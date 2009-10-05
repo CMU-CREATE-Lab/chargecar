@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="ChargeCar" default="all">
+   <dirname property="base.directory" file="${ant.file}"/>
+   <property file="build.properties"/>
+
+   <!-- Paths -->
+   <path id="core-classpath">
+      <!-- source classes -->
+      <pathelement path="${core.src.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="elevation-map-generator-classpath">
+      <!-- source classes -->
+      <pathelement path="${elevation-map-generator.src.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="grid-float-indexer-classpath">
+      <!-- source classes -->
+      <pathelement path="${grid-float-indexer.src.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="gpx-elevation-converter-classpath">
+      <!-- source classes -->
+      <pathelement path="${gpx-elevation-converter.src.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <!-- Compiler resources -->
+   <patternset id="compiler.resources">
+      <!-- excluded files -->
+      <exclude name="**/CVS/**"/>
+      <exclude name="**/SCCS/**"/>
+      <exclude name="**/RCS/**"/>
+      <exclude name="**/rcs/**"/>
+      <exclude name="**/.DS_Store/**"/>
+      <exclude name="**/.svn/**"/>
+      <!-- included files -->
+      <include name="**/?*.properties"/>
+      <include name="**/?*.xml"/>
+      <include name="**/?*.htm"/>
+      <include name="**/?*.html"/>
+      <include name="**/?*.dtd"/>
+      <include name="**/?*.tld"/>
+      <include name="**/?*.xsd"/>
+      <include name="**/?*.xsl"/>
+      <include name="**/?*.gif"/>
+      <include name="**/?*.png"/>
+      <include name="**/?*.jpeg"/>
+      <include name="**/?*.jpg"/>
+      <include name="**/?*.dll"/>
+      <include name="**/?*.lib"/>
+      <include name="**/?*.ice"/>
+      <include name="**/?*.pem"/>
+   </patternset>
+
+   <target name="all" depends="clean, dist" description="clean, then build everything"/>
+
+   <target name="clean" depends="clean-core,clean-elevation-map-generator,clean-grid-float-indexer,clean-gpx-elevation-converter" description="clean up everything"/>
+
+   <target name="clean-core" description="clean up core">
+      <delete dir="${core.build.dir}"/>
+      <delete dir="${core.dist.dir}"/>
+   </target>
+
+   <target name="clean-elevation-map-generator" description="clean up elevation-map-generator">
+      <delete dir="${elevation-map-generator.build.dir}"/>
+      <delete dir="${elevation-map-generator.dist.dir}"/>
+   </target>
+
+   <target name="clean-grid-float-indexer" description="clean up grid-float-indexer">
+      <delete dir="${grid-float-indexer.build.dir}"/>
+      <delete dir="${grid-float-indexer.dist.dir}"/>
+   </target>
+
+   <target name="clean-gpx-elevation-converter" description="clean up gpx-elevation-converter">
+      <delete dir="${gpx-elevation-converter.build.dir}"/>
+      <delete dir="${gpx-elevation-converter.dist.dir}"/>
+   </target>
+
+   <target name="build" depends="build-core, build-elevation-map-generator, build-grid-float-indexer, build-gpx-elevation-converter" description="builds the source code" unless="build-is-complete">
+      <property name="build-is-complete" value="true"/>
+   </target>
+
+   <target name="build-core" description="compiles the java source for core" unless="build-core-is-complete">
+      <!-- prompt the user for the passwords required to connect to the GridFloat Index database -->
+      <input message="GridFloat Index Database Username: " addproperty="gridfloat-index.database.connection.username"/>
+      <input message="GridFloat Index Database Password: " addproperty="gridfloat-index.database.connection.password"/>
+
+      <compile-code-and-copy-resources src.dir="${core.src.dir}"
+                                       build.dir="${core.build.dir}"
+                                       classpath-ref="core-classpath">
+         <resources-filterset>
+            <filterset>
+               <filter token="gridfloat-index.database.connection.username" value="${gridfloat-index.database.connection.username}"/>
+               <filter token="gridfloat-index.database.connection.password" value="${gridfloat-index.database.connection.password}"/>
+            </filterset>
+         </resources-filterset>
+      </compile-code-and-copy-resources>
+
+      <property name="build-core-is-complete" value="true"/>
+   </target>
+
+   <target name="build-elevation-map-generator" depends="build-core" description="compiles the java source for elevation-map-generator" unless="build-elevation-map-generator-is-complete">
+      <compile-code-and-copy-resources src.dir="${elevation-map-generator.src.dir}"
+                                       build.dir="${elevation-map-generator.build.dir}"
+                                       classpath-ref="elevation-map-generator-classpath"/>
+
+      <property name="build-elevation-map-generator-is-complete" value="true"/>
+   </target>
+
+   <target name="build-grid-float-indexer" depends="build-core" description="compiles the java source for grid-float-indexer" unless="build-grid-float-indexer-is-complete">
+      <compile-code-and-copy-resources src.dir="${grid-float-indexer.src.dir}"
+                                       build.dir="${grid-float-indexer.build.dir}"
+                                       classpath-ref="grid-float-indexer-classpath"/>
+
+      <property name="build-grid-float-indexer-is-complete" value="true"/>
+   </target>
+
+   <target name="build-gpx-elevation-converter" depends="build-core" description="compiles the java source for gpx-elevation-converter" unless="build-gpx-elevation-converter-is-complete">
+      <compile-code-and-copy-resources src.dir="${gpx-elevation-converter.src.dir}"
+                                       build.dir="${gpx-elevation-converter.build.dir}"
+                                       classpath-ref="gpx-elevation-converter-classpath"/>
+
+      <property name="build-gpx-elevation-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="dist" depends="dist-core, dist-elevation-map-generator, dist-grid-float-indexer, dist-gpx-elevation-converter" description="builds the project" unless="dist-is-complete">
+      <property name="dist-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-core" depends="build-core" description="builds the core" unless="dist-core-is-complete">
+      <create-dist build.dir="${core.build.dir}" jar.filename="${core.jar.filename}" dist.dir="${core.dist.dir}"/>
+
+      <property name="dist-core-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-elevation-map-generator" depends="dist-core, build-elevation-map-generator" description="builds the elevation-map-generator" unless="dist-elevation-map-generator-is-complete">
+      <create-dist build.dir="${elevation-map-generator.build.dir}" jar.filename="${elevation-map-generator.jar.filename}" dist.dir="${elevation-map-generator.dist.dir}">
+         <jar-manifest-main-class>
+            <attribute name="Main-Class" value="org.chargecar.ElevationMapGenerator"/>
+         </jar-manifest-main-class>
+         <additional-jar-files-to-copy>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-jar-files-to-copy>
+      </create-dist>
+
+      <property name="dist-elevation-map-generator-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-grid-float-indexer" depends="dist-core, build-grid-float-indexer" description="builds the grid-float-indexer" unless="dist-grid-float-indexer-is-complete">
+      <create-dist build.dir="${grid-float-indexer.build.dir}" jar.filename="${grid-float-indexer.jar.filename}" dist.dir="${grid-float-indexer.dist.dir}">
+         <jar-manifest-main-class>
+            <attribute name="Main-Class" value="org.chargecar.GridFloatIndexer"/>
+         </jar-manifest-main-class>
+         <additional-jar-files-to-copy>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-jar-files-to-copy>
+      </create-dist>
+
+      <property name="dist-grid-float-indexer-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-gpx-elevation-converter" depends="dist-core, build-gpx-elevation-converter" description="builds the gpx-elevation-converter" unless="dist-gpx-elevation-converter-is-complete">
+      <create-dist build.dir="${gpx-elevation-converter.build.dir}" jar.filename="${gpx-elevation-converter.jar.filename}" dist.dir="${gpx-elevation-converter.dist.dir}">
+         <jar-manifest-main-class>
+            <attribute name="Main-Class" value="org.chargecar.GPXElevationConverter"/>
+         </jar-manifest-main-class>
+         <additional-jar-files-to-copy>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-jar-files-to-copy>
+      </create-dist>
+
+      <property name="dist-gpx-elevation-converter-is-complete" value="true"/>
+   </target>
+
+   <!-- ============================================================================================================ -->
+   <!-- Macro definitions -->
+   <!-- ============================================================================================================ -->
+
+   <macrodef name="compile-code-and-copy-resources">
+      <attribute name="classpath-ref"/>
+      <attribute name="build.dir"/>
+      <attribute name="src.dir"/>
+      <element name="resources-filterset" optional="true"/>
+      <sequential>
+         <!-- create the build directory -->
+         <mkdir dir="@{build.dir}"/>
+
+         <!-- compile code -->
+         <javac srcdir="@{src.dir}"
+                destdir="@{build.dir}"
+                classpathref="@{classpath-ref}"
+                debug="${java.compiler.debug}"
+                nowarn="${java.compiler.generate.no.warnings}"
+                memorymaximumsize="${java.compiler.max.memory}"
+                source="${java.compiler.source.level}"
+                target="${java.compiler.target.level}"
+                fork="true">
+            <compilerarg line="${java.compiler.args}"/>
+         </javac>
+
+         <!-- copy resources -->
+         <copy todir="@{build.dir}">
+            <fileset dir="@{src.dir}">
+               <patternset refid="compiler.resources"/>
+            </fileset>
+            <resources-filterset/>
+         </copy>
+
+      </sequential>
+   </macrodef>
+
+   <macrodef name="create-dist">
+      <attribute name="build.dir"/>
+      <attribute name="dist.dir"/>
+      <attribute name="jar.filename"/>
+      <element name="jar-manifest-main-class" optional="true"/>
+      <element name="additional-jar-files-to-copy" optional="true"/>
+      <sequential>
+         <!-- create the dist directory -->
+         <mkdir dir="@{dist.dir}"/>
+
+         <!-- copy required jar files -->
+         <copy todir="@{dist.dir}" flatten="true">
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${commons-logging.jar}"/>
+            <fileset file="${jdom.jar}"/>
+            <fileset file="${log4j.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+            <additional-jar-files-to-copy/>
+         </copy>
+
+         <!-- define the execution classpath for use in the scripts -->
+         <path id="@{jar.filename}.execution.classpath.elements">
+            <pathelement location="@{dist.dir}"/>
+            <fileset dir="@{dist.dir}">
+               <include name="**/*.jar"/>
+            </fileset>
+         </path>
+
+         <!-- Set up a path id for the dist directory so it contains the correct kind of slashes when we do the pathconvert mapping -->
+         <path id="dist-@{jar.filename}.dir.before-conversion" path="@{dist.dir}"/>
+
+         <!-- Convert the dist directory path for the target platform to ensure that all the slashes are in the right direction -->
+         <pathconvert property="dist-@{jar.filename}.dir.after-conversion" dirsep="/" pathsep=":" refid="dist-@{jar.filename}.dir.before-conversion"/>
+
+         <!-- Create the classpath -->
+         <pathconvert property="@{jar.filename}.execution.classpath" dirsep="/" pathsep=" " refid="@{jar.filename}.execution.classpath.elements">
+            <map from="${dist-@{jar.filename}.dir.after-conversion}" to="."/>
+         </pathconvert>
+
+         <!-- create jar of Java classes -->
+         <jar destfile="@{dist.dir}/@{jar.filename}"
+              basedir="@{build.dir}"
+              update="no"
+              compress="true">
+            <manifest>
+               <attribute name="Built-By" value="${jar.built-by}"/>
+               <attribute name="Class-Path" value="${@{jar.filename}.execution.classpath}"/>
+               <jar-manifest-main-class/>
+            </manifest>
+         </jar>
+
+      </sequential>
+   </macrodef>
+
+</project>
