@@ -22,7 +22,6 @@
     <orderEntry type="library" name="JDOM" level="project" />
     <orderEntry type="library" name="Commons IO" level="project" />
     <orderEntry type="library" name="MySQL" level="project" />
-    <orderEntry type="library" name="JTS" level="project" />
     <orderEntry type="library" name="Commons Logging" level="project" />
   </component>
 </module>
