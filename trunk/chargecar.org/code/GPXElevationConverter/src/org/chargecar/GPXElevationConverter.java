@@ -1,7 +1,6 @@
 package org.chargecar;
 
 import java.io.File;
-import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gpx.GPXEventHandlerAdapter;
@@ -16,7 +15,6 @@ import org.chargecar.ned.gridfloat.GridFloatDataset;
 import org.chargecar.xml.XmlHelper;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 
 /**
  * <p>
@@ -34,7 +32,7 @@ public final class GPXElevationConverter
    private static final Log LOG = LogFactory.getLog(GPXElevationConverter.class);
    private static final String USGS_COMMAND_LINE_SWITCH = "--usgs";
 
-   public static void main(final String[] args) throws IOException, JDOMException, ElevationDatasetException
+   public static void main(final String[] args)
       {
       final long startTime = System.currentTimeMillis();
 
@@ -52,41 +50,52 @@ public final class GPXElevationConverter
          LOG.debug("Converting elevations for GPX [" + gpxFile.getAbsolutePath() + "]...");
          }
 
-      // create the GPX reader
-      final GPXReader gpxReader = new GPXReader(gpxFile);
-
-      // add the event handler which computes the lat/long ranges
-      final MinMaxLatLongCalculator minMaxLatLongCalculator = new MinMaxLatLongCalculator();
-      gpxReader.addGPXEventHandler(minMaxLatLongCalculator);
-
-      // read the GPX so we can get the lat/long ranges
-      gpxReader.read();
-
-      // remove the event handler
-      gpxReader.removeEventHandlers();
-
-      // add the event handler which will produce the new GPX
-      final ElevationDataset elevationDataset;
-      if (willQueryUSGSWebService)
+      try
          {
-         elevationDataset = new ElevationDatasetThrottle(USGSWebServiceElevationDataset.getInstance());
+         // create the GPX reader
+         final GPXReader gpxReader = new GPXReader(gpxFile);
+
+         // add the event handler which computes the lat/long ranges
+         final MinMaxLatLongCalculator minMaxLatLongCalculator = new MinMaxLatLongCalculator();
+         gpxReader.addGPXEventHandler(minMaxLatLongCalculator);
+
+         // read the GPX so we can get the lat/long ranges
+         gpxReader.read();
+
+         // remove the event handler
+         gpxReader.removeEventHandlers();
+
+         // add the event handler which will produce the new GPX
+         final ElevationDataset elevationDataset;
+         if (willQueryUSGSWebService)
+            {
+            elevationDataset = new ElevationDatasetThrottle(USGSWebServiceElevationDataset.getInstance());
+            }
+         else
+            {
+            elevationDataset = new GridFloatDataset(minMaxLatLongCalculator.getMinLongitude(),
+                                                    minMaxLatLongCalculator.getMaxLongitude(),
+                                                    minMaxLatLongCalculator.getMinLatitude(),
+                                                    minMaxLatLongCalculator.getMaxLatitude());
+            }
+         gpxReader.addGPXEventHandler(new GPXPrinter(elevationDataset));
+
+         // read the GPX so we can get the lat/long ranges
+         gpxReader.read();
+
+         final long endTime = System.currentTimeMillis();
+         if (LOG.isDebugEnabled())
+            {
+            LOG.debug("Total time (ms) to convert elevations for GPX [" + gpxFile.getAbsolutePath() + "]: " + (endTime - startTime));
+            }
          }
-      else
+      catch (Exception e)
          {
-         elevationDataset = new GridFloatDataset(minMaxLatLongCalculator.getMinLongitude(),
-                                                 minMaxLatLongCalculator.getMaxLongitude(),
-                                                 minMaxLatLongCalculator.getMinLatitude(),
-                                                 minMaxLatLongCalculator.getMaxLatitude());
-         }
-      gpxReader.addGPXEventHandler(new GPXPrinter(elevationDataset));
-
-      // read the GPX so we can get the lat/long ranges
-      gpxReader.read();
-
-      final long endTime = System.currentTimeMillis();
-      if (LOG.isDebugEnabled())
-         {
-         LOG.debug("Total time (ms) to convert elevations for GPX [" + gpxFile.getAbsolutePath() + "]: " + (endTime - startTime));
+         if (LOG.isErrorEnabled())
+            {
+            LOG.error("Exception caught while processing GPX [" + gpxFile.getAbsolutePath() + "]", e);
+            }
+         System.exit(1);
          }
       }
 
