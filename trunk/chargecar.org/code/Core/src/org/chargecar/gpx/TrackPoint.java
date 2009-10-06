@@ -141,7 +141,7 @@ public final class TrackPoint
       element.setAttribute(GPXFile.LATITUDE_ATTR, String.valueOf(latitude));
       element.setAttribute(GPXFile.LONGITUDE_ATTR, String.valueOf(longitude));
       final Element elevationElement = new Element(GPXFile.ELEVATION_ELEMENT_NAME, GPXFile.GPX_NAMESPACE);
-      elevationElement.addContent(String.valueOf(elevation));
+      elevationElement.addContent(elevation == null ? "0" : String.valueOf(elevation));
       final Element timeElement = new Element(GPXFile.TIME_ELEMENT_NAME, GPXFile.GPX_NAMESPACE);
       timeElement.addContent(timestamp);
       element.addContent(elevationElement);
