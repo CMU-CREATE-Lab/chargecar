@@ -2,9 +2,19 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/Serial/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/code/Serial/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/Serial/dist" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Log4J" level="project" />
+    <orderEntry type="library" name="Commons Logging" level="project" />
+    <orderEntry type="library" name="RxTx" level="project" />
   </component>
 </module>
 

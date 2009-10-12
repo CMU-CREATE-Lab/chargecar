@@ -45,6 +45,9 @@
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
   <component name="InspectionProjectProfileManager">
     <option name="PROJECT_PROFILE" value="Project Default" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
@@ -516,6 +519,15 @@
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/common/java/lib/commons-logging-1.1.1/commons-logging-1.1.1-sources.jar!/" />
       </SOURCES>
+    </library>
+    <library name="RxTx">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/common/java/lib/rxtx/rxtx-2.1-7-bins-r2/RXTXcomm.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="http://java.sun.com/products/javacomm/reference/api" />
+      </JAVADOC>
+      <SOURCES />
     </library>
   </component>
 </project>
