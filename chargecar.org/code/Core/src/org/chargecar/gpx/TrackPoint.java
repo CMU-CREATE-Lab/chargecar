@@ -1,8 +1,12 @@
 package org.chargecar.gpx;
 
+import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -10,6 +14,9 @@ import org.jdom.Element;
 public final class TrackPoint
    {
    private static final Log LOG = LogFactory.getLog(TrackPoint.class);
+
+   private static final DateTimeFormatter isoDateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis();
+   private static final DateTimeFormatter isoDateTimeFormatterFractionalSeconds = ISODateTimeFormat.dateTime();
 
    private final Double longitude;
    private final Double latitude;
@@ -71,6 +78,38 @@ public final class TrackPoint
    public String getTimestamp()
       {
       return timestamp;
+      }
+
+   public Date getTimestampAsDate()
+      {
+      if (timestamp != null)
+         {
+         // Parse the timestamp, first trying the fractional second parser, then fall back to the non-fractional
+         // second parser if the first fails.
+         DateTime dateTime = null;
+         try
+            {
+            dateTime = isoDateTimeFormatterFractionalSeconds.parseDateTime(timestamp);
+            }
+         catch (Exception e)
+            {
+            try
+               {
+               dateTime = isoDateTimeFormatter.parseDateTime(timestamp);
+               }
+            catch (Exception e1)
+               {
+               LOG.error("Exception while parsing the timestamp [" + timestamp + "]", e);
+               }
+            }
+
+         if (dateTime != null)
+            {
+            return dateTime.toDate();
+            }
+         }
+
+      return null;
       }
 
    public Double getElevation()

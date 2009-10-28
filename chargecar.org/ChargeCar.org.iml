@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/code/ElevationMapGenerator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/GPXElevationConverter/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/GridFloatIndexer/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/SpeedCalculator/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/code/Core/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/Core/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/ElevationMapGenerator/build" />
@@ -15,14 +16,17 @@
       <excludeFolder url="file://$MODULE_DIR$/code/GPXElevationConverter/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/GridFloatIndexer/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/GridFloatIndexer/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/code/SpeedCalculator/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/SpeedCalculator/dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Log4J" level="project" />
-    <orderEntry type="library" name="JDOM" level="project" />
-    <orderEntry type="library" name="Commons IO" level="project" />
-    <orderEntry type="library" name="MySQL" level="project" />
     <orderEntry type="library" name="Commons Logging" level="project" />
+    <orderEntry type="library" name="Commons IO" level="project" />
+    <orderEntry type="library" name="JDOM" level="project" />
+    <orderEntry type="library" name="Log4J" level="project" />
+    <orderEntry type="library" name="Joda Time" level="project" />
+    <orderEntry type="library" name="MySQL" level="project" />
   </component>
 </module>
 
