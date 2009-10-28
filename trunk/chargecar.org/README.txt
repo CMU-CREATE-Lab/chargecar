@@ -74,6 +74,12 @@ Indexes the local GridFloat NED data, storing meta data in the database.  Exampl
 
    java -jar chargecar-grid-float-indexer.jar /path/to/NED/root/directory
 
+SpeedCalculator
+----------------
+Calculates speed over time for a given GPX file using the Spherical Law of Cosines.
+
+   java -jar chargecar-speed-calculator.jar /path/to/file.gpx
+
 ------------------------------------------------------------------------------------------------------------------------
 
 MISC
