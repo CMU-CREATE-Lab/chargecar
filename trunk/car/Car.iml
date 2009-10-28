@@ -12,8 +12,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Log4J" level="project" />
     <orderEntry type="library" name="Commons Logging" level="project" />
+    <orderEntry type="library" name="Log4J" level="project" />
     <orderEntry type="library" name="RxTx" level="project" />
   </component>
 </module>
