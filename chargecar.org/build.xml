@@ -65,6 +65,22 @@
       <pathelement path="${mysql-connector.jar}"/>
    </path>
 
+   <path id="motionx-gps-raw-file-converter-classpath">
+      <!-- source classes -->
+      <pathelement path="${motionx-gps-raw-file-converter.src.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
    <path id="speed-calculator-classpath">
       <!-- source classes -->
       <pathelement path="${speed-calculator.src.dir}"/>
@@ -111,7 +127,12 @@
 
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
-   <target name="clean" depends="clean-core,clean-elevation-map-generator,clean-grid-float-indexer,clean-gpx-elevation-converter,clean-speed-calculator" description="clean up everything"/>
+   <target name="clean" depends="clean-core,
+                                 clean-elevation-map-generator,
+                                 clean-grid-float-indexer,
+                                 clean-gpx-elevation-converter,
+                                 clean-motionx-gps-raw-file-converter,
+                                 clean-speed-calculator" description="clean up everything"/>
 
    <target name="clean-core" description="clean up core">
       <delete dir="${core.build.dir}"/>
@@ -133,12 +154,22 @@
       <delete dir="${gpx-elevation-converter.dist.dir}"/>
    </target>
 
+   <target name="clean-motionx-gps-raw-file-converter" description="clean up motionx-gps-raw-file-converter">
+      <delete dir="${motionx-gps-raw-file-converter.build.dir}"/>
+      <delete dir="${motionx-gps-raw-file-converter.dist.dir}"/>
+   </target>
+
    <target name="clean-speed-calculator" description="clean up speed-calculator">
       <delete dir="${speed-calculator.build.dir}"/>
       <delete dir="${speed-calculator.dist.dir}"/>
    </target>
 
-   <target name="build" depends="build-core, build-elevation-map-generator, build-grid-float-indexer, build-gpx-elevation-converter, build-speed-calculator" description="builds the source code" unless="build-is-complete">
+   <target name="build" depends="build-core,
+                                 build-elevation-map-generator,
+                                 build-grid-float-indexer,
+                                 build-gpx-elevation-converter,
+                                 build-motionx-gps-raw-file-converter,
+                                 build-speed-calculator" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
    </target>
 
@@ -185,6 +216,14 @@
       <property name="build-gpx-elevation-converter-is-complete" value="true"/>
    </target>
 
+   <target name="build-motionx-gps-raw-file-converter" depends="build-core" description="compiles the java source for motionx-gps-raw-file-converter" unless="build-motionx-gps-raw-file-converter-is-complete">
+      <compile-code-and-copy-resources src.dir="${motionx-gps-raw-file-converter.src.dir}"
+                                       build.dir="${motionx-gps-raw-file-converter.build.dir}"
+                                       classpath-ref="motionx-gps-raw-file-converter-classpath"/>
+
+      <property name="build-motionx-gps-raw-file-converter-is-complete" value="true"/>
+   </target>
+
    <target name="build-speed-calculator" depends="build-core" description="compiles the java source for speed-calculator" unless="build-speed-calculator-is-complete">
       <compile-code-and-copy-resources src.dir="${speed-calculator.src.dir}"
                                        build.dir="${speed-calculator.build.dir}"
@@ -193,7 +232,12 @@
       <property name="build-speed-calculator-is-complete" value="true"/>
    </target>
 
-   <target name="dist" depends="dist-core, dist-elevation-map-generator, dist-grid-float-indexer, dist-gpx-elevation-converter, dist-speed-calculator" description="builds the project" unless="dist-is-complete">
+   <target name="dist" depends="dist-core,
+                                dist-elevation-map-generator,
+                                dist-grid-float-indexer,
+                                dist-gpx-elevation-converter,
+                                dist-motionx-gps-raw-file-converter,
+                                dist-speed-calculator" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
    </target>
 
@@ -240,6 +284,19 @@
       </create-dist>
 
       <property name="dist-gpx-elevation-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-motionx-gps-raw-file-converter" depends="dist-core, build-motionx-gps-raw-file-converter" description="builds the motionx-gps-raw-file-converter" unless="dist-motionx-gps-raw-file-converter-is-complete">
+      <create-dist build.dir="${motionx-gps-raw-file-converter.build.dir}" jar.filename="${motionx-gps-raw-file-converter.jar.filename}" dist.dir="${motionx-gps-raw-file-converter.dist.dir}">
+         <jar-manifest-main-class>
+            <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
+         </jar-manifest-main-class>
+         <additional-jar-files-to-copy>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-jar-files-to-copy>
+      </create-dist>
+
+      <property name="dist-motionx-gps-raw-file-converter-is-complete" value="true"/>
    </target>
 
    <target name="dist-speed-calculator" depends="dist-core, build-speed-calculator" description="builds the speed-calculator" unless="dist-speed-calculator-is-complete">

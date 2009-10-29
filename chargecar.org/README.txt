@@ -55,6 +55,12 @@ Seamless server.  Needs to be updated for use with our 1/3 and 1/9 arcsecond NED
 
    java -jar chargecar-elevation-map-generator.jar /path/to/gridfloat.hdr /path/to/output.png
 
+GridFloatIndexer
+----------------
+Indexes the local GridFloat NED data, storing meta data in the database.  Example usage:
+
+   java -jar chargecar-grid-float-indexer.jar /path/to/NED/root/directory
+
 GPXElevationConverter
 ---------------------
 Converts the elevations in a given GPX file to one containing elevations obtained either from the local NED or the USGS
@@ -68,11 +74,11 @@ or
 
 Note that if the --usgs switch is supplied, fetches from the USGS web service are throttled to occur at 50 ms intervals.
 
-GridFloatIndexer
+MotionXGPSRawFileConverter
 ----------------
-Indexes the local GridFloat NED data, storing meta data in the database.  Example usage:
+Converts the raw.xml file from MotionX-GPS to a GPX file with fractional second timestamps:
 
-   java -jar chargecar-grid-float-indexer.jar /path/to/NED/root/directory
+   java -jar chargecar-motionx-gps-raw-file-converter.jar /path/to/raw.xml
 
 SpeedCalculator
 ----------------
