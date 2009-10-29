@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -15,8 +16,8 @@ public final class TrackPoint
    {
    private static final Log LOG = LogFactory.getLog(TrackPoint.class);
 
-   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
-   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS = ISODateTimeFormat.dateTime();
+   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.UTC);
+   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
    private final Double longitude;
    private final Double latitude;
