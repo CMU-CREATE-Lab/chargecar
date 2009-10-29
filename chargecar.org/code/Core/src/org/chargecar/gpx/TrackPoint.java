@@ -15,8 +15,8 @@ public final class TrackPoint
    {
    private static final Log LOG = LogFactory.getLog(TrackPoint.class);
 
-   private static final DateTimeFormatter isoDateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis();
-   private static final DateTimeFormatter isoDateTimeFormatterFractionalSeconds = ISODateTimeFormat.dateTime();
+   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
+   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS = ISODateTimeFormat.dateTime();
 
    private final Double longitude;
    private final Double latitude;
@@ -89,13 +89,13 @@ public final class TrackPoint
          DateTime dateTime = null;
          try
             {
-            dateTime = isoDateTimeFormatterFractionalSeconds.parseDateTime(timestamp);
+            dateTime = ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS.parseDateTime(timestamp);
             }
          catch (Exception e)
             {
             try
                {
-               dateTime = isoDateTimeFormatter.parseDateTime(timestamp);
+               dateTime = ISO_DATE_TIME_FORMATTER.parseDateTime(timestamp);
                }
             catch (Exception e1)
                {
