@@ -99,7 +99,7 @@ public final class TrackPoint
                }
             catch (Exception e1)
                {
-               LOG.error("Exception while parsing the timestamp [" + timestamp + "]", e);
+               LOG.error("Exception while parsing the timestamp [" + timestamp + "]", e1);
                }
             }
 
