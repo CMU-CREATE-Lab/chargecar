@@ -5,9 +5,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Element;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -15,9 +12,6 @@ import org.joda.time.format.ISODateTimeFormat;
 public final class TrackPoint
    {
    private static final Log LOG = LogFactory.getLog(TrackPoint.class);
-
-   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.UTC);
-   private static final DateTimeFormatter ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
 
    private final Double longitude;
    private final Double latitude;
@@ -83,34 +77,12 @@ public final class TrackPoint
 
    public Date getTimestampAsDate()
       {
-      if (timestamp != null)
-         {
-         // Parse the timestamp, first trying the fractional second parser, then fall back to the non-fractional
-         // second parser if the first fails.
-         DateTime dateTime = null;
-         try
-            {
-            dateTime = ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS.parseDateTime(timestamp);
-            }
-         catch (Exception e)
-            {
-            try
-               {
-               dateTime = ISO_DATE_TIME_FORMATTER.parseDateTime(timestamp);
-               }
-            catch (Exception e1)
-               {
-               LOG.error("Exception while parsing the timestamp [" + timestamp + "]", e1);
-               }
-            }
+      return UTCHelper.getUTCTimestampAsDate(timestamp);
+      }
 
-         if (dateTime != null)
-            {
-            return dateTime.toDate();
-            }
-         }
-
-      return null;
+   public DateTime getTimestampAsDateTime()
+      {
+      return UTCHelper.getUTCTimestampAsDateTime(timestamp);
       }
 
    public Double getElevation()

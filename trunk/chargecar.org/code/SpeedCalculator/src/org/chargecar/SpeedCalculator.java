@@ -9,6 +9,7 @@ import org.chargecar.gpx.GPXReader;
 import org.chargecar.gpx.MinMaxLatLongCalculator;
 import org.chargecar.gpx.SphericalLawOfCosinesDistanceCalculator;
 import org.chargecar.gpx.TrackPoint;
+import org.chargecar.gpx.UTCHelper;
 import org.chargecar.ned.ElevationDataset;
 import org.chargecar.ned.ElevationDatasetException;
 import org.chargecar.ned.gridfloat.GridFloatDataset;
@@ -112,14 +113,6 @@ public final class SpeedCalculator
             }
          }
 
-      public void handleTrackBegin(final String trackName)
-         {
-         }
-
-      public void handleTrackSegmentBegin()
-         {
-         }
-
       public void handleTrackPoint(final TrackPoint trackPoint)
          {
          final Double longitude = trackPoint.getLongitude();
@@ -127,26 +120,35 @@ public final class SpeedCalculator
          final Double elevation = (longitude != null && latitude != null && elevationDataset != null) ? elevationDataset.getElevation(longitude, latitude) : null;
 
          final Double distanceInKilometers = distanceCalculator1.compute2DDistance(trackPoint, previousTrackPoint);
+         final double elapsedSeconds;
+         final Double distanceInMiles;
+         final Double milesPerHour;
          if (distanceInKilometers != null)
             {
-            final double elapsedSeconds = (trackPoint.getTimestampAsDate().getTime() -
-                                           previousTrackPoint.getTimestampAsDate().getTime()) / 1000.0;
+            elapsedSeconds = (trackPoint.getTimestampAsDate().getTime() -
+                              previousTrackPoint.getTimestampAsDate().getTime()) / 1000.0;
 
-            final Double distanceInMiles = distanceInKilometers * MILES_PER_KM;
+            distanceInMiles = distanceInKilometers * MILES_PER_KM;
             runningSumDistanceInMiles += distanceInMiles;
-            final Double milesPerHour = distanceInMiles / elapsedSeconds * 3600.0;
-
-            System.out.printf("%s\t%5f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\n",
-                              trackPoint.getTimestampAsDate().toString(),
-                              elapsedSeconds,
-                              longitude,
-                              latitude,
-                              trackPoint.getElevation(),
-                              elevation,
-                              distanceInMiles,
-                              runningSumDistanceInMiles,
-                              milesPerHour);
+            milesPerHour = distanceInMiles / elapsedSeconds * 3600.0;
             }
+         else
+            {
+            elapsedSeconds = 0.0;
+            distanceInMiles = 0.0;
+            milesPerHour = 0.0;
+            }
+
+         System.out.printf("%s\t%5f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\n",
+                           trackPoint.getTimestampAsDateTime().toString(UTCHelper.ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS),
+                           elapsedSeconds,
+                           longitude,
+                           latitude,
+                           trackPoint.getElevation(),
+                           elevation,
+                           distanceInMiles,
+                           runningSumDistanceInMiles,
+                           milesPerHour);
 
          previousTrackPoint = trackPoint;
          }
