@@ -1,10 +1,14 @@
 package org.chargecar;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gpx.GPXEventHandler;
@@ -22,12 +26,12 @@ final class MotionXGPSRawFileReader
    {
    private static final Log LOG = LogFactory.getLog(MotionXGPSRawFileReader.class);
 
-   private final File rawFile;
+   private final File file;
    private final List<GPXEventHandler> eventHandlers = new ArrayList<GPXEventHandler>();
 
-   MotionXGPSRawFileReader(final File rawFile)
+   MotionXGPSRawFileReader(final File file)
       {
-      this.rawFile = rawFile;
+      this.file = file;
       }
 
    public void addGPXEventHandler(final GPXEventHandler gpxEventHandler)
@@ -38,14 +42,22 @@ final class MotionXGPSRawFileReader
          }
       }
 
-   public void removeEventHandlers()
-      {
-      eventHandlers.clear();
-      }
-
    public void read() throws IOException, JDOMException
       {
-      final Element rootElement = XmlHelper.createElementNoValidate(rawFile);
+      // determine whether the specified file is a KMZ or a raw.xml
+      Element rootElement;
+      try
+         {
+         // start by assuming it's a KMZ
+         final ZipFile zipfile = new ZipFile(file);
+         final ZipEntry rawFileZipEntry = zipfile.getEntry("raw.xml");
+         rootElement = XmlHelper.createElementNoValidate(new BufferedInputStream(zipfile.getInputStream(rawFileZipEntry)));
+         }
+      catch (ZipException e)
+         {
+         // must not be a zip file, so assume it's an XML file
+         rootElement = XmlHelper.createElementNoValidate(file);
+         }
 
       if (rootElement != null && "track".equals(rootElement.getName()))
          {
