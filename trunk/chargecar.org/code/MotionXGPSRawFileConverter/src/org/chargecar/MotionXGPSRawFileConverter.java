@@ -13,6 +13,9 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 
 /**
+ * <code>MotionXGPSRawFileConverter</code> takes a MotionX-GPS .kmz file or raw.xml file and produces a GPX file with
+ * fractional-second timestamps.
+ *
  * @author Chris Bartley (bartley@cmu.edu)
  */
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
@@ -26,19 +29,19 @@ public final class MotionXGPSRawFileConverter
 
       if (args.length < 1)
          {
-         LOG.error("MotionX-GPS raw file not specified.  Aborting.");
+         LOG.error("MotionX-GPS kmz or raw file not specified.  Aborting.");
          System.exit(1);
          }
 
-      final File rawFile = new File(args[args.length - 1]);
+      final File file = new File(args[args.length - 1]);
 
       if (LOG.isDebugEnabled())
          {
-         LOG.debug("Converting MotionX-GPS raw file [" + rawFile.getAbsolutePath() + "]...");
+         LOG.debug("Converting MotionX-GPS file [" + file.getAbsolutePath() + "]...");
          }
 
       // create the raw file reader
-      final MotionXGPSRawFileReader rawFileReader = new MotionXGPSRawFileReader(rawFile);
+      final MotionXGPSRawFileReader rawFileReader = new MotionXGPSRawFileReader(file);
 
       // add the event handler which creates the GPX
       rawFileReader.addGPXEventHandler(new GPXCreator());
@@ -49,7 +52,7 @@ public final class MotionXGPSRawFileConverter
       final long endTime = System.currentTimeMillis();
       if (LOG.isDebugEnabled())
          {
-         LOG.debug("Total time (ms) to convert raw file [" + rawFile.getAbsolutePath() + "]: " + (endTime - startTime));
+         LOG.debug("Total time (ms) to convert raw file [" + file.getAbsolutePath() + "]: " + (endTime - startTime));
          }
       }
 

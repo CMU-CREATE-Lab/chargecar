@@ -76,7 +76,11 @@ Note that if the --usgs switch is supplied, fetches from the USGS web service ar
 
 MotionXGPSRawFileConverter
 ----------------
-Converts the raw.xml file from MotionX-GPS to a GPX file with fractional second timestamps:
+Converts a MotionX-GPS .kmz or raw.xml file to a GPX file with fractional-second timestamps:
+
+   java -jar chargecar-motionx-gps-raw-file-converter.jar /path/to/motionx-gpx.kmz
+
+or
 
    java -jar chargecar-motionx-gps-raw-file-converter.jar /path/to/raw.xml
 
