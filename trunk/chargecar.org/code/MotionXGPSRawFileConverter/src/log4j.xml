@@ -5,7 +5,7 @@
 
    <!-- Define appenders -->
    <appender name="LogFileAppender" class="org.apache.log4j.FileAppender">
-      <param name="File" value="SpeedCalculator.log"/>
+      <param name="File" value="MotionXGPSRawFileConverter.log"/>
       <layout class="org.apache.log4j.PatternLayout">
          <param name="ConversionPattern" value="%d [%t] %-5p: %c: %m%n"/>
       </layout>
