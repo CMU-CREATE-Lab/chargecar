@@ -31,7 +31,7 @@ public class SphericalLawOfCosinesDistanceCalculator extends AbstractDistanceCal
          final double t2LatitudeRadians = Math.toRadians(t2.getLatitude());
          return Math.acos(Math.sin(t1LatitudeRadians) * Math.sin(t2LatitudeRadians) +
                           Math.cos(t1LatitudeRadians) * Math.cos(t2LatitudeRadians) *
-                          Math.cos(Math.toRadians(t2.getLongitude() - t1.getLongitude()))) * RADIUS_OF_EARTH_IN_KM;
+                          Math.cos(Math.toRadians(t2.getLongitude() - t1.getLongitude()))) * RADIUS_OF_EARTH_IN_METERS;
          }
       return null;
       }

@@ -4,10 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * <p>
- * <code>MinMaxLatLongCalculator</code> does something...
- * </p>
- *
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public class MinMaxLatLongCalculator extends GPXEventHandlerAdapter
@@ -21,7 +17,7 @@ public class MinMaxLatLongCalculator extends GPXEventHandlerAdapter
 
    public void handleGPXBegin()
       {
-      LOG.trace("GPXElevationConverter$MinMaxLatLongCalculator.handleReadBegin()");
+      LOG.trace("MinMaxLatLongCalculator.handleGPXBegin()");
       }
 
    public void handleTrackPoint(final TrackPoint trackPoint)
@@ -38,7 +34,7 @@ public class MinMaxLatLongCalculator extends GPXEventHandlerAdapter
       {
       if (LOG.isTraceEnabled())
          {
-         LOG.trace("GPXElevationConverter$MinMaxLatLongCalculator.handleReadEnd()");
+         LOG.trace("MinMaxLatLongCalculator.handleGPXEnd()");
          LOG.trace("minLongitude = [" + minLongitude + "]");
          LOG.trace("maxLongitude = [" + maxLongitude + "]");
          LOG.trace("minLatitude = [" + minLatitude + "]");

@@ -119,7 +119,7 @@ public final class SpeedCalculator
          final Double latitude = trackPoint.getLatitude();
          final Double elevation = (longitude != null && latitude != null && elevationDataset != null) ? elevationDataset.getElevation(longitude, latitude) : null;
 
-         final Double distanceInKilometers = distanceCalculator1.compute2DDistance(trackPoint, previousTrackPoint);
+         final Double distanceInKilometers = distanceCalculator1.compute2DDistance(trackPoint, previousTrackPoint) / 1000;
          final double elapsedSeconds;
          final Double distanceInMiles;
          final Double milesPerHour;

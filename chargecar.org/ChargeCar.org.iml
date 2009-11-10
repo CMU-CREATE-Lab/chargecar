@@ -9,12 +9,15 @@
       <sourceFolder url="file://$MODULE_DIR$/code/GridFloatIndexer/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/SpeedCalculator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/MotionXGPSRawFileConverter/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/GPXTool/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/code/Core/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/Core/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/ElevationMapGenerator/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/ElevationMapGenerator/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/GPXElevationConverter/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/GPXElevationConverter/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/code/GPXTool/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/GPXTool/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/GridFloatIndexer/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/GridFloatIndexer/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/MotionXGPSRawFileConverter/build" />

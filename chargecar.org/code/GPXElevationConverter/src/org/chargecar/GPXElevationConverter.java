@@ -3,15 +3,7 @@ package org.chargecar;
 import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.gpx.GPXEventHandlerAdapter;
-import org.chargecar.gpx.GPXFile;
-import org.chargecar.gpx.GPXReader;
-import org.chargecar.gpx.MinMaxLatLongCalculator;
-import org.chargecar.gpx.TrackPoint;
-import org.chargecar.ned.ElevationDataset;
-import org.chargecar.ned.ElevationDatasetException;
-import org.chargecar.ned.USGSWebServiceElevationDataset;
-import org.chargecar.ned.gridfloat.GridFloatDataset;
+import org.chargecar.gpx.GPXElevationLookupTool;
 import org.chargecar.xml.XmlHelper;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -52,36 +44,17 @@ public final class GPXElevationConverter
 
       try
          {
-         // create the GPX reader
-         final GPXReader gpxReader = new GPXReader(gpxFile);
-
-         // add the event handler which computes the lat/long ranges
-         final MinMaxLatLongCalculator minMaxLatLongCalculator = new MinMaxLatLongCalculator();
-         gpxReader.addGPXEventHandler(minMaxLatLongCalculator);
-
-         // read the GPX so we can get the lat/long ranges
-         gpxReader.read();
-
-         // remove the event handler
-         gpxReader.removeEventHandlers();
-
-         // add the event handler which will produce the new GPX
-         final ElevationDataset elevationDataset;
+         final Element gpxElement;
          if (willQueryUSGSWebService)
             {
-            elevationDataset = new ElevationDatasetThrottle(USGSWebServiceElevationDataset.getInstance());
+            gpxElement = GPXElevationLookupTool.getInstance().convertElevationsUsingOnlineData(gpxFile);
             }
          else
             {
-            elevationDataset = new GridFloatDataset(minMaxLatLongCalculator.getMinLongitude(),
-                                                    minMaxLatLongCalculator.getMaxLongitude(),
-                                                    minMaxLatLongCalculator.getMinLatitude(),
-                                                    minMaxLatLongCalculator.getMaxLatitude());
+            gpxElement = GPXElevationLookupTool.getInstance().convertElevationsUsingLocalData(gpxFile);
             }
-         gpxReader.addGPXEventHandler(new GPXPrinter(elevationDataset));
 
-         // read the GPX so we can get the lat/long ranges
-         gpxReader.read();
+         System.out.println(XmlHelper.writeDocumentToStringFormatted(new Document(gpxElement)));
 
          final long endTime = System.currentTimeMillis();
          if (LOG.isDebugEnabled())
@@ -95,81 +68,8 @@ public final class GPXElevationConverter
             {
             LOG.error("Exception caught while processing GPX [" + gpxFile.getAbsolutePath() + "]", e);
             }
+
          System.exit(1);
-         }
-      }
-
-   private static class GPXPrinter extends GPXEventHandlerAdapter
-      {
-      private final ElevationDataset elevationDataset;
-      private final GPXFile gpxFile = new GPXFile();
-      private Element currentTrack;
-      private Element currentTrackSegment;
-
-      private GPXPrinter(final ElevationDataset elevationDataset) throws ElevationDatasetException
-         {
-         this.elevationDataset = elevationDataset;
-         this.elevationDataset.open();
-         }
-
-      public void handleTrackBegin(final String trackName)
-         {
-         currentTrack = gpxFile.createTrack(trackName);
-         }
-
-      public void handleTrackSegmentBegin()
-         {
-         currentTrackSegment = gpxFile.createTrackSegment(currentTrack);
-         }
-
-      public void handleTrackPoint(final TrackPoint trackPoint)
-         {
-         final Double longitude = trackPoint.getLongitude();
-         final Double latitude = trackPoint.getLatitude();
-         final Double elevation = (longitude != null && latitude != null) ? elevationDataset.getElevation(longitude, latitude) : null;
-
-         //System.out.printf("%10.15f\t%10.15f\t%10.15f\t%10.15f\n", longitude, latitude, trackPoint.getElevation(), elevation);
-         gpxFile.createTrackPoint(currentTrackSegment, new TrackPoint(trackPoint, elevation));
-         }
-
-      public void handleGPXEnd()
-         {
-         elevationDataset.close();
-         System.out.println(XmlHelper.writeDocumentToStringFormatted(new Document(gpxFile.toElement())));
-         }
-      }
-
-   private static class ElevationDatasetThrottle implements ElevationDataset
-      {
-      private final ElevationDataset elevationDataset;
-
-      private ElevationDatasetThrottle(final ElevationDataset elevationDataset)
-         {
-         this.elevationDataset = elevationDataset;
-         }
-
-      public void open() throws ElevationDatasetException
-         {
-         elevationDataset.open();
-         }
-
-      public Double getElevation(final double longitude, final double latitude)
-         {
-         final Double elevation = elevationDataset.getElevation(longitude, latitude);
-         try
-            {
-            Thread.sleep(50);
-            }
-         catch (InterruptedException e)
-            {
-            LOG.error("InterruptedException while sleeping", e);
-            }
-         return elevation;
-         }
-
-      public void close()
-         {
-         elevationDataset.close();
          }
       }
 

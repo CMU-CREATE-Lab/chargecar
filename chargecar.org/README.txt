@@ -74,6 +74,29 @@ or
 
 Note that if the --usgs switch is supplied, fetches from the USGS web service are throttled to occur at 50 ms intervals.
 
+GPXTool
+----------------
+Can validate and privatize a GPX file and also correct the elevations by doing a lookup from the local NED or the USGS
+NED Web Service.  Pretty-prints the resulting GPX on stdout.  Example usage:
+
+   Validate and pretty-print:
+   java -jar chargecar-gpx-tool.jar /path/to/file.gpx
+
+   Pretty-print only:
+   java -jar chargecar-gpx-tool.jar --no-validate /path/to/file.gpx
+
+   Privatize and pretty-print:
+   java -jar chargecar-gpx-tool.jar --privatize --no-validate /path/to/file.gpx
+
+   Validate, lookup elevations from local NED, and pretty-print:
+   java -jar chargecar-gpx-tool.jar --lookup-elevations-locally /path/to/file.gpx
+
+   Validate, privatize, lookup elevations from USGS web service, and pretty-print:
+   java -jar chargecar-gpx-tool.jar --privatize --lookup-elevations-online /path/to/file.gpx
+
+If both the "--lookup-elevations-locally" and "--lookup-elevations-online" switches are given, the request to do lookups
+online is ignored.
+
 MotionXGPSRawFileConverter
 ----------------
 Converts a MotionX-GPS .kmz or raw.xml file to a GPX file with fractional-second timestamps:
