@@ -65,6 +65,22 @@
       <pathelement path="${mysql-connector.jar}"/>
    </path>
 
+   <path id="gpx-tool-classpath">
+      <!-- source classes -->
+      <pathelement path="${gpx-tool.src.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
    <path id="motionx-gps-raw-file-converter-classpath">
       <!-- source classes -->
       <pathelement path="${motionx-gps-raw-file-converter.src.dir}"/>
@@ -131,6 +147,7 @@
                                  clean-elevation-map-generator,
                                  clean-grid-float-indexer,
                                  clean-gpx-elevation-converter,
+                                 clean-gpx-tool,
                                  clean-motionx-gps-raw-file-converter,
                                  clean-speed-calculator" description="clean up everything"/>
 
@@ -154,6 +171,11 @@
       <delete dir="${gpx-elevation-converter.dist.dir}"/>
    </target>
 
+   <target name="clean-gpx-tool" description="clean up gpx-tool">
+      <delete dir="${gpx-tool.build.dir}"/>
+      <delete dir="${gpx-tool.dist.dir}"/>
+   </target>
+
    <target name="clean-motionx-gps-raw-file-converter" description="clean up motionx-gps-raw-file-converter">
       <delete dir="${motionx-gps-raw-file-converter.build.dir}"/>
       <delete dir="${motionx-gps-raw-file-converter.dist.dir}"/>
@@ -168,6 +190,7 @@
                                  build-elevation-map-generator,
                                  build-grid-float-indexer,
                                  build-gpx-elevation-converter,
+                                 build-gpx-tool,
                                  build-motionx-gps-raw-file-converter,
                                  build-speed-calculator" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
@@ -185,6 +208,7 @@
             <filterset>
                <filter token="gridfloat-index.database.connection.username" value="${gridfloat-index.database.connection.username}"/>
                <filter token="gridfloat-index.database.connection.password" value="${gridfloat-index.database.connection.password}"/>
+               <filter token="gpx-xsd.directory" value="${gpx.xsd.dir}"/>
             </filterset>
          </resources-filterset>
       </compile-code-and-copy-resources>
@@ -216,6 +240,14 @@
       <property name="build-gpx-elevation-converter-is-complete" value="true"/>
    </target>
 
+   <target name="build-gpx-tool" depends="build-core" description="compiles the java source for gpx-tool" unless="build-gpx-tool-is-complete">
+      <compile-code-and-copy-resources src.dir="${gpx-tool.src.dir}"
+                                       build.dir="${gpx-tool.build.dir}"
+                                       classpath-ref="gpx-tool-classpath"/>
+
+      <property name="build-gpx-tool-is-complete" value="true"/>
+   </target>
+
    <target name="build-motionx-gps-raw-file-converter" depends="build-core" description="compiles the java source for motionx-gps-raw-file-converter" unless="build-motionx-gps-raw-file-converter-is-complete">
       <compile-code-and-copy-resources src.dir="${motionx-gps-raw-file-converter.src.dir}"
                                        build.dir="${motionx-gps-raw-file-converter.build.dir}"
@@ -236,6 +268,7 @@
                                 dist-elevation-map-generator,
                                 dist-grid-float-indexer,
                                 dist-gpx-elevation-converter,
+                                dist-gpx-tool,
                                 dist-motionx-gps-raw-file-converter,
                                 dist-speed-calculator" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
@@ -252,9 +285,9 @@
          <jar-manifest-main-class>
             <attribute name="Main-Class" value="org.chargecar.ElevationMapGenerator"/>
          </jar-manifest-main-class>
-         <additional-jar-files-to-copy>
+         <additional-files-to-copy>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
-         </additional-jar-files-to-copy>
+         </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-elevation-map-generator-is-complete" value="true"/>
@@ -265,9 +298,9 @@
          <jar-manifest-main-class>
             <attribute name="Main-Class" value="org.chargecar.GridFloatIndexer"/>
          </jar-manifest-main-class>
-         <additional-jar-files-to-copy>
+         <additional-files-to-copy>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
-         </additional-jar-files-to-copy>
+         </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-grid-float-indexer-is-complete" value="true"/>
@@ -278,12 +311,25 @@
          <jar-manifest-main-class>
             <attribute name="Main-Class" value="org.chargecar.GPXElevationConverter"/>
          </jar-manifest-main-class>
-         <additional-jar-files-to-copy>
+         <additional-files-to-copy>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
-         </additional-jar-files-to-copy>
+         </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-gpx-elevation-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-gpx-tool" depends="dist-core, build-gpx-tool" description="builds the gpx-tool" unless="dist-gpx-tool-is-complete">
+      <create-dist build.dir="${gpx-tool.build.dir}" jar.filename="${gpx-tool.jar.filename}" dist.dir="${gpx-tool.dist.dir}">
+         <jar-manifest-main-class>
+            <attribute name="Main-Class" value="org.chargecar.GPXTool"/>
+         </jar-manifest-main-class>
+         <additional-files-to-copy>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-gpx-tool-is-complete" value="true"/>
    </target>
 
    <target name="dist-motionx-gps-raw-file-converter" depends="dist-core, build-motionx-gps-raw-file-converter" description="builds the motionx-gps-raw-file-converter" unless="dist-motionx-gps-raw-file-converter-is-complete">
@@ -291,9 +337,9 @@
          <jar-manifest-main-class>
             <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
          </jar-manifest-main-class>
-         <additional-jar-files-to-copy>
+         <additional-files-to-copy>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
-         </additional-jar-files-to-copy>
+         </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-motionx-gps-raw-file-converter-is-complete" value="true"/>
@@ -304,9 +350,9 @@
          <jar-manifest-main-class>
             <attribute name="Main-Class" value="org.chargecar.SpeedCalculator"/>
          </jar-manifest-main-class>
-         <additional-jar-files-to-copy>
+         <additional-files-to-copy>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
-         </additional-jar-files-to-copy>
+         </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-speed-calculator-is-complete" value="true"/>
@@ -354,7 +400,7 @@
       <attribute name="dist.dir"/>
       <attribute name="jar.filename"/>
       <element name="jar-manifest-main-class" optional="true"/>
-      <element name="additional-jar-files-to-copy" optional="true"/>
+      <element name="additional-files-to-copy" optional="true"/>
       <sequential>
          <!-- create the dist directory -->
          <mkdir dir="@{dist.dir}"/>
@@ -367,7 +413,7 @@
             <fileset file="${joda-time.jar}"/>
             <fileset file="${log4j.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
-            <additional-jar-files-to-copy/>
+            <additional-files-to-copy/>
          </copy>
 
          <!-- define the execution classpath for use in the scripts -->
