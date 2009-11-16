@@ -97,6 +97,14 @@ NED Web Service.  Pretty-prints the resulting GPX on stdout.  Example usage:
 If both the "--lookup-elevations-locally" and "--lookup-elevations-online" switches are given, the request to do lookups
 online is ignored.
 
+GPXValidator
+----------------
+Validates GPX files.  If valid, it prints the word "Valid" to standard out and returns with a status code of zero.
+Otherwise, it prints "Invalid: " followed by the error message explaining why the validation failed and then exists with
+a non-zero status code. Example usage:
+
+   java -jar chargecar-gpx-validator.jar /path/to/file.gpx
+
 MotionXGPSRawFileConverter
 ----------------
 Converts a MotionX-GPS .kmz or raw.xml file to a GPX file with fractional-second timestamps:

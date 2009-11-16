@@ -30,6 +30,13 @@ import org.jdom.input.SAXBuilder;
  */
 public final class GPXValidator
    {
+   public interface ValidationResult
+      {
+      boolean isValid();
+
+      String getErrorMessage();
+      }
+
    private static final Log LOG = LogFactory.getLog(GPXValidator.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(GPXValidator.class.getName());
@@ -137,12 +144,12 @@ public final class GPXValidator
          }
       }
 
-   public boolean isValid(final String gpxFilePath)
+   public boolean isValid(final File gpxFile)
       {
-      return isValid(new File(gpxFilePath));
+      return validate(gpxFile).isValid();
       }
 
-   public boolean isValid(final File gpxFile)
+   public ValidationResult validate(final File gpxFile)
       {
       // true activates validation
       final SAXBuilder saxBuilder = new SAXBuilder(true);
@@ -154,24 +161,61 @@ public final class GPXValidator
       saxBuilder.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation", schemaLocationPropertyValue);
 
       // validate the XML file
+      String message = null;
       try
          {
          saxBuilder.build(gpxFile);
 
-         return true;
+         return ValidationResultImpl.createValidResult();
          }
       catch (JDOMException e)
          {
-         LOG.error("JDOMException while validating: " + e.getMessage());
+         message = e.getMessage();
+         LOG.error("JDOMException while validating: " + message);
          }
       catch (IOException e)
          {
-         LOG.error("IOException while validating: " + e.getMessage());
+         message = e.getMessage();
+         LOG.error("IOException while validating: " + message);
          }
       catch (Exception e)
          {
-         LOG.error("Exception while validating: " + e.getMessage());
+         message = e.getMessage();
+         LOG.error("Exception while validating: " + message);
          }
-      return false;
+
+      return ValidationResultImpl.createInvalidResult(message);
+      }
+
+   private static final class ValidationResultImpl implements ValidationResult
+      {
+      private final boolean isValid;
+      private final String message;
+
+      private static ValidationResult createValidResult()
+         {
+         return new ValidationResultImpl(true, null);
+         }
+
+      private static ValidationResult createInvalidResult(final String message)
+         {
+         return new ValidationResultImpl(false, message);
+         }
+
+      private ValidationResultImpl(final boolean isValid, final String message)
+         {
+         this.isValid = isValid;
+         this.message = message;
+         }
+
+      public boolean isValid()
+         {
+         return isValid;
+         }
+
+      public String getErrorMessage()
+         {
+         return message;
+         }
       }
    }
