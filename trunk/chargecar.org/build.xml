@@ -81,6 +81,19 @@
       <pathelement path="${mysql-connector.jar}"/>
    </path>
 
+   <path id="gpx-validator-classpath">
+      <!-- source classes -->
+      <pathelement path="${gpx-validator.src.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+   </path>
+
    <path id="motionx-gps-raw-file-converter-classpath">
       <!-- source classes -->
       <pathelement path="${motionx-gps-raw-file-converter.src.dir}"/>
@@ -89,12 +102,10 @@
       <pathelement path="${core.build.dir}"/>
 
       <!-- third-party jars -->
-      <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
-      <pathelement path="${mysql-connector.jar}"/>
    </path>
 
    <path id="speed-calculator-classpath">
@@ -148,6 +159,7 @@
                                  clean-grid-float-indexer,
                                  clean-gpx-elevation-converter,
                                  clean-gpx-tool,
+                                 clean-gpx-validator,
                                  clean-motionx-gps-raw-file-converter,
                                  clean-speed-calculator" description="clean up everything"/>
 
@@ -176,6 +188,11 @@
       <delete dir="${gpx-tool.dist.dir}"/>
    </target>
 
+   <target name="clean-gpx-validator" description="clean up gpx-validator">
+      <delete dir="${gpx-validator.build.dir}"/>
+      <delete dir="${gpx-validator.dist.dir}"/>
+   </target>
+
    <target name="clean-motionx-gps-raw-file-converter" description="clean up motionx-gps-raw-file-converter">
       <delete dir="${motionx-gps-raw-file-converter.build.dir}"/>
       <delete dir="${motionx-gps-raw-file-converter.dist.dir}"/>
@@ -191,6 +208,7 @@
                                  build-grid-float-indexer,
                                  build-gpx-elevation-converter,
                                  build-gpx-tool,
+                                 build-gpx-validator,
                                  build-motionx-gps-raw-file-converter,
                                  build-speed-calculator" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
@@ -248,6 +266,14 @@
       <property name="build-gpx-tool-is-complete" value="true"/>
    </target>
 
+   <target name="build-gpx-validator" depends="build-core" description="compiles the java source for gpx-validator" unless="build-gpx-validator-is-complete">
+      <compile-code-and-copy-resources src.dir="${gpx-validator.src.dir}"
+                                       build.dir="${gpx-validator.build.dir}"
+                                       classpath-ref="gpx-validator-classpath"/>
+
+      <property name="build-gpx-validator-is-complete" value="true"/>
+   </target>
+
    <target name="build-motionx-gps-raw-file-converter" depends="build-core" description="compiles the java source for motionx-gps-raw-file-converter" unless="build-motionx-gps-raw-file-converter-is-complete">
       <compile-code-and-copy-resources src.dir="${motionx-gps-raw-file-converter.src.dir}"
                                        build.dir="${motionx-gps-raw-file-converter.build.dir}"
@@ -269,6 +295,7 @@
                                 dist-grid-float-indexer,
                                 dist-gpx-elevation-converter,
                                 dist-gpx-tool,
+                                dist-gpx-validator,
                                 dist-motionx-gps-raw-file-converter,
                                 dist-speed-calculator" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
@@ -286,6 +313,9 @@
             <attribute name="Main-Class" value="org.chargecar.ElevationMapGenerator"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -299,6 +329,9 @@
             <attribute name="Main-Class" value="org.chargecar.GridFloatIndexer"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -312,6 +345,9 @@
             <attribute name="Main-Class" value="org.chargecar.GPXElevationConverter"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -325,11 +361,27 @@
             <attribute name="Main-Class" value="org.chargecar.GPXTool"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-gpx-tool-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-gpx-validator" depends="dist-core, build-gpx-validator" description="builds the gpx-validator" unless="dist-gpx-validator-is-complete">
+      <create-dist build.dir="${gpx-validator.build.dir}" jar.filename="${gpx-validator.jar.filename}" dist.dir="${gpx-validator.dist.dir}">
+         <jar-manifest-main-class>
+            <attribute name="Main-Class" value="org.chargecar.GPXValidator"/>
+         </jar-manifest-main-class>
+         <additional-files-to-copy>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-gpx-validator-is-complete" value="true"/>
    </target>
 
    <target name="dist-motionx-gps-raw-file-converter" depends="dist-core, build-motionx-gps-raw-file-converter" description="builds the motionx-gps-raw-file-converter" unless="dist-motionx-gps-raw-file-converter-is-complete">
@@ -338,6 +390,7 @@
             <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${joda-time.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -351,6 +404,9 @@
             <attribute name="Main-Class" value="org.chargecar.SpeedCalculator"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -407,12 +463,9 @@
 
          <!-- copy required jar files -->
          <copy todir="@{dist.dir}" flatten="true">
-            <fileset file="${commons-io.jar}"/>
             <fileset file="${commons-logging.jar}"/>
             <fileset file="${jdom.jar}"/>
-            <fileset file="${joda-time.jar}"/>
             <fileset file="${log4j.jar}"/>
-            <fileset file="${mysql-connector.jar}"/>
             <additional-files-to-copy/>
          </copy>
 
