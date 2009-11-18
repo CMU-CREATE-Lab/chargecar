@@ -38,6 +38,11 @@ public class GPXFile extends XmlObject
       getElement().setAttribute(new Attribute(SCHEMA_LOCATION_ATTR, SCHEMA_LOCATION_VALUE, XSI_NAMESPACE));
       }
 
+   public void setCreator(final String creator)
+      {
+      getElement().setAttribute(CREATOR_ATTR, creator == null ? CREATOR_VALUE : creator);
+      }
+
    public Element createTrack(final String trackName)
       {
       final Element track = new Element(TRACK_ELEMENT_NAME, GPX_NAMESPACE);

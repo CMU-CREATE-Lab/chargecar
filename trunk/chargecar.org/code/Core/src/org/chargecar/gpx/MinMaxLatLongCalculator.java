@@ -15,7 +15,7 @@ public class MinMaxLatLongCalculator extends GPXEventHandlerAdapter
    private double minLatitude = Double.POSITIVE_INFINITY;
    private double maxLatitude = Double.NEGATIVE_INFINITY;
 
-   public void handleGPXBegin()
+   public void handleGPXBegin(final String gpxCreator)
       {
       LOG.trace("MinMaxLatLongCalculator.handleGPXBegin()");
       }

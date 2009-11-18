@@ -120,6 +120,11 @@ public final class GPXElevationLookupTool
          this.elevationDataset.open();
          }
 
+      public void handleGPXBegin(final String gpxCreator)
+         {
+         gpxFile.setCreator(GPXElevationLookupTool.class.getName() + "(" + gpxCreator + ")");
+         }
+
       public void handleTrackBegin(final String trackName)
          {
          currentTrack = gpxFile.createTrack(trackName);

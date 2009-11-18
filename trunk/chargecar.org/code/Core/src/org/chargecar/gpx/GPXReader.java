@@ -56,16 +56,21 @@ public final class GPXReader
       {
       final Element rootElement = gpxElement != null ? gpxElement : XmlHelper.createElementNoValidate(gpxFile);
 
-      for (final GPXEventHandler handler : eventHandlers)
+      if (rootElement != null)
          {
-         handler.handleGPXBegin();
-         }
+         final String creator = rootElement.getAttributeValue("creator", "");
 
-      findTracks(rootElement);
+         for (final GPXEventHandler handler : eventHandlers)
+            {
+            handler.handleGPXBegin(creator);
+            }
 
-      for (final GPXEventHandler handler : eventHandlers)
-         {
-         handler.handleGPXEnd();
+         findTracks(rootElement);
+
+         for (final GPXEventHandler handler : eventHandlers)
+            {
+            handler.handleGPXEnd();
+            }
          }
       }
 

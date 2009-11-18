@@ -98,6 +98,11 @@ public final class MotionXGPSRawFileConverter
       private Element currentTrack;
       private Element currentTrackSegment;
 
+      public void handleGPXBegin(final String gpxCreator)
+         {
+         gpxFile.setCreator(MotionXGPSRawFileConverter.class.getName() + "(" + gpxCreator + ")");
+         }
+
       public void handleTrackBegin(final String trackName)
          {
          currentTrack = gpxFile.createTrack(trackName);
