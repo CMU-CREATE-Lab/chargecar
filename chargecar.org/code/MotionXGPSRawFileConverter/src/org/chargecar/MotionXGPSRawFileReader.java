@@ -67,7 +67,7 @@ final class MotionXGPSRawFileReader
          {
          for (final GPXEventHandler handler : eventHandlers)
             {
-            handler.handleGPXBegin();
+            handler.handleGPXBegin("MotionX-GPX KMZ raw.xml");
             }
 
          processTrack(rootElement);

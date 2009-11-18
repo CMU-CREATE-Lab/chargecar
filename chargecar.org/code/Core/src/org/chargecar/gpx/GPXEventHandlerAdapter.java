@@ -10,7 +10,7 @@ package org.chargecar.gpx;
  */
 public abstract class GPXEventHandlerAdapter implements GPXEventHandler
    {
-   public void handleGPXBegin()
+   public void handleGPXBegin(final String gpxCreator)
       {
       // do nothing
       }

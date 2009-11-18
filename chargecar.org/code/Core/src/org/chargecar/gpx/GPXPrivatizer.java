@@ -84,6 +84,11 @@ public final class GPXPrivatizer
          this.numMetersToRemoveFromEnd = numMetersToRemoveFromEnd;
          }
 
+      public void handleGPXBegin(final String gpxCreator)
+         {
+         gpxFile.setCreator(GPXPrivatizer.class.getName() + "(" + gpxCreator + ")");
+         }
+
       public void handleTrackBegin(final String trackName)
          {
          currentTrack = gpxFile.createTrack(trackName);

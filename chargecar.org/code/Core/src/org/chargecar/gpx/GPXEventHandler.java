@@ -5,7 +5,7 @@ package org.chargecar.gpx;
  */
 public interface GPXEventHandler
    {
-   void handleGPXBegin();
+   void handleGPXBegin(final String gpxCreator);
 
    void handleTrackBegin(final String trackName);
 
