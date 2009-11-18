@@ -7,6 +7,7 @@
    <path id="core-classpath">
       <!-- source classes -->
       <pathelement path="${core.src.dir}"/>
+      <pathelement path="${core-auth.src.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
@@ -15,6 +16,7 @@
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${mysql-connector.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
    </path>
 
    <path id="elevation-map-generator-classpath">
@@ -23,6 +25,7 @@
 
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
@@ -39,6 +42,7 @@
 
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
@@ -55,6 +59,7 @@
 
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
@@ -71,6 +76,7 @@
 
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
@@ -106,6 +112,7 @@
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
    </path>
 
    <path id="speed-calculator-classpath">
@@ -114,6 +121,7 @@
 
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
@@ -165,6 +173,7 @@
 
    <target name="clean-core" description="clean up core">
       <delete dir="${core.build.dir}"/>
+      <delete dir="${core-auth.build.dir}"/>
       <delete dir="${core.dist.dir}"/>
    </target>
 
@@ -224,9 +233,18 @@
                                        classpath-ref="core-classpath">
          <resources-filterset>
             <filterset>
+               <filter token="gpx-xsd.directory" value="${gpx.xsd.dir}"/>
+            </filterset>
+         </resources-filterset>
+      </compile-code-and-copy-resources>
+
+      <compile-code-and-copy-resources src.dir="${core-auth.src.dir}"
+                                       build.dir="${core-auth.build.dir}"
+                                       classpath-ref="core-classpath">
+         <resources-filterset>
+            <filterset>
                <filter token="gridfloat-index.database.connection.username" value="${gridfloat-index.database.connection.username}"/>
                <filter token="gridfloat-index.database.connection.password" value="${gridfloat-index.database.connection.password}"/>
-               <filter token="gpx-xsd.directory" value="${gpx.xsd.dir}"/>
             </filterset>
          </resources-filterset>
       </compile-code-and-copy-resources>
@@ -303,6 +321,7 @@
 
    <target name="dist-core" depends="build-core" description="builds the core" unless="dist-core-is-complete">
       <create-dist build.dir="${core.build.dir}" jar.filename="${core.jar.filename}" dist.dir="${core.dist.dir}"/>
+      <create-dist build.dir="${core-auth.build.dir}" jar.filename="${core-auth.jar.filename}" dist.dir="${core.dist.dir}"/>
 
       <property name="dist-core-is-complete" value="true"/>
    </target>
@@ -317,6 +336,7 @@
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
@@ -333,6 +353,7 @@
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
@@ -349,6 +370,7 @@
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
@@ -365,6 +387,7 @@
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
@@ -392,8 +415,20 @@
          <additional-files-to-copy>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
       </create-dist>
+
+      <!-- Create the big honkin' jar containing all the jars from dist-motionx-gps-raw-file-converter. This -->
+      <!-- is merely for easy distribution. -->
+      <jar destfile="${motionx-gps-kmz-to-gpx-converter.jar}" update="yes" compress="true">
+         <zipgroupfileset dir="${motionx-gps-raw-file-converter.dist.dir}" includes="**/*.jar" excludes="${motionx-gps-kmz-to-gpx-converter.jar.filename}"/>
+         <manifest>
+            <attribute name="Built-By" value="${jar.built-by}"/>
+            <attribute name="Class-Path" value="."/>
+            <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
+         </manifest>
+      </jar>
 
       <property name="dist-motionx-gps-raw-file-converter-is-complete" value="true"/>
    </target>
@@ -408,6 +443,7 @@
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
