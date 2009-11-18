@@ -115,6 +115,8 @@ or
 
    java -jar chargecar-motionx-gps-raw-file-converter.jar /path/to/raw.xml
 
+If executed without an argument, it launches a GUI which allows you to choose a KMZ to convert.
+
 SpeedCalculator
 ----------------
 Calculates speed over time for a given GPX file using the Spherical Law of Cosines.

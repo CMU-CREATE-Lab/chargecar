@@ -11,7 +11,9 @@
       <sourceFolder url="file://$MODULE_DIR$/code/MotionXGPSRawFileConverter/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/GPXTool/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/GPXValidator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/Core/src-auth" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/code/Core/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/Core/build-auth" />
       <excludeFolder url="file://$MODULE_DIR$/code/Core/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/ElevationMapGenerator/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/ElevationMapGenerator/dist" />
@@ -36,6 +38,7 @@
     <orderEntry type="library" name="Log4J" level="project" />
     <orderEntry type="library" name="Joda Time" level="project" />
     <orderEntry type="library" name="MySQL" level="project" />
+    <orderEntry type="library" name="Swing Layout" level="project" />
   </component>
 </module>
 

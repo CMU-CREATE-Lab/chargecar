@@ -51,6 +51,10 @@ final class MotionXGPSRawFileReader
          // start by assuming it's a KMZ
          final ZipFile zipfile = new ZipFile(file);
          final ZipEntry rawFileZipEntry = zipfile.getEntry("raw.xml");
+         if (rawFileZipEntry == null)
+            {
+            throw new IOException("raw.xml file not found within the KMZ");
+            }
          rootElement = XmlHelper.createElementNoValidate(new BufferedInputStream(zipfile.getInputStream(rawFileZipEntry)));
          }
       catch (ZipException e)
