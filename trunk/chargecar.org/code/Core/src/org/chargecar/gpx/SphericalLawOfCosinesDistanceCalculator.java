@@ -23,7 +23,7 @@ public class SphericalLawOfCosinesDistanceCalculator extends AbstractDistanceCal
       // private to prevent instantiation
       }
 
-   public Double compute2DDistance(final TrackPoint t1, final TrackPoint t2)
+   public double compute2DDistance(final TrackPoint t1, final TrackPoint t2)
       {
       if (t1 != null && t2 != null)
          {
@@ -33,6 +33,6 @@ public class SphericalLawOfCosinesDistanceCalculator extends AbstractDistanceCal
                           Math.cos(t1LatitudeRadians) * Math.cos(t2LatitudeRadians) *
                           Math.cos(Math.toRadians(t2.getLongitude() - t1.getLongitude()))) * RADIUS_OF_EARTH_IN_METERS;
          }
-      return null;
+      return 0.0;
       }
    }

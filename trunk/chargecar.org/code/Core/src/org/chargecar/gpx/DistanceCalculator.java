@@ -6,7 +6,8 @@ package org.chargecar.gpx;
 public interface DistanceCalculator
    {
    /**
-    * Returns the distance between the given {@link TrackPoint}s in meters.
+    * Returns the distance between the given {@link TrackPoint}s in meters.  Returns 0 if either (or both)
+    * {@link TrackPoint} is <code>null</code>.
     */
-   Double compute2DDistance(final TrackPoint t1, final TrackPoint t2);
+   double compute2DDistance(final TrackPoint t1, final TrackPoint t2);
    }

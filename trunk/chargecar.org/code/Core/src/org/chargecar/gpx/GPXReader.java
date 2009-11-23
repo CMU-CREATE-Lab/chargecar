@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import org.chargecar.xml.XmlHelper;
+import edu.cmu.ri.createlab.xml.XmlHelper;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;

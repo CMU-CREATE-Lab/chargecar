@@ -32,13 +32,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Commons Logging" level="project" />
-    <orderEntry type="library" name="Commons IO" level="project" />
-    <orderEntry type="library" name="JDOM" level="project" />
-    <orderEntry type="library" name="Log4J" level="project" />
-    <orderEntry type="library" name="Joda Time" level="project" />
-    <orderEntry type="library" name="MySQL" level="project" />
-    <orderEntry type="library" name="Swing Layout" level="project" />
+    <orderEntry type="module" module-name="CREATE Lab Commons" />
   </component>
 </module>
 

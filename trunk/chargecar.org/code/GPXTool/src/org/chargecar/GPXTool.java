@@ -1,12 +1,12 @@
 package org.chargecar;
 
 import java.io.File;
+import edu.cmu.ri.createlab.xml.XmlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gpx.GPXElevationLookupTool;
 import org.chargecar.gpx.GPXPrivatizer;
 import org.chargecar.gpx.GPXValidator;
-import org.chargecar.xml.XmlHelper;
 import org.jdom.Document;
 import org.jdom.Element;
 

@@ -14,14 +14,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import edu.cmu.ri.createlab.userinterface.AbstractTimeConsumingAction;
+import edu.cmu.ri.createlab.userinterface.GUIConstants;
+import edu.cmu.ri.createlab.userinterface.dialog.AbstractAlert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.graphics.AbstractTimeConsumingAction;
-import org.chargecar.graphics.GUIConstants;
-import org.chargecar.graphics.dialog.AbstractAlert;
-import org.chargecar.graphics.filechooser.FileChooser;
-import org.chargecar.graphics.filechooser.FileChooserEventListener;
-import org.chargecar.graphics.filechooser.StandardFileChooser;
+import org.chargecar.userinterface.filechooser.FileChooser;
+import org.chargecar.userinterface.filechooser.FileChooserEventListener;
+import org.chargecar.userinterface.filechooser.StandardFileChooser;
 import org.jdesktop.layout.GroupLayout;
 
 /**
