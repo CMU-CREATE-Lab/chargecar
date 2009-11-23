@@ -1,6 +1,6 @@
 package org.chargecar.gpx;
 
-import org.chargecar.xml.XmlObject;
+import edu.cmu.ri.createlab.xml.XmlObject;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;

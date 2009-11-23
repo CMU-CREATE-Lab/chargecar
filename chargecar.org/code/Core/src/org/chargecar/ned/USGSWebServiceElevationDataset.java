@@ -3,9 +3,9 @@ package org.chargecar.ned;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import edu.cmu.ri.createlab.xml.XmlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.xml.XmlHelper;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 

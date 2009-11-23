@@ -5,24 +5,17 @@
 
    <!-- Paths -->
    <path id="core-classpath">
-      <!-- source classes -->
-      <pathelement path="${core.src.dir}"/>
-      <pathelement path="${core-auth.src.dir}"/>
-
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${mysql-connector.jar}"/>
-      <pathelement path="${swing-layout.jar}"/>
    </path>
 
    <path id="elevation-map-generator-classpath">
-      <!-- source classes -->
-      <pathelement path="${elevation-map-generator.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
       <pathelement path="${core-auth.build.dir}"/>
@@ -30,6 +23,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -37,9 +31,6 @@
    </path>
 
    <path id="grid-float-indexer-classpath">
-      <!-- source classes -->
-      <pathelement path="${grid-float-indexer.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
       <pathelement path="${core-auth.build.dir}"/>
@@ -47,16 +38,12 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
-      <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${mysql-connector.jar}"/>
    </path>
 
    <path id="gpx-elevation-converter-classpath">
-      <!-- source classes -->
-      <pathelement path="${gpx-elevation-converter.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
       <pathelement path="${core-auth.build.dir}"/>
@@ -64,6 +51,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -71,9 +59,6 @@
    </path>
 
    <path id="gpx-tool-classpath">
-      <!-- source classes -->
-      <pathelement path="${gpx-tool.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
       <pathelement path="${core-auth.build.dir}"/>
@@ -81,6 +66,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -88,27 +74,24 @@
    </path>
 
    <path id="gpx-validator-classpath">
-      <!-- source classes -->
-      <pathelement path="${gpx-validator.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${log4j.jar}"/>
    </path>
 
    <path id="motionx-gps-raw-file-converter-classpath">
-      <!-- source classes -->
-      <pathelement path="${motionx-gps-raw-file-converter.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-user-interface.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -116,9 +99,6 @@
    </path>
 
    <path id="speed-calculator-classpath">
-      <!-- source classes -->
-      <pathelement path="${speed-calculator.src.dir}"/>
-
       <!-- other classes within this project -->
       <pathelement path="${core.build.dir}"/>
       <pathelement path="${core-auth.build.dir}"/>
@@ -126,6 +106,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -321,7 +302,14 @@
 
    <target name="dist-core" depends="build-core" description="builds the core" unless="dist-core-is-complete">
       <create-dist build.dir="${core.build.dir}" jar.filename="${core.jar.filename}" dist.dir="${core.dist.dir}"/>
-      <create-dist build.dir="${core-auth.build.dir}" jar.filename="${core-auth.jar.filename}" dist.dir="${core.dist.dir}"/>
+      <create-dist build.dir="${core-auth.build.dir}" jar.filename="${core-auth.jar.filename}" dist.dir="${core.dist.dir}">
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+         </additional-files-to-copy>
+      </create-dist>
 
       <property name="dist-core-is-complete" value="true"/>
    </target>
@@ -333,6 +321,7 @@
          </jar-manifest-main-class>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
@@ -367,6 +356,7 @@
          </jar-manifest-main-class>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
@@ -384,6 +374,7 @@
          </jar-manifest-main-class>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
@@ -400,6 +391,7 @@
             <attribute name="Main-Class" value="org.chargecar.GPXValidator"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -413,9 +405,11 @@
             <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
          </jar-manifest-main-class>
          <additional-files-to-copy>
+            <fileset file="${create-lab-commons-user-interface.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
-            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
             <fileset file="${swing-layout.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
       </create-dist>
 
@@ -440,6 +434,7 @@
          </jar-manifest-main-class>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>

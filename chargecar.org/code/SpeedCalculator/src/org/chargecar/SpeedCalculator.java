@@ -119,11 +119,18 @@ public final class SpeedCalculator
          final Double latitude = trackPoint.getLatitude();
          final Double elevation = (longitude != null && latitude != null && elevationDataset != null) ? elevationDataset.getElevation(longitude, latitude) : null;
 
-         final Double distanceInKilometers = distanceCalculator1.compute2DDistance(trackPoint, previousTrackPoint) / 1000;
+         final double distanceInMeters = distanceCalculator1.compute2DDistance(trackPoint, previousTrackPoint);
+         final double distanceInKilometers = distanceInMeters / 1000;
          final double elapsedSeconds;
-         final Double distanceInMiles;
-         final Double milesPerHour;
-         if (distanceInKilometers != null)
+         final double distanceInMiles;
+         final double milesPerHour;
+         if (Double.compare(distanceInKilometers, 0) == 0)
+            {
+            elapsedSeconds = 0.0;
+            distanceInMiles = 0.0;
+            milesPerHour = 0.0;
+            }
+         else
             {
             elapsedSeconds = (trackPoint.getTimestampAsDate().getTime() -
                               previousTrackPoint.getTimestampAsDate().getTime()) / 1000.0;
@@ -131,12 +138,6 @@ public final class SpeedCalculator
             distanceInMiles = distanceInKilometers * MILES_PER_KM;
             runningSumDistanceInMiles += distanceInMiles;
             milesPerHour = distanceInMiles / elapsedSeconds * 3600.0;
-            }
-         else
-            {
-            elapsedSeconds = 0.0;
-            distanceInMiles = 0.0;
-            milesPerHour = 0.0;
             }
 
          System.out.printf("%s\t%5f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\n",
