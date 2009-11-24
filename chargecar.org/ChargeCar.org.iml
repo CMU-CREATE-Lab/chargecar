@@ -32,7 +32,109 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="CREATE Lab Commons" />
+    <orderEntry type="module-library">
+      <library name="Commons IO">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/commons-io/commons-io-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/commons-io/commons-io-1.4-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/commons-io/commons-io-1.4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Commons Logging">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/commons-logging/commons-logging-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/commons-logging/commons-logging-1.1.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/commons-logging/commons-logging-1.1.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="CREATE Lab Commons User Interface">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-user-interface/create-lab-commons-user-interface.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-user-interface/create-lab-commons-user-interface-src.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="CREATE Lab Commons XML">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-xml/create-lab-commons-xml.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-xml/create-lab-commons-xml-src.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="JDOM">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jdom/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://www.jdom.org/docs/apidocs" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Joda Time">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/joda-time/joda-time-1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/lib/joda-time/joda-time-1.6-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/joda-time/joda-time-1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Log4j">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/log4j/log4j-1.2.15.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://logging.apache.org/log4j/1.2/apidocs" />
+        </JAVADOC>
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="MySQL Connector">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/mysql-connector/mysql-connector-java-5.1.10-bin.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Swing Layout">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/swing-layout/swing-layout-1.0.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/swing-layout/swing-layout-1.0.4-src.zip!/swing-layout-1.0.4/src/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 
