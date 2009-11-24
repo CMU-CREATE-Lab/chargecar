@@ -8,12 +8,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
+import edu.cmu.ri.createlab.userinterface.DatasetPlotter;
+import edu.cmu.ri.createlab.userinterface.GUIConstants;
+import edu.cmu.ri.createlab.userinterface.SpringLayoutUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
-import org.chargecar.graphics.DatasetPlotter;
-import org.chargecar.graphics.GUIConstants;
-import org.chargecar.graphics.SpringLayoutUtilities;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)

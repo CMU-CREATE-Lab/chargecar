@@ -13,6 +13,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import edu.cmu.ri.createlab.serial.DefaultSerialPortIOHelper;
+import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
+import edu.cmu.ri.createlab.serial.SerialPortException;
+import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
+import edu.cmu.ri.createlab.serial.config.BaudRate;
+import edu.cmu.ri.createlab.serial.config.CharacterSize;
+import edu.cmu.ri.createlab.serial.config.FlowControl;
+import edu.cmu.ri.createlab.serial.config.Parity;
+import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
+import edu.cmu.ri.createlab.serial.config.StopBits;
+import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
@@ -20,17 +31,6 @@ import gnu.io.UnsupportedCommOperationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
-import org.chargecar.serial.DefaultSerialPortIOHelper;
-import org.chargecar.serial.SerialPortEnumerator;
-import org.chargecar.serial.SerialPortException;
-import org.chargecar.serial.SerialPortIOHelper;
-import org.chargecar.serial.config.BaudRate;
-import org.chargecar.serial.config.CharacterSize;
-import org.chargecar.serial.config.FlowControl;
-import org.chargecar.serial.config.Parity;
-import org.chargecar.serial.config.SerialIOConfiguration;
-import org.chargecar.serial.config.StopBits;
-import org.chargecar.util.DaemonThreadFactory;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)

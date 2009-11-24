@@ -4,25 +4,28 @@
    <property file="build.properties"/>
 
    <!-- Paths -->
-   <path id="serial-classpath">
-      <!-- source classes -->
-      <pathelement path="${serial.src.dir}"/>
-
-      <!-- third-party jars -->
-      <pathelement path="${commons-logging.jar}"/>
-      <pathelement path="${log4j.jar}"/>
-      <pathelement path="${rxtx.jar}"/>
-   </path>
-
    <path id="heads-up-display-classpath">
       <!-- source classes -->
       <pathelement path="${heads-up-display.src.dir}"/>
 
-      <!-- other classes within this project -->
-      <pathelement path="${serial.build.dir}"/>
+      <!-- third-party jars -->
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-collections.jar}"/>
+      <pathelement path="${create-lab-commons-serial.jar}"/>
+      <pathelement path="${create-lab-commons-user-interface.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${rxtx.jar}"/>
+   </path>
+
+   <path id="sensor-board-reader-classpath">
+      <!-- source classes -->
+      <pathelement path="${sensor-board-reader.src.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-serial.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${rxtx.jar}"/>
    </path>
@@ -55,33 +58,29 @@
       <include name="**/?*.pem"/>
    </patternset>
 
+   <tstamp>
+      <format property="build.timestamp" pattern="yyyy-MM-dd hh:mm:ss a z"/>
+   </tstamp>
+
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
-   <target name="clean" depends="clean-serial,clean-heads-up-display" description="clean up everything"/>
-
-   <target name="clean-serial" description="clean up serial">
-      <delete dir="${serial.build.dir}"/>
-      <delete dir="${serial.dist.dir}"/>
-   </target>
+   <target name="clean" depends="clean-heads-up-display,clean-sensor-board-reader" description="clean up everything"/>
 
    <target name="clean-heads-up-display" description="clean up heads-up-display">
       <delete dir="${heads-up-display.build.dir}"/>
       <delete dir="${heads-up-display.dist.dir}"/>
    </target>
 
-   <target name="build" depends="build-serial, build-heads-up-display" description="builds the source code" unless="build-is-complete">
+   <target name="clean-sensor-board-reader" description="clean up sensor-board-reader">
+      <delete dir="${sensor-board-reader.build.dir}"/>
+      <delete dir="${sensor-board-reader.dist.dir}"/>
+   </target>
+
+   <target name="build" depends="build-heads-up-display, build-sensor-board-reader" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
    </target>
 
-   <target name="build-serial" description="compiles the java source for serial" unless="build-serial-is-complete">
-      <compile-code-and-copy-resources src.dir="${serial.src.dir}"
-                                       build.dir="${serial.build.dir}"
-                                       classpath-ref="serial-classpath"/>
-
-      <property name="build-serial-is-complete" value="true"/>
-   </target>
-
-   <target name="build-heads-up-display" depends="build-serial" description="compiles the java source for heads-up-display" unless="build-heads-up-display-is-complete">
+   <target name="build-heads-up-display" description="compiles the java source for heads-up-display" unless="build-heads-up-display-is-complete">
       <compile-code-and-copy-resources src.dir="${heads-up-display.src.dir}"
                                        build.dir="${heads-up-display.build.dir}"
                                        classpath-ref="heads-up-display-classpath"/>
@@ -89,27 +88,43 @@
       <property name="build-heads-up-display-is-complete" value="true"/>
    </target>
 
-   <target name="dist" depends="dist-serial, dist-heads-up-display" description="builds the project" unless="dist-is-complete">
+   <target name="build-sensor-board-reader" description="compiles the java source for sensor-board-reader" unless="build-sensor-board-reader-is-complete">
+      <compile-code-and-copy-resources src.dir="${sensor-board-reader.src.dir}"
+                                       build.dir="${sensor-board-reader.build.dir}"
+                                       classpath-ref="sensor-board-reader-classpath"/>
+
+      <property name="build-sensor-board-reader-is-complete" value="true"/>
+   </target>
+
+   <target name="dist" depends="dist-heads-up-display, dist-sensor-board-reader" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
    </target>
 
-   <target name="dist-serial" depends="build-serial" description="builds the serial" unless="dist-serial-is-complete">
-      <create-dist build.dir="${serial.build.dir}" jar.filename="${serial.jar.filename}" dist.dir="${serial.dist.dir}"/>
-
-      <property name="dist-serial-is-complete" value="true"/>
-   </target>
-
-   <target name="dist-heads-up-display" depends="dist-serial, build-heads-up-display" description="builds the heads-up-display" unless="dist-heads-up-display-is-complete">
-      <create-dist build.dir="${heads-up-display.build.dir}" jar.filename="${heads-up-display.jar.filename}" dist.dir="${heads-up-display.dist.dir}">
-         <jar-manifest-main-class>
+   <target name="dist-heads-up-display" depends="build-heads-up-display" description="builds the heads-up-display" unless="dist-heads-up-display-is-complete">
+      <create-dist component.name="heads-up-display">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.HeadsUpDisplay"/>
-         </jar-manifest-main-class>
-         <additional-jar-files-to-copy>
-            <fileset file="${serial.dist.dir}/${serial.jar.filename}"/>
-         </additional-jar-files-to-copy>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${create-lab-commons-collections.jar}"/>
+            <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-user-interface.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+         </additional-files-to-copy>
       </create-dist>
 
       <property name="dist-heads-up-display-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-sensor-board-reader" depends="build-sensor-board-reader" description="builds the sensor-board-reader" unless="dist-sensor-board-reader-is-complete">
+      <create-dist component.name="sensor-board-reader">
+         <additional-files-to-copy>
+            <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-sensor-board-reader-is-complete" value="true"/>
    </target>
 
    <!-- ============================================================================================================ -->
@@ -150,53 +165,51 @@
    </macrodef>
 
    <macrodef name="create-dist">
-      <attribute name="build.dir"/>
-      <attribute name="dist.dir"/>
-      <attribute name="jar.filename"/>
-      <element name="jar-manifest-main-class" optional="true"/>
-      <element name="additional-jar-files-to-copy" optional="true"/>
+      <attribute name="component.name"/>
+      <element name="jar-manifest-attributes" optional="true"/>
+      <element name="additional-files-to-copy" optional="true"/>
       <sequential>
          <!-- create the dist directory -->
-         <mkdir dir="@{dist.dir}"/>
+         <mkdir dir="${@{component.name}.dist.dir}"/>
 
          <!-- copy required jar files and native lib -->
-         <copy todir="@{dist.dir}" flatten="true">
+         <copy todir="${@{component.name}.dist.dir}" flatten="true">
             <fileset file="${commons-logging.jar}"/>
             <fileset file="${log4j.jar}"/>
             <fileset file="${rxtx.jar}"/>
-            <fileset file="${rxtx-linux.native}"/>
             <fileset file="${rxtx-macos.native}"/>
-            <additional-jar-files-to-copy/>
+            <additional-files-to-copy/>
          </copy>
 
          <!-- define the execution classpath for use in the scripts -->
-         <path id="@{jar.filename}.execution.classpath.elements">
-            <pathelement location="@{dist.dir}"/>
-            <fileset dir="@{dist.dir}">
+         <path id="@{component.name}.execution.classpath.elements">
+            <pathelement location="${@{component.name}.dist.dir}"/>
+            <fileset dir="${@{component.name}.dist.dir}">
                <include name="**/*.jar"/>
             </fileset>
          </path>
 
          <!-- Set up a path id for the dist directory so it contains the correct kind of slashes when we do the pathconvert mapping -->
-         <path id="dist-@{jar.filename}.dir.before-conversion" path="@{dist.dir}"/>
+         <path id="dist-@{component.name}.dir.before-conversion" path="${@{component.name}.dist.dir}"/>
 
          <!-- Convert the dist directory path for the target platform to ensure that all the slashes are in the right direction -->
-         <pathconvert property="dist-@{jar.filename}.dir.after-conversion" dirsep="/" pathsep=":" refid="dist-@{jar.filename}.dir.before-conversion"/>
+         <pathconvert property="dist-@{component.name}.dir.after-conversion" dirsep="/" pathsep=":" refid="dist-@{component.name}.dir.before-conversion"/>
 
          <!-- Create the classpath -->
-         <pathconvert property="@{jar.filename}.execution.classpath" dirsep="/" pathsep=" " refid="@{jar.filename}.execution.classpath.elements">
-            <map from="${dist-@{jar.filename}.dir.after-conversion}" to="."/>
+         <pathconvert property="@{component.name}.execution.classpath" dirsep="/" pathsep=" " refid="@{component.name}.execution.classpath.elements">
+            <map from="${dist-@{component.name}.dir.after-conversion}" to="."/>
          </pathconvert>
 
          <!-- create jar of Java classes -->
-         <jar destfile="@{dist.dir}/@{jar.filename}"
-              basedir="@{build.dir}"
+         <jar destfile="${@{component.name}.dist.dir}/${@{component.name}.jar.filename}"
+              basedir="${@{component.name}.build.dir}"
               update="no"
               compress="true">
             <manifest>
                <attribute name="Built-By" value="${jar.built-by}"/>
-               <attribute name="Class-Path" value="${@{jar.filename}.execution.classpath}"/>
-               <jar-manifest-main-class/>
+               <attribute name="Build-Timestamp" value="${build.timestamp}"/>
+               <attribute name="Class-Path" value="${@{component.name}.execution.classpath}"/>
+               <jar-manifest-attributes/>
             </manifest>
          </jar>
 

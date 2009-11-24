@@ -13,11 +13,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import edu.cmu.ri.createlab.serial.SerialPortException;
+import edu.cmu.ri.createlab.userinterface.SwingWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.nmea.NMEAReader;
-import org.chargecar.graphics.SwingWorker;
-import org.chargecar.serial.SerialPortException;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
