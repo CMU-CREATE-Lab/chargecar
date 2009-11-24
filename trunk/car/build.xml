@@ -118,6 +118,9 @@
 
    <target name="dist-sensor-board-reader" depends="build-sensor-board-reader" description="builds the sensor-board-reader" unless="dist-sensor-board-reader-is-complete">
       <create-dist component.name="sensor-board-reader">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.sensorboard.SensorBoardConsole"/>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${create-lab-commons-serial.jar}"/>
             <fileset file="${create-lab-commons-util.jar}"/>
