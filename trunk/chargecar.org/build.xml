@@ -141,6 +141,10 @@
       <include name="**/?*.pem"/>
    </patternset>
 
+   <tstamp>
+      <format property="build.timestamp" pattern="yyyy-MM-dd hh:mm:ss a z"/>
+   </tstamp>
+
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
    <target name="clean" depends="clean-core,
@@ -301,8 +305,8 @@
    </target>
 
    <target name="dist-core" depends="build-core" description="builds the core" unless="dist-core-is-complete">
-      <create-dist build.dir="${core.build.dir}" jar.filename="${core.jar.filename}" dist.dir="${core.dist.dir}"/>
-      <create-dist build.dir="${core-auth.build.dir}" jar.filename="${core-auth.jar.filename}" dist.dir="${core.dist.dir}">
+      <create-dist component.name="core"/>
+      <create-dist component.name="core-auth">
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
@@ -315,10 +319,10 @@
    </target>
 
    <target name="dist-elevation-map-generator" depends="dist-core, build-elevation-map-generator" description="builds the elevation-map-generator" unless="dist-elevation-map-generator-is-complete">
-      <create-dist build.dir="${elevation-map-generator.build.dir}" jar.filename="${elevation-map-generator.jar.filename}" dist.dir="${elevation-map-generator.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="elevation-map-generator">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.ElevationMapGenerator"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
@@ -333,10 +337,10 @@
    </target>
 
    <target name="dist-grid-float-indexer" depends="dist-core, build-grid-float-indexer" description="builds the grid-float-indexer" unless="dist-grid-float-indexer-is-complete">
-      <create-dist build.dir="${grid-float-indexer.build.dir}" jar.filename="${grid-float-indexer.jar.filename}" dist.dir="${grid-float-indexer.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="grid-float-indexer">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.GridFloatIndexer"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
             <fileset file="${joda-time.jar}"/>
@@ -350,10 +354,10 @@
    </target>
 
    <target name="dist-gpx-elevation-converter" depends="dist-core, build-gpx-elevation-converter" description="builds the gpx-elevation-converter" unless="dist-gpx-elevation-converter-is-complete">
-      <create-dist build.dir="${gpx-elevation-converter.build.dir}" jar.filename="${gpx-elevation-converter.jar.filename}" dist.dir="${gpx-elevation-converter.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="gpx-elevation-converter">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.GPXElevationConverter"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
@@ -368,10 +372,10 @@
    </target>
 
    <target name="dist-gpx-tool" depends="dist-core, build-gpx-tool" description="builds the gpx-tool" unless="dist-gpx-tool-is-complete">
-      <create-dist build.dir="${gpx-tool.build.dir}" jar.filename="${gpx-tool.jar.filename}" dist.dir="${gpx-tool.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="gpx-tool">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.GPXTool"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
@@ -386,10 +390,10 @@
    </target>
 
    <target name="dist-gpx-validator" depends="dist-core, build-gpx-validator" description="builds the gpx-validator" unless="dist-gpx-validator-is-complete">
-      <create-dist build.dir="${gpx-validator.build.dir}" jar.filename="${gpx-validator.jar.filename}" dist.dir="${gpx-validator.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="gpx-validator">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.GPXValidator"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
@@ -400,10 +404,10 @@
    </target>
 
    <target name="dist-motionx-gps-raw-file-converter" depends="dist-core, build-motionx-gps-raw-file-converter" description="builds the motionx-gps-raw-file-converter" unless="dist-motionx-gps-raw-file-converter-is-complete">
-      <create-dist build.dir="${motionx-gps-raw-file-converter.build.dir}" jar.filename="${motionx-gps-raw-file-converter.jar.filename}" dist.dir="${motionx-gps-raw-file-converter.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="motionx-gps-raw-file-converter">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${create-lab-commons-user-interface.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
@@ -428,10 +432,10 @@
    </target>
 
    <target name="dist-speed-calculator" depends="dist-core, build-speed-calculator" description="builds the speed-calculator" unless="dist-speed-calculator-is-complete">
-      <create-dist build.dir="${speed-calculator.build.dir}" jar.filename="${speed-calculator.jar.filename}" dist.dir="${speed-calculator.dist.dir}">
-         <jar-manifest-main-class>
+      <create-dist component.name="speed-calculator">
+         <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.SpeedCalculator"/>
-         </jar-manifest-main-class>
+         </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
@@ -483,17 +487,15 @@
    </macrodef>
 
    <macrodef name="create-dist">
-      <attribute name="build.dir"/>
-      <attribute name="dist.dir"/>
-      <attribute name="jar.filename"/>
-      <element name="jar-manifest-main-class" optional="true"/>
+      <attribute name="component.name"/>
+      <element name="jar-manifest-attributes" optional="true"/>
       <element name="additional-files-to-copy" optional="true"/>
       <sequential>
          <!-- create the dist directory -->
-         <mkdir dir="@{dist.dir}"/>
+         <mkdir dir="${@{component.name}.dist.dir}"/>
 
          <!-- copy required jar files -->
-         <copy todir="@{dist.dir}" flatten="true">
+         <copy todir="${@{component.name}.dist.dir}" flatten="true">
             <fileset file="${commons-logging.jar}"/>
             <fileset file="${jdom.jar}"/>
             <fileset file="${log4j.jar}"/>
@@ -501,33 +503,34 @@
          </copy>
 
          <!-- define the execution classpath for use in the scripts -->
-         <path id="@{jar.filename}.execution.classpath.elements">
-            <pathelement location="@{dist.dir}"/>
-            <fileset dir="@{dist.dir}">
+         <path id="@{component.name}.execution.classpath.elements">
+            <pathelement location="${@{component.name}.dist.dir}"/>
+            <fileset dir="${@{component.name}.dist.dir}">
                <include name="**/*.jar"/>
             </fileset>
          </path>
 
          <!-- Set up a path id for the dist directory so it contains the correct kind of slashes when we do the pathconvert mapping -->
-         <path id="dist-@{jar.filename}.dir.before-conversion" path="@{dist.dir}"/>
+         <path id="dist-@{component.name}.dir.before-conversion" path="${@{component.name}.dist.dir}"/>
 
          <!-- Convert the dist directory path for the target platform to ensure that all the slashes are in the right direction -->
-         <pathconvert property="dist-@{jar.filename}.dir.after-conversion" dirsep="/" pathsep=":" refid="dist-@{jar.filename}.dir.before-conversion"/>
+         <pathconvert property="dist-@{component.name}.dir.after-conversion" dirsep="/" pathsep=":" refid="dist-@{component.name}.dir.before-conversion"/>
 
          <!-- Create the classpath -->
-         <pathconvert property="@{jar.filename}.execution.classpath" dirsep="/" pathsep=" " refid="@{jar.filename}.execution.classpath.elements">
-            <map from="${dist-@{jar.filename}.dir.after-conversion}" to="."/>
+         <pathconvert property="@{component.name}.execution.classpath" dirsep="/" pathsep=" " refid="@{component.name}.execution.classpath.elements">
+            <map from="${dist-@{component.name}.dir.after-conversion}" to="."/>
          </pathconvert>
 
          <!-- create jar of Java classes -->
-         <jar destfile="@{dist.dir}/@{jar.filename}"
-              basedir="@{build.dir}"
+         <jar destfile="${@{component.name}.dist.dir}/${@{component.name}.jar.filename}"
+              basedir="${@{component.name}.build.dir}"
               update="no"
               compress="true">
             <manifest>
                <attribute name="Built-By" value="${jar.built-by}"/>
-               <attribute name="Class-Path" value="${@{jar.filename}.execution.classpath}"/>
-               <jar-manifest-main-class/>
+               <attribute name="Build-Timestamp" value="${build.timestamp}"/>
+               <attribute name="Class-Path" value="${@{component.name}.execution.classpath}"/>
+               <jar-manifest-attributes/>
             </manifest>
          </jar>
 
