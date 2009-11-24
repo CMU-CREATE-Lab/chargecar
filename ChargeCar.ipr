@@ -489,7 +489,6 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../../CREATELabCommons/trunk/CREATE Lab Commons.iml" filepath="$PROJECT_DIR$/../../CREATELabCommons/trunk/CREATE Lab Commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/car/Car.iml" filepath="$PROJECT_DIR$/car/Car.iml" />
       <module fileurl="file://$PROJECT_DIR$/chargecar.org/ChargeCar.org.iml" filepath="$PROJECT_DIR$/chargecar.org/ChargeCar.org.iml" />
     </modules>
@@ -540,7 +539,6 @@
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$/../../CREATELabCommons/trunk" vcs="svn" />
     <mapping directory="$PROJECT_DIR$" vcs="svn" />
   </component>
   <component name="libraryTable">
