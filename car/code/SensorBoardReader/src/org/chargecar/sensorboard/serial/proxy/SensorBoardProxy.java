@@ -104,7 +104,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
       }
 
    private final SerialPortCommandExecutionQueue commandQueue;
-   private final SerialPortCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
+   private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
    private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
    private final ScheduledExecutorService peerPingScheduler = Executors.newScheduledThreadPool(1, new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
    private final ScheduledFuture<?> peerPingScheduledFuture;
@@ -144,19 +144,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
       {
       final SerialPortCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
 
-      if (response != null)
-         {
-         try
-            {
-            return Integer.parseInt(new String(response.getData()));
-            }
-         catch (Exception e)
-            {
-            LOG.error("Exception while trying to read the speed and convert it to an integer", e);
-            }
-         }
-
-      return null;
+      return getSpeedCommandStrategy.convertResponseToSpeed(response);
       }
 
    public void disconnect()
