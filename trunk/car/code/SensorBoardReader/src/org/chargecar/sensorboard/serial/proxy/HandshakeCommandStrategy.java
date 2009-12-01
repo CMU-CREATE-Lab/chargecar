@@ -13,6 +13,11 @@ final class HandshakeCommandStrategy extends CreateLabSerialDeviceHandshakeComma
    /** The pattern of characters to send to put the sensor board into receive mode. */
    private static final byte[] RECEIVE_MODE_CHARACTERS = {'E', 'V'};
 
+   HandshakeCommandStrategy()
+      {
+      super(5000, DEFAULT_SLURP_TIMEOUT_MILLIS, DEFAULT_MAX_NUMBER_OF_RETRIES);
+      }
+
    protected byte[] getReceiveModeCharacters()
       {
       return RECEIVE_MODE_CHARACTERS.clone();
