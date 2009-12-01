@@ -1,5 +1,6 @@
 package org.chargecar.sensorboard.serial.proxy;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.Executors;
@@ -105,6 +106,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
 
    private final SerialPortCommandExecutionQueue commandQueue;
    private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
+   private final GetVoltagesCommandStrategy getVoltagesCommandStrategy = new GetVoltagesCommandStrategy();
    private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
    private final ScheduledExecutorService peerPingScheduler = Executors.newScheduledThreadPool(1, new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
    private final ScheduledFuture<?> peerPingScheduledFuture;
@@ -144,7 +146,14 @@ public class SensorBoardProxy implements SerialDeviceProxy
       {
       final SerialPortCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
 
-      return getSpeedCommandStrategy.convertResponseToSpeed(response);
+      return getSpeedCommandStrategy.convertResponse(response);
+      }
+
+   public ArrayList<Double> getVoltages()
+      {
+      final SerialPortCommandResponse response = commandQueue.execute(getVoltagesCommandStrategy);
+
+      return getVoltagesCommandStrategy.convertResponse(response);
       }
 
    public void disconnect()

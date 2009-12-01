@@ -2,6 +2,7 @@ package org.chargecar.sensorboard;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import edu.cmu.ri.createlab.serial.device.SerialDevicePingFailureEventListener;
 import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
 
@@ -47,6 +48,11 @@ public final class SensorBoardConsole extends BaseSensorBoardConsole
                });
          return true;
          }
+      }
+
+   protected ArrayList<Double> getVoltages()
+      {
+      return sensorBoardProxy.getVoltages();
       }
 
    protected boolean isInitialized()
