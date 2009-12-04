@@ -54,6 +54,11 @@ public final class SensorBoardConsole extends BaseSensorBoardConsole
       return sensorBoardProxy.getTemperatures();
       }
 
+   protected Currents getCurrents()
+      {
+      return sensorBoardProxy.getCurrents();
+      }
+
    protected Voltages getVoltages()
       {
       return sensorBoardProxy.getVoltages();

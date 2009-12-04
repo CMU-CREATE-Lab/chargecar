@@ -1,8 +1,6 @@
 package org.chargecar.sensorboard.serial.proxy;
 
 import java.util.Arrays;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.SensorBoardConstants;
 import org.chargecar.sensorboard.Voltages;
 
@@ -11,8 +9,6 @@ import org.chargecar.sensorboard.Voltages;
  */
 final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueCommandStrategy<Voltages>
    {
-   private static final Log LOG = LogFactory.getLog(GetVoltagesCommandStrategy.class);
-
    /** The command character used to request the voltages. */
    private static final String COMMAND_PREFIX = "V";
 
@@ -51,7 +47,7 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
       }
 
-   private static final class VoltagesImpl implements Voltages
+   private final class VoltagesImpl implements Voltages
       {
       private final double[] batteryVoltages = new double[SensorBoardConstants.BATTERY_DEVICE_COUNT];
       private final double capacitorVoltage;
@@ -72,16 +68,7 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
 
       private double convertToVoltage(final String rawValue)
          {
-         double value = 0.0;
-         try
-            {
-            value = Double.parseDouble(rawValue) / VOLTAGE_CONVERSION_FACTOR;
-            }
-         catch (NumberFormatException e)
-            {
-            LOG.error("GetVoltagesCommandStrategy$VoltagesImpl.convertToVoltage(): NumberFormatException while converting [" + rawValue + "] to a double.", e);
-            }
-         return value;
+         return convertToDouble(rawValue) / VOLTAGE_CONVERSION_FACTOR;
          }
 
       public double getBatteryVoltage(final int batteryId)

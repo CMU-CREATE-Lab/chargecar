@@ -76,6 +76,22 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             }
          };
 
+   private final Runnable currentsAction =
+         new Runnable()
+         {
+         public void run()
+            {
+            if (isInitialized())
+               {
+               println(convertCurrentsToString());
+               }
+            else
+               {
+               println("You must be connected to the sensor board first.");
+               }
+            }
+         };
+
    private final Runnable voltagesAction =
          new Runnable()
          {
@@ -118,6 +134,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       registerAction("?", enumeratePortsAction);
       registerAction("c", connectAction);
       registerAction("t", temperaturesAction);
+      registerAction("i", currentsAction);
       registerAction("v", voltagesAction);
       registerAction("d", disconnectAction);
       registerAction(QUIT_COMMAND, quitAction);
@@ -127,6 +144,12 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       {
       final Temperatures values = getTemperatures();
       return "Temperatures: " + values;
+      }
+
+   private String convertCurrentsToString()
+      {
+      final Currents values = getCurrents();
+      return "Currents: " + values;
       }
 
    private String convertVoltagesToString()
@@ -139,6 +162,8 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
 
    protected abstract Temperatures getTemperatures();
 
+   protected abstract Currents getCurrents();
+
    protected abstract Voltages getVoltages();
 
    protected abstract boolean isInitialized();
@@ -150,6 +175,8 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       println("?         List all available serial ports");
       println("");
       println("c         Connect to the sensor board on the given serial port");
+      println("i         Display currents");
+      println("t         Display temperatures");
       println("v         Display voltages");
       println("d         Disconnect from the sensor board");
       println("");

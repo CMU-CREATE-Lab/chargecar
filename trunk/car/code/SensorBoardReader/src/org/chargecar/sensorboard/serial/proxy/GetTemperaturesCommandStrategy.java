@@ -1,8 +1,6 @@
 package org.chargecar.sensorboard.serial.proxy;
 
 import java.util.Arrays;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.SensorBoardConstants;
 import org.chargecar.sensorboard.Temperatures;
 
@@ -11,8 +9,6 @@ import org.chargecar.sensorboard.Temperatures;
  */
 final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnValueCommandStrategy<Temperatures>
    {
-   private static final Log LOG = LogFactory.getLog(GetTemperaturesCommandStrategy.class);
-
    /** The command character used to request the temperatures. */
    private static final String COMMAND_PREFIX = "T";
 
@@ -49,7 +45,7 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
       }
 
-   private static final class TemperaturesImpl implements Temperatures
+   private final class TemperaturesImpl implements Temperatures
       {
       private final double[] motorTemperatures = new double[SensorBoardConstants.MOTOR_DEVICE_COUNT];
       private final double capacitorTemperature;
@@ -60,31 +56,17 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
 
       private TemperaturesImpl(final String[] rawValues)
          {
-         motorTemperatures[0] = convertToTemperature(rawValues[0]);
-         motorTemperatures[1] = convertToTemperature(rawValues[1]);
-         motorTemperatures[2] = convertToTemperature(rawValues[2]);
-         motorTemperatures[3] = convertToTemperature(rawValues[3]);
-         capacitorTemperature = computeCapacitorTemperature(convertToTemperature(rawValues[4]));
-         batteryTemperature = convertToTemperature(rawValues[5]);
-         motorControllerTemperatures[0] = convertToTemperature(rawValues[6]);
-         motorControllerTemperatures[1] = convertToTemperature(rawValues[7]);
-         outsideTemperature = convertToTemperature(rawValues[8]);
-         auxiliaryTemperatures[0] = convertToTemperature(rawValues[9]);
-         auxiliaryTemperatures[1] = convertToTemperature(rawValues[10]);
-         }
-
-      private double convertToTemperature(final String rawValue)
-         {
-         double value = 0.0;
-         try
-            {
-            value = Double.parseDouble(rawValue);
-            }
-         catch (NumberFormatException e)
-            {
-            LOG.error("GetTemperaturesCommandStrategy$TemperaturesImpl.convertToTemperature(): NumberFormatException while converting [" + rawValue + "] to a double.", e);
-            }
-         return value;
+         motorTemperatures[0] = convertToDouble(rawValues[0]);
+         motorTemperatures[1] = convertToDouble(rawValues[1]);
+         motorTemperatures[2] = convertToDouble(rawValues[2]);
+         motorTemperatures[3] = convertToDouble(rawValues[3]);
+         capacitorTemperature = computeCapacitorTemperature(convertToDouble(rawValues[4]));
+         batteryTemperature = convertToDouble(rawValues[5]);
+         motorControllerTemperatures[0] = convertToDouble(rawValues[6]);
+         motorControllerTemperatures[1] = convertToDouble(rawValues[7]);
+         outsideTemperature = convertToDouble(rawValues[8]);
+         auxiliaryTemperatures[0] = convertToDouble(rawValues[9]);
+         auxiliaryTemperatures[1] = convertToDouble(rawValues[10]);
          }
 
       private double computeCapacitorTemperature(final double rawValue)
