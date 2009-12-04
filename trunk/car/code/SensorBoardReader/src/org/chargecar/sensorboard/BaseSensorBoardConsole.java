@@ -67,7 +67,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             {
             if (isInitialized())
                {
-               println(convertTemperaturesToString());
+               println("Temperatures: " + getTemperatures());
                }
             else
                {
@@ -83,7 +83,23 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             {
             if (isInitialized())
                {
-               println(convertCurrentsToString());
+               println("Currents: " + getCurrents());
+               }
+            else
+               {
+               println("You must be connected to the sensor board first.");
+               }
+            }
+         };
+
+   private final Runnable pedalPositionsAction =
+         new Runnable()
+         {
+         public void run()
+            {
+            if (isInitialized())
+               {
+               println("Pedal Positions: " + getPedalPositions());
                }
             else
                {
@@ -99,7 +115,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             {
             if (isInitialized())
                {
-               println(convertVoltagesToString());
+               println("Voltages: " + getVoltages());
                }
             else
                {
@@ -135,27 +151,10 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       registerAction("c", connectAction);
       registerAction("t", temperaturesAction);
       registerAction("i", currentsAction);
+      registerAction("p", pedalPositionsAction);
       registerAction("v", voltagesAction);
       registerAction("d", disconnectAction);
       registerAction(QUIT_COMMAND, quitAction);
-      }
-
-   private String convertTemperaturesToString()
-      {
-      final Temperatures values = getTemperatures();
-      return "Temperatures: " + values;
-      }
-
-   private String convertCurrentsToString()
-      {
-      final Currents values = getCurrents();
-      return "Currents: " + values;
-      }
-
-   private String convertVoltagesToString()
-      {
-      final Voltages values = getVoltages();
-      return "Voltages: " + values;
       }
 
    protected abstract boolean connect(final String serialPortName);
@@ -163,6 +162,8 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
    protected abstract Temperatures getTemperatures();
 
    protected abstract Currents getCurrents();
+
+   protected abstract PedalPositions getPedalPositions();
 
    protected abstract Voltages getVoltages();
 
@@ -176,6 +177,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       println("");
       println("c         Connect to the sensor board on the given serial port");
       println("i         Display currents");
+      println("p         Display pedeal positions");
       println("t         Display temperatures");
       println("v         Display voltages");
       println("d         Disconnect from the sensor board");
