@@ -92,6 +92,22 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             }
          };
 
+   private final Runnable overVoltageAction =
+         new Runnable()
+         {
+         public void run()
+            {
+            if (isInitialized())
+               {
+               println("Capacitor Over-Voltage State: " + (isCapacitorOverVoltage() ? "Over Voltage!" : "OK"));
+               }
+            else
+               {
+               println("You must be connected to the sensor board first.");
+               }
+            }
+         };
+
    private final Runnable pedalPositionsAction =
          new Runnable()
          {
@@ -167,6 +183,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       registerAction("c", connectAction);
       registerAction("t", temperaturesAction);
       registerAction("i", currentsAction);
+      registerAction("o", overVoltageAction);
       registerAction("p", pedalPositionsAction);
       registerAction("s", speedAction);
       registerAction("v", voltagesAction);
@@ -180,9 +197,11 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
 
    protected abstract Currents getCurrents();
 
+   protected abstract Boolean isCapacitorOverVoltage();
+
    protected abstract PedalPositions getPedalPositions();
 
-   protected abstract int getSpeed();
+   protected abstract Integer getSpeed();
 
    protected abstract Voltages getVoltages();
 
@@ -196,7 +215,9 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       println("");
       println("c         Connect to the sensor board on the given serial port");
       println("i         Display currents");
+      println("o         Display capacitor over-voltage state");
       println("p         Display pedeal positions");
+      println("s         Display speed");
       println("t         Display temperatures");
       println("v         Display voltages");
       println("d         Disconnect from the sensor board");

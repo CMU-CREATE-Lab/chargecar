@@ -10,6 +10,7 @@
       </layout>
    </appender>
 
+   <!--
    <category name="edu.cmu.ri.createlab.serial">
       <priority value="trace"/>
    </category>
@@ -19,9 +20,10 @@
    <category name="edu.cmu.ri.createlab.serial.SerialPortEnumerator">
       <priority value="debug"/>
    </category>
+   -->
 
    <root>
-      <priority value="debug"/>
+      <priority value="info"/>
       <appender-ref ref="ConsoleAppender"/>
    </root>
 
