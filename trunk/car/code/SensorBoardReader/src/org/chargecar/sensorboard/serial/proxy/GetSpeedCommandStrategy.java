@@ -38,7 +38,7 @@ final class GetSpeedCommandStrategy extends ChargeCarSerialDeviceReturnValueComm
 
    protected Integer convertResponseHelper(final String[] values)
       {
-      int speed = 0;
+      Integer speed = null;
       try
          {
          speed = Integer.parseInt(values[0]);
