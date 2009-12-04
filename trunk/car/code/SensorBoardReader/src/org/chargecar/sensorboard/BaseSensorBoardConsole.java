@@ -108,6 +108,22 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             }
          };
 
+   private final Runnable speedAction =
+         new Runnable()
+         {
+         public void run()
+            {
+            if (isInitialized())
+               {
+               println("Speed: " + getSpeed());
+               }
+            else
+               {
+               println("You must be connected to the sensor board first.");
+               }
+            }
+         };
+
    private final Runnable voltagesAction =
          new Runnable()
          {
@@ -152,6 +168,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
       registerAction("t", temperaturesAction);
       registerAction("i", currentsAction);
       registerAction("p", pedalPositionsAction);
+      registerAction("s", speedAction);
       registerAction("v", voltagesAction);
       registerAction("d", disconnectAction);
       registerAction(QUIT_COMMAND, quitAction);
@@ -164,6 +181,8 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
    protected abstract Currents getCurrents();
 
    protected abstract PedalPositions getPedalPositions();
+
+   protected abstract int getSpeed();
 
    protected abstract Voltages getVoltages();
 

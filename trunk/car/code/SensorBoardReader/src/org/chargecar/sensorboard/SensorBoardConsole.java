@@ -64,6 +64,11 @@ public final class SensorBoardConsole extends BaseSensorBoardConsole
       return sensorBoardProxy.getPedalPositions();
       }
 
+   protected int getSpeed()
+      {
+      return sensorBoardProxy.getSpeed();
+      }
+
    protected Voltages getVoltages()
       {
       return sensorBoardProxy.getVoltages();
