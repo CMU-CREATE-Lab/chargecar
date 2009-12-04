@@ -72,16 +72,16 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
 
       private double convertToVoltage(final String rawValue)
          {
-         double tempValue = 0.0;
+         double value = 0.0;
          try
             {
-            tempValue = Double.parseDouble(rawValue) / VOLTAGE_CONVERSION_FACTOR;
+            value = Double.parseDouble(rawValue) / VOLTAGE_CONVERSION_FACTOR;
             }
          catch (NumberFormatException e)
             {
             LOG.error("GetVoltagesCommandStrategy$VoltagesImpl.convertToVoltage(): NumberFormatException while converting [" + rawValue + "] to a double.", e);
             }
-         return tempValue;
+         return value;
          }
 
       public double getBatteryVoltage(final int batteryId)

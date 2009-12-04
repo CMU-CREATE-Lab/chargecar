@@ -75,16 +75,16 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
 
       private double convertToTemperature(final String rawValue)
          {
-         double tempValue = 0.0;
+         double value = 0.0;
          try
             {
-            tempValue = Double.parseDouble(rawValue);
+            value = Double.parseDouble(rawValue);
             }
          catch (NumberFormatException e)
             {
             LOG.error("GetTemperaturesCommandStrategy$TemperaturesImpl.convertToTemperature(): NumberFormatException while converting [" + rawValue + "] to a double.", e);
             }
-         return tempValue;
+         return value;
          }
 
       private double computeCapacitorTemperature(final double rawValue)
