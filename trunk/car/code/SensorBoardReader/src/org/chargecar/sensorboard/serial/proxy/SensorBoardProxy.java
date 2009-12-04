@@ -1,6 +1,5 @@
 package org.chargecar.sensorboard.serial.proxy;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.Executors;
@@ -21,6 +20,8 @@ import edu.cmu.ri.createlab.serial.device.SerialDeviceProxy;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.sensorboard.Temperatures;
+import org.chargecar.sensorboard.Voltages;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -50,7 +51,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
 
       // create the serial port configuration
       final SerialIOConfiguration config = new SerialIOConfiguration(serialPortName,
-                                                                     BaudRate.BAUD_57600,
+                                                                     BaudRate.BAUD_19200,
                                                                      CharacterSize.EIGHT,
                                                                      Parity.NONE,
                                                                      StopBits.ONE,
@@ -106,6 +107,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
 
    private final SerialPortCommandExecutionQueue commandQueue;
    private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
+   private final GetTemperaturesCommandStrategy getTemperaturesCommandStrategy = new GetTemperaturesCommandStrategy();
    private final GetVoltagesCommandStrategy getVoltagesCommandStrategy = new GetVoltagesCommandStrategy();
    private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
    private final ScheduledExecutorService peerPingScheduler = Executors.newScheduledThreadPool(1, new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
@@ -149,7 +151,14 @@ public class SensorBoardProxy implements SerialDeviceProxy
       return getSpeedCommandStrategy.convertResponse(response);
       }
 
-   public ArrayList<Double> getVoltages()
+   public Temperatures getTemperatures()
+      {
+      final SerialPortCommandResponse response = commandQueue.execute(getTemperaturesCommandStrategy);
+
+      return getTemperaturesCommandStrategy.convertResponse(response);
+      }
+
+   public Voltages getVoltages()
       {
       final SerialPortCommandResponse response = commandQueue.execute(getVoltagesCommandStrategy);
 
