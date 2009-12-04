@@ -21,6 +21,7 @@ import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.Currents;
+import org.chargecar.sensorboard.PedalPositions;
 import org.chargecar.sensorboard.Temperatures;
 import org.chargecar.sensorboard.Voltages;
 
@@ -110,6 +111,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
    private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
    private final GetTemperaturesCommandStrategy getTemperaturesCommandStrategy = new GetTemperaturesCommandStrategy();
    private final GetCurrentsCommandStrategy getCurrentsCommandStrategy = new GetCurrentsCommandStrategy();
+   private final GetPedalPositionsCommandStrategy getPedalPositionsCommandStrategy = new GetPedalPositionsCommandStrategy();
    private final GetVoltagesCommandStrategy getVoltagesCommandStrategy = new GetVoltagesCommandStrategy();
    private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
    private final ScheduledExecutorService peerPingScheduler = Executors.newScheduledThreadPool(1, new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
@@ -165,6 +167,13 @@ public class SensorBoardProxy implements SerialDeviceProxy
       final SerialPortCommandResponse response = commandQueue.execute(getCurrentsCommandStrategy);
 
       return getCurrentsCommandStrategy.convertResponse(response);
+      }
+
+   public PedalPositions getPedalPositions()
+      {
+      final SerialPortCommandResponse response = commandQueue.execute(getPedalPositionsCommandStrategy);
+
+      return getPedalPositionsCommandStrategy.convertResponse(response);
       }
 
    public Voltages getVoltages()
