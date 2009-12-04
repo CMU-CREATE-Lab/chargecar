@@ -1,10 +1,8 @@
 package org.chargecar.sensorboard;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
 import java.util.SortedMap;
 import edu.cmu.ri.createlab.serial.commandline.SerialDeviceCommandLineApplication;
-import edu.cmu.ri.createlab.util.ArrayUtils;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -62,6 +60,22 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             }
          };
 
+   private final Runnable temperaturesAction =
+         new Runnable()
+         {
+         public void run()
+            {
+            if (isInitialized())
+               {
+               println(convertTemperaturesToString());
+               }
+            else
+               {
+               println("You must be connected to the sensor board first.");
+               }
+            }
+         };
+
    private final Runnable voltagesAction =
          new Runnable()
          {
@@ -103,19 +117,29 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
 
       registerAction("?", enumeratePortsAction);
       registerAction("c", connectAction);
+      registerAction("t", temperaturesAction);
       registerAction("v", voltagesAction);
       registerAction("d", disconnectAction);
       registerAction(QUIT_COMMAND, quitAction);
       }
 
+   private String convertTemperaturesToString()
+      {
+      final Temperatures values = getTemperatures();
+      return "Temperatures: " + values;
+      }
+
    private String convertVoltagesToString()
       {
-      return "Voltages: " + ArrayUtils.arrayToString(getVoltages().toArray());
+      final Voltages values = getVoltages();
+      return "Voltages: " + values;
       }
 
    protected abstract boolean connect(final String serialPortName);
 
-   protected abstract ArrayList<Double> getVoltages();
+   protected abstract Temperatures getTemperatures();
+
+   protected abstract Voltages getVoltages();
 
    protected abstract boolean isInitialized();
 

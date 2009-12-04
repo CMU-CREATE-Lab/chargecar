@@ -16,11 +16,6 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
 
    private static final String RESPONSE_VALUE_FIELD_DELIMITER = ",";
 
-   interface ResponseConversionStrategy<E>
-      {
-      E convert(final String[] values);
-      }
-
    /**
     * Creates a <code>ChargeCarSerialDeviceReturnValueCommandStrategy</code> using the default values for read timeout,
     * slurp timeout, and max retries.
@@ -49,7 +44,7 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
       super(readTimeoutMillis, slurpTimeoutMillis, maxNumberOfRetries);
       }
 
-   protected final E convertResponse(final SerialPortCommandResponse response, final ResponseConversionStrategy<E> responseConversionStrategy)
+   public final E convertResponse(final SerialPortCommandResponse response)
       {
       if (response != null)
          {
@@ -69,12 +64,25 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
                      final String[] values = cleanedResponseStr.split(RESPONSE_VALUE_FIELD_DELIMITER);
                      if ((values != null) && (values.length > 0))
                         {
-                        final E convertedResponse = responseConversionStrategy.convert(values);
-                        if (LOG.isTraceEnabled())
+                        final int numberOfExpectedValues = getNumberOfExpectedValuesInResponse();
+                        if (values.length == numberOfExpectedValues)
                            {
-                           LOG.trace("ChargeCarSerialDeviceReturnValueCommandStrategy.convertResponse(): returning converted response [" + convertedResponse + "]");
+                           final String[] trimmedValues = new String[values.length];
+                           for (int i = 0; i < values.length; i++)
+                              {
+                              trimmedValues[i] = (values[i] == null) ? "" : values[i].trim();
+                              }
+                           final E convertedResponse = convertResponseHelper(trimmedValues);
+                           if (LOG.isTraceEnabled())
+                              {
+                              LOG.trace("ChargeCarSerialDeviceReturnValueCommandStrategy.convertResponse(): returning converted response [" + convertedResponse + "]");
+                              }
+                           return convertedResponse;
                            }
-                        return convertedResponse;
+                        else
+                           {
+                           LOG.error("ChargeCarSerialDeviceReturnValueCommandStrategy.convertResponse(): response string contains [" + values.length + "] values, expected [" + numberOfExpectedValues + "]");
+                           }
                         }
                      else
                         {
@@ -103,4 +111,8 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
          }
       return null;
       }
+
+   protected abstract E convertResponseHelper(final String[] values);
+
+   protected abstract int getNumberOfExpectedValuesInResponse();
    }
