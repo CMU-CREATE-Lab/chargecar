@@ -59,12 +59,17 @@ public final class SensorBoardConsole extends BaseSensorBoardConsole
       return sensorBoardProxy.getCurrents();
       }
 
+   protected Boolean isCapacitorOverVoltage()
+      {
+      return sensorBoardProxy.isCapacitorOverVoltage();
+      }
+
    protected PedalPositions getPedalPositions()
       {
       return sensorBoardProxy.getPedalPositions();
       }
 
-   protected int getSpeed()
+   protected Integer getSpeed()
       {
       return sensorBoardProxy.getSpeed();
       }

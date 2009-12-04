@@ -111,6 +111,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
    private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
    private final GetTemperaturesCommandStrategy getTemperaturesCommandStrategy = new GetTemperaturesCommandStrategy();
    private final GetCurrentsCommandStrategy getCurrentsCommandStrategy = new GetCurrentsCommandStrategy();
+   private final IsCapacitorOverVoltageCommandStrategy isCapacitorOverVoltageCommandStrategy = new IsCapacitorOverVoltageCommandStrategy();
    private final GetPedalPositionsCommandStrategy getPedalPositionsCommandStrategy = new GetPedalPositionsCommandStrategy();
    private final GetVoltagesCommandStrategy getVoltagesCommandStrategy = new GetVoltagesCommandStrategy();
    private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
@@ -167,6 +168,13 @@ public class SensorBoardProxy implements SerialDeviceProxy
       final SerialPortCommandResponse response = commandQueue.execute(getCurrentsCommandStrategy);
 
       return getCurrentsCommandStrategy.convertResponse(response);
+      }
+
+   public Boolean isCapacitorOverVoltage()
+      {
+      final SerialPortCommandResponse response = commandQueue.execute(isCapacitorOverVoltageCommandStrategy);
+
+      return isCapacitorOverVoltageCommandStrategy.convertResponse(response);
       }
 
    public PedalPositions getPedalPositions()
