@@ -11,7 +11,7 @@
    </appender>
 
    <root>
-      <priority value="trace"/>
+      <priority value="debug"/>
       <appender-ref ref="ConsoleAppender"/>
    </root>
 
