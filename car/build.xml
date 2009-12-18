@@ -5,8 +5,8 @@
 
    <!-- Paths -->
    <path id="heads-up-display-classpath">
-      <!-- source classes -->
-      <pathelement path="${heads-up-display.src.dir}"/>
+      <!-- other classes within this project -->
+      <pathelement path="${sensor-board-reader.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
@@ -16,12 +16,10 @@
       <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${rxtx.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
    </path>
 
    <path id="sensor-board-reader-classpath">
-      <!-- source classes -->
-      <pathelement path="${sensor-board-reader.src.dir}"/>
-
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
@@ -76,11 +74,11 @@
       <delete dir="${sensor-board-reader.dist.dir}"/>
    </target>
 
-   <target name="build" depends="build-heads-up-display, build-sensor-board-reader" description="builds the source code" unless="build-is-complete">
+   <target name="build" depends="build-sensor-board-reader, build-heads-up-display" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
    </target>
 
-   <target name="build-heads-up-display" description="compiles the java source for heads-up-display" unless="build-heads-up-display-is-complete">
+   <target name="build-heads-up-display" depends="build-sensor-board-reader" description="compiles the java source for heads-up-display" unless="build-heads-up-display-is-complete">
       <compile-code-and-copy-resources src.dir="${heads-up-display.src.dir}"
                                        build.dir="${heads-up-display.build.dir}"
                                        classpath-ref="heads-up-display-classpath"/>
@@ -96,11 +94,11 @@
       <property name="build-sensor-board-reader-is-complete" value="true"/>
    </target>
 
-   <target name="dist" depends="dist-heads-up-display, dist-sensor-board-reader" description="builds the project" unless="dist-is-complete">
+   <target name="dist" depends="dist-sensor-board-reader, dist-heads-up-display" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
    </target>
 
-   <target name="dist-heads-up-display" depends="build-heads-up-display" description="builds the heads-up-display" unless="dist-heads-up-display-is-complete">
+   <target name="dist-heads-up-display" depends="dist-sensor-board-reader, build-heads-up-display" description="builds the heads-up-display" unless="dist-heads-up-display-is-complete">
       <create-dist component.name="heads-up-display">
          <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.HeadsUpDisplay"/>
@@ -110,6 +108,8 @@
             <fileset file="${create-lab-commons-serial.jar}"/>
             <fileset file="${create-lab-commons-user-interface.jar}"/>
             <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${sensor-board-reader.dist.dir}/${sensor-board-reader.jar.filename}"/>
+            <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
       </create-dist>
 
