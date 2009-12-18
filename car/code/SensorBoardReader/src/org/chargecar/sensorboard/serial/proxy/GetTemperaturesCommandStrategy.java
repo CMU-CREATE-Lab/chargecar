@@ -71,7 +71,7 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
 
       private double computeCapacitorTemperature(final double rawValue)
          {
-         return -9.7973 * Math.pow(rawValue, 3) + 54.706 * Math.pow(rawValue, 2) - 147.96 * rawValue + 217.76;
+         return -15.477 * Math.pow(rawValue, 3) + 88.368 * Math.pow(rawValue, 2) - 216.24 * rawValue + 294.35;
          }
 
       public double getMotorTemperature(final int motorId)
