@@ -21,6 +21,8 @@ final class GetCurrentsCommandStrategy extends ChargeCarSerialDeviceReturnValueC
    private static final int ACCESSORY_CURRENT_CONVERSION_FACTOR = 15;
    private static final int MOTOR_CURRENT_CONVERSION_FACTOR = 5;
 
+   private static final double[] DC_OFFSETS = new double[]{8.0, 9.4, 39.4, 2.73, 2.13, -0.8, -5.87, 0, 0};
+
    private final byte[] command;
 
    GetCurrentsCommandStrategy()
@@ -58,15 +60,15 @@ final class GetCurrentsCommandStrategy extends ChargeCarSerialDeviceReturnValueC
 
       private CurrentsImpl(final String[] rawValues)
          {
-         batteryCurrent = convertToDouble(rawValues[0]);
-         capacitorCurrent = convertToDouble(rawValues[1]);
-         accessoryCurrent = convertToDouble(rawValues[2]) / ACCESSORY_CURRENT_CONVERSION_FACTOR;
-         motorCurrents[0] = convertToDouble(rawValues[3]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-         motorCurrents[1] = convertToDouble(rawValues[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-         motorCurrents[2] = convertToDouble(rawValues[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-         motorCurrents[3] = convertToDouble(rawValues[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-         auxiliaryCurrents[0] = convertToDouble(rawValues[7]);
-         auxiliaryCurrents[1] = convertToDouble(rawValues[8]);
+         batteryCurrent = convertToDouble(rawValues[0]) + DC_OFFSETS[0];
+         capacitorCurrent = convertToDouble(rawValues[1]) + DC_OFFSETS[1];
+         accessoryCurrent = (convertToDouble(rawValues[2]) + DC_OFFSETS[2]) / ACCESSORY_CURRENT_CONVERSION_FACTOR;
+         motorCurrents[0] = (convertToDouble(rawValues[3]) + DC_OFFSETS[3]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+         motorCurrents[1] = (convertToDouble(rawValues[4]) + DC_OFFSETS[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+         motorCurrents[2] = (convertToDouble(rawValues[5]) + DC_OFFSETS[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+         motorCurrents[3] = (convertToDouble(rawValues[6]) + DC_OFFSETS[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+         auxiliaryCurrents[0] = convertToDouble(rawValues[7]) + DC_OFFSETS[7];
+         auxiliaryCurrents[1] = convertToDouble(rawValues[8]) + DC_OFFSETS[8];
          }
 
       public double getBatteryCurrent()
