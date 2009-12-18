@@ -103,7 +103,7 @@ final class GetPedalPositionsCommandStrategy extends ChargeCarSerialDeviceReturn
       public String toString()
          {
          final StringBuilder sb = new StringBuilder();
-         sb.append("PedalPositionsImpl");
+         sb.append("PedalPositions");
          sb.append("{throttlePosition=").append(throttlePosition);
          sb.append(", regenBrakePosition=").append(regenBrakePosition);
          sb.append('}');

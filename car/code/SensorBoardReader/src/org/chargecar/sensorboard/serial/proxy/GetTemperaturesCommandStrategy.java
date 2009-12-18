@@ -176,7 +176,7 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
       public String toString()
          {
          final StringBuilder sb = new StringBuilder();
-         sb.append("TemperaturesImpl");
+         sb.append("Temperatures");
          sb.append("{motorTemperatures=").append(motorTemperatures == null ? "null" : "");
          for (int i = 0; motorTemperatures != null && i < motorTemperatures.length; ++i)
             {
