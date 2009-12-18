@@ -159,7 +159,7 @@ final class GetCurrentsCommandStrategy extends ChargeCarSerialDeviceReturnValueC
       public String toString()
          {
          final StringBuilder sb = new StringBuilder();
-         sb.append("CurrentsImpl");
+         sb.append("Currents");
          sb.append("{batteryCurrent=").append(batteryCurrent);
          sb.append(", capacitorCurrent=").append(capacitorCurrent);
          sb.append(", accessoryCurrent=").append(accessoryCurrent);

@@ -115,7 +115,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
    private final GetPedalPositionsCommandStrategy getPedalPositionsCommandStrategy = new GetPedalPositionsCommandStrategy();
    private final GetVoltagesCommandStrategy getVoltagesCommandStrategy = new GetVoltagesCommandStrategy();
    private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
-   private final ScheduledExecutorService peerPingScheduler = Executors.newScheduledThreadPool(1, new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
+   private final ScheduledExecutorService peerPingScheduler = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
    private final ScheduledFuture<?> peerPingScheduledFuture;
    private final Collection<SerialDevicePingFailureEventListener> serialDevicePingFailureEventListeners = new HashSet<SerialDevicePingFailureEventListener>();
 

@@ -151,7 +151,7 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
       public String toString()
          {
          final StringBuilder sb = new StringBuilder();
-         sb.append("VoltagesImpl");
+         sb.append("Voltages");
          sb.append("{batteryVoltages=").append(batteryVoltages == null ? "null" : "");
          for (int i = 0; batteryVoltages != null && i < batteryVoltages.length; ++i)
             {
