@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.PropertyResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import edu.cmu.ri.createlab.serial.SerialPortException;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionEventListener;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionState;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManager;
@@ -27,6 +29,8 @@ import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.gps.GPSEventListener;
+import org.chargecar.gps.nmea.NMEAReader;
 import org.chargecar.sensorboard.serial.proxy.SensorBoardSerialDeviceProxyCreator;
 import org.jdesktop.layout.GroupLayout;
 
@@ -39,15 +43,25 @@ public class HeadsUpDisplay
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplay.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
 
-   public static void main(final String[] args)
+   public static void main(final String[] args) throws SerialPortException, IOException
       {
+      if (args.length < 1)
+         {
+         LOG.error("GPS serial port not specified, aborting.");
+         System.exit(1);
+         }
+
+      final String serialPortName = args[0];
+      final NMEAReader gpsReader = new NMEAReader(APPLICATION_NAME);
+      gpsReader.connect(serialPortName);
+
       //Schedule a job for the event-dispatching thread: creating and showing this application's GUI.
       SwingUtilities.invokeLater(
             new Runnable()
             {
             public void run()
                {
-               new HeadsUpDisplay();
+               new HeadsUpDisplay(gpsReader);
                }
             });
       }
@@ -56,8 +70,21 @@ public class HeadsUpDisplay
    private final SetStageRunnable setStageForIsConnectedRunnable;
    private final SetStageRunnable setStageForIsDisconnectedRunnable;
 
-   private HeadsUpDisplay()
+   private HeadsUpDisplay(final NMEAReader gpsReader)
       {
+      gpsReader.addEventListener(new GPSEventListener()
+      {
+      public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
+         {
+         LOG.info("GPS: " + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked);
+         }
+
+      public void handleElevationEvent(final int elevationInFeet)
+         {
+         LOG.info("GPS Elevation: " + elevationInFeet);
+         }
+      });
+
       // create and configure the GUI
       final JFrame jFrame = new JFrame(APPLICATION_NAME);
 
@@ -101,6 +128,7 @@ public class HeadsUpDisplay
                         {
                         // start scanning
                         serialDeviceConnectivityManager.scanAndConnect();
+                        gpsReader.startReading();
                         return null;
                         }
                      };
@@ -125,6 +153,8 @@ public class HeadsUpDisplay
                            {
                            // disconnect so we can exit gracefully
                            serialDeviceConnectivityManager.disconnect();
+                           gpsReader.stopReading();
+                           gpsReader.disconnect();
                            return null;
                            }
 
