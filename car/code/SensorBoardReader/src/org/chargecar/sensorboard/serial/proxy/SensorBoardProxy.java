@@ -53,7 +53,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
 
       // create the serial port configuration
       final SerialIOConfiguration config = new SerialIOConfiguration(serialPortName,
-                                                                     BaudRate.BAUD_19200,
+                                                                     BaudRate.BAUD_57600,
                                                                      CharacterSize.EIGHT,
                                                                      Parity.NONE,
                                                                      StopBits.ONE,
