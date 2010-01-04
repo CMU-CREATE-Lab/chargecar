@@ -131,7 +131,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
             {
             if (isInitialized())
                {
-               println("Speed: " + getSpeed());
+               println("Speed: " + getSpeed().getSpeed());
                }
             else
                {
@@ -201,7 +201,7 @@ abstract class BaseSensorBoardConsole extends SerialDeviceCommandLineApplication
 
    protected abstract PedalPositions getPedalPositions();
 
-   protected abstract Integer getSpeed();
+   protected abstract Speed getSpeed();
 
    protected abstract Voltages getVoltages();
 

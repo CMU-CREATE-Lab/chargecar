@@ -69,7 +69,7 @@ public final class SensorBoardConsole extends BaseSensorBoardConsole
       return sensorBoardProxy.getPedalPositions();
       }
 
-   protected Integer getSpeed()
+   protected Speed getSpeed()
       {
       return sensorBoardProxy.getSpeed();
       }

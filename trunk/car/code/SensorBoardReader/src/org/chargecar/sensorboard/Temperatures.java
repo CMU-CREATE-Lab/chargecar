@@ -3,7 +3,7 @@ package org.chargecar.sensorboard;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public interface Temperatures
+public interface Temperatures extends SensorBoardData
    {
    double getMotorTemperature(int motorId);
 

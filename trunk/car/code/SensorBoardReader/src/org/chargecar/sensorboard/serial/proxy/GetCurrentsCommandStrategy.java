@@ -3,6 +3,7 @@ package org.chargecar.sensorboard.serial.proxy;
 import java.util.Arrays;
 import org.chargecar.sensorboard.Currents;
 import org.chargecar.sensorboard.SensorBoardConstants;
+import org.chargecar.sensorboard.SensorBoardDataImpl;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -50,7 +51,7 @@ final class GetCurrentsCommandStrategy extends ChargeCarSerialDeviceReturnValueC
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
       }
 
-   private final class CurrentsImpl implements Currents
+   private final class CurrentsImpl extends SensorBoardDataImpl implements Currents
       {
       private final double batteryCurrent;
       private final double capacitorCurrent;
