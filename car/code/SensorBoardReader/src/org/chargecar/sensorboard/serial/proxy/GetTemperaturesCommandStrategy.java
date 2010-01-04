@@ -2,6 +2,7 @@ package org.chargecar.sensorboard.serial.proxy;
 
 import java.util.Arrays;
 import org.chargecar.sensorboard.SensorBoardConstants;
+import org.chargecar.sensorboard.SensorBoardDataImpl;
 import org.chargecar.sensorboard.Temperatures;
 
 /**
@@ -45,7 +46,7 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
       }
 
-   private final class TemperaturesImpl implements Temperatures
+   private final class TemperaturesImpl extends SensorBoardDataImpl implements Temperatures
       {
       private final double[] motorTemperatures = new double[SensorBoardConstants.MOTOR_DEVICE_COUNT];
       private final double capacitorTemperature;

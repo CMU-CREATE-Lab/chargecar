@@ -2,6 +2,7 @@ package org.chargecar.sensorboard.serial.proxy;
 
 import java.util.Arrays;
 import org.chargecar.sensorboard.SensorBoardConstants;
+import org.chargecar.sensorboard.SensorBoardDataImpl;
 import org.chargecar.sensorboard.Voltages;
 
 /**
@@ -47,7 +48,7 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
       }
 
-   private final class VoltagesImpl implements Voltages
+   private final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
       {
       private final double[] batteryVoltages = new double[SensorBoardConstants.BATTERY_DEVICE_COUNT];
       private final double capacitorVoltage;
@@ -58,8 +59,8 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
          {
          batteryVoltages[0] = convertToVoltage(rawValues[5]);
          batteryVoltages[1] = convertToVoltage(rawValues[4]) - batteryVoltages[0];
-         batteryVoltages[2] = convertToVoltage(rawValues[3]) - batteryVoltages[1];
-         batteryVoltages[3] = convertToVoltage(rawValues[0]) - batteryVoltages[2];
+         batteryVoltages[2] = convertToVoltage(rawValues[3]) - batteryVoltages[0] - batteryVoltages[1];
+         batteryVoltages[3] = convertToVoltage(rawValues[0]) - batteryVoltages[0] - batteryVoltages[1] - batteryVoltages[2];
          capacitorVoltage = convertToVoltage(rawValues[1]);
          accessoryVoltage = convertToVoltage(rawValues[2]);
          auxiliaryVoltages[0] = convertToVoltage(rawValues[6]);

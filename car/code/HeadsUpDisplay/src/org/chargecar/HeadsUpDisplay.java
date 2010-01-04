@@ -6,10 +6,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.PropertyResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,11 +22,12 @@ import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityM
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManagerImpl;
 import edu.cmu.ri.createlab.userinterface.component.Spinner;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
-import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
 import org.chargecar.gps.nmea.NMEAReader;
+import org.chargecar.sensorboard.SpeedAndOdometryModel;
+import org.chargecar.sensorboard.SpeedAndOdometryView;
 import org.chargecar.sensorboard.serial.proxy.SensorBoardSerialDeviceProxyCreator;
 import org.jdesktop.layout.GroupLayout;
 
@@ -43,17 +40,29 @@ public class HeadsUpDisplay
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplay.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
 
-   public static void main(final String[] args) throws SerialPortException, IOException
+   public static void main(final String[] args)
       {
+      final NMEAReader gpsReader = new NMEAReader(APPLICATION_NAME);
       if (args.length < 1)
          {
-         LOG.error("GPS serial port not specified, aborting.");
-         System.exit(1);
+         LOG.warn("GPS receiver serial port not specified, so no GPS data will be available!");
          }
-
-      final String serialPortName = args[0];
-      final NMEAReader gpsReader = new NMEAReader(APPLICATION_NAME);
-      gpsReader.connect(serialPortName);
+      else
+         {
+         final String gpsSerialPortName = args[0];
+         try
+            {
+            gpsReader.connect(gpsSerialPortName);
+            }
+         catch (SerialPortException e)
+            {
+            LOG.error("SerialPortException while connecting to the GPS receiver", e);
+            }
+         catch (IOException e)
+            {
+            LOG.error("IOException while connecting to the GPS receiver", e);
+            }
+         }
 
       //Schedule a job for the event-dispatching thread: creating and showing this application's GUI.
       SwingUtilities.invokeLater(
@@ -72,18 +81,19 @@ public class HeadsUpDisplay
 
    private HeadsUpDisplay(final NMEAReader gpsReader)
       {
-      gpsReader.addEventListener(new GPSEventListener()
-      {
-      public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
-         {
-         LOG.info("GPS: " + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked);
-         }
+      gpsReader.addEventListener(
+            new GPSEventListener()
+            {
+            public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
+               {
+               LOG.info("GPS: " + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked);
+               }
 
-      public void handleElevationEvent(final int elevationInFeet)
-         {
-         LOG.info("GPS Elevation: " + elevationInFeet);
-         }
-      });
+            public void handleElevationEvent(final int elevationInFeet)
+               {
+               LOG.info("GPS Elevation: " + elevationInFeet);
+               }
+            });
 
       // create and configure the GUI
       final JFrame jFrame = new JFrame(APPLICATION_NAME);
@@ -96,7 +106,9 @@ public class HeadsUpDisplay
       // add the panel to the JFrame
       jFrame.add(panel);
 
-      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView();
+      // create the views
+      final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
+      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(speedAndOdometryView);
 
       // set up the runnables used to toggle the UI for scanning/connected/disconnected
       final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
@@ -105,11 +117,41 @@ public class HeadsUpDisplay
       setStageForIsDisconnectedRunnable = new SetStageRunnable(panel, new JLabel(RESOURCES.getString("label.disconnected")));
       setStageForIsScanningRunnable.run();
 
-      // create and configure the SerialDeviceConnectivityManager
+      // create the models
+      final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
+
+      // create and configure the SerialDeviceConnectivityManager and HeadsUpDisplayController
       final SerialDeviceConnectivityManager serialDeviceConnectivityManager = new SerialDeviceConnectivityManagerImpl(new SensorBoardSerialDeviceProxyCreator());
-      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(serialDeviceConnectivityManager, headsUpDisplayView);
-      final SensorBoardConnectionEventListener sensorBoardConnectionEventListener = new SensorBoardConnectionEventListener(headsUpDisplayController);
-      serialDeviceConnectivityManager.addConnectionEventListener(sensorBoardConnectionEventListener);
+      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(serialDeviceConnectivityManager, speedAndOdometryModel);
+      serialDeviceConnectivityManager.addConnectionEventListener(headsUpDisplayController);
+      serialDeviceConnectivityManager.addConnectionEventListener(
+            new SerialDeviceConnectionEventListener()
+            {
+            public void handleConnectionStateChange(final SerialDeviceConnectionState oldState, final SerialDeviceConnectionState newState, final String serialPortName)
+               {
+               // don't bother doing anything if the state hasn't changed
+               if (oldState.equals(newState))
+                  {
+                  return;
+                  }
+
+               if (SerialDeviceConnectionState.SCANNING.equals(newState))
+                  {
+                  SwingUtilities.invokeLater(setStageForIsScanningRunnable);
+                  }
+               else if (SerialDeviceConnectionState.CONNECTED.equals(newState))
+                  {
+                  SwingUtilities.invokeLater(setStageForIsConnectedRunnable);
+                  }
+               else
+                  {
+                  SwingUtilities.invokeLater(setStageForIsDisconnectedRunnable);
+                  }
+               }
+            });
+
+      // add the various views as listeners to the models
+      speedAndOdometryModel.addEventListener(speedAndOdometryView);
 
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -203,63 +245,6 @@ public class HeadsUpDisplay
                      .add(component)
                      .add(rightGlue)
          );
-         }
-      }
-
-   private class SensorBoardConnectionEventListener implements SerialDeviceConnectionEventListener
-      {
-      private final ScheduledExecutorService dataAcquisitionExecutorService = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("SensorBoardExecutorThreadFactory"));
-      private ScheduledFuture<?> scheduledFuture = null;
-      private final HeadsUpDisplayController headsUpDisplayController;
-
-      private SensorBoardConnectionEventListener(final HeadsUpDisplayController headsUpDisplayController)
-         {
-         this.headsUpDisplayController = headsUpDisplayController;
-         }
-
-      public void handleConnectionStateChange(final SerialDeviceConnectionState oldState, final SerialDeviceConnectionState newState, final String serialPortName)
-         {
-         if (LOG.isDebugEnabled())
-            {
-            LOG.debug("HeadsUpDisplay$SensorBoardConnectionEventListener.handleConnectionStateChange(" + oldState.name() + "," + newState.name() + ")");
-            }
-
-         // don't bother doing anything if the state hasn't changed
-         if (oldState.equals(newState))
-            {
-            return;
-            }
-
-         if (SerialDeviceConnectionState.SCANNING.equals(newState))
-            {
-            SwingUtilities.invokeLater(setStageForIsScanningRunnable);
-            }
-         else if (SerialDeviceConnectionState.CONNECTED.equals(newState))
-            {
-            SwingUtilities.invokeLater(setStageForIsConnectedRunnable);
-
-            // start the data acquisition executor
-            scheduledFuture = dataAcquisitionExecutorService.scheduleAtFixedRate(headsUpDisplayController, 0, 1, TimeUnit.SECONDS);
-            }
-         else
-            {
-            SwingUtilities.invokeLater(setStageForIsDisconnectedRunnable);
-
-            // turn off the data acquisition executor
-            if (scheduledFuture != null)
-               {
-               try
-                  {
-                  scheduledFuture.cancel(false);
-                  dataAcquisitionExecutorService.shutdownNow();
-                  LOG.debug("HeadsUpDisplay$SensorBoardConnectionEventListener.handleConnectionStateChange(): Successfully shut down data acquisition executor.");
-                  }
-               catch (Exception e)
-                  {
-                  LOG.debug("HeadsUpDisplay$SensorBoardConnectionEventListener.handleConnectionStateChange(): Exception caught while trying to shut down the data acquisition executor", e);
-                  }
-               }
-            }
          }
       }
    }

@@ -2,11 +2,13 @@ package org.chargecar.sensorboard.serial.proxy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.sensorboard.SensorBoardDataImpl;
+import org.chargecar.sensorboard.Speed;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-final class GetSpeedCommandStrategy extends ChargeCarSerialDeviceReturnValueCommandStrategy<Integer>
+final class GetSpeedCommandStrategy extends ChargeCarSerialDeviceReturnValueCommandStrategy<Speed>
    {
    private static final Log LOG = LogFactory.getLog(GetSpeedCommandStrategy.class);
 
@@ -36,7 +38,7 @@ final class GetSpeedCommandStrategy extends ChargeCarSerialDeviceReturnValueComm
       return command.clone();
       }
 
-   protected Integer convertResponseHelper(final String[] values)
+   protected Speed convertResponseHelper(final String[] values)
       {
       Integer speed = null;
       try
@@ -47,11 +49,64 @@ final class GetSpeedCommandStrategy extends ChargeCarSerialDeviceReturnValueComm
          {
          LOG.error("GetSpeedCommandStrategy.convertResponseHelper(): NumberFormatException while converting [" + values[0] + "] to an int.  Returning [" + speed + "] instead.", e);
          }
-      return speed;
+      return new SpeedImpl(speed);
       }
 
    protected int getNumberOfExpectedValuesInResponse()
       {
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
+      }
+
+   private final class SpeedImpl extends SensorBoardDataImpl implements Speed
+      {
+      private final Integer speed;
+
+      private SpeedImpl(final Integer speed)
+         {
+         this.speed = speed;
+         }
+
+      public Integer getSpeed()
+         {
+         return speed;
+         }
+
+      @Override
+      public boolean equals(final Object o)
+         {
+         if (this == o)
+            {
+            return true;
+            }
+         if (o == null || getClass() != o.getClass())
+            {
+            return false;
+            }
+
+         final SpeedImpl speed1 = (SpeedImpl)o;
+
+         if (speed != null ? !speed.equals(speed1.speed) : speed1.speed != null)
+            {
+            return false;
+            }
+
+         return true;
+         }
+
+      @Override
+      public int hashCode()
+         {
+         return speed != null ? speed.hashCode() : 0;
+         }
+
+      @Override
+      public String toString()
+         {
+         final StringBuilder sb = new StringBuilder();
+         sb.append("Speed");
+         sb.append("{speed=").append(speed);
+         sb.append('}');
+         return sb.toString();
+         }
       }
    }

@@ -1,6 +1,7 @@
 package org.chargecar.sensorboard.serial.proxy;
 
 import org.chargecar.sensorboard.PedalPositions;
+import org.chargecar.sensorboard.SensorBoardDataImpl;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -43,7 +44,7 @@ final class GetPedalPositionsCommandStrategy extends ChargeCarSerialDeviceReturn
       return NUM_EXPECTED_VALUES_IN_RESPONSE;
       }
 
-   private final class PedalPositionsImpl implements PedalPositions
+   private final class PedalPositionsImpl extends SensorBoardDataImpl implements PedalPositions
       {
       private final double throttlePosition;
       private final double regenBrakePosition;

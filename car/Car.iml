@@ -70,6 +70,19 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="Joda Time">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/joda-time/joda-time-1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://joda-time.sourceforge.net/api-release/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/joda-time/joda-time-1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="Log4j">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/log4j/log4j-1.2.15.jar!/" />

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.Currents;
 import org.chargecar.sensorboard.PedalPositions;
+import org.chargecar.sensorboard.Speed;
 import org.chargecar.sensorboard.Temperatures;
 import org.chargecar.sensorboard.Voltages;
 
@@ -149,7 +150,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
    /**
     * Returns the speed; returns <code>null</code> if an error occurred while trying to read the value.
     */
-   public Integer getSpeed()
+   public Speed getSpeed()
       {
       final SerialPortCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
 
@@ -240,11 +241,11 @@ public class SensorBoardProxy implements SerialDeviceProxy
          try
             {
             // for pings, we simply get the speed
-            final Integer speed = getSpeed();
+            final Speed speed = getSpeed();
 
             // if the speed is null, then we know we have a problem so disconnect (which probably won't work) and then
             // notify the listeners
-            if (speed == null)
+            if (speed == null && speed.getSpeed() != null)
                {
                try
                   {
