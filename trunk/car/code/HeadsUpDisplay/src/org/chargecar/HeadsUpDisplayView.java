@@ -13,7 +13,9 @@ final class HeadsUpDisplayView
 
    HeadsUpDisplayView(final SpeedAndOdometryView speedAndOdometryView)
       {
-      panel.add(speedAndOdometryView.getComponent());
+      panel.add(speedAndOdometryView.getSpeedGaugePanel());
+      panel.add(speedAndOdometryView.getOdometerGaugePanel());
+      panel.add(speedAndOdometryView.getTripOdometerGaugePanel());
       }
 
    Component getComponent()
