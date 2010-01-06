@@ -1,5 +1,12 @@
 package org.chargecar.sensorboard;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p>
  * <code>SpeedAndOdometryModel</code> keeps track of speed and odometry data.
@@ -9,15 +16,40 @@ package org.chargecar.sensorboard;
  */
 public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
    {
+   private static final Log LOG = LogFactory.getLog(SpeedAndOdometryModel.class);
+
    private static final double HOURS_PER_MILLISECOND = 1 / 3600000.0;
+   private static final File ODOMETER_DATA_STORE_FILE = new File("Odometer.txt");
+   private static final String ODOMETER_PROPERTY_KEY = "odometer";
+   private static final String TRIP_ODOMETER_PROPERTY_KEY = "trip-odometer";
 
    private final byte[] dataSynchronizationLock = new byte[0];
    private Speed previousSpeed = null;
-   private double odometer = 0.0;       // todo: initialize this with persistent value
-   private double tripOdometer = 0.0;   // todo: initialize this with persistent value
+   private double odometer = 0.0;
+   private double tripOdometer = 0.0;
+   private final Properties odometerDataStore = new Properties();
+
+   public SpeedAndOdometryModel()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         try
+            {
+            odometerDataStore.loadFromXML(new FileInputStream(ODOMETER_DATA_STORE_FILE));
+            odometer = Double.parseDouble(odometerDataStore.getProperty(ODOMETER_PROPERTY_KEY, "0.0"));
+            tripOdometer = Double.parseDouble(odometerDataStore.getProperty(TRIP_ODOMETER_PROPERTY_KEY, "0.0"));
+            }
+         catch (Exception e)
+            {
+            LOG.info("Failed to load the odometer data store, creating a new one...");
+            writeOdometerDataStore();
+            }
+         }
+      }
 
    public void update(final Speed speed)
       {
+
       if (speed != null)
          {
          final SpeedAndOdometryImpl speedAndOdometry;
@@ -37,11 +69,28 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             // save the current speed 
             previousSpeed = speed;
 
+            // update the data store
+            writeOdometerDataStore();
+
             speedAndOdometry = new SpeedAndOdometryImpl(speed, odometer, tripOdometer);
 
             // notify listeners
             publishEventToListeners(speedAndOdometry);
             }
+         }
+      }
+
+   private void writeOdometerDataStore()
+      {
+      try
+         {
+         odometerDataStore.setProperty(ODOMETER_PROPERTY_KEY, String.valueOf(odometer));
+         odometerDataStore.setProperty(TRIP_ODOMETER_PROPERTY_KEY, String.valueOf(tripOdometer));
+         odometerDataStore.storeToXML(new FileOutputStream(ODOMETER_DATA_STORE_FILE), "GENERATED FILE!  DO NOT EDIT!");
+         }
+      catch (Exception e)
+         {
+         LOG.error("Exception while trying to write to the odometer data store [" + ODOMETER_DATA_STORE_FILE.getAbsolutePath() + "]", e);
          }
       }
 
