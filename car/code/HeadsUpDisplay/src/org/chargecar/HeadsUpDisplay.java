@@ -28,6 +28,8 @@ import org.chargecar.gps.GPSEventListener;
 import org.chargecar.gps.nmea.NMEAReader;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
 import org.chargecar.sensorboard.SpeedAndOdometryView;
+import org.chargecar.sensorboard.TemperaturesModel;
+import org.chargecar.sensorboard.TemperaturesView;
 import org.chargecar.sensorboard.serial.proxy.SensorBoardSerialDeviceProxyCreator;
 import org.jdesktop.layout.GroupLayout;
 
@@ -108,7 +110,8 @@ public class HeadsUpDisplay
 
       // create the views
       final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
-      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(speedAndOdometryView);
+      final TemperaturesView temperaturesView = new TemperaturesView();
+      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(speedAndOdometryView, temperaturesView);
 
       // set up the runnables used to toggle the UI for scanning/connected/disconnected
       final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
@@ -119,10 +122,11 @@ public class HeadsUpDisplay
 
       // create the models
       final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
+      final TemperaturesModel temperaturesModel = new TemperaturesModel();
 
       // create and configure the SerialDeviceConnectivityManager and HeadsUpDisplayController
       final SerialDeviceConnectivityManager serialDeviceConnectivityManager = new SerialDeviceConnectivityManagerImpl(new SensorBoardSerialDeviceProxyCreator());
-      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(serialDeviceConnectivityManager, speedAndOdometryModel);
+      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(serialDeviceConnectivityManager, speedAndOdometryModel, temperaturesModel);
       serialDeviceConnectivityManager.addConnectionEventListener(headsUpDisplayController);
       serialDeviceConnectivityManager.addConnectionEventListener(
             new SerialDeviceConnectionEventListener()
@@ -152,6 +156,7 @@ public class HeadsUpDisplay
 
       // add the various views as listeners to the models
       speedAndOdometryModel.addEventListener(speedAndOdometryView);
+      temperaturesModel.addEventListener(temperaturesView);
 
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
