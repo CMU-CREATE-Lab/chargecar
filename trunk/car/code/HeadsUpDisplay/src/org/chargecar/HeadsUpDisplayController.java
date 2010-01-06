@@ -15,6 +15,7 @@ import org.chargecar.sensorboard.PedalPositions;
 import org.chargecar.sensorboard.Speed;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
 import org.chargecar.sensorboard.Temperatures;
+import org.chargecar.sensorboard.TemperaturesModel;
 import org.chargecar.sensorboard.Voltages;
 import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
 
@@ -36,11 +37,15 @@ final class HeadsUpDisplayController implements SerialDeviceConnectionEventListe
    private final ScheduledExecutorService dataAcquisitionExecutorService = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("SensorBoardExecutorThreadFactory"));
    private ScheduledFuture<?> scheduledFuture = null;
    private final SpeedAndOdometryModel speedAndOdometryModel;
+   private final TemperaturesModel temperaturesModel;
 
-   HeadsUpDisplayController(final SerialDeviceProxyProvider serialDeviceProxyProvider, final SpeedAndOdometryModel speedAndOdometryModel)
+   HeadsUpDisplayController(final SerialDeviceProxyProvider serialDeviceProxyProvider,
+                            final SpeedAndOdometryModel speedAndOdometryModel,
+                            final TemperaturesModel temperaturesModel)
       {
       this.serialDeviceProxyProvider = serialDeviceProxyProvider;
       this.speedAndOdometryModel = speedAndOdometryModel;
+      this.temperaturesModel = temperaturesModel;
       }
 
    public void handleConnectionStateChange(final SerialDeviceConnectionState oldState, final SerialDeviceConnectionState newState, final String serialPortName)
@@ -107,6 +112,7 @@ final class HeadsUpDisplayController implements SerialDeviceConnectionEventListe
 
             // update the models
             speedAndOdometryModel.update(speed);
+            temperaturesModel.update(temperatures);
             }
          }
       }

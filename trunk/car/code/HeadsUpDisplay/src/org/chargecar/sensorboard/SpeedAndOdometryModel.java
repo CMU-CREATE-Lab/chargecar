@@ -1,9 +1,5 @@
 package org.chargecar.sensorboard;
 
-import java.util.ArrayList;
-import java.util.List;
-import edu.cmu.ri.createlab.collections.Dataset;
-
 /**
  * <p>
  * <code>SpeedAndOdometryModel</code> keeps track of speed and odometry data.
@@ -11,24 +7,14 @@ import edu.cmu.ri.createlab.collections.Dataset;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class SpeedAndOdometryModel
+public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
    {
    private static final double HOURS_PER_MILLISECOND = 1 / 3600000.0;
 
    private final byte[] dataSynchronizationLock = new byte[0];
-   private List<SpeedEventListener> eventListeners = new ArrayList<SpeedEventListener>();
-   private final Dataset<Integer> speedsDataset = new Dataset<Integer>(60);
    private Speed previousSpeed = null;
    private double odometer = 0.0;       // todo: initialize this with persistent value
    private double tripOdometer = 0.0;   // todo: initialize this with persistent value
-
-   public void addEventListener(final SpeedEventListener listener)
-      {
-      if (listener != null)
-         {
-         eventListeners.add(listener);
-         }
-      }
 
    public void update(final Speed speed)
       {
@@ -38,7 +24,6 @@ public final class SpeedAndOdometryModel
          synchronized (dataSynchronizationLock)
             {
             final Integer mph = speed.getSpeed();
-            speedsDataset.append(mph);
 
             // if the previous speed isn't null, then calculate the odometry change
             if (previousSpeed != null)
@@ -53,15 +38,9 @@ public final class SpeedAndOdometryModel
             previousSpeed = speed;
 
             speedAndOdometry = new SpeedAndOdometryImpl(speed, odometer, tripOdometer);
-            }
 
-         // notify listeners
-         if (!eventListeners.isEmpty())
-            {
-            for (final SpeedEventListener listener : eventListeners)
-               {
-               listener.handleEvent(speedAndOdometry);
-               }
+            // notify listeners
+            publishEventToListeners(speedAndOdometry);
             }
          }
       }
