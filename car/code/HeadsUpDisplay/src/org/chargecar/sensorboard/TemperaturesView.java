@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 import javax.swing.JPanel;
-import org.chargecar.HeadsUpDisplay;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -12,8 +11,6 @@ import org.chargecar.HeadsUpDisplay;
 public final class TemperaturesView extends View<Temperatures>
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(TemperaturesView.class.getName());
-   private static final PropertyResourceBundle COMMON_RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplay.class.getName());
-   private static final String UNKNOWN_VALUE = COMMON_RESOURCES.getString("unknown-value");
 
    private final List<Gauge<Double>> motorGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_DEVICE_COUNT);
    private final List<Gauge<Double>> motorControllerGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT);
@@ -80,50 +77,43 @@ public final class TemperaturesView extends View<Temperatures>
       return outsideGauge;
       }
 
-   public void handleEvent(final Temperatures temperatures)
+   protected void handleEventInGUIThread(final Temperatures temperatures)
       {
-      runInGUIThread(
-            new Runnable()
+      if (temperatures != null)
+         {
+         for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
             {
-            public void run()
-               {
-               if (temperatures != null)
-                  {
-                  for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
-                     {
-                     motorGauges.get(i).setValue(temperatures.getMotorTemperature(i));
-                     }
-                  for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
-                     {
-                     motorControllerGauges.get(i).setValue(temperatures.getMotorControllerTemperature(i));
-                     }
-                  for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
-                     {
-                     auxiliaryGauges.get(i).setValue(temperatures.getAuxiliaryTemperature(i));
-                     }
-                  capacitorGauge.setValue(temperatures.getCapacitorTemperature());
-                  batteryGauge.setValue(temperatures.getBatteryTemperature());
-                  outsideGauge.setValue(temperatures.getOutsideTemperature());
-                  }
-               else
-                  {
-                  for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
-                     {
-                     motorGauges.get(i).setValue(UNKNOWN_VALUE);
-                     }
-                  for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
-                     {
-                     motorControllerGauges.get(i).setValue(UNKNOWN_VALUE);
-                     }
-                  for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
-                     {
-                     auxiliaryGauges.get(i).setValue(UNKNOWN_VALUE);
-                     }
-                  capacitorGauge.setValue(UNKNOWN_VALUE);
-                  batteryGauge.setValue(UNKNOWN_VALUE);
-                  outsideGauge.setValue(UNKNOWN_VALUE);
-                  }
-               }
-            });
+            motorGauges.get(i).setValue(temperatures.getMotorTemperature(i));
+            }
+         for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
+            {
+            motorControllerGauges.get(i).setValue(temperatures.getMotorControllerTemperature(i));
+            }
+         for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
+            {
+            auxiliaryGauges.get(i).setValue(temperatures.getAuxiliaryTemperature(i));
+            }
+         capacitorGauge.setValue(temperatures.getCapacitorTemperature());
+         batteryGauge.setValue(temperatures.getBatteryTemperature());
+         outsideGauge.setValue(temperatures.getOutsideTemperature());
+         }
+      else
+         {
+         for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
+            {
+            motorGauges.get(i).setValue(null);
+            }
+         for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
+            {
+            motorControllerGauges.get(i).setValue(null);
+            }
+         for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
+            {
+            auxiliaryGauges.get(i).setValue(null);
+            }
+         capacitorGauge.setValue(null);
+         batteryGauge.setValue(null);
+         outsideGauge.setValue(null);
+         }
       }
    }

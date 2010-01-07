@@ -7,6 +7,8 @@ public interface Voltages extends SensorBoardData
    {
    double getBatteryVoltage(int batteryId);
 
+   double getBatteryVoltage();
+
    double getCapacitorVoltage();
 
    double getAccessoryVoltage();

@@ -18,16 +18,15 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
    {
    private static final Log LOG = LogFactory.getLog(SpeedAndOdometryModel.class);
 
-   private static final double HOURS_PER_MILLISECOND = 1 / 3600000.0;
    private static final File ODOMETER_DATA_STORE_FILE = new File("Odometer.txt");
    private static final String ODOMETER_PROPERTY_KEY = "odometer";
    private static final String TRIP_ODOMETER_PROPERTY_KEY = "trip-odometer";
 
    private final byte[] dataSynchronizationLock = new byte[0];
+   private final Properties odometerDataStore = new Properties();
    private Speed previousSpeed = null;
    private double odometer = 0.0;
    private double tripOdometer = 0.0;
-   private final Properties odometerDataStore = new Properties();
 
    public SpeedAndOdometryModel()
       {
@@ -49,10 +48,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
 
    public void update(final Speed speed)
       {
-
       if (speed != null)
          {
-         final SpeedAndOdometryImpl speedAndOdometry;
          synchronized (dataSynchronizationLock)
             {
             final Integer mph = speed.getSpeed();
@@ -61,7 +58,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             if (previousSpeed != null)
                {
                final long elapsedMilliseconds = speed.getTimestampMilliseconds() - previousSpeed.getTimestampMilliseconds();
-               final double distanceTraveledInMiles = mph * HOURS_PER_MILLISECOND * elapsedMilliseconds;
+               final double distanceTraveledInMiles = mph * SensorBoardConstants.HOURS_PER_MILLISECOND * elapsedMilliseconds;
                odometer += distanceTraveledInMiles;
                tripOdometer += distanceTraveledInMiles;
                }
@@ -72,10 +69,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             // update the data store
             writeOdometerDataStore();
 
-            speedAndOdometry = new SpeedAndOdometryImpl(speed, odometer, tripOdometer);
-
             // notify listeners
-            publishEventToListeners(speedAndOdometry);
+            publishEventToListeners(new SpeedAndOdometryImpl(speed, odometer, tripOdometer));
             }
          }
       }
@@ -94,7 +89,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          }
       }
 
-   private static class SpeedAndOdometryImpl implements SpeedAndOdometry
+   private static final class SpeedAndOdometryImpl implements SpeedAndOdometry
       {
       private final Speed speed;
       private final double odometer;

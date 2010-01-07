@@ -12,11 +12,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.Currents;
 import org.chargecar.sensorboard.PedalPositions;
+import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.Speed;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
 import org.chargecar.sensorboard.Temperatures;
 import org.chargecar.sensorboard.TemperaturesModel;
 import org.chargecar.sensorboard.Voltages;
+import org.chargecar.sensorboard.VoltagesAndCurrents;
 import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
 
 /**
@@ -38,14 +40,17 @@ final class HeadsUpDisplayController implements SerialDeviceConnectionEventListe
    private ScheduledFuture<?> scheduledFuture = null;
    private final SpeedAndOdometryModel speedAndOdometryModel;
    private final TemperaturesModel temperaturesModel;
+   private final PowerModel powerModel;
 
    HeadsUpDisplayController(final SerialDeviceProxyProvider serialDeviceProxyProvider,
                             final SpeedAndOdometryModel speedAndOdometryModel,
-                            final TemperaturesModel temperaturesModel)
+                            final TemperaturesModel temperaturesModel,
+                            final PowerModel powerModel)
       {
       this.serialDeviceProxyProvider = serialDeviceProxyProvider;
       this.speedAndOdometryModel = speedAndOdometryModel;
       this.temperaturesModel = temperaturesModel;
+      this.powerModel = powerModel;
       }
 
    public void handleConnectionStateChange(final SerialDeviceConnectionState oldState, final SerialDeviceConnectionState newState, final String serialPortName)
@@ -101,19 +106,52 @@ final class HeadsUpDisplayController implements SerialDeviceConnectionEventListe
             final Currents currents = sensorBoardProxy.getCurrents();
             LOG.info(currents);
 
+            final Voltages voltages = sensorBoardProxy.getVoltages();
+            LOG.info(voltages);
+
+            final Boolean isCapacitorOverVoltage = sensorBoardProxy.isCapacitorOverVoltage();
+            LOG.info("isCapacitorOverVoltage = [" + isCapacitorOverVoltage + "]");
+
             final PedalPositions pedalPositions = sensorBoardProxy.getPedalPositions();
             LOG.info(pedalPositions);
 
             final Temperatures temperatures = sensorBoardProxy.getTemperatures();
             LOG.info(temperatures);
 
-            final Voltages voltages = sensorBoardProxy.getVoltages();
-            LOG.info(voltages);
-
             // update the models
             speedAndOdometryModel.update(speed);
             temperaturesModel.update(temperatures);
+            powerModel.update(new VoltagesAndCurrentsImpl(voltages, currents, isCapacitorOverVoltage));
             }
+         }
+      }
+
+   private static final class VoltagesAndCurrentsImpl implements VoltagesAndCurrents
+      {
+      private final Voltages voltages;
+      private final Currents currents;
+      private final boolean isCapacitorOverVoltage;
+
+      private VoltagesAndCurrentsImpl(final Voltages voltages, final Currents currents, final boolean isCapacitorOverVoltage)
+         {
+         this.voltages = voltages;
+         this.currents = currents;
+         this.isCapacitorOverVoltage = isCapacitorOverVoltage;
+         }
+
+      public Voltages getVoltages()
+         {
+         return voltages;
+         }
+
+      public Currents getCurrents()
+         {
+         return currents;
+         }
+
+      public boolean isCapacitorOverVoltage()
+         {
+         return isCapacitorOverVoltage;
          }
       }
    }
