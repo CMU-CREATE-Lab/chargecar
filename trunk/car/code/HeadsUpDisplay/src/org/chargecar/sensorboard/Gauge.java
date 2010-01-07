@@ -2,6 +2,7 @@ package org.chargecar.sensorboard;
 
 import java.awt.Color;
 import java.util.PropertyResourceBundle;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
@@ -14,7 +15,7 @@ import org.jdesktop.layout.GroupLayout;
 final class Gauge<T> extends JPanel
    {
    private static final PropertyResourceBundle COMMON_RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplay.class.getName());
-   private static final String UNKNOWN_VALUE = COMMON_RESOURCES.getString("unknown-value");
+   private static final String UNKNOWN_VALUE = "?";
 
    private final JLabel value;
    private final String stringFormat;
@@ -36,13 +37,14 @@ final class Gauge<T> extends JPanel
             layout.createSequentialGroup()
                   .add(value)
                   .add(label));
+
+      this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       }
 
-   void setValue(final String s)
-      {
-      value.setText(s);
-      }
-
+   /**
+    * Sets the gauge's value using the string format given to the constructor.  Assumes it is being called in the GUI
+    * thread.
+    */
    void setValue(final T s)
       {
       if (s != null)
@@ -51,6 +53,7 @@ final class Gauge<T> extends JPanel
          }
       else
          {
+         // TODO: set this to zero, but color it and/or the label red or somesuch
          value.setText(UNKNOWN_VALUE);
          }
       }

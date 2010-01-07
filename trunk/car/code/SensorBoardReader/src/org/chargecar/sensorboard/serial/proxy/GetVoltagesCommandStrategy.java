@@ -81,6 +81,11 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
          throw new IllegalArgumentException("Invalid battery ID [" + batteryId + "], value must be a positive integer less than [" + SensorBoardConstants.BATTERY_DEVICE_COUNT + "]");
          }
 
+      public double getBatteryVoltage()
+         {
+         return batteryVoltages[0] + batteryVoltages[1] + batteryVoltages[2] + batteryVoltages[3];
+         }
+
       public double getCapacitorVoltage()
          {
          return capacitorVoltage;

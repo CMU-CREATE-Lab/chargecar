@@ -11,15 +11,27 @@ import javax.swing.SwingUtilities;
  */
 abstract class View<T> implements EventListener<T>
    {
-   protected final void runInGUIThread(final Runnable runnable)
+   public final void handleEvent(final T eventData)
       {
       if (SwingUtilities.isEventDispatchThread())
          {
-         runnable.run();
+         handleEventInGUIThread(eventData);
          }
       else
          {
-         SwingUtilities.invokeLater(runnable);
+         SwingUtilities.invokeLater(
+               new Runnable()
+               {
+               public void run()
+                  {
+                  handleEventInGUIThread(eventData);
+                  }
+               });
          }
       }
+
+   /**
+    * Method for handling the event, guaranteed to run in the GUI thread.
+    */
+   protected abstract void handleEventInGUIThread(final T eventData);
    }
