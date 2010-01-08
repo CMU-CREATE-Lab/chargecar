@@ -181,6 +181,7 @@
             <fileset file="${log4j.jar}"/>
             <fileset file="${rxtx.jar}"/>
             <fileset file="${rxtx-macos.native}"/>
+            <fileset file="${rxtx-linux.native}"/>
             <additional-files-to-copy/>
          </copy>
 
