@@ -1,5 +1,8 @@
 package org.chargecar.sensorboard;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p>
  * <code>PowerModel</code> keeps track of voltage, current, and power data.
@@ -9,6 +12,8 @@ package org.chargecar.sensorboard;
  */
 public final class PowerModel extends Model<VoltagesAndCurrents, Power>
    {
+   private static final Log LOG = LogFactory.getLog(PowerModel.class);
+
    private final byte[] dataSynchronizationLock = new byte[0];
    private VoltagesAndCurrents previousVoltagesAndCurrents = null;
    private long previousTimestamp = 0;
@@ -23,22 +28,32 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
          synchronized (dataSynchronizationLock)
             {
             // if the previous voltages and currents isn't null, then calculate the power change
-            long currentTimestamp = 0;
+            long currentTimestamp = System.currentTimeMillis();
             if (previousVoltagesAndCurrents != null && voltagesAndCurrents.getVoltages() != null && voltagesAndCurrents.getCurrents() != null)
                {
                // compute the timestamp by taking the average--semi-lame, but what else can we do?
                currentTimestamp = (voltagesAndCurrents.getVoltages().getTimestampMilliseconds() + voltagesAndCurrents.getCurrents().getTimestampMilliseconds()) / 2;
                final long elapsedMilliseconds = currentTimestamp - previousTimestamp;
                final double elapsedKiloHours = elapsedMilliseconds * SensorBoardConstants.HOURS_PER_MILLISECOND / 1000;
-               batteryPowerEquation.addKilowattHours(voltagesAndCurrents.getVoltages().getBatteryVoltage() *
-                                                     voltagesAndCurrents.getCurrents().getBatteryCurrent() *
-                                                     elapsedKiloHours);
-               capacitorPowerEquation.addKilowattHours(voltagesAndCurrents.getVoltages().getCapacitorVoltage() *
-                                                       voltagesAndCurrents.getCurrents().getCapacitorCurrent() *
-                                                       elapsedKiloHours);
-               accessoryPowerEquation.addKilowattHours(voltagesAndCurrents.getVoltages().getAccessoryVoltage() *
-                                                       voltagesAndCurrents.getCurrents().getAccessoryCurrent() *
-                                                       elapsedKiloHours);
+               final double batteryKwh = voltagesAndCurrents.getVoltages().getBatteryVoltage() *
+                                         voltagesAndCurrents.getCurrents().getBatteryCurrent() *
+                                         elapsedKiloHours;
+               final double capacitorKwh = voltagesAndCurrents.getVoltages().getCapacitorVoltage() *
+                                           voltagesAndCurrents.getCurrents().getCapacitorCurrent() *
+                                           elapsedKiloHours;
+               final double accessoryKwh = voltagesAndCurrents.getVoltages().getAccessoryVoltage() *
+                                           voltagesAndCurrents.getCurrents().getAccessoryCurrent() *
+                                           elapsedKiloHours;
+               if (LOG.isInfoEnabled())
+                  {
+                  LOG.info("PowerModel.update(): elapsedMilliseconds = [" + elapsedMilliseconds + "]");
+                  LOG.info("PowerModel.update(): batteryKwh = [" + batteryKwh + "]");
+                  LOG.info("PowerModel.update(): capacitorKwh = [" + capacitorKwh + "]");
+                  LOG.info("PowerModel.update(): accessoryKwh = [" + accessoryKwh + "]");
+                  }
+               batteryPowerEquation.addKilowattHours(batteryKwh);
+               capacitorPowerEquation.addKilowattHours(capacitorKwh);
+               accessoryPowerEquation.addKilowattHours(accessoryKwh);
                }
 
             // save the voltages and currents and timestamp
