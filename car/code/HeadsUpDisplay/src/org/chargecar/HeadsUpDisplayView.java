@@ -1,5 +1,6 @@
 package org.chargecar;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.PropertyResourceBundle;
 import javax.swing.JLabel;
@@ -23,6 +24,8 @@ final class HeadsUpDisplayView
       {
       final GroupLayout layout = new GroupLayout(panel);
       panel.setLayout(layout);
+      panel.setBackground(Color.WHITE);
+
       layout.setAutocreateGaps(true);
 
       final JLabel temperatureLabel = GUIConstants.createLabel(RESOURCES.getString("label.temperature"), GUIConstants.FONT_NORMAL);

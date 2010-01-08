@@ -106,6 +106,7 @@ public class HeadsUpDisplay
       final JPanel panel = new JPanel();
       panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
       panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+      panel.setBackground(Color.WHITE);
 
       // add the panel to the JFrame
       jFrame.add(panel);
