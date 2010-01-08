@@ -1,12 +1,10 @@
 package org.chargecar.sensorboard;
 
 import java.awt.Color;
-import java.util.PropertyResourceBundle;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
-import org.chargecar.HeadsUpDisplay;
 import org.jdesktop.layout.GroupLayout;
 
 /**
@@ -14,7 +12,6 @@ import org.jdesktop.layout.GroupLayout;
  */
 final class Gauge<T> extends JPanel
    {
-   private static final PropertyResourceBundle COMMON_RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplay.class.getName());
    private static final String UNKNOWN_VALUE = "?";
 
    private final JLabel value;
@@ -38,7 +35,7 @@ final class Gauge<T> extends JPanel
                   .add(value)
                   .add(label));
 
-      this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+      this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
       }
 
    /**

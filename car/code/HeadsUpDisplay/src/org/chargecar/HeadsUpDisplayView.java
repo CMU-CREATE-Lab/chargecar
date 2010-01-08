@@ -25,12 +25,12 @@ final class HeadsUpDisplayView
       panel.setLayout(layout);
       layout.setAutocreateGaps(true);
 
-      final JLabel temperatureLabel = GUIConstants.createLabel(RESOURCES.getString("label.temperature"), GUIConstants.FONT_MEDIUM);
-      final JLabel currentLabel = GUIConstants.createLabel(RESOURCES.getString("label.current"), GUIConstants.FONT_MEDIUM);
-      final JLabel voltageLabel = GUIConstants.createLabel(RESOURCES.getString("label.voltage"), GUIConstants.FONT_MEDIUM);
-      final JLabel accessoryPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.accessory-power"), GUIConstants.FONT_MEDIUM);
-      final JLabel batteryPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.battery-power"), GUIConstants.FONT_MEDIUM);
-      final JLabel capacitorPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.capacitor-power"), GUIConstants.FONT_MEDIUM);
+      final JLabel temperatureLabel = GUIConstants.createLabel(RESOURCES.getString("label.temperature"), GUIConstants.FONT_NORMAL);
+      final JLabel currentLabel = GUIConstants.createLabel(RESOURCES.getString("label.current"), GUIConstants.FONT_NORMAL);
+      final JLabel voltageLabel = GUIConstants.createLabel(RESOURCES.getString("label.voltage"), GUIConstants.FONT_NORMAL);
+      final JLabel accessoryPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.accessory-power"), GUIConstants.FONT_NORMAL);
+      final JLabel batteryPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.battery-power"), GUIConstants.FONT_NORMAL);
+      final JLabel capacitorPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.capacitor-power"), GUIConstants.FONT_NORMAL);
       final JLabel accessoryEquationEquals = GUIConstants.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_LARGE);
       final JLabel accessoryEquationPlus = GUIConstants.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_LARGE);
       final JLabel batteryEquationEquals = GUIConstants.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_LARGE);
