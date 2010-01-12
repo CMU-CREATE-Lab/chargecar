@@ -51,7 +51,7 @@ final class GetPedalPositionsCommandStrategy extends ChargeCarSerialDeviceReturn
 
       private PedalPositionsImpl(final String[] rawValues)
          {
-         throttlePosition = Math.max(0, 0.98 * convertToDouble(rawValues[0]) - 50);
+         throttlePosition = Math.max(0, 0.495 * convertToDouble(rawValues[0]) - 2.475);
          regenBrakePosition = Math.max(0, 0.65 * convertToDouble(rawValues[1]) - 33.3);
          }
 
