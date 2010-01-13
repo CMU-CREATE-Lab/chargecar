@@ -17,12 +17,12 @@ public final class PowerView extends View<Power>
    private static final String POWER_STRING_FORMAT = "%06.1f";
 
    private final Gauge<Double> accessoryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.accessory"), CURRENT_STRING_FORMAT);
-   private final Gauge<Double> batteryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.battery"), CURRENT_STRING_FORMAT);
+   private final Gauge<Double> batteryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.batteries"), CURRENT_STRING_FORMAT);
    private final Gauge<Double> capacitorCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.capacitor"), CURRENT_STRING_FORMAT);
    private final List<Gauge<Double>> motorCurrentGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_DEVICE_COUNT);
 
    private final Gauge<Double> accessoryVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.accessory"), VOLTAGE_STRING_FORMAT);
-   private final Gauge<Double> batteryVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.battery"), VOLTAGE_STRING_FORMAT);
+   private final Gauge<Double> batteryVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.batteries"), VOLTAGE_STRING_FORMAT);
    private final Gauge<Double> capacitorVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.capacitor"), VOLTAGE_STRING_FORMAT);
    private final List<Gauge<Double>> batteryVoltageGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.BATTERY_DEVICE_COUNT);
 

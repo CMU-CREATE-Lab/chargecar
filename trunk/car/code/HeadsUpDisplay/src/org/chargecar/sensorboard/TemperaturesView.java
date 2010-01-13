@@ -16,7 +16,7 @@ public final class TemperaturesView extends View<Temperatures>
    private final List<Gauge<Double>> motorControllerGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT);
    private final List<Gauge<Double>> auxiliaryGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.AUXILIARY_DEVICE_COUNT);
    private final Gauge<Double> capacitorGauge = new Gauge<Double>(RESOURCES.getString("label.capacitor"), "%05.1f");
-   private final Gauge<Double> batteryGauge = new Gauge<Double>(RESOURCES.getString("label.battery"), "%05.1f");
+   private final Gauge<Double> batteryGauge = new Gauge<Double>(RESOURCES.getString("label.batteries"), "%05.1f");
    private final Gauge<Double> outsideGauge = new Gauge<Double>(RESOURCES.getString("label.outside"), "%05.1f");
 
    public TemperaturesView()
