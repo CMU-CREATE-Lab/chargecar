@@ -2,13 +2,13 @@ package org.chargecar;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.PropertyResourceBundle;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -74,7 +74,21 @@ public class HeadsUpDisplay
             {
             public void run()
                {
-               new HeadsUpDisplay(gpsReader);
+               final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+               final GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+               try
+                  {
+                  new HeadsUpDisplay(graphicsDevice, gpsReader);
+                  }
+               finally
+                  {
+                  // see if we can use full-screen mode
+                  if (graphicsDevice.isFullScreenSupported())
+                     {
+                     // Exit full-screen mode
+                     graphicsDevice.setFullScreenWindow(null);
+                     }
+                  }
                }
             });
       }
@@ -83,7 +97,7 @@ public class HeadsUpDisplay
    private final SetStageRunnable setStageForIsConnectedRunnable;
    private final SetStageRunnable setStageForIsDisconnectedRunnable;
 
-   private HeadsUpDisplay(final NMEAReader gpsReader)
+   private HeadsUpDisplay(final GraphicsDevice graphicsDevice, final NMEAReader gpsReader)
       {
       gpsReader.addEventListener(
             new GPSEventListener()
@@ -100,16 +114,14 @@ public class HeadsUpDisplay
             });
 
       // create and configure the GUI
-      final JFrame jFrame = new JFrame(APPLICATION_NAME);
-
-      // create the main panel for the JFrame
       final JPanel panel = new JPanel();
-      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-      panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       panel.setBackground(Color.WHITE);
+      final JFrame jFrame = new JFrame(APPLICATION_NAME);
+      jFrame.setUndecorated(true);
+      jFrame.setContentPane(panel);
 
-      // add the panel to the JFrame
-      jFrame.add(panel);
+      // Enter full-screen mode
+      graphicsDevice.setFullScreenWindow(jFrame);
 
       // create the views
       final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
@@ -120,7 +132,7 @@ public class HeadsUpDisplay
       // set up the runnables used to toggle the UI for scanning/connected/disconnected
       final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
       setStageForIsScanningRunnable = new SetStageRunnable(panel, spinner);
-      setStageForIsConnectedRunnable = new SetStageRunnable(panel, headsUpDisplayView.getComponent());
+      setStageForIsConnectedRunnable = new SetStageRunnable(panel, headsUpDisplayView);
       setStageForIsDisconnectedRunnable = new SetStageRunnable(panel, new JLabel(RESOURCES.getString("label.disconnected")));
       setStageForIsScanningRunnable.run();
 
@@ -167,7 +179,7 @@ public class HeadsUpDisplay
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       jFrame.setBackground(Color.WHITE);
-      jFrame.setResizable(true);
+      jFrame.setResizable(false);
       jFrame.addWindowListener(
             new WindowAdapter()
             {
@@ -213,6 +225,9 @@ public class HeadsUpDisplay
 
                         public void finished()
                            {
+                           // Exit full-screen mode
+                           graphicsDevice.setFullScreenWindow(null);
+
                            System.exit(0);
                            }
                         };
@@ -220,30 +235,29 @@ public class HeadsUpDisplay
                   }
                }
             });
-      jFrame.pack();
-      jFrame.setLocationRelativeTo(null);// center the window on the screen
+
       jFrame.setVisible(true);
       }
 
    private class SetStageRunnable implements Runnable
       {
-      private final JPanel parentPanel;
+      private final JPanel parentContainer;
       private final Component component;
 
       private SetStageRunnable(final JPanel parentPanel, final Component component)
          {
-         this.parentPanel = parentPanel;
+         this.parentContainer = parentPanel;
          this.component = component;
          }
 
       public void run()
          {
-         parentPanel.removeAll();
+         parentContainer.removeAll();
 
-         final GroupLayout layout = new GroupLayout(parentPanel);
+         final GroupLayout layout = new GroupLayout(parentContainer);
          final Component leftGlue = Box.createGlue();
          final Component rightGlue = Box.createGlue();
-         parentPanel.setLayout(layout);
+         parentContainer.setLayout(layout);
          layout.setHorizontalGroup(
                layout.createSequentialGroup()
                      .add(leftGlue)

@@ -1,7 +1,6 @@
 package org.chargecar;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.util.PropertyResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,17 +13,15 @@ import org.jdesktop.layout.GroupLayout;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-final class HeadsUpDisplayView
+final class HeadsUpDisplayView extends JPanel
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplayView.class.getName());
 
-   private final JPanel panel = new JPanel();
-
    HeadsUpDisplayView(final SpeedAndOdometryView speedAndOdometryView, final TemperaturesView temperaturesView, final PowerView powerView)
       {
-      final GroupLayout layout = new GroupLayout(panel);
-      panel.setLayout(layout);
-      panel.setBackground(Color.WHITE);
+      final GroupLayout layout = new GroupLayout(this);
+      this.setLayout(layout);
+      this.setBackground(Color.WHITE);
 
       layout.setAutocreateGaps(true);
 
@@ -172,10 +169,5 @@ final class HeadsUpDisplayView
                   .add(powerView.getAccessoryPowerRegenGauge())
             )
       );
-      }
-
-   Component getComponent()
-      {
-      return panel;
       }
    }
