@@ -14,7 +14,7 @@ public final class PowerView extends View<Power>
 
    private static final String CURRENT_STRING_FORMAT = "%+07.1f";
    private static final String VOLTAGE_STRING_FORMAT = "%04.1f";
-   private static final String POWER_STRING_FORMAT = "%+06.1f";
+   private static final String POWER_STRING_FORMAT = "%06.1f";
 
    private final Gauge<Double> accessoryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.accessory"), CURRENT_STRING_FORMAT);
    private final Gauge<Double> batteryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.battery"), CURRENT_STRING_FORMAT);
