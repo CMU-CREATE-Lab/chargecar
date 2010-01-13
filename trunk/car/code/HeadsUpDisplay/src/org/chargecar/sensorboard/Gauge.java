@@ -20,8 +20,8 @@ final class Gauge<T> extends JPanel
    Gauge(final String labelText, final String stringFormat)
       {
       this.stringFormat = stringFormat;
-      final JLabel label = GUIConstants.createLabel(labelText, GUIConstants.FONT_SMALL);
-      this.value = GUIConstants.createLabel("", GUIConstants.FONT_LARGE);
+      final JLabel label = GUIConstants.createLabel(labelText, GUIConstants.FONT_NORMAL);
+      this.value = GUIConstants.createLabel("", GUIConstants.FONT_MEDIUM_LARGE);
       final GroupLayout layout = new GroupLayout(this);
       this.setLayout(layout);
       this.setBackground(Color.WHITE);
@@ -35,7 +35,7 @@ final class Gauge<T> extends JPanel
                   .add(value)
                   .add(label));
 
-      this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+      this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       }
 
    /**
