@@ -245,7 +245,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
 
             // if the speed is null, then we know we have a problem so disconnect (which probably won't work) and then
             // notify the listeners
-            if (speed == null && speed.getSpeed() != null)
+            if (speed == null || speed.getSpeed() == null)
                {
                try
                   {
