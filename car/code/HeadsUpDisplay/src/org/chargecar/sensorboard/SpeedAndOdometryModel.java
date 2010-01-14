@@ -20,13 +20,15 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
 
    private static final File ODOMETER_DATA_STORE_FILE = new File("Odometer.txt");
    private static final String ODOMETER_PROPERTY_KEY = "odometer";
-   private static final String TRIP_ODOMETER_PROPERTY_KEY = "trip-odometer";
+   private static final String TRIP_ODOMETER_1_PROPERTY_KEY = "trip-odometer-1";
+   private static final String TRIP_ODOMETER_2_PROPERTY_KEY = "trip-odometer-2";
 
    private final byte[] dataSynchronizationLock = new byte[0];
    private final Properties odometerDataStore = new Properties();
    private Speed previousSpeed = null;
    private double odometer = 0.0;
-   private double tripOdometer = 0.0;
+   private double tripOdometer1 = 0.0;
+   private double tripOdometer2 = 0.0;
 
    public SpeedAndOdometryModel()
       {
@@ -36,7 +38,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             {
             odometerDataStore.loadFromXML(new FileInputStream(ODOMETER_DATA_STORE_FILE));
             odometer = Double.parseDouble(odometerDataStore.getProperty(ODOMETER_PROPERTY_KEY, "0.0"));
-            tripOdometer = Double.parseDouble(odometerDataStore.getProperty(TRIP_ODOMETER_PROPERTY_KEY, "0.0"));
+            tripOdometer1 = Double.parseDouble(odometerDataStore.getProperty(TRIP_ODOMETER_1_PROPERTY_KEY, "0.0"));
+            tripOdometer2 = Double.parseDouble(odometerDataStore.getProperty(TRIP_ODOMETER_2_PROPERTY_KEY, "0.0"));
             }
          catch (Exception e)
             {
@@ -60,7 +63,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
                final long elapsedMilliseconds = speed.getTimestampMilliseconds() - previousSpeed.getTimestampMilliseconds();
                final double distanceTraveledInMiles = mph * SensorBoardConstants.HOURS_PER_MILLISECOND * elapsedMilliseconds;
                odometer += distanceTraveledInMiles;
-               tripOdometer += distanceTraveledInMiles;
+               tripOdometer1 += distanceTraveledInMiles;
+               tripOdometer2 += distanceTraveledInMiles;
                }
 
             // save the current speed 
@@ -70,7 +74,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             writeOdometerDataStore();
 
             // notify listeners
-            publishEventToListeners(new SpeedAndOdometryImpl(speed, odometer, tripOdometer));
+            publishEventToListeners(new SpeedAndOdometryImpl(speed, odometer, tripOdometer1, tripOdometer2));
             }
          }
       }
@@ -80,7 +84,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
       try
          {
          odometerDataStore.setProperty(ODOMETER_PROPERTY_KEY, String.valueOf(odometer));
-         odometerDataStore.setProperty(TRIP_ODOMETER_PROPERTY_KEY, String.valueOf(tripOdometer));
+         odometerDataStore.setProperty(TRIP_ODOMETER_1_PROPERTY_KEY, String.valueOf(tripOdometer1));
+         odometerDataStore.setProperty(TRIP_ODOMETER_2_PROPERTY_KEY, String.valueOf(tripOdometer2));
          odometerDataStore.storeToXML(new FileOutputStream(ODOMETER_DATA_STORE_FILE), "GENERATED FILE!  DO NOT EDIT!");
          }
       catch (Exception e)
@@ -93,13 +98,15 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
       {
       private final Speed speed;
       private final double odometer;
-      private final double tripOdometer;
+      private final double tripOdometer1;
+      private final double tripOdometer2;
 
-      private SpeedAndOdometryImpl(final Speed speed, final double odometer, final double tripOdometer)
+      private SpeedAndOdometryImpl(final Speed speed, final double odometer, final double tripOdometer1, final double tripOdometer2)
          {
          this.speed = speed;
          this.odometer = odometer;
-         this.tripOdometer = tripOdometer;
+         this.tripOdometer1 = tripOdometer1;
+         this.tripOdometer2 = tripOdometer2;
          }
 
       public long getTimestampMilliseconds()
@@ -117,9 +124,14 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          return odometer;
          }
 
-      public double getTripOdometer()
+      public double getTripOdometer1()
          {
-         return tripOdometer;
+         return tripOdometer1;
+         }
+
+      public double getTripOdometer2()
+         {
+         return tripOdometer2;
          }
 
       @Override
@@ -140,7 +152,11 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             {
             return false;
             }
-         if (Double.compare(that.tripOdometer, tripOdometer) != 0)
+         if (Double.compare(that.tripOdometer1, tripOdometer1) != 0)
+            {
+            return false;
+            }
+         if (Double.compare(that.tripOdometer2, tripOdometer2) != 0)
             {
             return false;
             }
@@ -160,7 +176,9 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          result = speed != null ? speed.hashCode() : 0;
          temp = odometer != +0.0d ? Double.doubleToLongBits(odometer) : 0L;
          result = 31 * result + (int)(temp ^ (temp >>> 32));
-         temp = tripOdometer != +0.0d ? Double.doubleToLongBits(tripOdometer) : 0L;
+         temp = tripOdometer1 != +0.0d ? Double.doubleToLongBits(tripOdometer1) : 0L;
+         result = 31 * result + (int)(temp ^ (temp >>> 32));
+         temp = tripOdometer2 != +0.0d ? Double.doubleToLongBits(tripOdometer2) : 0L;
          result = 31 * result + (int)(temp ^ (temp >>> 32));
          return result;
          }
@@ -172,7 +190,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          sb.append("SpeedAndOdometry");
          sb.append("{speed=").append(speed);
          sb.append(", odometer=").append(odometer);
-         sb.append(", tripOdometer=").append(tripOdometer);
+         sb.append(", tripOdometer1=").append(tripOdometer1);
+         sb.append(", tripOdometer2=").append(tripOdometer2);
          sb.append('}');
          return sb.toString();
          }
