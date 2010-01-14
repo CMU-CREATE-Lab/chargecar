@@ -31,8 +31,6 @@ final class HeadsUpDisplayView extends JPanel
       final JLabel accessoryPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.accessory-power"), GUIConstants.FONT_MEDIUM);
       final JLabel batteryPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.battery-power"), GUIConstants.FONT_MEDIUM);
       final JLabel capacitorPowerLabel = GUIConstants.createLabel(RESOURCES.getString("label.capacitor-power"), GUIConstants.FONT_MEDIUM);
-      final JLabel accessoryEquationEquals = GUIConstants.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_LARGE);
-      final JLabel accessoryEquationPlus = GUIConstants.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_LARGE);
       final JLabel batteryEquationEquals = GUIConstants.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_LARGE);
       final JLabel batteryEquationPlus = GUIConstants.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_LARGE);
       final JLabel capacitorEquationEquals = GUIConstants.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_LARGE);
@@ -64,24 +62,22 @@ final class HeadsUpDisplayView extends JPanel
                         .add(powerView.getBatteryVoltageGauge(0))
                         .add(batteryEquationEquals)
                         .add(capacitorEquationEquals)
-                        .add(accessoryEquationEquals)
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
-                        .add(speedAndOdometryView.getTripOdometerGauge())
+                        .add(speedAndOdometryView.getTripOdometer1Gauge())
                         .add(temperaturesView.getMotorGauge(1))
                         .add(powerView.getMotorCurrentGauge(1))
                         .add(powerView.getBatteryVoltageGauge(1))
                         .add(powerView.getBatteryPowerUsedGauge())
                         .add(powerView.getCapacitorPowerUsedGauge())
-                        .add(powerView.getAccessoryPowerUsedGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(speedAndOdometryView.getTripOdometer2Gauge())
                         .add(temperaturesView.getMotorGauge(2))
                         .add(powerView.getMotorCurrentGauge(2))
                         .add(powerView.getBatteryVoltageGauge(2))
                         .add(batteryEquationPlus)
                         .add(capacitorEquationPlus)
-                        .add(accessoryEquationPlus)
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                         .add(temperaturesView.getMotorGauge(3))
@@ -89,7 +85,6 @@ final class HeadsUpDisplayView extends JPanel
                         .add(powerView.getBatteryVoltageGauge(3))
                         .add(powerView.getBatteryPowerRegenGauge())
                         .add(powerView.getCapacitorPowerRegenGauge())
-                        .add(powerView.getAccessoryPowerRegenGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                         .add(temperaturesView.getCapacitorGauge())
@@ -110,7 +105,8 @@ final class HeadsUpDisplayView extends JPanel
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                         .add(speedAndOdometryView.getSpeedGauge())
                         .add(speedAndOdometryView.getOdometerGauge())
-                        .add(speedAndOdometryView.getTripOdometerGauge())
+                        .add(speedAndOdometryView.getTripOdometer1Gauge())
+                        .add(speedAndOdometryView.getTripOdometer2Gauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                         .add(temperatureLabel)
@@ -163,10 +159,6 @@ final class HeadsUpDisplayView extends JPanel
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                   .add(accessoryPowerLabel)
                   .add(powerView.getAccessoryPowerTotalGauge())
-                  .add(accessoryEquationEquals)
-                  .add(powerView.getAccessoryPowerUsedGauge())
-                  .add(accessoryEquationPlus)
-                  .add(powerView.getAccessoryPowerRegenGauge())
             )
       );
       }

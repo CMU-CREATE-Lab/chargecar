@@ -7,5 +7,7 @@ public interface SpeedAndOdometry extends Speed
    {
    double getOdometer();
 
-   double getTripOdometer();
+   double getTripOdometer1();
+
+   double getTripOdometer2();
    }
