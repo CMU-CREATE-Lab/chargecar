@@ -5,13 +5,13 @@ package org.chargecar.sensorboard;
  */
 public interface Currents extends SensorBoardData
    {
-   double getBatteryCurrent();
+   Double getBatteryCurrent();
 
-   double getCapacitorCurrent();
+   Double getCapacitorCurrent();
 
-   double getAccessoryCurrent();
+   Double getAccessoryCurrent();
 
-   double getMotorCurrent(int motorId);
+   Double getMotorCurrent(int motorId);
 
-   double getAuxiliaryCurrent(int auxiliaryDeviceId);
+   Double getAuxiliaryCurrent(int auxiliaryDeviceId);
    }

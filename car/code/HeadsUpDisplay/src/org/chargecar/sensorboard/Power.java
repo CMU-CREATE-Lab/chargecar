@@ -10,4 +10,12 @@ public interface Power extends VoltagesAndCurrents
    PowerEquation getCapacitorPowerEquation();
 
    PowerEquation getAccessoryPowerEquation();
+
+   Voltages getMinimumVoltages();
+
+   Voltages getMaximumVoltages();
+
+   Currents getMinimumCurrents();
+
+   Currents getMaximumCurrents();
    }

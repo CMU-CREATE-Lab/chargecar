@@ -19,6 +19,16 @@
       <pathelement path="${swing-layout.jar}"/>
    </path>
 
+   <path id="heads-up-display-test-classpath">
+      <pathelement path="${heads-up-display.build-test.dir}"/>
+
+      <!-- other classes within this project -->
+      <pathelement path="${heads-up-display.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${junit.jar}"/>
+   </path>
+
    <path id="sensor-board-reader-classpath">
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
@@ -82,6 +92,20 @@
       <compile-code-and-copy-resources src.dir="${heads-up-display.src.dir}"
                                        build.dir="${heads-up-display.build.dir}"
                                        classpath-ref="heads-up-display-classpath"/>
+
+      <compile-code-and-copy-resources src.dir="${heads-up-display.src-test.dir}"
+                                       build.dir="${heads-up-display.build-test.dir}"
+                                       classpath-ref="heads-up-display-test-classpath"/>
+
+      <!-- run tests -->
+      <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+         <classpath refid="heads-up-display-test-classpath"/>
+         <batchtest>
+            <fileset dir="${heads-up-display.src-test.dir}">
+               <include name="**/*Test.java"/>
+            </fileset>
+         </batchtest>
+      </junit>
 
       <property name="build-heads-up-display-is-complete" value="true"/>
    </target>

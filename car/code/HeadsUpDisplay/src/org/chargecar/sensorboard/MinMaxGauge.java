@@ -10,29 +10,37 @@ import org.jdesktop.layout.GroupLayout;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-final class Gauge<T> extends JPanel
+final class MinMaxGauge<T> extends JPanel
    {
    private static final String UNKNOWN_VALUE = "?";
 
-   private final JLabel value;
+   private final JLabel valueLabel;
+   private final JLabel minValueLabel;
+   private final JLabel maxValueLabel;
    private final String stringFormat;
 
-   Gauge(final String labelText, final String stringFormat)
+   MinMaxGauge(final String labelText, final String stringFormat)
       {
       this.stringFormat = stringFormat;
       final JLabel label = GUIConstants.createLabel(labelText, GUIConstants.FONT_NORMAL);
-      this.value = GUIConstants.createLabel("", GUIConstants.FONT_MEDIUM_LARGE);
+      this.valueLabel = GUIConstants.createLabel("", GUIConstants.FONT_MEDIUM_LARGE);
+      this.minValueLabel = GUIConstants.createLabel("", GUIConstants.FONT_TINY);
+      this.maxValueLabel = GUIConstants.createLabel("", GUIConstants.FONT_TINY);
       final GroupLayout layout = new GroupLayout(this);
       this.setLayout(layout);
       this.setBackground(Color.WHITE);
 
       layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.CENTER)
-                  .add(value)
+                  .add(maxValueLabel)
+                  .add(valueLabel)
+                  .add(minValueLabel)
                   .add(label));
       layout.setVerticalGroup(
             layout.createSequentialGroup()
-                  .add(value)
+                  .add(maxValueLabel)
+                  .add(valueLabel)
+                  .add(minValueLabel)
                   .add(label));
 
       this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -42,17 +50,24 @@ final class Gauge<T> extends JPanel
     * Sets the gauge's value using the string format given to the constructor.  Assumes it is being called in the GUI
     * thread.
     */
-   void setValue(final T s)
+   void setValues(final T value, final T min, final T max)
       {
-      if (s != null)
+      setValue(value, valueLabel);
+      setValue(min, minValueLabel);
+      setValue(max, maxValueLabel);
+      }
+
+   private void setValue(final T value, final JLabel label)
+      {
+      if (value != null)
          {
-         value.setForeground(Color.BLACK);
-         value.setText(String.format(stringFormat, s));
+         label.setForeground(Color.BLACK);
+         label.setText(String.format(stringFormat, value));
          }
       else
          {
-         value.setForeground(Color.RED);
-         value.setText(UNKNOWN_VALUE);
+         label.setForeground(Color.RED);
+         label.setText(UNKNOWN_VALUE);
          }
       }
    }

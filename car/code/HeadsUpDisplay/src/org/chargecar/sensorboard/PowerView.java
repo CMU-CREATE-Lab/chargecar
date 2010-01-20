@@ -16,19 +16,17 @@ public final class PowerView extends View<Power>
    private static final String VOLTAGE_STRING_FORMAT = "%04.1f";
    private static final String POWER_STRING_FORMAT = "%06.1f";
 
-   private final Gauge<Double> accessoryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.accessory"), CURRENT_STRING_FORMAT);
-   private final Gauge<Double> batteryCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.batteries"), CURRENT_STRING_FORMAT);
-   private final Gauge<Double> capacitorCurrentGauge = new Gauge<Double>(RESOURCES.getString("label.capacitor"), CURRENT_STRING_FORMAT);
-   private final List<Gauge<Double>> motorCurrentGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_DEVICE_COUNT);
+   private final MinMaxGauge<Double> accessoryCurrentGauge = new MinMaxGauge<Double>(RESOURCES.getString("label.accessory"), CURRENT_STRING_FORMAT);
+   private final MinMaxGauge<Double> batteryCurrentGauge = new MinMaxGauge<Double>(RESOURCES.getString("label.batteries"), CURRENT_STRING_FORMAT);
+   private final MinMaxGauge<Double> capacitorCurrentGauge = new MinMaxGauge<Double>(RESOURCES.getString("label.capacitor"), CURRENT_STRING_FORMAT);
+   private final List<MinMaxGauge<Double>> motorCurrentGauges = new ArrayList<MinMaxGauge<Double>>(SensorBoardConstants.MOTOR_DEVICE_COUNT);
 
-   private final Gauge<Double> accessoryVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.accessory"), VOLTAGE_STRING_FORMAT);
-   private final Gauge<Double> batteryVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.batteries"), VOLTAGE_STRING_FORMAT);
-   private final Gauge<Double> capacitorVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.capacitor"), VOLTAGE_STRING_FORMAT);
-   private final List<Gauge<Double>> batteryVoltageGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.BATTERY_DEVICE_COUNT);
+   private final MinMaxGauge<Double> accessoryVoltageGauge = new MinMaxGauge<Double>(RESOURCES.getString("label.accessory"), VOLTAGE_STRING_FORMAT);
+   private final MinMaxGauge<Double> batteryVoltageGauge = new MinMaxGauge<Double>(RESOURCES.getString("label.batteries"), VOLTAGE_STRING_FORMAT);
+   private final MinMaxGauge<Double> capacitorVoltageGauge = new MinMaxGauge<Double>(RESOURCES.getString("label.capacitor"), VOLTAGE_STRING_FORMAT);
+   private final List<MinMaxGauge<Double>> batteryVoltageGauges = new ArrayList<MinMaxGauge<Double>>(SensorBoardConstants.BATTERY_DEVICE_COUNT);
 
    private final Gauge<Double> accessoryPowerTotalGauge = new Gauge<Double>(RESOURCES.getString("label.total"), POWER_STRING_FORMAT);
-   private final Gauge<Double> accessoryPowerUsedGauge = new Gauge<Double>(RESOURCES.getString("label.used"), POWER_STRING_FORMAT);
-   private final Gauge<Double> accessoryPowerRegenGauge = new Gauge<Double>(RESOURCES.getString("label.regen"), POWER_STRING_FORMAT);
    private final Gauge<Double> batteryPowerTotalGauge = new Gauge<Double>(RESOURCES.getString("label.total"), POWER_STRING_FORMAT);
    private final Gauge<Double> batteryPowerUsedGauge = new Gauge<Double>(RESOURCES.getString("label.used"), POWER_STRING_FORMAT);
    private final Gauge<Double> batteryPowerRegenGauge = new Gauge<Double>(RESOURCES.getString("label.regen"), POWER_STRING_FORMAT);
@@ -40,11 +38,11 @@ public final class PowerView extends View<Power>
       {
       for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
          {
-         motorCurrentGauges.add(new Gauge<Double>(RESOURCES.getString("label.motor") + " " + (i + 1), CURRENT_STRING_FORMAT));
+         motorCurrentGauges.add(new MinMaxGauge<Double>(RESOURCES.getString("label.motor") + " " + (i + 1), CURRENT_STRING_FORMAT));
          }
       for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
          {
-         batteryVoltageGauges.add(new Gauge<Double>(RESOURCES.getString("label.battery") + " " + (i + 1), VOLTAGE_STRING_FORMAT));
+         batteryVoltageGauges.add(new MinMaxGauge<Double>(RESOURCES.getString("label.battery") + " " + (i + 1), VOLTAGE_STRING_FORMAT));
          }
       }
 
@@ -101,16 +99,6 @@ public final class PowerView extends View<Power>
       return accessoryPowerTotalGauge;
       }
 
-   public JPanel getAccessoryPowerUsedGauge()
-      {
-      return accessoryPowerUsedGauge;
-      }
-
-   public JPanel getAccessoryPowerRegenGauge()
-      {
-      return accessoryPowerRegenGauge;
-      }
-
    public JPanel getBatteryPowerTotalGauge()
       {
       return batteryPowerTotalGauge;
@@ -147,12 +135,20 @@ public final class PowerView extends View<Power>
          {
          if (power.getCurrents() != null)
             {
-            accessoryCurrentGauge.setValue(power.getCurrents().getAccessoryCurrent());
-            batteryCurrentGauge.setValue(power.getCurrents().getBatteryCurrent());
-            capacitorCurrentGauge.setValue(power.getCurrents().getCapacitorCurrent());
+            accessoryCurrentGauge.setValues(power.getCurrents().getAccessoryCurrent(),
+                                            power.getMinimumCurrents().getAccessoryCurrent(),
+                                            power.getMaximumCurrents().getAccessoryCurrent());
+            batteryCurrentGauge.setValues(power.getCurrents().getBatteryCurrent(),
+                                          power.getMinimumCurrents().getBatteryCurrent(),
+                                          power.getMaximumCurrents().getBatteryCurrent());
+            capacitorCurrentGauge.setValues(power.getCurrents().getCapacitorCurrent(),
+                                            power.getMinimumCurrents().getCapacitorCurrent(),
+                                            power.getMaximumCurrents().getCapacitorCurrent());
             for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
                {
-               motorCurrentGauges.get(i).setValue(power.getCurrents().getMotorCurrent(i));
+               motorCurrentGauges.get(i).setValues(power.getCurrents().getMotorCurrent(i),
+                                                   power.getMinimumCurrents().getMotorCurrent(i),
+                                                   power.getMaximumCurrents().getMotorCurrent(i));
                }
             }
          else
@@ -162,12 +158,20 @@ public final class PowerView extends View<Power>
 
          if (power.getVoltages() != null)
             {
-            accessoryVoltageGauge.setValue(power.getVoltages().getAccessoryVoltage());
-            batteryVoltageGauge.setValue(power.getVoltages().getBatteryVoltage());
-            capacitorVoltageGauge.setValue(power.getVoltages().getCapacitorVoltage());
+            accessoryVoltageGauge.setValues(power.getVoltages().getAccessoryVoltage(),
+                                            power.getMinimumVoltages().getAccessoryVoltage(),
+                                            power.getMaximumVoltages().getAccessoryVoltage());
+            batteryVoltageGauge.setValues(power.getVoltages().getBatteryVoltage(),
+                                          power.getMinimumVoltages().getBatteryVoltage(),
+                                          power.getMaximumVoltages().getBatteryVoltage());
+            capacitorVoltageGauge.setValues(power.getVoltages().getCapacitorVoltage(),
+                                            power.getMinimumVoltages().getCapacitorVoltage(),
+                                            power.getMaximumVoltages().getCapacitorVoltage());
             for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
                {
-               batteryVoltageGauges.get(i).setValue(power.getVoltages().getBatteryVoltage(i));
+               batteryVoltageGauges.get(i).setValues(power.getVoltages().getBatteryVoltage(i),
+                                                     power.getMinimumVoltages().getBatteryVoltage(i),
+                                                     power.getMaximumVoltages().getBatteryVoltage(i));
                }
             }
          else
@@ -176,8 +180,6 @@ public final class PowerView extends View<Power>
             }
 
          accessoryPowerTotalGauge.setValue(power.getAccessoryPowerEquation().getKilowattHours());
-         accessoryPowerUsedGauge.setValue(power.getAccessoryPowerEquation().getKilowattHoursUsed());
-         accessoryPowerRegenGauge.setValue(power.getAccessoryPowerEquation().getKilowattHoursRegen());
          batteryPowerTotalGauge.setValue(power.getBatteryPowerEquation().getKilowattHours());
          batteryPowerUsedGauge.setValue(power.getBatteryPowerEquation().getKilowattHoursUsed());
          batteryPowerRegenGauge.setValue(power.getBatteryPowerEquation().getKilowattHoursRegen());
@@ -190,8 +192,6 @@ public final class PowerView extends View<Power>
          setUnknownCurrents();
          setUnknownVoltages();
          accessoryPowerTotalGauge.setValue(null);
-         accessoryPowerUsedGauge.setValue(null);
-         accessoryPowerRegenGauge.setValue(null);
          batteryPowerTotalGauge.setValue(null);
          batteryPowerUsedGauge.setValue(null);
          batteryPowerRegenGauge.setValue(null);
@@ -203,23 +203,23 @@ public final class PowerView extends View<Power>
 
    private void setUnknownCurrents()
       {
-      accessoryCurrentGauge.setValue(null);
-      batteryCurrentGauge.setValue(null);
-      capacitorCurrentGauge.setValue(null);
+      accessoryCurrentGauge.setValues(null, null, null);
+      batteryCurrentGauge.setValues(null, null, null);
+      capacitorCurrentGauge.setValues(null, null, null);
       for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
          {
-         motorCurrentGauges.get(i).setValue(null);
+         motorCurrentGauges.get(i).setValues(null, null, null);
          }
       }
 
    private void setUnknownVoltages()
       {
-      accessoryVoltageGauge.setValue(null);
-      batteryVoltageGauge.setValue(null);
-      capacitorVoltageGauge.setValue(null);
+      accessoryVoltageGauge.setValues(null, null, null);
+      batteryVoltageGauge.setValues(null, null, null);
+      capacitorVoltageGauge.setValues(null, null, null);
       for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
          {
-         batteryVoltageGauges.get(i).setValue(null);
+         batteryVoltageGauges.get(i).setValues(null, null, null);
          }
       }
    }

@@ -5,13 +5,13 @@ package org.chargecar.sensorboard;
  */
 public interface Voltages extends SensorBoardData
    {
-   double getBatteryVoltage(int batteryId);
+   Double getBatteryVoltage(final int batteryId);
 
-   double getBatteryVoltage();
+   Double getBatteryVoltage();
 
-   double getCapacitorVoltage();
+   Double getCapacitorVoltage();
 
-   double getAccessoryVoltage();
+   Double getAccessoryVoltage();
 
-   double getAuxiliaryVoltage(final int auxiliaryDeviceId);
+   Double getAuxiliaryVoltage(final int auxiliaryDeviceId);
    }

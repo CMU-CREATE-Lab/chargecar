@@ -20,6 +20,10 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
    private final PowerEquationImpl batteryPowerEquation = new PowerEquationImpl();
    private final PowerEquationImpl capacitorPowerEquation = new PowerEquationImpl();
    private final PowerEquationImpl accessoryPowerEquation = new PowerEquationImpl();
+   private final UpdatableVoltages minimumVoltages = UpdatableVoltages.createMinimumVoltages();
+   private final UpdatableVoltages maximumVoltages = UpdatableVoltages.createMaximumVoltages();
+   private final UpdatableCurrents minimumCurrents = UpdatableCurrents.createMinimumCurrents();
+   private final UpdatableCurrents maximumCurrents = UpdatableCurrents.createMaximumCurrents();
 
    public void update(final VoltagesAndCurrents voltagesAndCurrents)
       {
@@ -44,6 +48,7 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
                final double accessoryKwh = voltagesAndCurrents.getVoltages().getAccessoryVoltage() *
                                            voltagesAndCurrents.getCurrents().getAccessoryCurrent() *
                                            elapsedKiloHours;
+
                if (LOG.isInfoEnabled())
                   {
                   LOG.info("PowerModel.update(): elapsedMilliseconds = [" + elapsedMilliseconds + "]");
@@ -51,9 +56,16 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
                   LOG.info("PowerModel.update(): capacitorKwh = [" + capacitorKwh + "]");
                   LOG.info("PowerModel.update(): accessoryKwh = [" + accessoryKwh + "]");
                   }
+
                batteryPowerEquation.addKilowattHours(batteryKwh);
                capacitorPowerEquation.addKilowattHours(capacitorKwh);
                accessoryPowerEquation.addKilowattHours(accessoryKwh);
+
+               // update minimums and maximums
+               minimumVoltages.update(voltagesAndCurrents.getVoltages());
+               maximumVoltages.update(voltagesAndCurrents.getVoltages());
+               minimumCurrents.update(voltagesAndCurrents.getCurrents());
+               maximumCurrents.update(voltagesAndCurrents.getCurrents());
                }
 
             // save the voltages and currents and timestamp
@@ -64,7 +76,11 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
             publishEventToListeners(new PowerImpl(voltagesAndCurrents,
                                                   batteryPowerEquation,
                                                   capacitorPowerEquation,
-                                                  accessoryPowerEquation));
+                                                  accessoryPowerEquation,
+                                                  minimumVoltages,
+                                                  maximumVoltages,
+                                                  minimumCurrents,
+                                                  maximumCurrents));
             }
          }
       }
@@ -119,16 +135,30 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
       private final PowerEquation batteryPowerEquation;
       private final PowerEquation capacitorPowerEquation;
       private final PowerEquation accessoryPowerEquation;
+      private final Voltages minimumVoltages;
+      private final Voltages maximumVoltages;
+      private final Currents minimumCurrents;
+      private final Currents maximumCurrents;
 
       private PowerImpl(final VoltagesAndCurrents voltagesAndCurrents,
                         final PowerEquation batteryPowerEquation,
                         final PowerEquation capacitorPowerEquation,
-                        final PowerEquation accessoryPowerEquation)
+                        final PowerEquation accessoryPowerEquation,
+                        final Voltages minimumVoltages,
+                        final Voltages maximumVoltages,
+                        final Currents minimumCurrents,
+                        final Currents maximumCurrents)
          {
          this.voltagesAndCurrents = voltagesAndCurrents;
          this.batteryPowerEquation = batteryPowerEquation;
          this.capacitorPowerEquation = capacitorPowerEquation;
          this.accessoryPowerEquation = accessoryPowerEquation;
+
+         // create copies of these for immutability
+         this.minimumVoltages = new VoltagesImpl(minimumVoltages);
+         this.maximumVoltages = new VoltagesImpl(maximumVoltages);
+         this.minimumCurrents = new CurrentsImpl(minimumCurrents);
+         this.maximumCurrents = new CurrentsImpl(maximumCurrents);
          }
 
       public Voltages getVoltages()
@@ -161,6 +191,26 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
          return accessoryPowerEquation;
          }
 
+      public Voltages getMinimumVoltages()
+         {
+         return minimumVoltages;
+         }
+
+      public Voltages getMaximumVoltages()
+         {
+         return maximumVoltages;
+         }
+
+      public Currents getMinimumCurrents()
+         {
+         return minimumCurrents;
+         }
+
+      public Currents getMaximumCurrents()
+         {
+         return maximumCurrents;
+         }
+
       @Override
       public boolean equals(final Object o)
          {
@@ -187,6 +237,22 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
             {
             return false;
             }
+         if (maximumCurrents != null ? !maximumCurrents.equals(power.maximumCurrents) : power.maximumCurrents != null)
+            {
+            return false;
+            }
+         if (maximumVoltages != null ? !maximumVoltages.equals(power.maximumVoltages) : power.maximumVoltages != null)
+            {
+            return false;
+            }
+         if (minimumCurrents != null ? !minimumCurrents.equals(power.minimumCurrents) : power.minimumCurrents != null)
+            {
+            return false;
+            }
+         if (minimumVoltages != null ? !minimumVoltages.equals(power.minimumVoltages) : power.minimumVoltages != null)
+            {
+            return false;
+            }
          if (voltagesAndCurrents != null ? !voltagesAndCurrents.equals(power.voltagesAndCurrents) : power.voltagesAndCurrents != null)
             {
             return false;
@@ -202,20 +268,11 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
          result = 31 * result + (batteryPowerEquation != null ? batteryPowerEquation.hashCode() : 0);
          result = 31 * result + (capacitorPowerEquation != null ? capacitorPowerEquation.hashCode() : 0);
          result = 31 * result + (accessoryPowerEquation != null ? accessoryPowerEquation.hashCode() : 0);
+         result = 31 * result + (minimumVoltages != null ? minimumVoltages.hashCode() : 0);
+         result = 31 * result + (maximumVoltages != null ? maximumVoltages.hashCode() : 0);
+         result = 31 * result + (minimumCurrents != null ? minimumCurrents.hashCode() : 0);
+         result = 31 * result + (maximumCurrents != null ? maximumCurrents.hashCode() : 0);
          return result;
-         }
-
-      @Override
-      public String toString()
-         {
-         final StringBuilder sb = new StringBuilder();
-         sb.append("PowerImpl");
-         sb.append("{voltagesAndCurrents=").append(voltagesAndCurrents);
-         sb.append(", batteryPowerEquation=").append(batteryPowerEquation);
-         sb.append(", capacitorPowerEquation=").append(capacitorPowerEquation);
-         sb.append(", accessoryPowerEquation=").append(accessoryPowerEquation);
-         sb.append('}');
-         return sb.toString();
          }
       }
    }
