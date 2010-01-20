@@ -112,31 +112,6 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
       return null;
       }
 
-   protected final double convertToDouble(final String rawValue)
-      {
-      double value = 0.0;
-      if (rawValue != null && rawValue.length() > 0)
-         {
-         try
-            {
-            final boolean isNegative = rawValue.startsWith("-");
-            if (isNegative)
-               {
-               value = -1 * Double.parseDouble(rawValue.substring(1));
-               }
-            else
-               {
-               value = Double.parseDouble(rawValue);
-               }
-            }
-         catch (NumberFormatException e)
-            {
-            LOG.error("ChargeCarSerialDeviceReturnValueCommandStrategy.convertToDouble(): NumberFormatException while converting [" + rawValue + "] to a double.");
-            }
-         }
-      return value;
-      }
-
    protected abstract E convertResponseHelper(final String[] values);
 
    protected abstract int getNumberOfExpectedValuesInResponse();

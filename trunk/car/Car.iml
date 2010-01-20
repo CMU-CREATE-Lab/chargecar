@@ -5,7 +5,9 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/SensorBoardReader/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/test" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/build-test" />
       <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/SensorBoardReader/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/SensorBoardReader/dist" />
@@ -79,6 +81,19 @@
         </JAVADOC>
         <SOURCES>
           <root url="jar://$MODULE_DIR$/lib/joda-time/joda-time-1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="JUnit">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/junit/junit-4.7.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://kentbeck.github.com/junit/javadoc/latest/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/junit/junit-4.7-src.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
