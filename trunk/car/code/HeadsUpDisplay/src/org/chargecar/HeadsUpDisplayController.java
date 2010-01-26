@@ -4,9 +4,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import edu.cmu.ri.createlab.serial.device.SerialDeviceProxyProvider;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionEventListener;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionState;
+import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManager;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,63 +31,76 @@ import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-final class HeadsUpDisplayController implements SerialDeviceConnectionEventListener
+final class HeadsUpDisplayController
    {
    private static final Log LOG = LogFactory.getLog(HeadsUpDisplayController.class);
 
-   private final SerialDeviceProxyProvider serialDeviceProxyProvider;
+   private final LifecycleManager lifecycleManager;
+   private final SerialDeviceConnectivityManager serialDeviceConnectivityManager;
    private final ScheduledExecutorService dataAcquisitionExecutorService = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("SensorBoardExecutorThreadFactory"));
    private ScheduledFuture<?> scheduledFuture = null;
    private final SpeedAndOdometryModel speedAndOdometryModel;
    private final TemperaturesModel temperaturesModel;
    private final PowerModel powerModel;
 
-   HeadsUpDisplayController(final SerialDeviceProxyProvider serialDeviceProxyProvider,
+   HeadsUpDisplayController(final LifecycleManager lifecycleManager,
+                            final SerialDeviceConnectivityManager serialDeviceConnectivityManager,
                             final SpeedAndOdometryModel speedAndOdometryModel,
                             final TemperaturesModel temperaturesModel,
                             final PowerModel powerModel)
       {
-      this.serialDeviceProxyProvider = serialDeviceProxyProvider;
+      this.lifecycleManager = lifecycleManager;
+      this.serialDeviceConnectivityManager = serialDeviceConnectivityManager;
       this.speedAndOdometryModel = speedAndOdometryModel;
       this.temperaturesModel = temperaturesModel;
       this.powerModel = powerModel;
+
+      // register self as a SerialDeviceConnectionEventListener
+      this.serialDeviceConnectivityManager.addConnectionEventListener(
+            new SerialDeviceConnectionEventListener()
+            {
+            public void handleConnectionStateChange(final SerialDeviceConnectionState oldState, final SerialDeviceConnectionState newState, final String serialPortName)
+               {
+               if (LOG.isDebugEnabled())
+                  {
+                  LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(" + oldState.name() + "," + newState.name() + ")");
+                  }
+
+               // don't bother doing anything if the state hasn't changed
+               if (oldState.equals(newState))
+                  {
+                  return;
+                  }
+
+               if (SerialDeviceConnectionState.CONNECTED.equals(newState))
+                  {
+                  // start the data acquisition executor
+                  scheduledFuture = dataAcquisitionExecutorService.scheduleAtFixedRate(new SensorBoardReader(), 0, 1, TimeUnit.SECONDS);
+                  }
+               else if (SerialDeviceConnectionState.DISCONNECTED.equals(newState))
+                  {
+                  // turn off the data acquisition executor
+                  if (scheduledFuture != null)
+                     {
+                     try
+                        {
+                        scheduledFuture.cancel(false);
+                        dataAcquisitionExecutorService.shutdownNow();
+                        LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(): Successfully shut down data acquisition executor.");
+                        }
+                     catch (Exception e)
+                        {
+                        LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(): Exception caught while trying to shut down the data acquisition executor", e);
+                        }
+                     }
+                  }
+               }
+            });
       }
 
-   public void handleConnectionStateChange(final SerialDeviceConnectionState oldState, final SerialDeviceConnectionState newState, final String serialPortName)
+   public void shutdown()
       {
-      if (LOG.isDebugEnabled())
-         {
-         LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(" + oldState.name() + "," + newState.name() + ")");
-         }
-
-      // don't bother doing anything if the state hasn't changed
-      if (oldState.equals(newState))
-         {
-         return;
-         }
-
-      if (SerialDeviceConnectionState.CONNECTED.equals(newState))
-         {
-         // start the data acquisition executor
-         scheduledFuture = dataAcquisitionExecutorService.scheduleAtFixedRate(new SensorBoardReader(), 0, 1, TimeUnit.SECONDS);
-         }
-      else if (SerialDeviceConnectionState.DISCONNECTED.equals(newState))
-         {
-         // turn off the data acquisition executor
-         if (scheduledFuture != null)
-            {
-            try
-               {
-               scheduledFuture.cancel(false);
-               dataAcquisitionExecutorService.shutdownNow();
-               LOG.debug("HeadsUpDisplay$SensorBoardConnectionEventListener.handleConnectionStateChange(): Successfully shut down data acquisition executor.");
-               }
-            catch (Exception e)
-               {
-               LOG.debug("HeadsUpDisplay$SensorBoardConnectionEventListener.handleConnectionStateChange(): Exception caught while trying to shut down the data acquisition executor", e);
-               }
-            }
-         }
+      lifecycleManager.shutdown();
       }
 
    private final class SensorBoardReader implements Runnable
@@ -95,7 +108,7 @@ final class HeadsUpDisplayController implements SerialDeviceConnectionEventListe
       public void run()
          {
          // get a reference to the proxy
-         final SensorBoardProxy sensorBoardProxy = (SensorBoardProxy)serialDeviceProxyProvider.getSerialDeviceProxy();
+         final SensorBoardProxy sensorBoardProxy = (SensorBoardProxy)serialDeviceConnectivityManager.getSerialDeviceProxy();
 
          if (sensorBoardProxy != null)
             {

@@ -7,6 +7,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.PropertyResourceBundle;
 import javax.swing.Box;
 import javax.swing.JFrame;
@@ -123,28 +124,15 @@ public class HeadsUpDisplay
       // Enter full-screen mode
       graphicsDevice.setFullScreenWindow(jFrame);
 
-      // create the views
-      final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
-      final TemperaturesView temperaturesView = new TemperaturesView();
-      final PowerView powerView = new PowerView();
-      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(speedAndOdometryView, temperaturesView, powerView);
-
-      // set up the runnables used to toggle the UI for scanning/connected/disconnected
-      final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
-      setStageForIsScanningRunnable = new SetStageRunnable(panel, spinner);
-      setStageForIsConnectedRunnable = new SetStageRunnable(panel, headsUpDisplayView);
-      setStageForIsDisconnectedRunnable = new SetStageRunnable(panel, new JLabel(RESOURCES.getString("label.disconnected")));
-      setStageForIsScanningRunnable.run();
-
       // create the models
       final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
       final TemperaturesModel temperaturesModel = new TemperaturesModel();
       final PowerModel powerModel = new PowerModel();
 
-      // create and configure the SerialDeviceConnectivityManager and HeadsUpDisplayController
+      // create and configure the SerialDeviceConnectivityManager, LifecycleManager, and HeadsUpDisplayController
       final SerialDeviceConnectivityManager serialDeviceConnectivityManager = new SerialDeviceConnectivityManagerImpl(new SensorBoardSerialDeviceProxyCreator());
-      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(serialDeviceConnectivityManager, speedAndOdometryModel, temperaturesModel, powerModel);
-      serialDeviceConnectivityManager.addConnectionEventListener(headsUpDisplayController);
+      final LifecycleManager lifecycleManager = new MyLifecycleManager(jFrame, graphicsDevice, serialDeviceConnectivityManager, gpsReader);
+      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(lifecycleManager, serialDeviceConnectivityManager, speedAndOdometryModel, temperaturesModel, powerModel);
       serialDeviceConnectivityManager.addConnectionEventListener(
             new SerialDeviceConnectionEventListener()
             {
@@ -171,6 +159,19 @@ public class HeadsUpDisplay
                }
             });
 
+      // create the views
+      final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
+      final TemperaturesView temperaturesView = new TemperaturesView();
+      final PowerView powerView = new PowerView();
+      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(headsUpDisplayController, speedAndOdometryView, temperaturesView, powerView);
+
+      // set up the runnables used to toggle the UI for scanning/connected/disconnected
+      final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
+      setStageForIsScanningRunnable = new SetStageRunnable(panel, spinner);
+      setStageForIsConnectedRunnable = new SetStageRunnable(panel, headsUpDisplayView);
+      setStageForIsDisconnectedRunnable = new SetStageRunnable(panel, new JLabel(RESOURCES.getString("label.disconnected")));
+      setStageForIsScanningRunnable.run();
+
       // add the various views as listeners to the models
       speedAndOdometryModel.addEventListener(speedAndOdometryView);
       temperaturesModel.addEventListener(temperaturesView);
@@ -179,60 +180,19 @@ public class HeadsUpDisplay
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       jFrame.setBackground(Color.WHITE);
-      jFrame.setResizable(false);
+      jFrame.setResizable(true);    // This *should* be false, but full-screen doesn't work on Linux unless it's true
       jFrame.addWindowListener(
             new WindowAdapter()
             {
             public void windowOpened(final WindowEvent e)
                {
                LOG.debug("HeadsUpDisplay.windowOpened()");
-               final SwingWorker worker =
-                     new SwingWorker()
-                     {
-                     public Object construct()
-                        {
-                        // start scanning
-                        serialDeviceConnectivityManager.scanAndConnect();
-                        gpsReader.startReading();
-                        return null;
-                        }
-                     };
-               worker.start();
+               lifecycleManager.startup();
                }
 
             public void windowClosing(final WindowEvent event)
                {
-               // ask if the user really wants to exit
-               final int selectedOption = JOptionPane.showConfirmDialog(jFrame,
-                                                                        RESOURCES.getString("dialog.message.exit-confirmation"),
-                                                                        RESOURCES.getString("dialog.title.exit-confirmation"),
-                                                                        JOptionPane.YES_NO_OPTION,
-                                                                        JOptionPane.QUESTION_MESSAGE);
-
-               if (selectedOption == JOptionPane.YES_OPTION)
-                  {
-                  final SwingWorker worker =
-                        new SwingWorker()
-                        {
-                        public Object construct()
-                           {
-                           // disconnect so we can exit gracefully
-                           serialDeviceConnectivityManager.disconnect();
-                           gpsReader.stopReading();
-                           gpsReader.disconnect();
-                           return null;
-                           }
-
-                        public void finished()
-                           {
-                           // Exit full-screen mode
-                           graphicsDevice.setFullScreenWindow(null);
-
-                           System.exit(0);
-                           }
-                        };
-                  worker.start();
-                  }
+               lifecycleManager.shutdown();
                }
             });
 
@@ -270,6 +230,124 @@ public class HeadsUpDisplay
                      .add(component)
                      .add(rightGlue)
          );
+         }
+      }
+
+   private static class MyLifecycleManager implements LifecycleManager
+      {
+      private final Runnable startupRunnable;
+      private final Runnable shutdownRunnable;
+      private final JFrame jFrame;
+
+      private MyLifecycleManager(final JFrame jFrame, final GraphicsDevice graphicsDevice, final SerialDeviceConnectivityManager serialDeviceConnectivityManager, final NMEAReader gpsReader)
+         {
+         this.jFrame = jFrame;
+         startupRunnable =
+               new Runnable()
+               {
+               public void run()
+                  {
+                  // start scanning
+                  serialDeviceConnectivityManager.scanAndConnect();
+                  gpsReader.startReading();
+                  }
+               };
+
+         shutdownRunnable =
+               new Runnable()
+               {
+               public void run()
+                  {
+                  // disconnect so we can exit gracefully
+                  serialDeviceConnectivityManager.disconnect();
+                  gpsReader.stopReading();
+                  gpsReader.disconnect();
+
+                  // Exit full-screen mode
+                  graphicsDevice.setFullScreenWindow(null);
+
+                  System.exit(0);
+                  }
+               };
+         }
+
+      public void startup()
+         {
+         LOG.debug("LifecycleManager.startup()");
+
+         run(startupRunnable);
+         }
+
+      public void shutdown()
+         {
+         LOG.debug("LifecycleManager.shutdown()");
+
+         final int[] selectedOption = new int[1];
+         selectedOption[0] = JOptionPane.NO_OPTION;
+
+         if (SwingUtilities.isEventDispatchThread())
+            {
+            selectedOption[0] = promptUser();
+            }
+         else
+            {
+            try
+               {
+               SwingUtilities.invokeAndWait(
+                     new Runnable()
+                     {
+                     public void run()
+                        {
+                        // ask if the user really wants to exit
+                        selectedOption[0] = promptUser();
+                        }
+                     });
+               }
+            catch (InterruptedException e)
+               {
+               LOG.error("InterruptedException during invokeAndWait()", e);
+               }
+            catch (InvocationTargetException e)
+               {
+               LOG.error("InvocationTargetException during invokeAndWait()", e);
+               }
+            }
+
+         if (selectedOption[0] == JOptionPane.YES_OPTION)
+            {
+            run(shutdownRunnable);
+            }
+         }
+
+      private int promptUser()
+         {
+         // ask if the user really wants to exit
+         return JOptionPane.showConfirmDialog(jFrame,
+                                              RESOURCES.getString("dialog.message.exit-confirmation"),
+                                              RESOURCES.getString("dialog.title.exit-confirmation"),
+                                              JOptionPane.YES_NO_OPTION,
+                                              JOptionPane.QUESTION_MESSAGE);
+         }
+
+      private void run(final Runnable runnable)
+         {
+         if (SwingUtilities.isEventDispatchThread())
+            {
+            final SwingWorker worker =
+                  new SwingWorker()
+                  {
+                  public Object construct()
+                     {
+                     runnable.run();
+                     return null;
+                     }
+                  };
+            worker.start();
+            }
+         else
+            {
+            runnable.run();
+            }
          }
       }
    }
