@@ -14,6 +14,8 @@
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
       <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${jfreechart1.jar}"/>
+      <pathelement path="${jfreechart2.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${rxtx.jar}"/>
       <pathelement path="${swing-layout.jar}"/>
@@ -133,6 +135,8 @@
             <fileset file="${create-lab-commons-user-interface.jar}"/>
             <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${sensor-board-reader.dist.dir}/${sensor-board-reader.jar.filename}"/>
+            <fileset file="${jfreechart1.jar}"/>
+            <fileset file="${jfreechart2.jar}"/>
             <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
       </create-dist>

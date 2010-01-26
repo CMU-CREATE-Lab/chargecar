@@ -2,9 +2,11 @@ package org.chargecar;
 
 import java.awt.Color;
 import java.util.PropertyResourceBundle;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
+import edu.cmu.ri.createlab.userinterface.util.AbstractTimeConsumingAction;
 import org.chargecar.sensorboard.PowerView;
 import org.chargecar.sensorboard.SpeedAndOdometryView;
 import org.chargecar.sensorboard.TemperaturesView;
@@ -13,11 +15,12 @@ import org.jdesktop.layout.GroupLayout;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
+@SuppressWarnings({"CloneableClassWithoutClone"})
 final class HeadsUpDisplayView extends JPanel
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplayView.class.getName());
 
-   HeadsUpDisplayView(final SpeedAndOdometryView speedAndOdometryView, final TemperaturesView temperaturesView, final PowerView powerView)
+   HeadsUpDisplayView(final HeadsUpDisplayController headsUpDisplayController, final SpeedAndOdometryView speedAndOdometryView, final TemperaturesView temperaturesView, final PowerView powerView)
       {
       final GroupLayout layout = new GroupLayout(this);
       this.setLayout(layout);
@@ -25,6 +28,7 @@ final class HeadsUpDisplayView extends JPanel
 
       layout.setAutocreateGaps(true);
 
+      final JButton quitButton = GUIConstants.createButton(RESOURCES.getString("label.quit"), true);
       final JLabel temperatureLabel = GUIConstants.createLabel(RESOURCES.getString("label.temperature"), GUIConstants.FONT_MEDIUM);
       final JLabel currentLabel = GUIConstants.createLabel(RESOURCES.getString("label.current"), GUIConstants.FONT_MEDIUM);
       final JLabel voltageLabel = GUIConstants.createLabel(RESOURCES.getString("label.voltage"), GUIConstants.FONT_MEDIUM);
@@ -36,9 +40,35 @@ final class HeadsUpDisplayView extends JPanel
       final JLabel capacitorEquationEquals = GUIConstants.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_LARGE);
       final JLabel capacitorEquationPlus = GUIConstants.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_LARGE);
 
+      quitButton.addActionListener(
+            new AbstractTimeConsumingAction(this)
+            {
+            @Override
+            protected void executeGUIActionBefore()
+               {
+               super.executeGUIActionBefore();
+               quitButton.setEnabled(false);
+               }
+
+            @Override
+            protected Object executeTimeConsumingAction()
+               {
+               headsUpDisplayController.shutdown();
+               return null;
+               }
+
+            @Override
+            protected void executeGUIActionAfter(final Object resultOfTimeConsumingAction)
+               {
+               super.executeGUIActionAfter(resultOfTimeConsumingAction);
+               quitButton.setEnabled(true);
+               }
+            });
+
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
                   .add(layout.createParallelGroup(GroupLayout.TRAILING)
+                        .add(quitButton)
                         .add(temperatureLabel)
                         .add(currentLabel)
                         .add(voltageLabel)
@@ -103,6 +133,7 @@ final class HeadsUpDisplayView extends JPanel
       layout.setVerticalGroup(
             layout.createSequentialGroup()
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(quitButton)
                         .add(speedAndOdometryView.getSpeedGauge())
                         .add(speedAndOdometryView.getOdometerGauge())
                         .add(speedAndOdometryView.getTripOdometer1Gauge())
