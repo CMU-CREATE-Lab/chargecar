@@ -1,7 +1,6 @@
 package org.chargecar.sensorboard;
 
 import java.awt.Color;
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
@@ -34,8 +33,6 @@ final class Gauge<T> extends JPanel
             layout.createSequentialGroup()
                   .add(value)
                   .add(label));
-
-      this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       }
 
    /**
