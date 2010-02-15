@@ -1,5 +1,7 @@
 package org.chargecar.sensorboard;
 
+import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
@@ -12,69 +14,106 @@ public final class TemperaturesView extends View<Temperatures>
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(TemperaturesView.class.getName());
 
-   private final List<Gauge<Double>> motorGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_DEVICE_COUNT);
-   private final List<Gauge<Double>> motorControllerGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT);
-   private final List<Gauge<Double>> auxiliaryGauges = new ArrayList<Gauge<Double>>(SensorBoardConstants.AUXILIARY_DEVICE_COUNT);
-   private final Gauge<Double> capacitorGauge = new Gauge<Double>(RESOURCES.getString("label.capacitor"), "%05.1f");
-   private final Gauge<Double> batteryGauge = new Gauge<Double>(RESOURCES.getString("label.batteries"), "%05.1f");
-   private final Gauge<Double> outsideGauge = new Gauge<Double>(RESOURCES.getString("label.outside"), "%05.1f");
+   private final List<Meter> motorMeters = new ArrayList<Meter>(SensorBoardConstants.MOTOR_DEVICE_COUNT);
+   private final List<Meter> motorControllerMeters = new ArrayList<Meter>(SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT);
+   private final List<Meter> auxiliaryMeters = new ArrayList<Meter>(SensorBoardConstants.AUXILIARY_DEVICE_COUNT);
+   private final Meter capacitorMeter;
+   private final Meter batteryMeter;
+   private final Meter outsideMeter;
 
    public TemperaturesView()
       {
+      final DefaultMeterConfig meterConfig = new DefaultMeterConfig(1);
+      meterConfig.setDatasetColor(0, Color.RED);
+
+      // configure the meters ==========================================================================================
+
+      meterConfig.setSize(160, 160);
+      meterConfig.setRange(0, 200);
+      meterConfig.setTicks(20, 5);
+      meterConfig.setNumberFormat(new DecimalFormat("##0.0"));
+      meterConfig.setLabel(RESOURCES.getString("label.capacitor"), RESOURCES.getString("label.temperature"));
+
+      capacitorMeter = new Meter(meterConfig);
+
+      // ---------------------------------------------------------------------------------------------------------------
+
+      meterConfig.clearDialRanges();
+      meterConfig.setLabel(RESOURCES.getString("label.batteries"), RESOURCES.getString("label.temperature"));
+
+      batteryMeter = new Meter(meterConfig);
+
+      // ---------------------------------------------------------------------------------------------------------------
+
+      meterConfig.clearDialRanges();
+      meterConfig.setLabel(RESOURCES.getString("label.outside"), RESOURCES.getString("label.temperature"));
+
+      outsideMeter = new Meter(meterConfig);
+
+      // ---------------------------------------------------------------------------------------------------------------
+
+      meterConfig.clearDialRanges();
       for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
          {
-         motorGauges.add(new Gauge<Double>(RESOURCES.getString("label.motor") + " " + (i + 1), "%05.1f"));
+         meterConfig.setLabel(RESOURCES.getString("label.motor") + " " + (i + 1), RESOURCES.getString("label.temperature"));
+         motorMeters.add(new Meter(meterConfig));
          }
+
+      meterConfig.clearDialRanges();
       for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
          {
-         motorControllerGauges.add(new Gauge<Double>(RESOURCES.getString("label.controller") + " " + (i + 1), "%05.1f"));
+         meterConfig.setLabel(RESOURCES.getString("label.controller") + " " + (i + 1), RESOURCES.getString("label.temperature"));
+         motorControllerMeters.add(new Meter(meterConfig));
          }
+
+      meterConfig.clearDialRanges();
       for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
          {
-         auxiliaryGauges.add(new Gauge<Double>(RESOURCES.getString("label.aux") + " " + (i + 1), "%05.1f"));
+         meterConfig.setLabel(RESOURCES.getString("label.aux") + " " + (i + 1), RESOURCES.getString("label.temperature"));
+         auxiliaryMeters.add(new Meter(meterConfig));
          }
       }
 
-   public JPanel getMotorGauge(final int id)
+   public JPanel getMotorMeter(final int id)
       {
       if (0 <= id && id < SensorBoardConstants.MOTOR_DEVICE_COUNT)
          {
-         return motorGauges.get(id);
+         return motorMeters.get(id);
          }
       return null;
       }
 
-   public JPanel getMotorControllerGauge(final int id)
+   public JPanel getMotorControllerMeter(final int id)
       {
       if (0 <= id && id < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT)
          {
-         return motorControllerGauges.get(id);
+         return motorControllerMeters.get(id);
          }
       return null;
       }
 
-   public JPanel getAuxiliaryGauge(final int id)
+   public JPanel getAuxiliaryMeter(final int id)
       {
       if (0 <= id && id < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
          {
-         return auxiliaryGauges.get(id);
+         return auxiliaryMeters.get(id);
          }
       return null;
       }
 
-   public JPanel getCapacitorGauge()
+   public JPanel getCapacitorMeter()
       {
-      return capacitorGauge;
+      return capacitorMeter;
       }
 
-   public JPanel getBatteryGauge()
+   public JPanel getBatteryMeter()
       {
-      return batteryGauge;
+      return batteryMeter;
       }
 
-   public JPanel getOutsideGauge()
+   public JPanel getOutsideMeter()
       {
-      return outsideGauge;
+      return outsideMeter;
       }
 
    protected void handleEventInGUIThread(final Temperatures temperatures)
@@ -83,37 +122,37 @@ public final class TemperaturesView extends View<Temperatures>
          {
          for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
             {
-            motorGauges.get(i).setValue(temperatures.getMotorTemperature(i));
+            motorMeters.get(i).setValues(temperatures.getMotorTemperature(i));
             }
          for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
             {
-            motorControllerGauges.get(i).setValue(temperatures.getMotorControllerTemperature(i));
+            motorControllerMeters.get(i).setValues(temperatures.getMotorControllerTemperature(i));
             }
          for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
             {
-            auxiliaryGauges.get(i).setValue(temperatures.getAuxiliaryTemperature(i));
+            auxiliaryMeters.get(i).setValues(temperatures.getAuxiliaryTemperature(i));
             }
-         capacitorGauge.setValue(temperatures.getCapacitorTemperature());
-         batteryGauge.setValue(temperatures.getBatteryTemperature());
-         outsideGauge.setValue(temperatures.getOutsideTemperature());
+         capacitorMeter.setValues(temperatures.getCapacitorTemperature());
+         batteryMeter.setValues(temperatures.getBatteryTemperature());
+         outsideMeter.setValues(temperatures.getOutsideTemperature());
          }
       else
          {
          for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
             {
-            motorGauges.get(i).setValue(null);
+            motorMeters.get(i).setValues();
             }
          for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
             {
-            motorControllerGauges.get(i).setValue(null);
+            motorControllerMeters.get(i).setValues();
             }
          for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
             {
-            auxiliaryGauges.get(i).setValue(null);
+            auxiliaryMeters.get(i).setValues();
             }
-         capacitorGauge.setValue(null);
-         batteryGauge.setValue(null);
-         outsideGauge.setValue(null);
+         capacitorMeter.setValues();
+         batteryMeter.setValues();
+         outsideMeter.setValues();
          }
       }
    }
