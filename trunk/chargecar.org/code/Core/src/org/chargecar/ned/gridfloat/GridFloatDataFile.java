@@ -350,6 +350,7 @@ public final class GridFloatDataFile implements ElevationDataFile
       }
 
    // BilinearInterpolation
+
    public Double getElevation(final double longitude, final double latitude)
       {
       if (randomAccessFile != null && contains(longitude, latitude))
@@ -400,6 +401,7 @@ public final class GridFloatDataFile implements ElevationDataFile
       }
 
    // NearestNeighbor
+
    public Double getElevationNearestNeighbor(final double longitude, final double latitude)
       {
       if (randomAccessFile != null && contains(longitude, latitude))
