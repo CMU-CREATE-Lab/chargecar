@@ -141,7 +141,7 @@ public final class PowerView extends View<Power>
             {
             public void resetMeter()
                {
-               powerController.resetBatteryCurrent();
+               powerController.resetBatteryCurrentMinMax();
                }
             }
       );
@@ -150,7 +150,7 @@ public final class PowerView extends View<Power>
             {
             public void resetMeter()
                {
-               powerController.resetBatteryVoltage();
+               powerController.resetBatteryVoltageMinMax();
                }
             }
       );
@@ -159,7 +159,7 @@ public final class PowerView extends View<Power>
             {
             public void resetMeter()
                {
-               powerController.resetCapacitorCurrent();
+               powerController.resetCapacitorCurrentMinMax();
                }
             }
       );
@@ -168,7 +168,7 @@ public final class PowerView extends View<Power>
             {
             public void resetMeter()
                {
-               powerController.resetCapacitorVoltage();
+               powerController.resetCapacitorVoltageMinMax();
                }
             }
       );
@@ -177,7 +177,7 @@ public final class PowerView extends View<Power>
             {
             public void resetMeter()
                {
-               powerController.resetAccessoryCurrent();
+               powerController.resetAccessoryCurrentMinMax();
                }
             }
       );
@@ -186,7 +186,7 @@ public final class PowerView extends View<Power>
             {
             public void resetMeter()
                {
-               powerController.resetAccessoryVoltage();
+               powerController.resetAccessoryVoltageMinMax();
                }
             }
       );
@@ -199,7 +199,7 @@ public final class PowerView extends View<Power>
                {
                protected void resetMeter(final int id)
                   {
-                  powerController.resetMotorCurrent(id);
+                  powerController.resetMotorCurrentMinMax(id);
                   }
                }
          );
@@ -214,7 +214,7 @@ public final class PowerView extends View<Power>
                {
                protected void resetMeter(final int id)
                   {
-                  powerController.resetBatteryVoltage(id);
+                  powerController.resetBatteryVoltageMinMax(id);
                   }
                }
          );

@@ -38,6 +38,18 @@ final class UpdatableVoltages implements Voltages
       throw new IllegalArgumentException("Invalid battery ID [" + batteryId + "], value must be a positive integer less than [" + SensorBoardConstants.BATTERY_DEVICE_COUNT + "]");
       }
 
+   public void setBatteryVoltage(final int batteryId, final Double value)
+      {
+      if (batteryId >= 0 && batteryId < SensorBoardConstants.BATTERY_DEVICE_COUNT)
+         {
+         batteryVoltages[batteryId].setValue(value);
+         }
+      else
+         {
+         throw new IllegalArgumentException("Invalid battery ID [" + batteryId + "], value must be a positive integer less than [" + SensorBoardConstants.BATTERY_DEVICE_COUNT + "]");
+         }
+      }
+
    public Double getBatteryVoltage()
       {
       return batteryVoltages[0].getValue() + batteryVoltages[1].getValue() + batteryVoltages[2].getValue() + batteryVoltages[3].getValue();
@@ -48,9 +60,19 @@ final class UpdatableVoltages implements Voltages
       return capacitorVoltage.getValue();
       }
 
+   public void setCapacitorVoltage(final Double value)
+      {
+      capacitorVoltage.setValue(value);
+      }
+
    public Double getAccessoryVoltage()
       {
       return accessoryVoltage.getValue();
+      }
+
+   public void setAccessoryVoltage(final Double value)
+      {
+      accessoryVoltage.setValue(value);
       }
 
    public Double getAuxiliaryVoltage(final int auxiliaryDeviceId)
@@ -60,6 +82,18 @@ final class UpdatableVoltages implements Voltages
          return auxiliaryVoltages[auxiliaryDeviceId].getValue();
          }
       throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
+      }
+
+   public void setAuxiliaryVoltage(final int auxiliaryDeviceId, final Double value)
+      {
+      if (auxiliaryDeviceId >= 0 && auxiliaryDeviceId < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
+         {
+         auxiliaryVoltages[auxiliaryDeviceId].setValue(value);
+         }
+      else
+         {
+         throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
+         }
       }
 
    public long getTimestampMilliseconds()

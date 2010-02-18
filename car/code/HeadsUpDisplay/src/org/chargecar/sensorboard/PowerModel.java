@@ -85,6 +85,126 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
          }
       }
 
+   public void resetBatteryCurrentMinMax()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         final Double value = previousVoltagesAndCurrents.getCurrents().getBatteryCurrent();
+         minimumCurrents.setBatteryCurrent(value);
+         maximumCurrents.setBatteryCurrent(value);
+         }
+      }
+
+   public void resetBatteryVoltageMinMax()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
+            {
+            final Double value = previousVoltagesAndCurrents.getVoltages().getBatteryVoltage(i);
+            minimumVoltages.setBatteryVoltage(i, value);
+            maximumVoltages.setBatteryVoltage(i, value);
+            }
+         }
+      }
+
+   public void resetCapacitorCurrentMinMax()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         final Double value = previousVoltagesAndCurrents.getCurrents().getCapacitorCurrent();
+         minimumCurrents.setCapacitorCurrent(value);
+         maximumCurrents.setCapacitorCurrent(value);
+         }
+      }
+
+   public void resetCapacitorVoltageMinMax()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         final Double value = previousVoltagesAndCurrents.getVoltages().getCapacitorVoltage();
+         minimumVoltages.setCapacitorVoltage(value);
+         maximumVoltages.setCapacitorVoltage(value);
+         }
+      }
+
+   public void resetAccessoryCurrentMinMax()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         final Double value = previousVoltagesAndCurrents.getCurrents().getAccessoryCurrent();
+         minimumCurrents.setAccessoryCurrent(value);
+         maximumCurrents.setAccessoryCurrent(value);
+         }
+      }
+
+   public void resetAccessoryVoltageMinMax()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         final Double value = previousVoltagesAndCurrents.getVoltages().getAccessoryVoltage();
+         minimumVoltages.setAccessoryVoltage(value);
+         maximumVoltages.setAccessoryVoltage(value);
+         }
+      }
+
+   public void resetMotorCurrentMinMax(final int id)
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         if (id >= 0 && id < SensorBoardConstants.MOTOR_DEVICE_COUNT)
+            {
+            final Double value = previousVoltagesAndCurrents.getCurrents().getMotorCurrent(id);
+            minimumCurrents.setMotorCurrent(id, value);
+            maximumCurrents.setMotorCurrent(id, value);
+            }
+         else
+            {
+            throw new IllegalArgumentException("Invalid motor ID [" + id + "], value must be a positive integer less than [" + SensorBoardConstants.MOTOR_DEVICE_COUNT + "]");
+            }
+         }
+      }
+
+   public void resetBatteryVoltageMinMax(final int id)
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         if (id >= 0 && id < SensorBoardConstants.BATTERY_DEVICE_COUNT)
+            {
+            minimumVoltages.setBatteryVoltage(id, previousVoltagesAndCurrents.getVoltages().getBatteryVoltage(id));
+            maximumVoltages.setBatteryVoltage(id, previousVoltagesAndCurrents.getVoltages().getBatteryVoltage(id));
+            }
+         else
+            {
+            throw new IllegalArgumentException("Invalid battery ID [" + id + "], value must be a positive integer less than [" + SensorBoardConstants.BATTERY_DEVICE_COUNT + "]");
+            }
+         }
+      }
+
+   public void resetBatteryPowerEquation()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         batteryPowerEquation.reset();
+         }
+      }
+
+   public void resetCapacitorPowerEquation()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         capacitorPowerEquation.reset();
+         }
+      }
+
+   public void resetAccessoryPowerEquation()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         accessoryPowerEquation.reset();
+         }
+      }
+
    private static final class PowerEquationImpl implements PowerEquation
       {
       private double kwhUsed = 0.0;
@@ -115,6 +235,12 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
             {
             kwhRegen += kwh;
             }
+         }
+
+      private void reset()
+         {
+         kwhUsed = 0.0;
+         kwhRegen = 0.0;
          }
 
       @Override

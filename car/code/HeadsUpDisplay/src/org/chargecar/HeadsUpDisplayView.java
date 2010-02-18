@@ -2,7 +2,10 @@ package org.chargecar;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.PropertyResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -36,8 +39,9 @@ final class HeadsUpDisplayView extends JPanel
                       final PowerView powerView,
                       final PowerController powerController)
       {
+      final AtomicInteger markValue = new AtomicInteger(0);
       final JButton quitButton = SwingUtils.createButton(RESOURCES.getString("label.quit"), true);
-      final JButton markButton = SwingUtils.createButton(RESOURCES.getString("label.mark"), true);
+      final JButton markButton = SwingUtils.createButton(RESOURCES.getString("label.mark") + " " + markValue.get(), true);
 
       final JButton resetBatteryPowerButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
       final JButton resetCapacitorPowerButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
@@ -64,12 +68,12 @@ final class HeadsUpDisplayView extends JPanel
             });
 
       markButton.addActionListener(
-            new ButtonTimeConsumingAction(this, quitButton)
+            new ActionListener()
             {
-            protected Object executeTimeConsumingAction()
+            public void actionPerformed(final ActionEvent e)
                {
-               LOG.debug("$$$$$$$$$$$$$$$$$$$ MARK!");
-               return null;
+               LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " =============================================================");
+               markButton.setText(RESOURCES.getString("label.mark") + " " + markValue.get());
                }
             });
 
@@ -78,7 +82,7 @@ final class HeadsUpDisplayView extends JPanel
             {
             protected Object executeTimeConsumingAction()
                {
-               powerController.resetBatteryPower();
+               powerController.resetBatteryPowerEquation();
                return null;
                }
             });
@@ -88,7 +92,7 @@ final class HeadsUpDisplayView extends JPanel
             {
             protected Object executeTimeConsumingAction()
                {
-               powerController.resetCapacitorPower();
+               powerController.resetCapacitorPowerEquation();
                return null;
                }
             });
@@ -98,7 +102,7 @@ final class HeadsUpDisplayView extends JPanel
             {
             protected Object executeTimeConsumingAction()
                {
-               powerController.resetAccessoryPower();
+               powerController.resetAccessoryPowerEquation();
                return null;
                }
             });
@@ -122,6 +126,7 @@ final class HeadsUpDisplayView extends JPanel
       final JPanel batteryAndCapDialsPanel = new JPanel();
       batteryAndCapDialsPanel.setLayout(new BoxLayout(batteryAndCapDialsPanel, BoxLayout.X_AXIS));
 
+      batteryAndCapDialsPanel.add(Box.createGlue());
       batteryAndCapDialsPanel.add(powerView.getBatteryVoltageMeter());
       batteryAndCapDialsPanel.add(SwingUtils.createRigidSpacer());
       batteryAndCapDialsPanel.add(powerView.getBatteryCurrentMeter());
@@ -129,6 +134,7 @@ final class HeadsUpDisplayView extends JPanel
       batteryAndCapDialsPanel.add(powerView.getCapacitorVoltageMeter());
       batteryAndCapDialsPanel.add(SwingUtils.createRigidSpacer());
       batteryAndCapDialsPanel.add(powerView.getCapacitorCurrentMeter());
+      batteryAndCapDialsPanel.add(Box.createGlue());
 
       final Component powerPanelHorizontalSpacer1 = SwingUtils.createRigidSpacer(40);
       final Component powerPanelHorizontalSpacer2 = SwingUtils.createRigidSpacer(40);
@@ -239,6 +245,7 @@ final class HeadsUpDisplayView extends JPanel
 
       final JPanel powerPanelContainer = new JPanel();
       powerPanelContainer.setLayout(new BoxLayout(powerPanelContainer, BoxLayout.X_AXIS));
+
       powerPanelContainer.add(Box.createGlue());
       powerPanelContainer.add(powerPanel);
       powerPanelContainer.add(Box.createGlue());
@@ -246,6 +253,7 @@ final class HeadsUpDisplayView extends JPanel
       final JPanel batteryVoltageDialsPanel = new JPanel();
       batteryVoltageDialsPanel.setLayout(new BoxLayout(batteryVoltageDialsPanel, BoxLayout.X_AXIS));
 
+      batteryVoltageDialsPanel.add(Box.createGlue());
       batteryVoltageDialsPanel.add(powerView.getBatteryVoltageMeter(0));
       batteryVoltageDialsPanel.add(SwingUtils.createRigidSpacer());
       batteryVoltageDialsPanel.add(powerView.getBatteryVoltageMeter(1));
@@ -253,10 +261,12 @@ final class HeadsUpDisplayView extends JPanel
       batteryVoltageDialsPanel.add(powerView.getBatteryVoltageMeter(2));
       batteryVoltageDialsPanel.add(SwingUtils.createRigidSpacer());
       batteryVoltageDialsPanel.add(powerView.getBatteryVoltageMeter(3));
+      batteryVoltageDialsPanel.add(Box.createGlue());
 
       final JPanel motorCurrentDialsPanel = new JPanel();
       motorCurrentDialsPanel.setLayout(new BoxLayout(motorCurrentDialsPanel, BoxLayout.X_AXIS));
 
+      motorCurrentDialsPanel.add(Box.createGlue());
       motorCurrentDialsPanel.add(powerView.getMotorCurrentMeter(0));
       motorCurrentDialsPanel.add(SwingUtils.createRigidSpacer());
       motorCurrentDialsPanel.add(powerView.getMotorCurrentMeter(1));
@@ -264,6 +274,7 @@ final class HeadsUpDisplayView extends JPanel
       motorCurrentDialsPanel.add(powerView.getMotorCurrentMeter(2));
       motorCurrentDialsPanel.add(SwingUtils.createRigidSpacer());
       motorCurrentDialsPanel.add(powerView.getMotorCurrentMeter(3));
+      motorCurrentDialsPanel.add(Box.createGlue());
 
       final JPanel batteryAndMotorDetailPanel = new JPanel();
       batteryAndMotorDetailPanel.setLayout(new BoxLayout(batteryAndMotorDetailPanel, BoxLayout.Y_AXIS));
@@ -276,6 +287,7 @@ final class HeadsUpDisplayView extends JPanel
       final JPanel temperatureDialsRow1Panel = new JPanel();
       temperatureDialsRow1Panel.setLayout(new BoxLayout(temperatureDialsRow1Panel, BoxLayout.X_AXIS));
 
+      temperatureDialsRow1Panel.add(Box.createGlue());
       temperatureDialsRow1Panel.add(temperaturesView.getBatteryMeter());
       temperatureDialsRow1Panel.add(SwingUtils.createRigidSpacer());
       temperatureDialsRow1Panel.add(temperaturesView.getCapacitorMeter());
@@ -283,10 +295,12 @@ final class HeadsUpDisplayView extends JPanel
       temperatureDialsRow1Panel.add(temperaturesView.getMotorControllerMeter(0));
       temperatureDialsRow1Panel.add(SwingUtils.createRigidSpacer());
       temperatureDialsRow1Panel.add(temperaturesView.getMotorControllerMeter(1));
+      temperatureDialsRow1Panel.add(Box.createGlue());
 
       final JPanel temperatureDialsRow2Panel = new JPanel();
       temperatureDialsRow2Panel.setLayout(new BoxLayout(temperatureDialsRow2Panel, BoxLayout.X_AXIS));
 
+      temperatureDialsRow2Panel.add(Box.createGlue());
       temperatureDialsRow2Panel.add(temperaturesView.getMotorMeter(0));
       temperatureDialsRow2Panel.add(SwingUtils.createRigidSpacer());
       temperatureDialsRow2Panel.add(temperaturesView.getMotorMeter(1));
@@ -294,6 +308,7 @@ final class HeadsUpDisplayView extends JPanel
       temperatureDialsRow2Panel.add(temperaturesView.getMotorMeter(2));
       temperatureDialsRow2Panel.add(SwingUtils.createRigidSpacer());
       temperatureDialsRow2Panel.add(temperaturesView.getMotorMeter(3));
+      temperatureDialsRow2Panel.add(Box.createGlue());
 
       final JPanel temperatureDialsPanel = new JPanel();
       temperatureDialsPanel.setLayout(new BoxLayout(temperatureDialsPanel, BoxLayout.Y_AXIS));
@@ -306,9 +321,11 @@ final class HeadsUpDisplayView extends JPanel
       final JPanel accessoryDialsPanel = new JPanel();
       accessoryDialsPanel.setLayout(new BoxLayout(accessoryDialsPanel, BoxLayout.X_AXIS));
 
+      accessoryDialsPanel.add(Box.createGlue());
       accessoryDialsPanel.add(powerView.getAccessoryVoltageMeter());
       accessoryDialsPanel.add(SwingUtils.createRigidSpacer());
       accessoryDialsPanel.add(powerView.getAccessoryCurrentMeter());
+      accessoryDialsPanel.add(Box.createGlue());
 
       final JTabbedPane tabbedPane = new JTabbedPane();
       tabbedPane.addTab(RESOURCES.getString("label.power"), powerPanelContainer);
@@ -344,7 +361,7 @@ final class HeadsUpDisplayView extends JPanel
          }
 
       @Override
-      protected final void executeGUIActionAfter(final Object resultOfTimeConsumingAction)
+      protected void executeGUIActionAfter(final Object resultOfTimeConsumingAction)
          {
          super.executeGUIActionAfter(resultOfTimeConsumingAction);
          button.setEnabled(true);
