@@ -1,8 +1,5 @@
 package org.chargecar.sensorboard;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * <p>
  * <code>PowerController</code> is the MVC controller class for the {@link PowerModel} and {@link PowerView}.
@@ -12,64 +9,65 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class PowerController
    {
-   private static final Log LOG = LogFactory.getLog(PowerController.class);
+   private final PowerModel powerModel;
 
    public PowerController(final PowerModel powerModel)
       {
+      this.powerModel = powerModel;
       }
 
-   public void resetBatteryCurrent()
+   public void resetBatteryCurrentMinMax()
       {
-      LOG.debug("################################################## PowerController.resetBatteryCurrent()");
+      powerModel.resetBatteryCurrentMinMax();
       }
 
-   public void resetBatteryVoltage()
+   public void resetBatteryVoltageMinMax()
       {
-      LOG.debug("################################################## PowerController.resetBatteryVoltage()");
+      powerModel.resetBatteryVoltageMinMax();
       }
 
-   public void resetCapacitorCurrent()
+   public void resetCapacitorCurrentMinMax()
       {
-      LOG.debug("################################################## PowerController.resetCapacitorCurrent()");
+      powerModel.resetCapacitorCurrentMinMax();
       }
 
-   public void resetCapacitorVoltage()
+   public void resetCapacitorVoltageMinMax()
       {
-      LOG.debug("################################################## PowerController.resetCapacitorVoltage()");
+      powerModel.resetCapacitorVoltageMinMax();
       }
 
-   public void resetAccessoryCurrent()
+   public void resetAccessoryCurrentMinMax()
       {
-      LOG.debug("################################################## PowerController.resetAccessoryCurrent()");
+      powerModel.resetAccessoryCurrentMinMax();
       }
 
-   public void resetAccessoryVoltage()
+   public void resetAccessoryVoltageMinMax()
       {
-      LOG.debug("################################################## PowerController.resetAccessoryVoltage()");
+      powerModel.resetAccessoryVoltageMinMax();
       }
 
-   public void resetMotorCurrent(final int id)
+   public void resetMotorCurrentMinMax(final int id)
       {
-      LOG.debug("################################################## PowerController.resetMotorCurrent(" + id + ")");
+      powerModel.resetMotorCurrentMinMax(id);
       }
 
-   public void resetBatteryVoltage(final int id)
+   public void resetBatteryVoltageMinMax(final int id)
       {
-      LOG.debug("################################################## PowerController.resetBatteryVoltage(" + id + ")");
+      powerModel.resetBatteryVoltageMinMax(id);
       }
 
-   public void resetBatteryPower()
+   public void resetBatteryPowerEquation()
       {
-      LOG.debug("################################################## PowerController.resetBatteryPower()");
+      powerModel.resetBatteryPowerEquation();
       }
 
-   public void resetCapacitorPower()
+   public void resetCapacitorPowerEquation()
       {
-      LOG.debug("################################################## PowerController.resetCapacitorPower()");
+      powerModel.resetCapacitorPowerEquation();
       }
 
-   public void resetAccessoryPower()
+   public void resetAccessoryPowerEquation()
       {
-      LOG.debug("################################################## PowerController.resetAccessoryPower()");
+      powerModel.resetAccessoryPowerEquation();
       }
    }

@@ -47,8 +47,7 @@ final class UpdatableDouble
          {
          public boolean shouldUpdateToNewValue(final Double oldValue, final Double newValue)
             {
-            final int i = Double.compare(newValue, oldValue);
-            return i > 0;
+            return Double.compare(newValue, oldValue) > 0;
             }
          };
 
