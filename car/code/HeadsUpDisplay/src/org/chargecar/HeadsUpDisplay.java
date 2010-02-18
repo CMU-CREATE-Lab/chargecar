@@ -7,12 +7,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.PropertyResourceBundle;
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -22,11 +20,13 @@ import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionSta
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManager;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManagerImpl;
 import edu.cmu.ri.createlab.userinterface.component.Spinner;
+import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
 import org.chargecar.gps.nmea.NMEAReader;
+import org.chargecar.sensorboard.PowerController;
 import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.PowerView;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
@@ -128,6 +128,7 @@ public class HeadsUpDisplay
       final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
       final TemperaturesModel temperaturesModel = new TemperaturesModel();
       final PowerModel powerModel = new PowerModel();
+      final PowerController powerController = new PowerController(powerModel);
 
       // create and configure the SerialDeviceConnectivityManager, LifecycleManager, and HeadsUpDisplayController
       final SerialDeviceConnectivityManager serialDeviceConnectivityManager = new SerialDeviceConnectivityManagerImpl(new SensorBoardSerialDeviceProxyCreator());
@@ -162,8 +163,12 @@ public class HeadsUpDisplay
       // create the views
       final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
       final TemperaturesView temperaturesView = new TemperaturesView();
-      final PowerView powerView = new PowerView();
-      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(headsUpDisplayController, speedAndOdometryView, temperaturesView, powerView);
+      final PowerView powerView = new PowerView(powerController);
+      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(headsUpDisplayController,
+                                                                           speedAndOdometryView,
+                                                                           temperaturesView,
+                                                                           powerView,
+                                                                           powerController);
 
       // set up the runnables used to toggle the UI for scanning/connected/disconnected
       final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
@@ -282,51 +287,13 @@ public class HeadsUpDisplay
          {
          LOG.debug("LifecycleManager.shutdown()");
 
-         final int[] selectedOption = new int[1];
-         selectedOption[0] = JOptionPane.NO_OPTION;
-
-         if (SwingUtilities.isEventDispatchThread())
-            {
-            selectedOption[0] = promptUser();
-            }
-         else
-            {
-            try
-               {
-               SwingUtilities.invokeAndWait(
-                     new Runnable()
-                     {
-                     public void run()
-                        {
-                        // ask if the user really wants to exit
-                        selectedOption[0] = promptUser();
-                        }
-                     });
-               }
-            catch (InterruptedException e)
-               {
-               LOG.error("InterruptedException during invokeAndWait()", e);
-               }
-            catch (InvocationTargetException e)
-               {
-               LOG.error("InvocationTargetException during invokeAndWait()", e);
-               }
-            }
-
-         if (selectedOption[0] == JOptionPane.YES_OPTION)
+         // ask if the user really wants to exit
+         if (DialogHelper.showYesNoDialog(RESOURCES.getString("dialog.title.exit-confirmation"),
+                                          RESOURCES.getString("dialog.message.exit-confirmation"),
+                                          jFrame))
             {
             run(shutdownRunnable);
             }
-         }
-
-      private int promptUser()
-         {
-         // ask if the user really wants to exit
-         return JOptionPane.showConfirmDialog(jFrame,
-                                              RESOURCES.getString("dialog.message.exit-confirmation"),
-                                              RESOURCES.getString("dialog.title.exit-confirmation"),
-                                              JOptionPane.YES_NO_OPTION,
-                                              JOptionPane.QUESTION_MESSAGE);
          }
 
       private void run(final Runnable runnable)

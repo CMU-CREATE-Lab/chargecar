@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
+import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdesktop.layout.GroupLayout;
@@ -62,7 +63,7 @@ public final class StandardFileChooser implements FileChooser
    public StandardFileChooser(final int numTextFieldColumns, final String buttonLabel, final String targetFileExtension, final String targetFileDescription)
       {
       filePathTextField = createTextField(numTextFieldColumns);
-      findClipButton = GUIConstants.createButton(buttonLabel, true);
+      findClipButton = SwingUtils.createButton(buttonLabel, true);
 
       filePathTextField.addKeyListener(
             new KeyAdapter()
