@@ -7,6 +7,7 @@ import java.awt.Point;
 import javax.swing.JPanel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.dial.DialBackground;
@@ -27,6 +28,7 @@ public class Meter extends JPanel
    private static final Log LOG = LogFactory.getLog(Meter.class);
 
    private final DefaultValueDataset[] datasets;
+   private final ChartPanel chartPanel;
 
    public Meter(final MeterConfig meterConfig)
       {
@@ -119,18 +121,25 @@ public class Meter extends JPanel
          datasetNeedle.setRadius(0.75);
          datasetNeedle.setPaint(meterConfig.getDatasetColor(i));
          plot.addLayer(datasetNeedle);
-         LOG.debug("############################################# ADDING NEEDLE FOR DATASET " + i + " color is [" + meterConfig.getDatasetColor(i) + "]");
          }
 
       final DialCap dialCap = new DialCap();
       dialCap.setRadius(0.10);
       plot.setCap(dialCap);
 
-      final JFreeChart chart1 = new JFreeChart(plot);
-      final ChartPanel chartPanel = new ChartPanel(chart1);
+      chartPanel = new ChartPanel(new JFreeChart(plot));
       chartPanel.setPreferredSize(meterConfig.getSize());
 
       this.add(chartPanel);
+      this.setPreferredSize(meterConfig.getSize());
+      }
+
+   public void addChartMouseListener(final ChartMouseListener listener)
+      {
+      if (listener != null)
+         {
+         chartPanel.addChartMouseListener(listener);
+         }
       }
 
    public void setValues(final Double... values)
@@ -145,7 +154,6 @@ public class Meter extends JPanel
                }
             else
                {
-               LOG.debug("setValues(): dataset [" + i + "] value [" + values[i] + "]");
                datasets[i].setValue(values[i]);
                }
             }

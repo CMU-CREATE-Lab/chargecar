@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import javax.swing.SwingUtilities;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.component.DatasetPlotter;
 import edu.cmu.ri.createlab.userinterface.util.SpringLayoutUtilities;
+import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
@@ -25,10 +25,10 @@ public class GPSDisplay implements GPSEventListener
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(GPSDisplay.class.getName());
 
    private final JPanel panel = new JPanel(new SpringLayout());
-   private final JLabel latitudeLabel = GUIConstants.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
-   private final JLabel longitudeLabel = GUIConstants.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
-   private final JLabel satellitesLabel = GUIConstants.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
-   private final JLabel elevationLabel = GUIConstants.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
+   private final JLabel latitudeLabel = SwingUtils.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
+   private final JLabel longitudeLabel = SwingUtils.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
+   private final JLabel satellitesLabel = SwingUtils.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
+   private final JLabel elevationLabel = SwingUtils.createLabel("", GUIConstants.MONOSPACED_FONT_LARGE);
    private final DatasetPlotter<Integer> elevationPlot = new DatasetPlotter<Integer>(900, 1300, 400, 400, 1, TimeUnit.SECONDS);
 
    public GPSDisplay()
@@ -36,13 +36,13 @@ public class GPSDisplay implements GPSEventListener
       elevationPlot.addDataset(Color.RED);
 
       final JPanel dataPanel = new JPanel(new SpringLayout());
-      dataPanel.add(GUIConstants.createLabel(RESOURCES.getString("label.latitude"), GUIConstants.FONT_LARGE));
+      dataPanel.add(SwingUtils.createLabel(RESOURCES.getString("label.latitude"), GUIConstants.FONT_LARGE));
       dataPanel.add(latitudeLabel);
-      dataPanel.add(GUIConstants.createLabel(RESOURCES.getString("label.longitude"), GUIConstants.FONT_LARGE));
+      dataPanel.add(SwingUtils.createLabel(RESOURCES.getString("label.longitude"), GUIConstants.FONT_LARGE));
       dataPanel.add(longitudeLabel);
-      dataPanel.add(GUIConstants.createLabel(RESOURCES.getString("label.satellites"), GUIConstants.FONT_LARGE));
+      dataPanel.add(SwingUtils.createLabel(RESOURCES.getString("label.satellites"), GUIConstants.FONT_LARGE));
       dataPanel.add(satellitesLabel);
-      dataPanel.add(GUIConstants.createLabel(RESOURCES.getString("label.elevation"), GUIConstants.FONT_LARGE));
+      dataPanel.add(SwingUtils.createLabel(RESOURCES.getString("label.elevation"), GUIConstants.FONT_LARGE));
       dataPanel.add(elevationLabel);
       SpringLayoutUtilities.makeCompactGrid(dataPanel,
                                             4, 2, // rows, cols
@@ -65,7 +65,7 @@ public class GPSDisplay implements GPSEventListener
    public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
       {
       LOG.debug("GPSDisplay.handleLocationEvent(" + latitude + "," + longitude + "," + numSatellitesBeingTracked + ")");
-      runInGUIThread(
+      SwingUtils.runInGUIThread(
             new Runnable()
             {
             public void run()
@@ -80,7 +80,7 @@ public class GPSDisplay implements GPSEventListener
    public void handleElevationEvent(final int elevationInFeet)
       {
       LOG.debug("GPSDisplay.handleElevationEvent(" + elevationInFeet + ")");
-      runInGUIThread(
+      SwingUtils.runInGUIThread(
             new Runnable()
             {
             public void run()
@@ -89,17 +89,5 @@ public class GPSDisplay implements GPSEventListener
                elevationPlot.setCurrentValues(elevationInFeet);
                }
             });
-      }
-
-   private void runInGUIThread(final Runnable runnable)
-      {
-      if (SwingUtilities.isEventDispatchThread())
-         {
-         runnable.run();
-         }
-      else
-         {
-         SwingUtilities.invokeLater(runnable);
-         }
       }
    }

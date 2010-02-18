@@ -5,7 +5,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
-import javax.swing.JPanel;
+import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
+import org.jfree.chart.ChartMouseEvent;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -34,7 +35,7 @@ public final class PowerView extends View<Power>
    private final Gauge<Double> capacitorPowerUsedGauge = new Gauge<Double>(RESOURCES.getString("label.used"), POWER_STRING_FORMAT);
    private final Gauge<Double> capacitorPowerRegenGauge = new Gauge<Double>(RESOURCES.getString("label.regen"), POWER_STRING_FORMAT);
 
-   public PowerView()
+   public PowerView(final PowerController powerController)
       {
       final DefaultMeterConfig meterConfig = new DefaultMeterConfig(3);
       meterConfig.setDatasetColor(0, Color.RED);
@@ -120,6 +121,8 @@ public final class PowerView extends View<Power>
          batteryVoltageMeters.add(new Meter(meterConfig));
          }
 
+      // ---------------------------------------------------------------------------------------------------------------
+
       meterConfig.clearDialRanges();
       meterConfig.setRange(-500, 500);
       meterConfig.setTicks(100, 9);
@@ -129,24 +132,112 @@ public final class PowerView extends View<Power>
          meterConfig.setLabel(RESOURCES.getString("label.motor") + " " + (i + 1), RESOURCES.getString("label.current"));
          motorCurrentMeters.add(new Meter(meterConfig));
          }
+
+      // ---------------------------------------------------------------------------------------------------------------
+
+      // Add mouse listeners for all the meters
+      batteryCurrentMeter.addChartMouseListener(
+            new MeterResetHandler()
+            {
+            public void resetMeter()
+               {
+               powerController.resetBatteryCurrent();
+               }
+            }
+      );
+      batteryVoltageMeter.addChartMouseListener(
+            new MeterResetHandler()
+            {
+            public void resetMeter()
+               {
+               powerController.resetBatteryVoltage();
+               }
+            }
+      );
+      capacitorCurrentMeter.addChartMouseListener(
+            new MeterResetHandler()
+            {
+            public void resetMeter()
+               {
+               powerController.resetCapacitorCurrent();
+               }
+            }
+      );
+      capacitorVoltageMeter.addChartMouseListener(
+            new MeterResetHandler()
+            {
+            public void resetMeter()
+               {
+               powerController.resetCapacitorVoltage();
+               }
+            }
+      );
+      accessoryCurrentMeter.addChartMouseListener(
+            new MeterResetHandler()
+            {
+            public void resetMeter()
+               {
+               powerController.resetAccessoryCurrent();
+               }
+            }
+      );
+      accessoryVoltageMeter.addChartMouseListener(
+            new MeterResetHandler()
+            {
+            public void resetMeter()
+               {
+               powerController.resetAccessoryVoltage();
+               }
+            }
+      );
+
+      int i = 0;
+      for (final Meter motorCurrentMeter : motorCurrentMeters)
+         {
+         motorCurrentMeter.addChartMouseListener(
+               new IndexedMeterResetHandler(i)
+               {
+               protected void resetMeter(final int id)
+                  {
+                  powerController.resetMotorCurrent(id);
+                  }
+               }
+         );
+         i++;
+         }
+
+      i = 0;
+      for (final Meter batteryVoltageMeter : batteryVoltageMeters)
+         {
+         batteryVoltageMeter.addChartMouseListener(
+               new IndexedMeterResetHandler(i)
+               {
+               protected void resetMeter(final int id)
+                  {
+                  powerController.resetBatteryVoltage(id);
+                  }
+               }
+         );
+         i++;
+         }
       }
 
-   public JPanel getAccessoryCurrentMeter()
+   public Meter getAccessoryCurrentMeter()
       {
       return accessoryCurrentMeter;
       }
 
-   public JPanel getBatteryCurrentMeter()
+   public Meter getBatteryCurrentMeter()
       {
       return batteryCurrentMeter;
       }
 
-   public JPanel getCapacitorCurrentMeter()
+   public Meter getCapacitorCurrentMeter()
       {
       return capacitorCurrentMeter;
       }
 
-   public JPanel getMotorCurrentMeter(final int id)
+   public Meter getMotorCurrentMeter(final int id)
       {
       if (0 <= id && id < SensorBoardConstants.MOTOR_DEVICE_COUNT)
          {
@@ -155,22 +246,22 @@ public final class PowerView extends View<Power>
       return null;
       }
 
-   public JPanel getAccessoryVoltageMeter()
+   public Meter getAccessoryVoltageMeter()
       {
       return accessoryVoltageMeter;
       }
 
-   public JPanel getBatteryVoltageMeter()
+   public Meter getBatteryVoltageMeter()
       {
       return batteryVoltageMeter;
       }
 
-   public JPanel getCapacitorVoltageMeter()
+   public Meter getCapacitorVoltageMeter()
       {
       return capacitorVoltageMeter;
       }
 
-   public JPanel getBatteryVoltageMeter(final int id)
+   public Meter getBatteryVoltageMeter(final int id)
       {
       if (0 <= id && id < SensorBoardConstants.BATTERY_DEVICE_COUNT)
          {
@@ -179,37 +270,37 @@ public final class PowerView extends View<Power>
       return null;
       }
 
-   public JPanel getAccessoryPowerTotalGauge()
+   public Gauge getAccessoryPowerTotalGauge()
       {
       return accessoryPowerTotalGauge;
       }
 
-   public JPanel getBatteryPowerTotalGauge()
+   public Gauge getBatteryPowerTotalGauge()
       {
       return batteryPowerTotalGauge;
       }
 
-   public JPanel getBatteryPowerUsedGauge()
+   public Gauge getBatteryPowerUsedGauge()
       {
       return batteryPowerUsedGauge;
       }
 
-   public JPanel getBatteryPowerRegenGauge()
+   public Gauge getBatteryPowerRegenGauge()
       {
       return batteryPowerRegenGauge;
       }
 
-   public JPanel getCapacitorPowerTotalGauge()
+   public Gauge getCapacitorPowerTotalGauge()
       {
       return capacitorPowerTotalGauge;
       }
 
-   public JPanel getCapacitorPowerUsedGauge()
+   public Gauge getCapacitorPowerUsedGauge()
       {
       return capacitorPowerUsedGauge;
       }
 
-   public JPanel getCapacitorPowerRegenGauge()
+   public Gauge getCapacitorPowerRegenGauge()
       {
       return capacitorPowerRegenGauge;
       }
@@ -306,5 +397,50 @@ public final class PowerView extends View<Power>
          {
          batteryVoltageMeters.get(i).setValues(null, null, null);
          }
+      }
+
+   private abstract static class MeterResetHandler extends ChartMouseAdapter
+      {
+      public final void chartMouseClicked(final ChartMouseEvent event)
+         {
+         final SwingWorker worker =
+               new SwingWorker()
+               {
+               public Object construct()
+                  {
+                  resetMeter();
+                  return null;
+                  }
+               };
+         worker.start();
+         }
+
+      protected abstract void resetMeter();
+      }
+
+   private abstract static class IndexedMeterResetHandler extends ChartMouseAdapter
+      {
+      private final int id;
+
+      private IndexedMeterResetHandler(final int id)
+         {
+         this.id = id;
+         }
+
+      public final void chartMouseClicked(final ChartMouseEvent event)
+         {
+         final SwingWorker worker =
+               new SwingWorker()
+               {
+               public Object construct()
+                  {
+                  resetMeter(id);
+                  return null;
+                  }
+               };
+         worker.start();
+         }
+
+      protected abstract void resetMeter(final int index);
       }
    }

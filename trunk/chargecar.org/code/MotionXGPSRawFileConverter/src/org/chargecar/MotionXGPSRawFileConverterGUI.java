@@ -15,8 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
-import edu.cmu.ri.createlab.userinterface.component.AbstractAlert;
 import edu.cmu.ri.createlab.userinterface.util.AbstractTimeConsumingAction;
+import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
+import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.userinterface.filechooser.FileChooser;
@@ -41,7 +42,7 @@ final class MotionXGPSRawFileConverterGUI extends JPanel
                                                                          RESOURCES.getString("filechooser.filter.accepted-file-type.extension"),
                                                                          RESOURCES.getString("filechooser.filter.accepted-file-type.name"));
 
-   private final JButton convertButton = GUIConstants.createButton(RESOURCES.getString("button.convert"), false);
+   private final JButton convertButton = SwingUtils.createButton(RESOURCES.getString("button.convert"), false);
    private final Alert alert = new Alert(this);
 
    MotionXGPSRawFileConverterGUI(final MotionXGPSRawFileConverter converter)
@@ -139,12 +140,12 @@ final class MotionXGPSRawFileConverterGUI extends JPanel
       final Component titlePaddingLeft = Box.createGlue();
       final Component titlePaddingRight = Box.createGlue();
       final Component convertButtonPaddingLeft = Box.createGlue();
-      final JLabel titleLabel = GUIConstants.createLabel(APPLICATION_NAME, GUIConstants.FONT_MEDIUM);
-      final Component titlePadding = GUIConstants.createRigidSpacer(20);
-      final JLabel instructionsLabel = GUIConstants.createLabel(RESOURCES.getString("label.instructions"));
-      final Component instructionsPadding = GUIConstants.createRigidSpacer(20);
-      final Component convertButtonPadding = GUIConstants.createRigidSpacer(20);
-      final JLabel sourceLabel = GUIConstants.createLabel(RESOURCES.getString("label.source-kmz") + ":");
+      final JLabel titleLabel = SwingUtils.createLabel(APPLICATION_NAME, GUIConstants.FONT_MEDIUM);
+      final Component titlePadding = SwingUtils.createRigidSpacer(20);
+      final JLabel instructionsLabel = SwingUtils.createLabel(RESOURCES.getString("label.instructions"));
+      final Component instructionsPadding = SwingUtils.createRigidSpacer(20);
+      final Component convertButtonPadding = SwingUtils.createRigidSpacer(20);
+      final JLabel sourceLabel = SwingUtils.createLabel(RESOURCES.getString("label.source-kmz") + ":");
 
       final JPanel panel = new JPanel();
       final GroupLayout layout = new GroupLayout(panel);
@@ -194,35 +195,41 @@ final class MotionXGPSRawFileConverterGUI extends JPanel
       this.add(panel);
       }
 
-   private static final class Alert extends AbstractAlert
+   private static final class Alert
       {
+      private final Component parentComponent;
+
       private Alert(final Component parentComponent)
          {
-         super(parentComponent);
+         this.parentComponent = parentComponent;
          }
 
       public void showConversionFailureAlert(final String message)
          {
-         showErrorMessage(RESOURCES.getString("dialog.title.conversion-failed"),
-                          RESOURCES.getString("dialog.message.conversion-failed") + LINE_SEPARATOR + LINE_SEPARATOR + message);
+         DialogHelper.showErrorMessage(RESOURCES.getString("dialog.title.conversion-failed"),
+                                       RESOURCES.getString("dialog.message.conversion-failed") + LINE_SEPARATOR + LINE_SEPARATOR + message,
+                                       parentComponent);
          }
 
       public void showFileExistsAlert()
          {
-         showErrorMessage(RESOURCES.getString("dialog.title.conversion-failed-file-exists"),
-                          RESOURCES.getString("dialog.message.conversion-failed-file-exists"));
+         DialogHelper.showErrorMessage(RESOURCES.getString("dialog.title.conversion-failed-file-exists"),
+                                       RESOURCES.getString("dialog.message.conversion-failed-file-exists"),
+                                       parentComponent);
          }
 
       public void showFileCouldNotBeWrittenAlert()
          {
-         showErrorMessage(RESOURCES.getString("dialog.title.conversion-failed-file-could-not-be-written"),
-                          RESOURCES.getString("dialog.message.conversion-failed-file-could-not-be-written"));
+         DialogHelper.showErrorMessage(RESOURCES.getString("dialog.title.conversion-failed-file-could-not-be-written"),
+                                       RESOURCES.getString("dialog.message.conversion-failed-file-could-not-be-written"),
+                                       parentComponent);
          }
 
       public void showConversionSuccessAlert(final File file)
          {
-         showInfoMessage(RESOURCES.getString("dialog.title.conversion-success"),
-                         RESOURCES.getString("dialog.message.conversion-success") + " " + file.getAbsolutePath());
+         DialogHelper.showInfoMessage(RESOURCES.getString("dialog.title.conversion-success"),
+                                      RESOURCES.getString("dialog.message.conversion-success") + " " + file.getAbsolutePath(),
+                                      parentComponent);
          }
       }
 
