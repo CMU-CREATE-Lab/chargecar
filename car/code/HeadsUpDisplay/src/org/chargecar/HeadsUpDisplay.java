@@ -29,6 +29,7 @@ import org.chargecar.gps.nmea.NMEAReader;
 import org.chargecar.sensorboard.PowerController;
 import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.PowerView;
+import org.chargecar.sensorboard.SpeedAndOdometryController;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
 import org.chargecar.sensorboard.SpeedAndOdometryView;
 import org.chargecar.sensorboard.TemperaturesModel;
@@ -128,7 +129,6 @@ public class HeadsUpDisplay
       final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
       final TemperaturesModel temperaturesModel = new TemperaturesModel();
       final PowerModel powerModel = new PowerModel();
-      final PowerController powerController = new PowerController(powerModel);
 
       // create and configure the SerialDeviceConnectivityManager, LifecycleManager, and HeadsUpDisplayController
       final SerialDeviceConnectivityManager serialDeviceConnectivityManager = new SerialDeviceConnectivityManagerImpl(new SensorBoardSerialDeviceProxyCreator());
@@ -160,8 +160,12 @@ public class HeadsUpDisplay
                }
             });
 
+      // create controllers
+      final PowerController powerController = new PowerController(powerModel);
+      final SpeedAndOdometryController speedAndOdometryController = new SpeedAndOdometryController(speedAndOdometryModel);
+
       // create the views
-      final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView();
+      final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView(speedAndOdometryController);
       final TemperaturesView temperaturesView = new TemperaturesView();
       final PowerView powerView = new PowerView(powerController);
       final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(headsUpDisplayController,
