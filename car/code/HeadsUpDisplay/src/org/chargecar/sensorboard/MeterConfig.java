@@ -25,6 +25,10 @@ public interface MeterConfig
 
    Color getDatasetColor(final int id);
 
+   Color getBackgroundColor();
+
+   Color getBackgroundWarningColor();
+
    List<StandardDialRange> getDialRanges();
 
    String getLabelLine1();

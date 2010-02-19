@@ -15,6 +15,9 @@ import org.jfree.chart.plot.dial.StandardDialRange;
 public class DefaultMeterConfig implements MeterConfig
    {
    private final Color[] datasetColors;
+   private Color backgroundColor = GUIConstants.DEFAULT_METER_COLOR;
+   private Color backgroundWarningColor = GUIConstants.METER_WARNING_COLOR;
+
    private int width;
    private int height;
 
@@ -102,6 +105,32 @@ public class DefaultMeterConfig implements MeterConfig
       if (id >= 0 && id < datasetColors.length && color != null)
          {
          datasetColors[id] = color;
+         }
+      }
+
+   public Color getBackgroundColor()
+      {
+      return backgroundColor;
+      }
+
+   public void setBackgroundColor(final Color backgroundColor)
+      {
+      if (backgroundColor != null)
+         {
+         this.backgroundColor = backgroundColor;
+         }
+      }
+
+   public Color getBackgroundWarningColor()
+      {
+      return backgroundWarningColor;
+      }
+
+   public void setBackgroundWarningColor(final Color backgroundWarningColor)
+      {
+      if (backgroundWarningColor != null)
+         {
+         this.backgroundWarningColor = backgroundWarningColor;
          }
       }
 
