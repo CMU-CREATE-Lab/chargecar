@@ -94,6 +94,24 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          }
       }
 
+   public void resetTripOdometer1()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         tripOdometer1 = 0.0;
+         writeOdometerDataStore();
+         }
+      }
+
+   public void resetTripOdometer2()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         tripOdometer2 = 0.0;
+         writeOdometerDataStore();
+         }
+      }
+
    private static final class SpeedAndOdometryImpl implements SpeedAndOdometry
       {
       private final Speed speed;
