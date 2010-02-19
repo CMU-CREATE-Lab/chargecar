@@ -11,7 +11,11 @@ import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.Currents;
+import org.chargecar.sensorboard.EfficiencyModel;
+import org.chargecar.sensorboard.Odometry;
 import org.chargecar.sensorboard.PedalPositions;
+import org.chargecar.sensorboard.Power;
+import org.chargecar.sensorboard.PowerAndOdometry;
 import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.Speed;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
@@ -42,18 +46,21 @@ final class HeadsUpDisplayController
    private final SpeedAndOdometryModel speedAndOdometryModel;
    private final TemperaturesModel temperaturesModel;
    private final PowerModel powerModel;
+   private final EfficiencyModel efficiencyModel;
 
    HeadsUpDisplayController(final LifecycleManager lifecycleManager,
                             final SerialDeviceConnectivityManager serialDeviceConnectivityManager,
                             final SpeedAndOdometryModel speedAndOdometryModel,
                             final TemperaturesModel temperaturesModel,
-                            final PowerModel powerModel)
+                            final PowerModel powerModel,
+                            final EfficiencyModel efficiencyModel)
       {
       this.lifecycleManager = lifecycleManager;
       this.serialDeviceConnectivityManager = serialDeviceConnectivityManager;
       this.speedAndOdometryModel = speedAndOdometryModel;
       this.temperaturesModel = temperaturesModel;
       this.powerModel = powerModel;
+      this.efficiencyModel = efficiencyModel;
 
       // register self as a SerialDeviceConnectionEventListener
       this.serialDeviceConnectivityManager.addConnectionEventListener(
@@ -135,6 +142,7 @@ final class HeadsUpDisplayController
             speedAndOdometryModel.update(speed);
             temperaturesModel.update(temperatures);
             powerModel.update(new VoltagesAndCurrentsImpl(voltages, currents, isCapacitorOverVoltage));
+            efficiencyModel.update(new PowerAndOdometryImpl(powerModel.getPower(), speedAndOdometryModel.getOdometry()));
             }
          }
       }
@@ -165,6 +173,28 @@ final class HeadsUpDisplayController
       public boolean isCapacitorOverVoltage()
          {
          return isCapacitorOverVoltage;
+         }
+      }
+
+   private static final class PowerAndOdometryImpl implements PowerAndOdometry
+      {
+      private final Power power;
+      private final Odometry odometry;
+
+      private PowerAndOdometryImpl(final Power power, final Odometry odometry)
+         {
+         this.power = power;
+         this.odometry = odometry;
+         }
+
+      public Power getPower()
+         {
+         return power;
+         }
+
+      public Odometry getOdometry()
+         {
+         return odometry;
          }
       }
    }

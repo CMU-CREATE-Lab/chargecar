@@ -24,6 +24,7 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
    private final UpdatableVoltages maximumVoltages = UpdatableVoltages.createMaximumVoltages();
    private final UpdatableCurrents minimumCurrents = UpdatableCurrents.createMinimumCurrents();
    private final UpdatableCurrents maximumCurrents = UpdatableCurrents.createMaximumCurrents();
+   private Power power;
 
    public void update(final VoltagesAndCurrents voltagesAndCurrents)
       {
@@ -72,16 +73,26 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
             previousVoltagesAndCurrents = voltagesAndCurrents;
             previousTimestamp = currentTimestamp;
 
+            power = new PowerImpl(voltagesAndCurrents,
+                                  batteryPowerEquation,
+                                  capacitorPowerEquation,
+                                  accessoryPowerEquation,
+                                  minimumVoltages,
+                                  maximumVoltages,
+                                  minimumCurrents,
+                                  maximumCurrents);
+
             // notify listeners
-            publishEventToListeners(new PowerImpl(voltagesAndCurrents,
-                                                  batteryPowerEquation,
-                                                  capacitorPowerEquation,
-                                                  accessoryPowerEquation,
-                                                  minimumVoltages,
-                                                  maximumVoltages,
-                                                  minimumCurrents,
-                                                  maximumCurrents));
+            publishEventToListeners(power);
             }
+         }
+      }
+
+   public Power getPower()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         return power;
          }
       }
 
@@ -207,12 +218,18 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
 
    private static final class PowerEquationImpl implements PowerEquation
       {
+      private double kwhDelta = 0.0;
       private double kwhUsed = 0.0;
       private double kwhRegen = 0.0;
 
       public double getKilowattHours()
          {
          return kwhUsed + kwhRegen;
+         }
+
+      public double getKilowattHoursDelta()
+         {
+         return kwhDelta;
          }
 
       public double getKilowattHoursUsed()
@@ -227,6 +244,8 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
 
       private void addKilowattHours(final double kwh)
          {
+         kwhDelta = kwh;
+
          if (Double.compare(kwh, 0.0) < 0)
             {
             kwhUsed += kwh;
@@ -239,6 +258,7 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
 
       private void reset()
          {
+         kwhDelta = 0.0;
          kwhUsed = 0.0;
          kwhRegen = 0.0;
          }
@@ -248,7 +268,8 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
          {
          final StringBuilder sb = new StringBuilder();
          sb.append("PowerEquation");
-         sb.append("{kwhUsed=").append(kwhUsed);
+         sb.append("{kwhDelta=").append(kwhDelta);
+         sb.append(", kwhUsed=").append(kwhUsed);
          sb.append(", kwhRegen=").append(kwhRegen);
          sb.append('}');
          return sb.toString();

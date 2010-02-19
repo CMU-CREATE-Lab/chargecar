@@ -29,6 +29,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
    private double odometer = 0.0;
    private double tripOdometer1 = 0.0;
    private double tripOdometer2 = 0.0;
+   private SpeedAndOdometryImpl speedAndOdometry;
 
    public SpeedAndOdometryModel()
       {
@@ -41,7 +42,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             tripOdometer1 = Double.parseDouble(odometerDataStore.getProperty(TRIP_ODOMETER_1_PROPERTY_KEY, "0.0"));
             tripOdometer2 = Double.parseDouble(odometerDataStore.getProperty(TRIP_ODOMETER_2_PROPERTY_KEY, "0.0"));
             }
-         catch (Exception e)
+         catch (Exception ignored)
             {
             LOG.info("Failed to load the odometer data store, creating a new one...");
             writeOdometerDataStore();
@@ -56,26 +57,41 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          synchronized (dataSynchronizationLock)
             {
             final Integer mph = speed.getSpeed();
+            double distanceTraveledInMiles = 0.0;
 
             // if the previous speed isn't null, then calculate the odometry change
             if (previousSpeed != null)
                {
                final long elapsedMilliseconds = speed.getTimestampMilliseconds() - previousSpeed.getTimestampMilliseconds();
-               final double distanceTraveledInMiles = mph * SensorBoardConstants.HOURS_PER_MILLISECOND * elapsedMilliseconds;
+               distanceTraveledInMiles = mph * SensorBoardConstants.HOURS_PER_MILLISECOND * elapsedMilliseconds;
                odometer += distanceTraveledInMiles;
                tripOdometer1 += distanceTraveledInMiles;
                tripOdometer2 += distanceTraveledInMiles;
                }
 
-            // save the current speed 
+            // save the current speed
             previousSpeed = speed;
 
             // update the data store
             writeOdometerDataStore();
 
+            speedAndOdometry = new SpeedAndOdometryImpl(speed,
+                                                        odometer,
+                                                        distanceTraveledInMiles,
+                                                        tripOdometer1,
+                                                        tripOdometer2);
+
             // notify listeners
-            publishEventToListeners(new SpeedAndOdometryImpl(speed, odometer, tripOdometer1, tripOdometer2));
+            publishEventToListeners(speedAndOdometry);
             }
+         }
+      }
+
+   public Odometry getOdometry()
+      {
+      synchronized (dataSynchronizationLock)
+         {
+         return speedAndOdometry;
          }
       }
 
@@ -116,13 +132,15 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
       {
       private final Speed speed;
       private final double odometer;
+      private final double odometerDelta;
       private final double tripOdometer1;
       private final double tripOdometer2;
 
-      private SpeedAndOdometryImpl(final Speed speed, final double odometer, final double tripOdometer1, final double tripOdometer2)
+      private SpeedAndOdometryImpl(final Speed speed, final double odometer, final double odometerDelta, final double tripOdometer1, final double tripOdometer2)
          {
          this.speed = speed;
          this.odometer = odometer;
+         this.odometerDelta = odometerDelta;
          this.tripOdometer1 = tripOdometer1;
          this.tripOdometer2 = tripOdometer2;
          }
@@ -140,6 +158,11 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
       public double getOdometer()
          {
          return odometer;
+         }
+
+      public double getOdometerDelta()
+         {
+         return odometerDelta;
          }
 
       public double getTripOdometer1()
@@ -170,6 +193,10 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             {
             return false;
             }
+         if (Double.compare(that.odometerDelta, odometerDelta) != 0)
+            {
+            return false;
+            }
          if (Double.compare(that.tripOdometer1, tripOdometer1) != 0)
             {
             return false;
@@ -194,6 +221,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          result = speed != null ? speed.hashCode() : 0;
          temp = odometer != +0.0d ? Double.doubleToLongBits(odometer) : 0L;
          result = 31 * result + (int)(temp ^ (temp >>> 32));
+         temp = odometerDelta != +0.0d ? Double.doubleToLongBits(odometerDelta) : 0L;
+         result = 31 * result + (int)(temp ^ (temp >>> 32));
          temp = tripOdometer1 != +0.0d ? Double.doubleToLongBits(tripOdometer1) : 0L;
          result = 31 * result + (int)(temp ^ (temp >>> 32));
          temp = tripOdometer2 != +0.0d ? Double.doubleToLongBits(tripOdometer2) : 0L;
@@ -208,6 +237,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          sb.append("SpeedAndOdometry");
          sb.append("{speed=").append(speed);
          sb.append(", odometer=").append(odometer);
+         sb.append(", odometerDelta=").append(odometerDelta);
          sb.append(", tripOdometer1=").append(tripOdometer1);
          sb.append(", tripOdometer2=").append(tripOdometer2);
          sb.append('}');

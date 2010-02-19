@@ -7,6 +7,9 @@ public interface PowerEquation
    {
    double getKilowattHours();
 
+   /** Returns the change in kilowatt hours since the last update. */
+   double getKilowattHoursDelta();
+
    double getKilowattHoursUsed();
 
    double getKilowattHoursRegen();

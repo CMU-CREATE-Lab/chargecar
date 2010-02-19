@@ -26,6 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
 import org.chargecar.gps.nmea.NMEAReader;
+import org.chargecar.sensorboard.EfficiencyController;
+import org.chargecar.sensorboard.EfficiencyModel;
+import org.chargecar.sensorboard.EfficiencyView;
 import org.chargecar.sensorboard.PowerController;
 import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.PowerView;
@@ -125,15 +128,8 @@ public class HeadsUpDisplay
       // Enter full-screen mode
       graphicsDevice.setFullScreenWindow(jFrame);
 
-      // create the models
-      final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
-      final TemperaturesModel temperaturesModel = new TemperaturesModel();
-      final PowerModel powerModel = new PowerModel();
-
-      // create and configure the SerialDeviceConnectivityManager, LifecycleManager, and HeadsUpDisplayController
+      // create and configure the SerialDeviceConnectivityManager and LifecycleManager
       final SerialDeviceConnectivityManager serialDeviceConnectivityManager = new SerialDeviceConnectivityManagerImpl(new SensorBoardSerialDeviceProxyCreator());
-      final LifecycleManager lifecycleManager = new MyLifecycleManager(jFrame, graphicsDevice, serialDeviceConnectivityManager, gpsReader);
-      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(lifecycleManager, serialDeviceConnectivityManager, speedAndOdometryModel, temperaturesModel, powerModel);
       serialDeviceConnectivityManager.addConnectionEventListener(
             new SerialDeviceConnectionEventListener()
             {
@@ -159,20 +155,43 @@ public class HeadsUpDisplay
                   }
                }
             });
+      final LifecycleManager lifecycleManager = new MyLifecycleManager(jFrame, graphicsDevice, serialDeviceConnectivityManager, gpsReader);
 
-      // create controllers
+      // create the models
+      final SpeedAndOdometryModel speedAndOdometryModel = new SpeedAndOdometryModel();
+      final TemperaturesModel temperaturesModel = new TemperaturesModel();
+      final PowerModel powerModel = new PowerModel();
+      final EfficiencyModel efficiencyModel = new EfficiencyModel();
+
+      // create the controllers
       final PowerController powerController = new PowerController(powerModel);
       final SpeedAndOdometryController speedAndOdometryController = new SpeedAndOdometryController(speedAndOdometryModel);
+      final EfficiencyController efficiencyController = new EfficiencyController(efficiencyModel);
+      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(lifecycleManager,
+                                                                                             serialDeviceConnectivityManager,
+                                                                                             speedAndOdometryModel,
+                                                                                             temperaturesModel,
+                                                                                             powerModel,
+                                                                                             efficiencyModel);
 
       // create the views
       final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView(speedAndOdometryController);
       final TemperaturesView temperaturesView = new TemperaturesView();
       final PowerView powerView = new PowerView(powerController);
+      final EfficiencyView efficiencyView = new EfficiencyView();
       final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(headsUpDisplayController,
                                                                            speedAndOdometryView,
                                                                            temperaturesView,
                                                                            powerView,
-                                                                           powerController);
+                                                                           powerController,
+                                                                           efficiencyView,
+                                                                           efficiencyController);
+
+      // add the various views as listeners to the models
+      speedAndOdometryModel.addEventListener(speedAndOdometryView);
+      temperaturesModel.addEventListener(temperaturesView);
+      powerModel.addEventListener(powerView);
+      efficiencyModel.addEventListener(efficiencyView);
 
       // set up the runnables used to toggle the UI for scanning/connected/disconnected
       final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
@@ -180,11 +199,6 @@ public class HeadsUpDisplay
       setStageForIsConnectedRunnable = new SetStageRunnable(panel, headsUpDisplayView);
       setStageForIsDisconnectedRunnable = new SetStageRunnable(panel, new JLabel(RESOURCES.getString("label.disconnected")));
       setStageForIsScanningRunnable.run();
-
-      // add the various views as listeners to the models
-      speedAndOdometryModel.addEventListener(speedAndOdometryView);
-      temperaturesModel.addEventListener(temperaturesView);
-      powerModel.addEventListener(powerView);
 
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

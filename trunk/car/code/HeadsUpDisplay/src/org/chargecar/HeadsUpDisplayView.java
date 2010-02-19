@@ -17,6 +17,8 @@ import edu.cmu.ri.createlab.userinterface.util.AbstractTimeConsumingAction;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.sensorboard.EfficiencyController;
+import org.chargecar.sensorboard.EfficiencyView;
 import org.chargecar.sensorboard.PowerController;
 import org.chargecar.sensorboard.PowerView;
 import org.chargecar.sensorboard.SpeedAndOdometryView;
@@ -37,18 +39,22 @@ final class HeadsUpDisplayView extends JPanel
                       final SpeedAndOdometryView speedAndOdometryView,
                       final TemperaturesView temperaturesView,
                       final PowerView powerView,
-                      final PowerController powerController)
+                      final PowerController powerController,
+                      final EfficiencyView efficiencyView,
+                      final EfficiencyController efficiencyController)
       {
       final AtomicInteger markValue = new AtomicInteger(0);
       final JButton quitButton = SwingUtils.createButton(RESOURCES.getString("label.quit"), true);
       final JButton markButton = SwingUtils.createButton(RESOURCES.getString("label.mark") + " " + markValue.get(), true);
 
       final JButton resetBatteryPowerButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
+      final JButton resetBatteryEfficiencyButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
       final JButton resetCapacitorPowerButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
       final JButton resetAccessoryPowerButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
 
       final JLabel accessoryPowerLabel = SwingUtils.createLabel(RESOURCES.getString("label.accessory-power"), GUIConstants.FONT_MEDIUM_LARGE);
       final JLabel batteryPowerLabel = SwingUtils.createLabel(RESOURCES.getString("label.battery-power"), GUIConstants.FONT_MEDIUM_LARGE);
+      final JLabel batteryEfficiencyLabel = SwingUtils.createLabel(RESOURCES.getString("label.battery-efficiency"), GUIConstants.FONT_MEDIUM_LARGE);
       final JLabel capacitorPowerLabel = SwingUtils.createLabel(RESOURCES.getString("label.capacitor-power"), GUIConstants.FONT_MEDIUM_LARGE);
       final JLabel batteryEquationEquals = SwingUtils.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_MEDIUM_LARGE);
       final JLabel batteryEquationPlus = SwingUtils.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_MEDIUM_LARGE);
@@ -83,6 +89,16 @@ final class HeadsUpDisplayView extends JPanel
             protected Object executeTimeConsumingAction()
                {
                powerController.resetBatteryPowerEquation();
+               return null;
+               }
+            });
+
+      resetBatteryEfficiencyButton.addActionListener(
+            new ButtonTimeConsumingAction(this, resetBatteryEfficiencyButton)
+            {
+            protected Object executeTimeConsumingAction()
+               {
+               efficiencyController.resetBatteryEfficiency();
                return null;
                }
             });
@@ -136,95 +152,100 @@ final class HeadsUpDisplayView extends JPanel
       batteryAndCapDialsPanel.add(powerView.getCapacitorCurrentMeter());
       batteryAndCapDialsPanel.add(Box.createGlue());
 
-      final Component powerPanelHorizontalSpacer1 = SwingUtils.createRigidSpacer(40);
-      final Component powerPanelHorizontalSpacer2 = SwingUtils.createRigidSpacer(40);
-      final Component powerPanelVerticalSpacer1 = SwingUtils.createRigidSpacer(20);
-      final Component powerPanelVerticalSpacer2 = SwingUtils.createRigidSpacer(20);
-      final Component powerPanelVerticalSpacer3 = SwingUtils.createRigidSpacer(20);
-      final Component powerPanelVerticalSpacer4 = SwingUtils.createRigidSpacer(20);
-      final Component powerPanelVerticalSpacer5 = SwingUtils.createRigidSpacer(20);
-      final Component powerPanelVerticalSpacer6 = SwingUtils.createRigidSpacer(20);
+      final Component powerAndEfficiencyPanelHorizontalSpacer1 = SwingUtils.createRigidSpacer(30);
+      final Component powerAndEfficiencyPanelHorizontalSpacer2 = SwingUtils.createRigidSpacer(30);
+      final Component powerAndEfficiencyPanelHorizontalSpacer3 = SwingUtils.createRigidSpacer(30);
+      final Component powerAndEfficiencyPanelVerticalSpacer1 = SwingUtils.createRigidSpacer(20);
+      final Component powerAndEfficiencyPanelVerticalSpacer2 = SwingUtils.createRigidSpacer(20);
+      final Component powerAndEfficiencyPanelVerticalSpacer3 = SwingUtils.createRigidSpacer(20);
+      final Component powerAndEfficiencyPanelVerticalSpacer4 = SwingUtils.createRigidSpacer(20);
+      final Component powerAndEfficiencyPanelVerticalSpacer5 = SwingUtils.createRigidSpacer(20);
+      final Component powerAndEfficiencyPanelVerticalSpacer6 = SwingUtils.createRigidSpacer(20);
 
-      final JPanel powerPanel = new JPanel();
-      final GroupLayout powerPanelLayout = new GroupLayout(powerPanel);
-      powerPanel.setLayout(powerPanelLayout);
-      powerPanelLayout.setAutocreateGaps(true);
-      powerPanelLayout.setHorizontalGroup(
-            powerPanelLayout.createSequentialGroup()
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.TRAILING)
+      final JPanel powerAndEfficiencyPanel = new JPanel();
+      final GroupLayout powerAndEfficiencyPanelLayout = new GroupLayout(powerAndEfficiencyPanel);
+      powerAndEfficiencyPanel.setLayout(powerAndEfficiencyPanelLayout);
+      powerAndEfficiencyPanelLayout.setAutocreateGaps(true);
+      powerAndEfficiencyPanelLayout.setHorizontalGroup(
+            powerAndEfficiencyPanelLayout.createSequentialGroup()
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.TRAILING)
                         .add(batteryPowerLabel)
-                        .add(powerPanelHorizontalSpacer1)
+                        .add(powerAndEfficiencyPanelHorizontalSpacer1)
                         .add(capacitorPowerLabel)
-                        .add(powerPanelHorizontalSpacer2)
+                        .add(powerAndEfficiencyPanelHorizontalSpacer2)
                         .add(accessoryPowerLabel)
+                        .add(powerAndEfficiencyPanelHorizontalSpacer3)
+                        .add(batteryEfficiencyLabel)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
-                        .add(powerPanelVerticalSpacer1)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                        .add(powerAndEfficiencyPanelVerticalSpacer1)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
                         .add(powerView.getBatteryPowerTotalGauge())
                         .add(powerView.getCapacitorPowerTotalGauge())
                         .add(powerView.getAccessoryPowerTotalGauge())
+                        .add(efficiencyView.getBatteryEfficiencyGauge())
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
-                        .add(powerPanelVerticalSpacer2)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                        .add(powerAndEfficiencyPanelVerticalSpacer2)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
                         .add(batteryEquationEquals)
                         .add(capacitorEquationEquals)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
-                        .add(powerPanelVerticalSpacer3)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                        .add(powerAndEfficiencyPanelVerticalSpacer3)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
                         .add(powerView.getBatteryPowerUsedGauge())
                         .add(powerView.getCapacitorPowerUsedGauge())
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
-                        .add(powerPanelVerticalSpacer4)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                        .add(powerAndEfficiencyPanelVerticalSpacer4)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
                         .add(batteryEquationPlus)
                         .add(capacitorEquationPlus)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
-                        .add(powerPanelVerticalSpacer5)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                        .add(powerAndEfficiencyPanelVerticalSpacer5)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
                         .add(powerView.getBatteryPowerRegenGauge())
                         .add(powerView.getCapacitorPowerRegenGauge())
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
-                        .add(powerPanelVerticalSpacer6)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                        .add(powerAndEfficiencyPanelVerticalSpacer6)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.CENTER)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.CENTER)
                   .add(resetBatteryPowerButton)
                   .add(resetCapacitorPowerButton)
                   .add(resetAccessoryPowerButton)
+                  .add(resetBatteryEfficiencyButton)
             )
       );
 
-      powerPanelLayout.setVerticalGroup(
-            powerPanelLayout.createSequentialGroup()
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.LEADING)
+      powerAndEfficiencyPanelLayout.setVerticalGroup(
+            powerAndEfficiencyPanelLayout.createSequentialGroup()
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
                         .add(batteryPowerLabel)
-                        .add(powerPanelVerticalSpacer1)
+                        .add(powerAndEfficiencyPanelVerticalSpacer1)
                         .add(powerView.getBatteryPowerTotalGauge())
-                        .add(powerPanelVerticalSpacer2)
+                        .add(powerAndEfficiencyPanelVerticalSpacer2)
                         .add(batteryEquationEquals)
-                        .add(powerPanelVerticalSpacer3)
+                        .add(powerAndEfficiencyPanelVerticalSpacer3)
                         .add(powerView.getBatteryPowerUsedGauge())
-                        .add(powerPanelVerticalSpacer4)
+                        .add(powerAndEfficiencyPanelVerticalSpacer4)
                         .add(batteryEquationPlus)
-                        .add(powerPanelVerticalSpacer5)
+                        .add(powerAndEfficiencyPanelVerticalSpacer5)
                         .add(powerView.getBatteryPowerRegenGauge())
-                        .add(powerPanelVerticalSpacer6)
+                        .add(powerAndEfficiencyPanelVerticalSpacer6)
                         .add(resetBatteryPowerButton)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.LEADING)
-                        .add(powerPanelHorizontalSpacer1)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(powerAndEfficiencyPanelHorizontalSpacer1)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
                         .add(capacitorPowerLabel)
                         .add(powerView.getCapacitorPowerTotalGauge())
                         .add(capacitorEquationEquals)
@@ -233,22 +254,30 @@ final class HeadsUpDisplayView extends JPanel
                         .add(powerView.getCapacitorPowerRegenGauge())
                         .add(resetCapacitorPowerButton)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.LEADING)
-                        .add(powerPanelHorizontalSpacer2)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(powerAndEfficiencyPanelHorizontalSpacer2)
                   )
-                  .add(powerPanelLayout.createParallelGroup(GroupLayout.LEADING)
-                  .add(accessoryPowerLabel)
-                  .add(powerView.getAccessoryPowerTotalGauge())
-                  .add(resetAccessoryPowerButton)
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(accessoryPowerLabel)
+                        .add(powerView.getAccessoryPowerTotalGauge())
+                        .add(resetAccessoryPowerButton)
+                  )
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                        .add(powerAndEfficiencyPanelHorizontalSpacer3)
+                  )
+                  .add(powerAndEfficiencyPanelLayout.createParallelGroup(GroupLayout.LEADING)
+                  .add(batteryEfficiencyLabel)
+                  .add(efficiencyView.getBatteryEfficiencyGauge())
+                  .add(resetBatteryEfficiencyButton)
             )
       );
 
-      final JPanel powerPanelContainer = new JPanel();
-      powerPanelContainer.setLayout(new BoxLayout(powerPanelContainer, BoxLayout.X_AXIS));
+      final JPanel powerAndEfficiencyPanelContainer = new JPanel();
+      powerAndEfficiencyPanelContainer.setLayout(new BoxLayout(powerAndEfficiencyPanelContainer, BoxLayout.Y_AXIS));
 
-      powerPanelContainer.add(Box.createGlue());
-      powerPanelContainer.add(powerPanel);
-      powerPanelContainer.add(Box.createGlue());
+      //powerAndEfficiencyPanelContainer.add(Box.createGlue());
+      powerAndEfficiencyPanelContainer.add(powerAndEfficiencyPanel);
+      powerAndEfficiencyPanelContainer.add(Box.createGlue());
 
       final JPanel batteryVoltageDialsPanel = new JPanel();
       batteryVoltageDialsPanel.setLayout(new BoxLayout(batteryVoltageDialsPanel, BoxLayout.X_AXIS));
@@ -328,7 +357,7 @@ final class HeadsUpDisplayView extends JPanel
       accessoryDialsPanel.add(Box.createGlue());
 
       final JTabbedPane tabbedPane = new JTabbedPane();
-      tabbedPane.addTab(RESOURCES.getString("label.power"), powerPanelContainer);
+      tabbedPane.addTab(RESOURCES.getString("label.power-and-efficiency"), powerAndEfficiencyPanelContainer);
       tabbedPane.addTab(RESOURCES.getString("label.batteries-and-motors"), batteryAndMotorDetailPanel);
       tabbedPane.addTab(RESOURCES.getString("label.temperatures"), temperatureDialsPanel);
       tabbedPane.addTab(RESOURCES.getString("label.accessory"), accessoryDialsPanel);
