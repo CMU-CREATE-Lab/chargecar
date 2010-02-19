@@ -9,65 +9,65 @@ package org.chargecar.sensorboard;
  */
 public final class PowerController
    {
-   private final PowerModel powerModel;
+   private final PowerModel model;
 
-   public PowerController(final PowerModel powerModel)
+   public PowerController(final PowerModel model)
       {
-      this.powerModel = powerModel;
+      this.model = model;
       }
 
    public void resetBatteryCurrentMinMax()
       {
-      powerModel.resetBatteryCurrentMinMax();
+      model.resetBatteryCurrentMinMax();
       }
 
    public void resetBatteryVoltageMinMax()
       {
-      powerModel.resetBatteryVoltageMinMax();
+      model.resetBatteryVoltageMinMax();
       }
 
    public void resetCapacitorCurrentMinMax()
       {
-      powerModel.resetCapacitorCurrentMinMax();
+      model.resetCapacitorCurrentMinMax();
       }
 
    public void resetCapacitorVoltageMinMax()
       {
-      powerModel.resetCapacitorVoltageMinMax();
+      model.resetCapacitorVoltageMinMax();
       }
 
    public void resetAccessoryCurrentMinMax()
       {
-      powerModel.resetAccessoryCurrentMinMax();
+      model.resetAccessoryCurrentMinMax();
       }
 
    public void resetAccessoryVoltageMinMax()
       {
-      powerModel.resetAccessoryVoltageMinMax();
+      model.resetAccessoryVoltageMinMax();
       }
 
    public void resetMotorCurrentMinMax(final int id)
       {
-      powerModel.resetMotorCurrentMinMax(id);
+      model.resetMotorCurrentMinMax(id);
       }
 
    public void resetBatteryVoltageMinMax(final int id)
       {
-      powerModel.resetBatteryVoltageMinMax(id);
+      model.resetBatteryVoltageMinMax(id);
       }
 
    public void resetBatteryPowerEquation()
       {
-      powerModel.resetBatteryPowerEquation();
+      model.resetBatteryPowerEquation();
       }
 
    public void resetCapacitorPowerEquation()
       {
-      powerModel.resetCapacitorPowerEquation();
+      model.resetCapacitorPowerEquation();
       }
 
    public void resetAccessoryPowerEquation()
       {
-      powerModel.resetAccessoryPowerEquation();
+      model.resetAccessoryPowerEquation();
       }
    }
