@@ -54,6 +54,7 @@ public final class PowerView extends View<Power>
       meterConfig.addDialRange(1000, 1100, new Color(255, 150, 0));
       meterConfig.addDialRange(1100, 1200, Color.RED);
       meterConfig.setNumberFormat(new DecimalFormat("###0"));
+      meterConfig.setBackgroundColor(GUIConstants.BATTERY_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.battery"), RESOURCES.getString("label.current"));
 
       batteryCurrentMeter = new Meter(meterConfig);
@@ -64,6 +65,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(30, 70);
       meterConfig.setTicks(5, 4);
       meterConfig.setNumberFormat(new DecimalFormat("#0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.BATTERY_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.battery"), RESOURCES.getString("label.voltage"));
 
       batteryVoltageMeter = new Meter(meterConfig);
@@ -74,6 +76,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(-1600, 1600);
       meterConfig.setTicks(400, 3);
       meterConfig.setNumberFormat(new DecimalFormat("###0"));
+      meterConfig.setBackgroundColor(GUIConstants.CAPACITOR_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.capacitor"), RESOURCES.getString("label.current"));
 
       capacitorCurrentMeter = new Meter(meterConfig);
@@ -84,6 +87,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(0, 55);
       meterConfig.setTicks(5, 4);
       meterConfig.setNumberFormat(new DecimalFormat("#0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.CAPACITOR_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.capacitor"), RESOURCES.getString("label.voltage"));
 
       capacitorVoltageMeter = new Meter(meterConfig);
@@ -94,6 +98,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(-100, 100);
       meterConfig.setTicks(20, 5);
       meterConfig.setNumberFormat(new DecimalFormat("##0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.ACCESSSORY_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.accessory"), RESOURCES.getString("label.current"));
 
       accessoryCurrentMeter = new Meter(meterConfig);
@@ -104,6 +109,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(8, 16);
       meterConfig.setTicks(1, 9);
       meterConfig.setNumberFormat(new DecimalFormat("#0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.ACCESSSORY_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.accessory"), RESOURCES.getString("label.voltage"));
 
       accessoryVoltageMeter = new Meter(meterConfig);
@@ -114,6 +120,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(8, 16);
       meterConfig.setTicks(1, 9);
       meterConfig.setNumberFormat(new DecimalFormat("#0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.BATTERY_METER_COLOR);
       for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
          {
          // 8 to 16
@@ -127,6 +134,7 @@ public final class PowerView extends View<Power>
       meterConfig.setRange(-500, 500);
       meterConfig.setTicks(100, 9);
       meterConfig.setNumberFormat(new DecimalFormat("##0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.MOTOR_METER_COLOR);
       for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
          {
          meterConfig.setLabel(RESOURCES.getString("label.motor") + " " + (i + 1), RESOURCES.getString("label.current"));
@@ -343,6 +351,7 @@ public final class PowerView extends View<Power>
             capacitorVoltageMeter.setValues(power.getVoltages().getCapacitorVoltage(),
                                             power.getMinimumVoltages().getCapacitorVoltage(),
                                             power.getMaximumVoltages().getCapacitorVoltage());
+            capacitorVoltageMeter.setIsWarningMode(power.isCapacitorOverVoltage());
             for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
                {
                batteryVoltageMeters.get(i).setValues(power.getVoltages().getBatteryVoltage(i),

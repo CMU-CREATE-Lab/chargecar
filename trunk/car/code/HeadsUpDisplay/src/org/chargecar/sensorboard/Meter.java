@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Point;
 import javax.swing.JPanel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -25,10 +23,11 @@ import org.jfree.ui.StandardGradientPaintTransformer;
 
 public class Meter extends JPanel
    {
-   private static final Log LOG = LogFactory.getLog(Meter.class);
-
    private final DefaultValueDataset[] datasets;
    private final ChartPanel chartPanel;
+   private final GradientPaint gradientPaint;
+   private final GradientPaint warningGradientPaint;
+   private final DialBackground dialBackground;
 
    public Meter(final MeterConfig meterConfig)
       {
@@ -57,11 +56,16 @@ public class Meter extends JPanel
       dialFrame.setForegroundPaint(Color.darkGray);
       plot.setDialFrame(dialFrame);
 
-      final GradientPaint gradientPaint = new GradientPaint(new Point(),
-                                                            new Color(255, 255, 255),
-                                                            new Point(),
-                                                            new Color(200, 200, 220));
-      final DialBackground dialBackground = new DialBackground(gradientPaint);
+      gradientPaint = new GradientPaint(new Point(),
+                                        new Color(255, 255, 255),
+                                        new Point(),
+                                        meterConfig.getBackgroundColor());
+      warningGradientPaint = new GradientPaint(new Point(),
+                                               new Color(255, 255, 255),
+                                               new Point(),
+                                               meterConfig.getBackgroundWarningColor());
+
+      dialBackground = new DialBackground(gradientPaint);
       dialBackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
       plot.setBackground(dialBackground);
 
@@ -162,5 +166,10 @@ public class Meter extends JPanel
          {
          // todo
          }
+      }
+
+   public void setIsWarningMode(final boolean isInWarningMode)
+      {
+      dialBackground.setPaint(isInWarningMode ? warningGradientPaint : gradientPaint);
       }
    }

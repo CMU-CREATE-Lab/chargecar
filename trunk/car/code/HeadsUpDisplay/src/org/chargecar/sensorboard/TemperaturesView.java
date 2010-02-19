@@ -32,6 +32,7 @@ public final class TemperaturesView extends View<Temperatures>
       meterConfig.setRange(0, 200);
       meterConfig.setTicks(20, 5);
       meterConfig.setNumberFormat(new DecimalFormat("##0.0"));
+      meterConfig.setBackgroundColor(GUIConstants.CAPACITOR_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.capacitor"), RESOURCES.getString("label.temperature"));
 
       capacitorMeter = new Meter(meterConfig);
@@ -39,6 +40,7 @@ public final class TemperaturesView extends View<Temperatures>
       // ---------------------------------------------------------------------------------------------------------------
 
       meterConfig.clearDialRanges();
+      meterConfig.setBackgroundColor(GUIConstants.BATTERY_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.batteries"), RESOURCES.getString("label.temperature"));
 
       batteryMeter = new Meter(meterConfig);
@@ -46,6 +48,7 @@ public final class TemperaturesView extends View<Temperatures>
       // ---------------------------------------------------------------------------------------------------------------
 
       meterConfig.clearDialRanges();
+      meterConfig.setBackgroundColor(GUIConstants.DEFAULT_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.outside"), RESOURCES.getString("label.temperature"));
 
       outsideMeter = new Meter(meterConfig);
@@ -53,6 +56,7 @@ public final class TemperaturesView extends View<Temperatures>
       // ---------------------------------------------------------------------------------------------------------------
 
       meterConfig.clearDialRanges();
+      meterConfig.setBackgroundColor(GUIConstants.MOTOR_METER_COLOR);
       for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
          {
          meterConfig.setLabel(RESOURCES.getString("label.motor") + " " + (i + 1), RESOURCES.getString("label.temperature"));
@@ -60,6 +64,7 @@ public final class TemperaturesView extends View<Temperatures>
          }
 
       meterConfig.clearDialRanges();
+      meterConfig.setBackgroundColor(GUIConstants.MOTOR_CONTROLLER_METER_COLOR);
       for (int i = 0; i < SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT; i++)
          {
          meterConfig.setLabel(RESOURCES.getString("label.controller") + " " + (i + 1), RESOURCES.getString("label.temperature"));
@@ -67,6 +72,7 @@ public final class TemperaturesView extends View<Temperatures>
          }
 
       meterConfig.clearDialRanges();
+      meterConfig.setBackgroundColor(GUIConstants.AUXILIARY_DEVICE_METER_COLOR);
       for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
          {
          meterConfig.setLabel(RESOURCES.getString("label.aux") + " " + (i + 1), RESOURCES.getString("label.temperature"));
