@@ -29,6 +29,7 @@ import org.chargecar.gps.nmea.NMEAReader;
 import org.chargecar.sensorboard.EfficiencyController;
 import org.chargecar.sensorboard.EfficiencyModel;
 import org.chargecar.sensorboard.EfficiencyView;
+import org.chargecar.sensorboard.PedalPositionsModel;
 import org.chargecar.sensorboard.PowerController;
 import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.PowerView;
@@ -162,6 +163,7 @@ public class HeadsUpDisplay
       final TemperaturesModel temperaturesModel = new TemperaturesModel();
       final PowerModel powerModel = new PowerModel();
       final EfficiencyModel efficiencyModel = new EfficiencyModel();
+      final PedalPositionsModel pedalPositionsModel = new PedalPositionsModel();
 
       // create the controllers
       final PowerController powerController = new PowerController(powerModel);
@@ -172,7 +174,8 @@ public class HeadsUpDisplay
                                                                                              speedAndOdometryModel,
                                                                                              temperaturesModel,
                                                                                              powerModel,
-                                                                                             efficiencyModel);
+                                                                                             efficiencyModel,
+                                                                                             pedalPositionsModel);
 
       // create the views
       final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView(speedAndOdometryController);

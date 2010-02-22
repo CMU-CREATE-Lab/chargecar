@@ -29,7 +29,6 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
    private double odometer = 0.0;
    private double tripOdometer1 = 0.0;
    private double tripOdometer2 = 0.0;
-   private SpeedAndOdometryImpl speedAndOdometry;
 
    public SpeedAndOdometryModel()
       {
@@ -50,7 +49,7 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
          }
       }
 
-   public void update(final Speed speed)
+   public SpeedAndOdometry update(final Speed speed)
       {
       if (speed != null)
          {
@@ -75,24 +74,20 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
             // update the data store
             writeOdometerDataStore();
 
-            speedAndOdometry = new SpeedAndOdometryImpl(speed,
-                                                        odometer,
-                                                        distanceTraveledInMiles,
-                                                        tripOdometer1,
-                                                        tripOdometer2);
+            final SpeedAndOdometryImpl speedAndOdometry = new SpeedAndOdometryImpl(speed,
+                                                                                   odometer,
+                                                                                   distanceTraveledInMiles,
+                                                                                   tripOdometer1,
+                                                                                   tripOdometer2);
 
             // notify listeners
             publishEventToListeners(speedAndOdometry);
+
+            return speedAndOdometry;
             }
          }
-      }
 
-   public Odometry getOdometry()
-      {
-      synchronized (dataSynchronizationLock)
-         {
-         return speedAndOdometry;
-         }
+      return null;
       }
 
    private void writeOdometerDataStore()
@@ -130,6 +125,8 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
 
    private static final class SpeedAndOdometryImpl implements SpeedAndOdometry
       {
+      private static final String TO_STRING_DELIMITER = "\t";
+
       private final Speed speed;
       private final double odometer;
       private final double odometerDelta;
@@ -233,13 +230,30 @@ public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
       @Override
       public String toString()
          {
+         return toString("timestamp=",
+                         ", speed=",
+                         ", odometer=",
+                         ", odometerDelta=",
+                         ", tripOdometer1=",
+                         ", tripOdometer2=");
+         }
+
+      public String toLoggingString()
+         {
+         return toString("", TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER);
+         }
+
+      private String toString(final String field1, final String field2, final String field3, final String field4, final String field5, final String field6)
+         {
          final StringBuilder sb = new StringBuilder();
          sb.append("SpeedAndOdometry");
-         sb.append("{speed=").append(speed);
-         sb.append(", odometer=").append(odometer);
-         sb.append(", odometerDelta=").append(odometerDelta);
-         sb.append(", tripOdometer1=").append(tripOdometer1);
-         sb.append(", tripOdometer2=").append(tripOdometer2);
+         sb.append("{");
+         sb.append(field1).append(speed == null ? null : speed.getTimestampMilliseconds());
+         sb.append(field2).append(speed == null ? null : speed.getSpeed());
+         sb.append(field3).append(odometer);
+         sb.append(field4).append(odometerDelta);
+         sb.append(field5).append(tripOdometer1);
+         sb.append(field6).append(tripOdometer2);
          sb.append('}');
          return sb.toString();
          }

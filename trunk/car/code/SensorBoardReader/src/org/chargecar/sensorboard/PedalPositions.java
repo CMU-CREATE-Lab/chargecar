@@ -8,4 +8,6 @@ public interface PedalPositions extends SensorBoardData
    double getThrottlePosition();
 
    double getRegenBrakePosition();
+
+   String toLoggingString();
    }

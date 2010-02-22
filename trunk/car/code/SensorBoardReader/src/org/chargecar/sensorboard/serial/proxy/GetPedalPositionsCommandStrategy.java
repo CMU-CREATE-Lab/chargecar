@@ -46,6 +46,8 @@ final class GetPedalPositionsCommandStrategy extends ChargeCarSerialDeviceReturn
 
    private final class PedalPositionsImpl extends SensorBoardDataImpl implements PedalPositions
       {
+      private static final String TO_STRING_DELIMITER = "\t";
+
       private final double throttlePosition;
       private final double regenBrakePosition;
 
@@ -103,10 +105,21 @@ final class GetPedalPositionsCommandStrategy extends ChargeCarSerialDeviceReturn
 
       public String toString()
          {
+         return toString("throttlePosition=", ", regenBrakePosition=");
+         }
+
+      public String toLoggingString()
+         {
+         return toString("", TO_STRING_DELIMITER);
+         }
+
+      private String toString(final String field1, final String field2)
+         {
          final StringBuilder sb = new StringBuilder();
          sb.append("PedalPositions");
-         sb.append("{throttlePosition=").append(throttlePosition);
-         sb.append(", regenBrakePosition=").append(regenBrakePosition);
+         sb.append("{");
+         sb.append(field1).append(throttlePosition);
+         sb.append(field2).append(regenBrakePosition);
          sb.append('}');
          return sb.toString();
          }

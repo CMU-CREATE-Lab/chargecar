@@ -18,4 +18,6 @@ public interface Power extends VoltagesAndCurrents
    Currents getMinimumCurrents();
 
    Currents getMaximumCurrents();
+
+   String toLoggingString();
    }

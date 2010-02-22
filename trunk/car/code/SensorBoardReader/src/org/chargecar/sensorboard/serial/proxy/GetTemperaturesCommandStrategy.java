@@ -48,6 +48,8 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
 
    private final class TemperaturesImpl extends SensorBoardDataImpl implements Temperatures
       {
+      private static final String TO_STRING_DELIMITER = "\t";
+
       private final double[] motorTemperatures = new double[SensorBoardConstants.MOTOR_DEVICE_COUNT];
       private final double capacitorTemperature;
       private final double batteryTemperature;
@@ -176,26 +178,53 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
 
       public String toString()
          {
+         return toString("timestamp=",
+                         ", motorTemperatures=",
+                         ", capacitorTemperature=",
+                         ", batteryTemperature=",
+                         ", motorControllerTemperatures=",
+                         ", outsideTemperature=",
+                         ", auxiliaryTemperatures=",
+                         ", "
+         );
+         }
+
+      public String toLoggingString()
+         {
+         return toString("", TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER);
+         }
+
+      private String toString(final String field1,
+                              final String field2,
+                              final String field3,
+                              final String field4,
+                              final String field5,
+                              final String field6,
+                              final String field7,
+                              final String subFieldDelimiter)
+         {
          final StringBuilder sb = new StringBuilder();
          sb.append("Temperatures");
-         sb.append("{motorTemperatures=").append(motorTemperatures == null ? "null" : "");
-         for (int i = 0; motorTemperatures != null && i < motorTemperatures.length; ++i)
-            {
-            sb.append(i == 0 ? "" : ", ").append(motorTemperatures[i]);
-            }
-         sb.append(", capacitorTemperature=").append(capacitorTemperature);
-         sb.append(", batteryTemperature=").append(batteryTemperature);
-         sb.append(", motorControllerTemperatures=").append(motorControllerTemperatures == null ? "null" : "");
-         for (int i = 0; motorControllerTemperatures != null && i < motorControllerTemperatures.length; ++i)
-            {
-            sb.append(i == 0 ? "" : ", ").append(motorControllerTemperatures[i]);
-            }
-         sb.append(", outsideTemperature=").append(outsideTemperature);
-         sb.append(", auxiliaryTemperatures=").append(auxiliaryTemperatures == null ? "null" : "");
+         sb.append("{");
+         sb.append(field1).append(getTimestampMilliseconds());
+         sb.append(field7).append(auxiliaryTemperatures == null ? "null" : "");
          for (int i = 0; auxiliaryTemperatures != null && i < auxiliaryTemperatures.length; ++i)
             {
-            sb.append(i == 0 ? "" : ", ").append(auxiliaryTemperatures[i]);
+            sb.append(i == 0 ? "" : subFieldDelimiter).append(auxiliaryTemperatures[i]);
             }
+         sb.append(field4).append(batteryTemperature);
+         sb.append(field3).append(capacitorTemperature);
+         sb.append(field2).append(motorTemperatures == null ? "null" : "");
+         for (int i = 0; motorTemperatures != null && i < motorTemperatures.length; ++i)
+            {
+            sb.append(i == 0 ? "" : subFieldDelimiter).append(motorTemperatures[i]);
+            }
+         sb.append(field5).append(motorControllerTemperatures == null ? "null" : "");
+         for (int i = 0; motorControllerTemperatures != null && i < motorControllerTemperatures.length; ++i)
+            {
+            sb.append(i == 0 ? "" : subFieldDelimiter).append(motorControllerTemperatures[i]);
+            }
+         sb.append(field6).append(outsideTemperature);
          sb.append('}');
          return sb.toString();
          }

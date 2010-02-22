@@ -16,4 +16,6 @@ public interface Temperatures extends SensorBoardData
    double getOutsideTemperature();
 
    double getAuxiliaryTemperature(int auxiliaryDeviceId);
+
+   String toLoggingString();
    }
