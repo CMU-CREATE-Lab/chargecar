@@ -6,4 +6,6 @@ package org.chargecar.sensorboard;
 public interface Efficiency
    {
    double getBatteryEfficiency();
+
+   String toLoggingString();
    }

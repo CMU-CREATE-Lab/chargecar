@@ -5,4 +5,5 @@ package org.chargecar.sensorboard;
  */
 public interface SpeedAndOdometry extends Speed, Odometry
    {
+   String toLoggingString();
    }

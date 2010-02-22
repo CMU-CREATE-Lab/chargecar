@@ -14,7 +14,7 @@ public final class EfficiencyModel extends Model<PowerAndOdometry, Efficiency>
    private double batteryPowerUsed = 0.0;
 
    @Override
-   public void update(final PowerAndOdometry data)
+   public Efficiency update(final PowerAndOdometry data)
       {
       if (data != null && data.getPower() != null && data.getOdometry() != null)
          {
@@ -23,9 +23,14 @@ public final class EfficiencyModel extends Model<PowerAndOdometry, Efficiency>
             distanceTraveled += data.getOdometry().getOdometerDelta();
             batteryPowerUsed += data.getPower().getBatteryPowerEquation().getKilowattHoursDelta();
 
-            publishEventToListeners(new EfficiencyImpl(distanceTraveled, batteryPowerUsed));
+            final EfficiencyImpl efficiency = new EfficiencyImpl(distanceTraveled, batteryPowerUsed);
+
+            publishEventToListeners(efficiency);
+            return efficiency;
             }
          }
+
+      return null;
       }
 
    public void resetBatteryEfficiency()
@@ -90,9 +95,20 @@ public final class EfficiencyModel extends Model<PowerAndOdometry, Efficiency>
       @Override
       public String toString()
          {
+         return toString("batteryEfficiency=");
+         }
+
+      public String toLoggingString()
+         {
+         return toString("");
+         }
+
+      private String toString(final String field1)
+         {
          final StringBuilder sb = new StringBuilder();
          sb.append("Efficiency");
-         sb.append("{batteryEfficiency=").append(batteryEfficiency);
+         sb.append("{");
+         sb.append(field1).append(batteryEfficiency);
          sb.append('}');
          return sb.toString();
          }

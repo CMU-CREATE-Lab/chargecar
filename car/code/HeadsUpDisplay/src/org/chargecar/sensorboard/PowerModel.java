@@ -1,8 +1,5 @@
 package org.chargecar.sensorboard;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * <p>
  * <code>PowerModel</code> keeps track of voltage, current, and power data.
@@ -12,8 +9,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class PowerModel extends Model<VoltagesAndCurrents, Power>
    {
-   private static final Log LOG = LogFactory.getLog(PowerModel.class);
-
    private final byte[] dataSynchronizationLock = new byte[0];
    private VoltagesAndCurrents previousVoltagesAndCurrents = null;
    private long previousTimestamp = 0;
@@ -24,9 +19,8 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
    private final UpdatableVoltages maximumVoltages = UpdatableVoltages.createMaximumVoltages();
    private final UpdatableCurrents minimumCurrents = UpdatableCurrents.createMinimumCurrents();
    private final UpdatableCurrents maximumCurrents = UpdatableCurrents.createMaximumCurrents();
-   private Power power;
 
-   public void update(final VoltagesAndCurrents voltagesAndCurrents)
+   public Power update(final VoltagesAndCurrents voltagesAndCurrents)
       {
       if (voltagesAndCurrents != null)
          {
@@ -50,14 +44,6 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
                                            voltagesAndCurrents.getCurrents().getAccessoryCurrent() *
                                            elapsedKiloHours;
 
-               if (LOG.isInfoEnabled())
-                  {
-                  LOG.info("PowerModel.update(): elapsedMilliseconds = [" + elapsedMilliseconds + "]");
-                  LOG.info("PowerModel.update(): batteryKwh = [" + batteryKwh + "]");
-                  LOG.info("PowerModel.update(): capacitorKwh = [" + capacitorKwh + "]");
-                  LOG.info("PowerModel.update(): accessoryKwh = [" + accessoryKwh + "]");
-                  }
-
                batteryPowerEquation.addKilowattHours(batteryKwh);
                capacitorPowerEquation.addKilowattHours(capacitorKwh);
                accessoryPowerEquation.addKilowattHours(accessoryKwh);
@@ -73,27 +59,23 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
             previousVoltagesAndCurrents = voltagesAndCurrents;
             previousTimestamp = currentTimestamp;
 
-            power = new PowerImpl(voltagesAndCurrents,
-                                  batteryPowerEquation,
-                                  capacitorPowerEquation,
-                                  accessoryPowerEquation,
-                                  minimumVoltages,
-                                  maximumVoltages,
-                                  minimumCurrents,
-                                  maximumCurrents);
+            final Power power = new PowerImpl(voltagesAndCurrents,
+                                              batteryPowerEquation,
+                                              capacitorPowerEquation,
+                                              accessoryPowerEquation,
+                                              minimumVoltages,
+                                              maximumVoltages,
+                                              minimumCurrents,
+                                              maximumCurrents);
 
             // notify listeners
             publishEventToListeners(power);
+
+            return power;
             }
          }
-      }
 
-   public Power getPower()
-      {
-      synchronized (dataSynchronizationLock)
-         {
-         return power;
-         }
+      return null;
       }
 
    public void resetBatteryCurrentMinMax()
@@ -278,6 +260,8 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
 
    private static final class PowerImpl implements Power
       {
+      private static final String TO_STRING_DELIMITER = "\t";
+
       private final VoltagesAndCurrents voltagesAndCurrents;
       private final PowerEquation batteryPowerEquation;
       private final PowerEquation capacitorPowerEquation;
@@ -420,6 +404,59 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
          result = 31 * result + (minimumCurrents != null ? minimumCurrents.hashCode() : 0);
          result = 31 * result + (maximumCurrents != null ? maximumCurrents.hashCode() : 0);
          return result;
+         }
+
+      public String toLoggingString()
+         {
+         final StringBuilder sb = new StringBuilder();
+
+         sb.append("Power");
+         sb.append("{");
+         sb.append(voltagesAndCurrents.isCapacitorOverVoltage()).append(TO_STRING_DELIMITER);
+
+         sb.append(voltagesAndCurrents.getVoltages().getTimestampMilliseconds()).append(TO_STRING_DELIMITER);
+         sb.append(voltagesAndCurrents.getVoltages().getAccessoryVoltage()).append(TO_STRING_DELIMITER);
+         for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
+            {
+            sb.append(voltagesAndCurrents.getVoltages().getAuxiliaryVoltage(i)).append(TO_STRING_DELIMITER);
+            }
+         for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
+            {
+            sb.append(voltagesAndCurrents.getVoltages().getBatteryVoltage(i)).append(TO_STRING_DELIMITER);
+            }
+         sb.append(voltagesAndCurrents.getVoltages().getBatteryVoltage()).append(TO_STRING_DELIMITER);
+         sb.append(voltagesAndCurrents.getVoltages().getCapacitorVoltage()).append(TO_STRING_DELIMITER);
+
+         sb.append(voltagesAndCurrents.getCurrents().getTimestampMilliseconds()).append(TO_STRING_DELIMITER);
+         sb.append(voltagesAndCurrents.getCurrents().getAccessoryCurrent()).append(TO_STRING_DELIMITER);
+         for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
+            {
+            sb.append(voltagesAndCurrents.getCurrents().getAuxiliaryCurrent(i)).append(TO_STRING_DELIMITER);
+            }
+         sb.append(voltagesAndCurrents.getCurrents().getBatteryCurrent()).append(TO_STRING_DELIMITER);
+         sb.append(voltagesAndCurrents.getCurrents().getCapacitorCurrent()).append(TO_STRING_DELIMITER);
+         for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
+            {
+            sb.append(voltagesAndCurrents.getCurrents().getMotorCurrent(i)).append(TO_STRING_DELIMITER);
+            }
+
+         sb.append(batteryPowerEquation.getKilowattHours()).append(TO_STRING_DELIMITER);
+         sb.append(batteryPowerEquation.getKilowattHoursDelta()).append(TO_STRING_DELIMITER);
+         sb.append(batteryPowerEquation.getKilowattHoursUsed()).append(TO_STRING_DELIMITER);
+         sb.append(batteryPowerEquation.getKilowattHoursRegen()).append(TO_STRING_DELIMITER);
+
+         sb.append(capacitorPowerEquation.getKilowattHours()).append(TO_STRING_DELIMITER);
+         sb.append(capacitorPowerEquation.getKilowattHoursDelta()).append(TO_STRING_DELIMITER);
+         sb.append(capacitorPowerEquation.getKilowattHoursUsed()).append(TO_STRING_DELIMITER);
+         sb.append(capacitorPowerEquation.getKilowattHoursRegen()).append(TO_STRING_DELIMITER);
+
+         sb.append(accessoryPowerEquation.getKilowattHours()).append(TO_STRING_DELIMITER);
+         sb.append(accessoryPowerEquation.getKilowattHoursDelta()).append(TO_STRING_DELIMITER);
+         sb.append(accessoryPowerEquation.getKilowattHoursUsed()).append(TO_STRING_DELIMITER);
+         sb.append(accessoryPowerEquation.getKilowattHoursRegen());
+         sb.append('}');
+
+         return sb.toString();
          }
       }
    }

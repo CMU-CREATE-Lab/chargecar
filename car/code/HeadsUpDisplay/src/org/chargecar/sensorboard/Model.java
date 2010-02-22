@@ -49,5 +49,5 @@ abstract class Model<T, U>
          }
       }
 
-   public abstract void update(final T data);
+   public abstract U update(final T data);
    }

@@ -2,16 +2,17 @@ package org.chargecar.sensorboard;
 
 /**
  * <p>
- * <code>TemperaturesModel</code> keeps track of temperatures.
+ * <code>PedalPositionsModel</code> keeps track of pedal positions.
  * </p>
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class TemperaturesModel extends Model<Temperatures, Temperatures>
+public class PedalPositionsModel extends Model<PedalPositions, PedalPositions>
    {
    private final byte[] dataSynchronizationLock = new byte[0];
 
-   public Temperatures update(final Temperatures data)
+   @Override
+   public PedalPositions update(final PedalPositions data)
       {
       synchronized (dataSynchronizationLock)
          {

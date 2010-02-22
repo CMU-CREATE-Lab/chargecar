@@ -11,13 +11,16 @@ import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.sensorboard.Currents;
+import org.chargecar.sensorboard.Efficiency;
 import org.chargecar.sensorboard.EfficiencyModel;
 import org.chargecar.sensorboard.Odometry;
 import org.chargecar.sensorboard.PedalPositions;
+import org.chargecar.sensorboard.PedalPositionsModel;
 import org.chargecar.sensorboard.Power;
 import org.chargecar.sensorboard.PowerAndOdometry;
 import org.chargecar.sensorboard.PowerModel;
 import org.chargecar.sensorboard.Speed;
+import org.chargecar.sensorboard.SpeedAndOdometry;
 import org.chargecar.sensorboard.SpeedAndOdometryModel;
 import org.chargecar.sensorboard.Temperatures;
 import org.chargecar.sensorboard.TemperaturesModel;
@@ -47,13 +50,15 @@ final class HeadsUpDisplayController
    private final TemperaturesModel temperaturesModel;
    private final PowerModel powerModel;
    private final EfficiencyModel efficiencyModel;
+   private final PedalPositionsModel pedalPositionsModel;
 
    HeadsUpDisplayController(final LifecycleManager lifecycleManager,
                             final SerialDeviceConnectivityManager serialDeviceConnectivityManager,
                             final SpeedAndOdometryModel speedAndOdometryModel,
                             final TemperaturesModel temperaturesModel,
                             final PowerModel powerModel,
-                            final EfficiencyModel efficiencyModel)
+                            final EfficiencyModel efficiencyModel,
+                            final PedalPositionsModel pedalPositionsModel)
       {
       this.lifecycleManager = lifecycleManager;
       this.serialDeviceConnectivityManager = serialDeviceConnectivityManager;
@@ -61,6 +66,7 @@ final class HeadsUpDisplayController
       this.temperaturesModel = temperaturesModel;
       this.powerModel = powerModel;
       this.efficiencyModel = efficiencyModel;
+      this.pedalPositionsModel = pedalPositionsModel;
 
       // register self as a SerialDeviceConnectionEventListener
       this.serialDeviceConnectivityManager.addConnectionEventListener(
@@ -121,28 +127,28 @@ final class HeadsUpDisplayController
             {
             // read the data
             final Speed speed = sensorBoardProxy.getSpeed();
-            LOG.info(speed);
-
             final Currents currents = sensorBoardProxy.getCurrents();
-            LOG.info(currents);
-
             final Voltages voltages = sensorBoardProxy.getVoltages();
-            LOG.info(voltages);
-
             final Boolean isCapacitorOverVoltage = sensorBoardProxy.isCapacitorOverVoltage();
-            LOG.info("isCapacitorOverVoltage = [" + isCapacitorOverVoltage + "]");
-
-            final PedalPositions pedalPositions = sensorBoardProxy.getPedalPositions();
-            LOG.info(pedalPositions);
-
-            final Temperatures temperatures = sensorBoardProxy.getTemperatures();
-            LOG.info(temperatures);
+            final PedalPositions pedalPositionsIn = sensorBoardProxy.getPedalPositions();
+            final Temperatures temperaturesIn = sensorBoardProxy.getTemperatures();
 
             // update the models
-            speedAndOdometryModel.update(speed);
-            temperaturesModel.update(temperatures);
-            powerModel.update(new VoltagesAndCurrentsImpl(voltages, currents, isCapacitorOverVoltage));
-            efficiencyModel.update(new PowerAndOdometryImpl(powerModel.getPower(), speedAndOdometryModel.getOdometry()));
+            final Temperatures temperaturesOut = temperaturesModel.update(temperaturesIn);
+            final SpeedAndOdometry speedAndOdometry = speedAndOdometryModel.update(speed);
+            final Power power = powerModel.update(new VoltagesAndCurrentsImpl(voltages, currents, isCapacitorOverVoltage));
+            final Efficiency efficiency = efficiencyModel.update(new PowerAndOdometryImpl(power, speedAndOdometry));
+            final PedalPositions pedalPositionsOut = pedalPositionsModel.update(pedalPositionsIn);
+
+            // write to log
+            if (LOG.isInfoEnabled())
+               {
+               LOG.info(temperaturesOut.toLoggingString());
+               LOG.info(speedAndOdometry.toLoggingString());
+               LOG.info(power.toLoggingString());
+               LOG.info(efficiency.toLoggingString());
+               LOG.info(pedalPositionsOut.toLoggingString());
+               }
             }
          }
       }
