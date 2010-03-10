@@ -2,6 +2,13 @@ package chargecar.capacitor;
 
 public class NaiveCapacitor extends CapacitorModel {
 
+	public NaiveCapacitor(double maxCharge){
+		this.maxCharge = maxCharge;
+		this.charge = 0;
+		this.temperature = 0;
+		this.efficiency = 1.0;
+		this.time = 0.0;
+	}
 	@Override
 	public double getMaxCurrent(double period) {
 		// TODO Auto-generated method stub
@@ -38,7 +45,7 @@ public class NaiveCapacitor extends CapacitorModel {
 
 	@Override
 	public CapacitorModel createClone() {
-		NaiveCapacitor clone = new NaiveCapacitor();
+		NaiveCapacitor clone = new NaiveCapacitor(this.maxCharge);
 		clone.charge = this.charge;
 		clone.current = this.current;
 		clone.efficiency = this.efficiency;
