@@ -1,5 +1,8 @@
 package chargecar.battery;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NaiveBattery extends BatteryModel {
 
 	public NaiveBattery(){
@@ -9,21 +12,8 @@ public class NaiveBattery extends BatteryModel {
 		this.charge = Double.POSITIVE_INFINITY;		
 		this.efficiency = calculateEfficiency();
 		
-	}
-	
-	public NaiveBattery(BatteryModel battery){
-		this.temperature = battery.getTemperature();
-		this.efficiency = battery.getEfficiency();
-		this.charge = battery.getCharge();
-		this.time = battery.getTime();	
-		this.current = battery.getCurrent();
-		this.temperatureHistory.addAll(battery.getTemperatureHistory());
-		this.efficiencyHistory.addAll(battery.getEfficiencyHistory());
-		this.timeHistory.addAll(battery.getTimeHistory());
-		this.chargeHistory.addAll(battery.getChargeHistory());
-		this.currentDrawHistory.addAll(battery.getCurrentDrawHistory());
-	}
-	
+	}	
+
 	@Override
 	protected double calculateEfficiency() {
 		return 100.0; //naive battery operates at 100% efficiency
@@ -51,4 +41,19 @@ public class NaiveBattery extends BatteryModel {
 		return this.charge; //infinite battery
 	}
 
+	@Override
+	public BatteryModel createClone() {
+		BatteryModel clone = new NaiveBattery();
+		clone.charge = this.charge;
+		clone.current = this.current;
+		clone.efficiency = this.efficiency;
+		clone.temperature = this.temperature;
+		clone.time = this.time;
+		clone.chargeHistory.addAll(cloneCollection(this.chargeHistory));
+		clone.temperatureHistory.addAll(cloneCollection(this.temperatureHistory));
+		clone.currentDrawHistory.addAll(cloneCollection(this.currentDrawHistory));
+		clone.efficiencyHistory.addAll(cloneCollection(this.efficiencyHistory));
+		clone.timeHistory.addAll(cloneCollection(this.timeHistory));
+		return clone;
+	}
 }

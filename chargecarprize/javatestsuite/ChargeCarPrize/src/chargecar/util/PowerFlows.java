@@ -11,5 +11,23 @@ package chargecar.util;
  * and Battery to Cap)
  */
 public class PowerFlows {
-
+	private double batteryToMotor;
+	private double capacitorToMotor;
+	private double batteryToCapacitor;
+	
+	public PowerFlows(double batteryToMotor, double capacitorToMotor, double batteryToCapacitor)
+	{
+		this.batteryToMotor = batteryToMotor;
+		this.capacitorToMotor = capacitorToMotor;
+		this.batteryToCapacitor = batteryToCapacitor;
+	}
+	public double getBatteryToMotor() {
+		return batteryToMotor;
+	}
+	public double getCapacitorToMotor() {
+		return capacitorToMotor;
+	}
+	public double getBatteryToCapacitor() {
+		return batteryToCapacitor;
+	}
 }

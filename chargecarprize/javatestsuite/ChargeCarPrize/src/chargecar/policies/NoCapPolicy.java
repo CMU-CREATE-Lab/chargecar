@@ -3,6 +3,8 @@
  */
 package chargecar.policies;
 
+import chargecar.battery.BatteryModel;
+import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
@@ -12,29 +14,25 @@ import chargecar.util.TripFeatures;
  * DO NOT EDIT
  */
 public class NoCapPolicy implements Policy {
-
-	@Override
-	public void beginTrip(TripFeatures tf) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public PowerFlows calculatePowerFlows(PointFeatures pf) {
-		// TODO Auto-generated method stub
-		return null;
+		return new PowerFlows(pf.getPowerDemand(),0,0);//get all power from battery
 	}
 
 	@Override
 	public void endTrip() {
-		// TODO Auto-generated method stub
-		
+		//no trip-state		
 	}
 
 	@Override
 	public void loadState() {
-		// TODO Auto-generated method stub
-		
+		//no policy-state		
+	}
+
+	@Override
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
+			CapacitorModel capacitorClone) {
+		//no trip-state for nocap policy		
 	}
 
 }

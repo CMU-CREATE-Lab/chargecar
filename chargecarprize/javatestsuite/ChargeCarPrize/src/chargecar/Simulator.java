@@ -54,7 +54,7 @@ public class Simulator {
 	}
 
 	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) {
-		policy.beginTrip(trip.getFeatures());
+		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
 		for(PointFeatures point : trip.getPoints()){
 			PowerFlows pf = policy.calculatePowerFlows(point);
 			//point.validate(pf);

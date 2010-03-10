@@ -3,6 +3,8 @@
  */
 package chargecar.policies;
 
+import chargecar.battery.BatteryModel;
+import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
@@ -12,40 +14,27 @@ import chargecar.util.TripFeatures;
  *
  */
 public class UserPolicy implements Policy {
-	/* (non-Javadoc)
-	 * @see chargecar.policies.Policy#loadState()
-	 */
 	@Override
 	public void loadState() {
 		// TODO Auto-generated method stub
 
 	}
 
-	/* (non-Javadoc)
-	 * @see chargecar.policies.Policy#beginTrip()
-	 */
-	@Override
-	public void beginTrip(TripFeatures tf) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	/* (non-Javadoc)
-	 * @see chargecar.policies.Policy#calculatePowerFlows(chargecar.util.PointFeatures)
-	 */
 	@Override
 	public PowerFlows calculatePowerFlows(PointFeatures pf) {
 		// TODO Auto-generated method stub
-		return null;
+		return new PowerFlows(pf.getPowerDemand(),0,0);
 	}
 
-	/* (non-Javadoc)
-	 * @see chargecar.policies.Policy#endTrip()
-	 */
 	@Override
 	public void endTrip() {
 		// TODO Auto-generated method stub
+	}
 
+	@Override
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
+			CapacitorModel capacitorClone) {
+		// TODO Auto-generated method stub		
 	}
 
 }
