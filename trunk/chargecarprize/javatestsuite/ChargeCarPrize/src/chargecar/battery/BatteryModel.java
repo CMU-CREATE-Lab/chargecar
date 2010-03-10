@@ -76,4 +76,15 @@ public abstract class BatteryModel {
 			this.timeHistory.add(time);
 			this.currentDrawHistory.add(current);			
 		}
+		
+		protected List<Double> cloneCollection(List<Double> collection){
+			List<Double> clone = new ArrayList<Double>();
+			for(Double d : collection){
+				clone.add(new Double(d));
+			}			
+			return clone;
+			
+		}
+		
+		public abstract BatteryModel createClone();
 	}

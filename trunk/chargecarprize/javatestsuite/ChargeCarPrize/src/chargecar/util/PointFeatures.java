@@ -7,5 +7,13 @@ package chargecar.util;
  * such as GPS coordinates, power demand, speed, etc...
  */
 public class PointFeatures {
-
+	public PointFeatures(){
+		
+	}
+	public double getPowerDemand(){
+		return 0.0;
+	}
+	public double getPeriod() {
+		return 1.0;
+	}
 }
