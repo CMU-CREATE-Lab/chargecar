@@ -10,13 +10,12 @@ public class NaiveBattery extends BatteryModel {
 		this.current = 0.0;
 		this.temperature = 0.0;
 		this.charge = Double.POSITIVE_INFINITY;		
-		this.efficiency = calculateEfficiency();
-		
+		this.efficiency = calculateEfficiency();		
 	}	
 
 	@Override
 	protected double calculateEfficiency() {
-		return 100.0; //naive battery operates at 100% efficiency
+		return 1.0; //naive battery operates at 100% efficiency
 	}
 
 	@Override

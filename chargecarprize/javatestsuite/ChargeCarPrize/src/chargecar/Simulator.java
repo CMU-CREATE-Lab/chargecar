@@ -33,22 +33,24 @@ public class Simulator {
 		Policy userPolicy = PolicyFactory.getUserPolicy();
 		userPolicy.loadState();
 		
-		simulateTripsNaive(userPolicy, tripsToTest);
-		simulateTripsNaive(noCapBaseline, tripsToTest);
-		simulateTripsNaive(naiveBaseline, tripsToTest);
+		BatteryModel judgingBattery = new NaiveBattery();
+		CapacitorModel judgingCap = new NaiveCapacitor(50);
+		simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
+		simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
+		simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
 		
 		//grab Results, visualize
 		}
 		
-	private static List<BatteryModel> simulateTripsNaive(Policy policy, List<Trip> trips){
+	private static List<BatteryModel> simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
 		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
 		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();		
 		for(Trip trip : trips){
-				BatteryModel battery = new NaiveBattery();
-				CapacitorModel cap = new NaiveCapacitor();				
-				simulateTrip(policy, trip, battery, cap);				
-				tripBatteries.add(battery);
-				tripCapacitors.add(cap);
+				BatteryModel tripBattery = battery.createClone();
+				CapacitorModel tripCap = cap.createClone();				
+				simulateTrip(policy, trip, tripBattery, tripCap);				
+				tripBatteries.add(tripBattery);
+				tripCapacitors.add(tripCap);
 		}
 		return tripBatteries;//return both for visualizer		
 	}
