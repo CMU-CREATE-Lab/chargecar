@@ -44,10 +44,10 @@ import org.jdesktop.layout.GroupLayout;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class HeadsUpDisplay
+public class InDashDisplay
    {
-   private static final Log LOG = LogFactory.getLog(HeadsUpDisplay.class);
-   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplay.class.getName());
+   private static final Log LOG = LogFactory.getLog(InDashDisplay.class);
+   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(InDashDisplay.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
 
    public static void main(final String[] args)
@@ -84,7 +84,7 @@ public class HeadsUpDisplay
                final GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
                try
                   {
-                  new HeadsUpDisplay(graphicsDevice, gpsReader);
+                  new InDashDisplay(graphicsDevice, gpsReader);
                   }
                finally
                   {
@@ -103,7 +103,7 @@ public class HeadsUpDisplay
    private final SetStageRunnable setStageForIsConnectedRunnable;
    private final SetStageRunnable setStageForIsDisconnectedRunnable;
 
-   private HeadsUpDisplay(final GraphicsDevice graphicsDevice, final NMEAReader gpsReader)
+   private InDashDisplay(final GraphicsDevice graphicsDevice, final NMEAReader gpsReader)
       {
       gpsReader.addEventListener(
             new GPSEventListener()
@@ -169,26 +169,26 @@ public class HeadsUpDisplay
       final PowerController powerController = new PowerController(powerModel);
       final SpeedAndOdometryController speedAndOdometryController = new SpeedAndOdometryController(speedAndOdometryModel);
       final EfficiencyController efficiencyController = new EfficiencyController(efficiencyModel);
-      final HeadsUpDisplayController headsUpDisplayController = new HeadsUpDisplayController(lifecycleManager,
-                                                                                             serialDeviceConnectivityManager,
-                                                                                             speedAndOdometryModel,
-                                                                                             temperaturesModel,
-                                                                                             powerModel,
-                                                                                             efficiencyModel,
-                                                                                             pedalPositionsModel);
+      final InDashDisplayController inDashDisplayController = new InDashDisplayController(lifecycleManager,
+                                                                                          serialDeviceConnectivityManager,
+                                                                                          speedAndOdometryModel,
+                                                                                          temperaturesModel,
+                                                                                          powerModel,
+                                                                                          efficiencyModel,
+                                                                                          pedalPositionsModel);
 
       // create the views
       final SpeedAndOdometryView speedAndOdometryView = new SpeedAndOdometryView(speedAndOdometryController);
       final TemperaturesView temperaturesView = new TemperaturesView();
       final PowerView powerView = new PowerView(powerController);
       final EfficiencyView efficiencyView = new EfficiencyView();
-      final HeadsUpDisplayView headsUpDisplayView = new HeadsUpDisplayView(headsUpDisplayController,
-                                                                           speedAndOdometryView,
-                                                                           temperaturesView,
-                                                                           powerView,
-                                                                           powerController,
-                                                                           efficiencyView,
-                                                                           efficiencyController);
+      final InDashDisplayView inDashDisplayView = new InDashDisplayView(inDashDisplayController,
+                                                                        speedAndOdometryView,
+                                                                        temperaturesView,
+                                                                        powerView,
+                                                                        powerController,
+                                                                        efficiencyView,
+                                                                        efficiencyController);
 
       // add the various views as listeners to the models
       speedAndOdometryModel.addEventListener(speedAndOdometryView);
@@ -199,7 +199,7 @@ public class HeadsUpDisplay
       // set up the runnables used to toggle the UI for scanning/connected/disconnected
       final Spinner spinner = new Spinner(RESOURCES.getString("label.connecting-to-sensor-board"));
       setStageForIsScanningRunnable = new SetStageRunnable(panel, spinner);
-      setStageForIsConnectedRunnable = new SetStageRunnable(panel, headsUpDisplayView);
+      setStageForIsConnectedRunnable = new SetStageRunnable(panel, inDashDisplayView);
       setStageForIsDisconnectedRunnable = new SetStageRunnable(panel, new JLabel(RESOURCES.getString("label.disconnected")));
       setStageForIsScanningRunnable.run();
 
@@ -212,7 +212,7 @@ public class HeadsUpDisplay
             {
             public void windowOpened(final WindowEvent e)
                {
-               LOG.debug("HeadsUpDisplay.windowOpened()");
+               LOG.debug("InDashDisplay.windowOpened()");
                lifecycleManager.startup();
                }
 

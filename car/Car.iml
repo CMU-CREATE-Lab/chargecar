@@ -3,12 +3,12 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/SensorBoardReader/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/test" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/build" />
-      <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/build-test" />
-      <excludeFolder url="file://$MODULE_DIR$/code/HeadsUpDisplay/dist" />
+      <sourceFolder url="file://$MODULE_DIR$/code/InDashDisplay/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/InDashDisplay/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/build-test" />
+      <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/SensorBoardReader/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/SensorBoardReader/dist" />
     </content>

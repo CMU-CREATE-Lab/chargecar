@@ -29,19 +29,19 @@ import org.jdesktop.layout.GroupLayout;
  * @author Chris Bartley (bartley@cmu.edu)
  */
 @SuppressWarnings({"CloneableClassWithoutClone"})
-final class HeadsUpDisplayView extends JPanel
+final class InDashDisplayView extends JPanel
    {
-   private static final Log LOG = LogFactory.getLog(HeadsUpDisplayView.class);
+   private static final Log LOG = LogFactory.getLog(InDashDisplayView.class);
 
-   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(HeadsUpDisplayView.class.getName());
+   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(InDashDisplayView.class.getName());
 
-   HeadsUpDisplayView(final HeadsUpDisplayController headsUpDisplayController,
-                      final SpeedAndOdometryView speedAndOdometryView,
-                      final TemperaturesView temperaturesView,
-                      final PowerView powerView,
-                      final PowerController powerController,
-                      final EfficiencyView efficiencyView,
-                      final EfficiencyController efficiencyController)
+   InDashDisplayView(final InDashDisplayController inDashDisplayController,
+                     final SpeedAndOdometryView speedAndOdometryView,
+                     final TemperaturesView temperaturesView,
+                     final PowerView powerView,
+                     final PowerController powerController,
+                     final EfficiencyView efficiencyView,
+                     final EfficiencyController efficiencyController)
       {
       final AtomicInteger markValue = new AtomicInteger(0);
       final JButton quitButton = SwingUtils.createButton(RESOURCES.getString("label.quit"), true);
@@ -68,7 +68,7 @@ final class HeadsUpDisplayView extends JPanel
             {
             protected Object executeTimeConsumingAction()
                {
-               headsUpDisplayController.shutdown();
+               inDashDisplayController.shutdown();
                return null;
                }
             });

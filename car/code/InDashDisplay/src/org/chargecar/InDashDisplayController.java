@@ -30,7 +30,7 @@ import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
 
 /**
  * <p>
- * <code>HeadsUpDisplayController</code> is a controller with acts as a bridge between the sensor board proxy (the
+ * <code>InDashDisplayController</code> is a controller with acts as a bridge between the sensor board proxy (the
  * model) and its listeners (typcially GUI views).  It is a {@link SerialDeviceConnectionEventListener} which, upon
  * connection, starts a thread which reads from the sensor board once every second and publishes the data to its
  * listeners (e.g. the views).
@@ -38,9 +38,9 @@ import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-final class HeadsUpDisplayController
+final class InDashDisplayController
    {
-   private static final Log LOG = LogFactory.getLog(HeadsUpDisplayController.class);
+   private static final Log LOG = LogFactory.getLog(InDashDisplayController.class);
 
    private final LifecycleManager lifecycleManager;
    private final SerialDeviceConnectivityManager serialDeviceConnectivityManager;
@@ -52,13 +52,13 @@ final class HeadsUpDisplayController
    private final EfficiencyModel efficiencyModel;
    private final PedalPositionsModel pedalPositionsModel;
 
-   HeadsUpDisplayController(final LifecycleManager lifecycleManager,
-                            final SerialDeviceConnectivityManager serialDeviceConnectivityManager,
-                            final SpeedAndOdometryModel speedAndOdometryModel,
-                            final TemperaturesModel temperaturesModel,
-                            final PowerModel powerModel,
-                            final EfficiencyModel efficiencyModel,
-                            final PedalPositionsModel pedalPositionsModel)
+   InDashDisplayController(final LifecycleManager lifecycleManager,
+                           final SerialDeviceConnectivityManager serialDeviceConnectivityManager,
+                           final SpeedAndOdometryModel speedAndOdometryModel,
+                           final TemperaturesModel temperaturesModel,
+                           final PowerModel powerModel,
+                           final EfficiencyModel efficiencyModel,
+                           final PedalPositionsModel pedalPositionsModel)
       {
       this.lifecycleManager = lifecycleManager;
       this.serialDeviceConnectivityManager = serialDeviceConnectivityManager;
@@ -76,7 +76,7 @@ final class HeadsUpDisplayController
                {
                if (LOG.isDebugEnabled())
                   {
-                  LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(" + oldState.name() + "," + newState.name() + ")");
+                  LOG.debug("InDashDisplayController.handleConnectionStateChange(" + oldState.name() + "," + newState.name() + ")");
                   }
 
                // don't bother doing anything if the state hasn't changed
@@ -99,11 +99,11 @@ final class HeadsUpDisplayController
                         {
                         scheduledFuture.cancel(false);
                         dataAcquisitionExecutorService.shutdownNow();
-                        LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(): Successfully shut down data acquisition executor.");
+                        LOG.debug("InDashDisplayController.handleConnectionStateChange(): Successfully shut down data acquisition executor.");
                         }
                      catch (Exception e)
                         {
-                        LOG.debug("HeadsUpDisplayController.handleConnectionStateChange(): Exception caught while trying to shut down the data acquisition executor", e);
+                        LOG.debug("InDashDisplayController.handleConnectionStateChange(): Exception caught while trying to shut down the data acquisition executor", e);
                         }
                      }
                   }
