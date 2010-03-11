@@ -110,12 +110,18 @@ public class InDashDisplay
             {
             public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
                {
-               LOG.info("GPS: " + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked);
+               if (LOG.isInfoEnabled())
+                  {
+                  LOG.info("GPS{" + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked + "}");
+                  }
                }
 
             public void handleElevationEvent(final int elevationInFeet)
                {
-               LOG.info("GPS Elevation: " + elevationInFeet);
+               if (LOG.isInfoEnabled())
+                  {
+                  LOG.info("GPS Elevation{" + elevationInFeet + "}");
+                  }
                }
             });
 
