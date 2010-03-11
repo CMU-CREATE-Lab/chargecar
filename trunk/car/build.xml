@@ -4,7 +4,7 @@
    <property file="build.properties"/>
 
    <!-- Paths -->
-   <path id="heads-up-display-classpath">
+   <path id="in-dash-display-classpath">
       <!-- other classes within this project -->
       <pathelement path="${sensor-board-reader.build.dir}"/>
 
@@ -21,11 +21,11 @@
       <pathelement path="${swing-layout.jar}"/>
    </path>
 
-   <path id="heads-up-display-test-classpath">
-      <pathelement path="${heads-up-display.build-test.dir}"/>
+   <path id="in-dash-display-test-classpath">
+      <pathelement path="${in-dash-display.build-test.dir}"/>
 
       <!-- other classes within this project -->
-      <pathelement path="${heads-up-display.build.dir}"/>
+      <pathelement path="${in-dash-display.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${junit.jar}"/>
@@ -74,12 +74,12 @@
 
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
-   <target name="clean" depends="clean-heads-up-display,clean-sensor-board-reader" description="clean up everything"/>
+   <target name="clean" depends="clean-in-dash-display,clean-sensor-board-reader" description="clean up everything"/>
 
-   <target name="clean-heads-up-display" description="clean up heads-up-display">
-      <delete dir="${heads-up-display.build.dir}"/>
-      <delete dir="${heads-up-display.build-test.dir}"/>
-      <delete dir="${heads-up-display.dist.dir}"/>
+   <target name="clean-in-dash-display" description="clean up in-dash-display">
+      <delete dir="${in-dash-display.build.dir}"/>
+      <delete dir="${in-dash-display.build-test.dir}"/>
+      <delete dir="${in-dash-display.dist.dir}"/>
    </target>
 
    <target name="clean-sensor-board-reader" description="clean up sensor-board-reader">
@@ -87,30 +87,30 @@
       <delete dir="${sensor-board-reader.dist.dir}"/>
    </target>
 
-   <target name="build" depends="build-sensor-board-reader, build-heads-up-display" description="builds the source code" unless="build-is-complete">
+   <target name="build" depends="build-sensor-board-reader, build-in-dash-display" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
    </target>
 
-   <target name="build-heads-up-display" depends="build-sensor-board-reader" description="compiles the java source for heads-up-display" unless="build-heads-up-display-is-complete">
-      <compile-code-and-copy-resources src.dir="${heads-up-display.src.dir}"
-                                       build.dir="${heads-up-display.build.dir}"
-                                       classpath-ref="heads-up-display-classpath"/>
+   <target name="build-in-dash-display" depends="build-sensor-board-reader" description="compiles the java source for in-dash-display" unless="build-in-dash-display-is-complete">
+      <compile-code-and-copy-resources src.dir="${in-dash-display.src.dir}"
+                                       build.dir="${in-dash-display.build.dir}"
+                                       classpath-ref="in-dash-display-classpath"/>
 
-      <compile-code-and-copy-resources src.dir="${heads-up-display.src-test.dir}"
-                                       build.dir="${heads-up-display.build-test.dir}"
-                                       classpath-ref="heads-up-display-test-classpath"/>
+      <compile-code-and-copy-resources src.dir="${in-dash-display.src-test.dir}"
+                                       build.dir="${in-dash-display.build-test.dir}"
+                                       classpath-ref="in-dash-display-test-classpath"/>
 
       <!-- run tests -->
       <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
-         <classpath refid="heads-up-display-test-classpath"/>
+         <classpath refid="in-dash-display-test-classpath"/>
          <batchtest>
-            <fileset dir="${heads-up-display.src-test.dir}">
+            <fileset dir="${in-dash-display.src-test.dir}">
                <include name="**/*Test.java"/>
             </fileset>
          </batchtest>
       </junit>
 
-      <property name="build-heads-up-display-is-complete" value="true"/>
+      <property name="build-in-dash-display-is-complete" value="true"/>
    </target>
 
    <target name="build-sensor-board-reader" description="compiles the java source for sensor-board-reader" unless="build-sensor-board-reader-is-complete">
@@ -121,14 +121,14 @@
       <property name="build-sensor-board-reader-is-complete" value="true"/>
    </target>
 
-   <target name="dist" depends="dist-sensor-board-reader, dist-heads-up-display" description="builds the project" unless="dist-is-complete">
+   <target name="dist" depends="dist-sensor-board-reader, dist-in-dash-display" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
    </target>
 
-   <target name="dist-heads-up-display" depends="dist-sensor-board-reader, build-heads-up-display" description="builds the heads-up-display" unless="dist-heads-up-display-is-complete">
-      <create-dist component.name="heads-up-display">
+   <target name="dist-in-dash-display" depends="dist-sensor-board-reader, build-in-dash-display" description="builds the in-dash-display" unless="dist-in-dash-display-is-complete">
+      <create-dist component.name="in-dash-display">
          <jar-manifest-attributes>
-            <attribute name="Main-Class" value="org.chargecar.HeadsUpDisplay"/>
+            <attribute name="Main-Class" value="org.chargecar.InDashDisplay"/>
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${create-lab-commons-collections.jar}"/>
@@ -142,7 +142,7 @@
          </additional-files-to-copy>
       </create-dist>
 
-      <property name="dist-heads-up-display-is-complete" value="true"/>
+      <property name="dist-in-dash-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-sensor-board-reader" depends="build-sensor-board-reader" description="builds the sensor-board-reader" unless="dist-sensor-board-reader-is-complete">
