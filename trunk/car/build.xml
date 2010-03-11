@@ -78,6 +78,7 @@
 
    <target name="clean-heads-up-display" description="clean up heads-up-display">
       <delete dir="${heads-up-display.build.dir}"/>
+      <delete dir="${heads-up-display.build-test.dir}"/>
       <delete dir="${heads-up-display.dist.dir}"/>
    </target>
 
