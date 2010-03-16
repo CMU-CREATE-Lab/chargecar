@@ -1,6 +1,3 @@
-/**
- * 
- */
 package chargecar.policies;
 
 import chargecar.battery.BatteryModel;
@@ -10,7 +7,7 @@ import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 /**
- * @author astyler
+ * @author Alex Styler
  * DO NOT EDIT
  */
 public class NoCapPolicy implements Policy {

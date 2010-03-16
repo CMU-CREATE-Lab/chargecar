@@ -1,5 +1,9 @@
 package chargecar.capacitor;
 
+/**
+ * @author Alex Styler
+ * DO NOT EDIT
+ */
 public class NaiveCapacitor extends CapacitorModel {
 
 	public NaiveCapacitor(double maxCharge){

@@ -1,14 +1,11 @@
-/**
- * 
- */
 package chargecar.battery;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author astyler
- *
+ * @author Alex Styler
+ * DO NOT EDIT
  */
 public abstract class BatteryModel {
 		protected final List<Double> temperatureHistory = new ArrayList<Double>();

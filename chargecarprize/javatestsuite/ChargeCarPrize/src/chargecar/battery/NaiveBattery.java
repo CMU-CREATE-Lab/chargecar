@@ -1,5 +1,9 @@
 package chargecar.battery;
 
+/**
+ * @author Alex Styler
+ * DO NOT EDIT
+ */
 public class NaiveBattery extends BatteryModel {
 
 	public NaiveBattery(){
