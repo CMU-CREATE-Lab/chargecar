@@ -1,10 +1,6 @@
-/**
- * 
- */
 package chargecar;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import chargecar.util.PointFeatures;
@@ -14,12 +10,11 @@ import chargecar.battery.BatteryModel;
 import chargecar.battery.NaiveBattery;
 import chargecar.capacitor.CapacitorModel;
 import chargecar.capacitor.NaiveCapacitor;
-import chargecar.policies.Policy;
-import chargecar.policies.PolicyFactory;
+import chargecar.policies.*;
 
 /**
  * @author Alex Styler
- *
+ * DO NOT EDIT
  */
 public class Simulator {
 
@@ -28,9 +23,9 @@ public class Simulator {
 	 */
 	public static void main(String[] args) {		
 		List<Trip> tripsToTest = new ArrayList<Trip>();
-		Policy noCapBaseline = PolicyFactory.getNoCapPolicy();
-		Policy naiveBaseline = PolicyFactory.getNaiveBufferPolicy();
-		Policy userPolicy = PolicyFactory.getUserPolicy();
+		Policy noCapBaseline = new NoCapPolicy();
+		Policy naiveBaseline = new NaiveBufferPolicy();
+		Policy userPolicy = new UserPolicy();
 		userPolicy.loadState();
 		
 		BatteryModel judgingBattery = new NaiveBattery();

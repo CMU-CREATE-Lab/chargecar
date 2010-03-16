@@ -10,7 +10,7 @@ import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 /**
- * @author astyler
+ * @author Alex Styler
  * DO NOT EDIT
  */
 public interface Policy {

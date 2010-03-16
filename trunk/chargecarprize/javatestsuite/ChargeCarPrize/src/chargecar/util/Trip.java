@@ -3,6 +3,10 @@ package chargecar.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Alex Styler
+ * DO NOT EDIT
+ */
 public class Trip {
 	private TripFeatures features;
 	private List<PointFeatures> points;

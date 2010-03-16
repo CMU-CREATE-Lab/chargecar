@@ -1,6 +1,3 @@
-/**
- * 
- */
 package chargecar.policies;
 
 import chargecar.battery.BatteryModel;
@@ -10,31 +7,32 @@ import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 /**
- * @author astyler
+ * @author You
  *
  */
 public class UserPolicy implements Policy {
 	@Override
 	public void loadState() {
-		// TODO Auto-generated method stub
-
+		// TODO implement state loading from file or other source
 	}
 
 	@Override
 	public PowerFlows calculatePowerFlows(PointFeatures pf) {
-		// TODO Auto-generated method stub
+		// TODO implement power flow calculation, will be called almost every two
+		// seconds for a trip... this is where most of your logic will be
 		return new PowerFlows(pf.getPowerDemand(),0,0);
 	}
 
 	@Override
 	public void endTrip() {
-		// TODO Auto-generated method stub
+		// TODO implement cleanup if necessary.
 	}
 
 	@Override
 	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 			CapacitorModel capacitorClone) {
-		// TODO Auto-generated method stub		
+		// TODO implement the initiating/reseting policy for a new trip, given a clone of 
+		// the battery and cap as a reference, can spawn additional clones with .createClone()
 	}
 
 }
