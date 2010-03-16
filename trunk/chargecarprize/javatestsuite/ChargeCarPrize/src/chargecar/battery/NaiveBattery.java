@@ -1,8 +1,5 @@
 package chargecar.battery;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NaiveBattery extends BatteryModel {
 
 	public NaiveBattery(){
@@ -24,19 +21,20 @@ public class NaiveBattery extends BatteryModel {
 	}
 
 	@Override
-	public void drawCurrent(double current, double period) {
+	public void drawCurrent(double current, double periodMS) {
 		this.current = current;
 		//record this current as starting at the current time
 		recordHistory();
 		//after the period is up, update charge, temp, and eff.
-		this.time = this.time + period;
-		this.charge = calculateChargeAfterDraw(current, period);
-		this.temperature = calculateTemperatureAfterDraw(current, period);
-		this.efficiency = calculateEfficiency();
+		this.time = this.time + periodMS;
+		this.charge = calculateChargeAfterDraw(current, periodMS);
+		//temp and eff do not update in naive model
+		//this.temperature = calculateTemperatureAfterDraw(current, period);
+		//this.efficiency = calculateEfficiency();
 	}
 
 	@Override
-	protected double calculateChargeAfterDraw(double current, double period) {
+	protected double calculateChargeAfterDraw(double current, double periodMS) {
 		return this.charge; //infinite battery
 	}
 

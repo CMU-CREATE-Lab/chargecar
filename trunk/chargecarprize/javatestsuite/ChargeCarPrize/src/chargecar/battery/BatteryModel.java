@@ -22,6 +22,8 @@ public abstract class BatteryModel {
 		protected double time;
 		protected double current;
 		
+		protected final double MS_PER_HOUR = 3600000;
+		
 		protected abstract double calculateEfficiency();
 		protected abstract double calculateTemperatureAfterDraw(double current, double time);
 		protected abstract double calculateChargeAfterDraw(double current, double time);
