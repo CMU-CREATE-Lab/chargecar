@@ -8,6 +8,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
@@ -23,6 +24,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
@@ -38,6 +40,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${joda-time.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${mysql-connector.jar}"/>
@@ -51,6 +54,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
@@ -66,6 +70,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
@@ -79,6 +84,7 @@
 
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -91,6 +97,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
@@ -106,6 +113,7 @@
       <!-- third-party jars -->
       <pathelement path="${commons-io.jar}"/>
       <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${joda-time.jar}"/>
@@ -309,6 +317,7 @@
       <create-dist component.name="core-auth">
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
@@ -325,6 +334,7 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
@@ -343,6 +353,7 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
@@ -360,6 +371,7 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
@@ -378,6 +390,7 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
@@ -395,6 +408,7 @@
             <attribute name="Main-Class" value="org.chargecar.GPXValidator"/>
          </jar-manifest-attributes>
          <additional-files-to-copy>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${core.dist.dir}/${core.jar.filename}"/>
          </additional-files-to-copy>
@@ -410,6 +424,7 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${create-lab-commons-user-interface.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${swing-layout.jar}"/>
@@ -438,6 +453,7 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${joda-time.jar}"/>
             <fileset file="${mysql-connector.jar}"/>
