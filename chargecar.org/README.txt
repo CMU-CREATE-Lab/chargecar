@@ -88,6 +88,12 @@ NED Web Service.  Pretty-prints the resulting GPX on stdout.  Example usage:
    Privatize and pretty-print:
    java -jar chargecar-gpx-tool.jar --privatize --no-validate /path/to/file.gpx
 
+   Privatize a 1/10 of a mile radius around a particular location and pretty-print (location must be specified as LAT,LONG):
+   java -jar chargecar-gpx-tool.jar --privatize-location=40.443887,-79.946357 --no-validate /path/to/file.gpx
+
+   Privatize a 2/10 of a mile radius around a particular location and pretty-print (location must be specified as LAT,LONG,RADIUS):
+   java -jar chargecar-gpx-tool.jar --privatize-location=40.443887,-79.946357,321.8688 --no-validate /path/to/file.gpx
+
    Validate, lookup elevations from local NED, and pretty-print:
    java -jar chargecar-gpx-tool.jar --lookup-elevations-locally /path/to/file.gpx
 

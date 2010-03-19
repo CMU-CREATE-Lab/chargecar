@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import edu.cmu.ri.createlab.util.StringUtils;
 import edu.cmu.ri.createlab.xml.XmlHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -129,7 +130,7 @@ final class MotionXGPSRawFileReader
                   // the starting timestamp to get the current timestamp.  We use this value instead of the "activeTime"
                   // attribute because this value has more accuracy.
                   DateTime timestamp = startingTimestamp;
-                  final Double timeValue = convertStringToDouble(locationElement.getAttributeValue("time"));
+                  final Double timeValue = StringUtils.convertStringToDouble(locationElement.getAttributeValue("time"));
                   if (timeValue != null)
                      {
                      timestamp = timestamp.plusMillis((int)(timeValue * 1000.0));
@@ -161,24 +162,5 @@ final class MotionXGPSRawFileReader
                }
             }
          }
-      }
-
-   private Double convertStringToDouble(final String str)
-      {
-      if (str != null && !"".equals(str))
-         {
-         try
-            {
-            return Double.parseDouble(str);
-            }
-         catch (NumberFormatException e)
-            {
-            if (LOG.isErrorEnabled())
-               {
-               LOG.error("NumberFormatException while trying to parse string [" + str + "] as a double", e);
-               }
-            }
-         }
-      return null;
       }
    }

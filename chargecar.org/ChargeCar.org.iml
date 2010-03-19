@@ -70,6 +70,17 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="CREATE Lab Commons Util">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-util/create-lab-commons-util.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-util/create-lab-commons-util-src.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="CREATE Lab Commons XML">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/create-lab-commons-xml/create-lab-commons-xml.jar!/" />

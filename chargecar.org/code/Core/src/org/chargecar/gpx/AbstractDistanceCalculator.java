@@ -7,5 +7,5 @@ public abstract class AbstractDistanceCalculator implements DistanceCalculator
    {
    public static final double RADIUS_OF_EARTH_IN_METERS = 6371000;
 
-   public abstract double compute2DDistance(final TrackPoint t1, final TrackPoint t2);
+   public abstract double compute2DDistance(final GPSCoordinate t1, final GPSCoordinate t2);
    }
