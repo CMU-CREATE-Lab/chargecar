@@ -124,6 +124,7 @@ final class InDashDisplayView extends JPanel
             });
 
       final JPanel odometerPanel = new JPanel();
+      odometerPanel.setBackground(Color.WHITE);
       odometerPanel.setLayout(new BoxLayout(odometerPanel, BoxLayout.X_AXIS));
       odometerPanel.add(Box.createGlue());
       odometerPanel.add(quitButton);
@@ -140,6 +141,7 @@ final class InDashDisplayView extends JPanel
       odometerPanel.add(Box.createGlue());
 
       final JPanel batteryAndCapDialsPanel = new JPanel();
+      batteryAndCapDialsPanel.setBackground(Color.WHITE);
       batteryAndCapDialsPanel.setLayout(new BoxLayout(batteryAndCapDialsPanel, BoxLayout.X_AXIS));
 
       batteryAndCapDialsPanel.add(Box.createGlue());
@@ -163,6 +165,7 @@ final class InDashDisplayView extends JPanel
       final Component powerAndEfficiencyPanelVerticalSpacer6 = SwingUtils.createRigidSpacer(20);
 
       final JPanel powerAndEfficiencyPanel = new JPanel();
+      powerAndEfficiencyPanel.setBackground(Color.WHITE);
       final GroupLayout powerAndEfficiencyPanelLayout = new GroupLayout(powerAndEfficiencyPanel);
       powerAndEfficiencyPanel.setLayout(powerAndEfficiencyPanelLayout);
       powerAndEfficiencyPanelLayout.setAutocreateGaps(true);
@@ -273,6 +276,7 @@ final class InDashDisplayView extends JPanel
       );
 
       final JPanel powerAndEfficiencyPanelContainer = new JPanel();
+      powerAndEfficiencyPanelContainer.setBackground(Color.WHITE);
       powerAndEfficiencyPanelContainer.setLayout(new BoxLayout(powerAndEfficiencyPanelContainer, BoxLayout.Y_AXIS));
 
       //powerAndEfficiencyPanelContainer.add(Box.createGlue());
@@ -280,6 +284,7 @@ final class InDashDisplayView extends JPanel
       powerAndEfficiencyPanelContainer.add(Box.createGlue());
 
       final JPanel batteryVoltageDialsPanel = new JPanel();
+      batteryVoltageDialsPanel.setBackground(Color.WHITE);
       batteryVoltageDialsPanel.setLayout(new BoxLayout(batteryVoltageDialsPanel, BoxLayout.X_AXIS));
 
       batteryVoltageDialsPanel.add(Box.createGlue());
@@ -293,6 +298,7 @@ final class InDashDisplayView extends JPanel
       batteryVoltageDialsPanel.add(Box.createGlue());
 
       final JPanel motorCurrentDialsPanel = new JPanel();
+      motorCurrentDialsPanel.setBackground(Color.WHITE);
       motorCurrentDialsPanel.setLayout(new BoxLayout(motorCurrentDialsPanel, BoxLayout.X_AXIS));
 
       motorCurrentDialsPanel.add(Box.createGlue());
@@ -306,6 +312,7 @@ final class InDashDisplayView extends JPanel
       motorCurrentDialsPanel.add(Box.createGlue());
 
       final JPanel batteryAndMotorDetailPanel = new JPanel();
+      batteryAndMotorDetailPanel.setBackground(Color.WHITE);
       batteryAndMotorDetailPanel.setLayout(new BoxLayout(batteryAndMotorDetailPanel, BoxLayout.Y_AXIS));
 
       batteryAndMotorDetailPanel.add(batteryVoltageDialsPanel);
@@ -314,6 +321,7 @@ final class InDashDisplayView extends JPanel
       batteryAndMotorDetailPanel.add(Box.createGlue());
 
       final JPanel temperatureDialsRow1Panel = new JPanel();
+      temperatureDialsRow1Panel.setBackground(Color.WHITE);
       temperatureDialsRow1Panel.setLayout(new BoxLayout(temperatureDialsRow1Panel, BoxLayout.X_AXIS));
 
       temperatureDialsRow1Panel.add(Box.createGlue());
@@ -327,6 +335,7 @@ final class InDashDisplayView extends JPanel
       temperatureDialsRow1Panel.add(Box.createGlue());
 
       final JPanel temperatureDialsRow2Panel = new JPanel();
+      temperatureDialsRow2Panel.setBackground(Color.WHITE);
       temperatureDialsRow2Panel.setLayout(new BoxLayout(temperatureDialsRow2Panel, BoxLayout.X_AXIS));
 
       temperatureDialsRow2Panel.add(Box.createGlue());
@@ -340,6 +349,7 @@ final class InDashDisplayView extends JPanel
       temperatureDialsRow2Panel.add(Box.createGlue());
 
       final JPanel temperatureDialsPanel = new JPanel();
+      temperatureDialsPanel.setBackground(Color.WHITE);
       temperatureDialsPanel.setLayout(new BoxLayout(temperatureDialsPanel, BoxLayout.Y_AXIS));
 
       temperatureDialsPanel.add(temperatureDialsRow1Panel);
@@ -348,6 +358,7 @@ final class InDashDisplayView extends JPanel
       temperatureDialsPanel.add(Box.createGlue());
 
       final JPanel accessoryDialsPanel = new JPanel();
+      accessoryDialsPanel.setBackground(Color.WHITE);
       accessoryDialsPanel.setLayout(new BoxLayout(accessoryDialsPanel, BoxLayout.X_AXIS));
 
       accessoryDialsPanel.add(Box.createGlue());
