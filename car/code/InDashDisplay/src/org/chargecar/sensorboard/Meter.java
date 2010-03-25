@@ -133,6 +133,7 @@ public class Meter extends JPanel
 
       chartPanel = new ChartPanel(new JFreeChart(plot));
       chartPanel.setPreferredSize(meterConfig.getSize());
+      chartPanel.setBackground(Color.WHITE);
 
       this.add(chartPanel);
       this.setPreferredSize(meterConfig.getSize());
