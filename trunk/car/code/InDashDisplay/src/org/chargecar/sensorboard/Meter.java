@@ -68,6 +68,7 @@ public class Meter extends JPanel
       dialBackground = new DialBackground(gradientPaint);
       dialBackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
       plot.setBackground(dialBackground);
+      plot.setBackgroundPaint(Color.WHITE);
 
       if (meterConfig.getLabelLine1() != null)
          {
