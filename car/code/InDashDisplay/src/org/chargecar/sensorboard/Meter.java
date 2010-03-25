@@ -132,7 +132,9 @@ public class Meter extends JPanel
       dialCap.setRadius(0.10);
       plot.setCap(dialCap);
 
-      chartPanel = new ChartPanel(new JFreeChart(plot));
+      final JFreeChart jFreeChart = new JFreeChart(plot);
+      jFreeChart.setBackgroundPaint(Color.WHITE);
+      chartPanel = new ChartPanel(jFreeChart);
       chartPanel.setPreferredSize(meterConfig.getSize());
       chartPanel.setBackground(Color.WHITE);
 
