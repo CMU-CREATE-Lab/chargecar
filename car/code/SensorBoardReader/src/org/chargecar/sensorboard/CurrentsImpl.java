@@ -10,15 +10,15 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
    private static final int ACCESSORY_CURRENT_CONVERSION_FACTOR = 15;
    private static final int MOTOR_CURRENT_CONVERSION_FACTOR = 5;
 
-   private static final double[] DC_OFFSETS = new double[]{-18.8,       // battery
-                                                           0,           // aux 1
-                                                           -44.3,       // accessory
-                                                           -6.9,        // motor 1
-                                                           -6.9,        // motor 2
-                                                           -10.9,       // motor 3
-                                                           -9.75,       // motor 4
-                                                           0,           // aux 2
-                                                           -4.5};       // capacitor
+   private static final double[] DC_OFFSETS = new double[]{-18.8,       // 0 = battery
+                                                           0,           // 1 = aux 1
+                                                           0,           // 2 = aux 2
+                                                           -6.9,        // 3 = motor 1
+                                                           -6.9,        // 4 = motor 2
+                                                           -10.9,       // 5 = motor 3
+                                                           -9.75,       // 6 = motor 4
+                                                           -44.3,       // 7 = accessory
+                                                           -4.5};       // 8 = capacitor
 
    private final Double batteryCurrent;
    private final Double capacitorCurrent;
@@ -48,12 +48,12 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
       {
       batteryCurrent = convertToDouble(rawValues[0]) + DC_OFFSETS[0];
       auxiliaryCurrents[0] = convertToDouble(rawValues[1]) + DC_OFFSETS[1];
-      accessoryCurrent = (convertToDouble(rawValues[2]) + DC_OFFSETS[2]) / ACCESSORY_CURRENT_CONVERSION_FACTOR;
+      auxiliaryCurrents[1] = convertToDouble(rawValues[2]) + DC_OFFSETS[2];
       motorCurrents[0] = (convertToDouble(rawValues[3]) + DC_OFFSETS[3]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[1] = (convertToDouble(rawValues[4]) + DC_OFFSETS[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[2] = (convertToDouble(rawValues[5]) + DC_OFFSETS[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[3] = (convertToDouble(rawValues[6]) + DC_OFFSETS[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-      auxiliaryCurrents[1] = convertToDouble(rawValues[7]) + DC_OFFSETS[7];
+      accessoryCurrent = (convertToDouble(rawValues[7]) + DC_OFFSETS[7]) / ACCESSORY_CURRENT_CONVERSION_FACTOR;
       capacitorCurrent = convertToDouble(rawValues[8]) + DC_OFFSETS[8];
       }
 
