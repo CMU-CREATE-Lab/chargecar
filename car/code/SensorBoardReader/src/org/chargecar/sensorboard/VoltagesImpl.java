@@ -12,7 +12,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
    private final Double[] batteryVoltages = new Double[SensorBoardConstants.BATTERY_DEVICE_COUNT];
    private final Double capacitorVoltage;
    private final Double accessoryVoltage;
-   private final Double[] auxiliaryVoltages = new Double[SensorBoardConstants.AUXILIARY_DEVICE_COUNT];
 
    /**
     * Copy constructor
@@ -25,10 +24,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
          }
       capacitorVoltage = voltages.getCapacitorVoltage();
       accessoryVoltage = voltages.getAccessoryVoltage();
-      for (int i = 0; i < auxiliaryVoltages.length; i++)
-         {
-         auxiliaryVoltages[i] = voltages.getAuxiliaryVoltage(i);
-         }
       }
 
    public VoltagesImpl(final String[] rawValues)
@@ -39,8 +34,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
       batteryVoltages[3] = convertToVoltage(rawValues[0]) - batteryVoltages[0] - batteryVoltages[1] - batteryVoltages[2];
       capacitorVoltage = convertToVoltage(rawValues[1]);
       accessoryVoltage = convertToVoltage(rawValues[2]);
-      auxiliaryVoltages[0] = convertToVoltage(rawValues[6]);
-      auxiliaryVoltages[1] = convertToVoltage(rawValues[7]);
       }
 
    private double convertToVoltage(final String rawValue)
@@ -84,15 +77,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
       return accessoryVoltage;
       }
 
-   public Double getAuxiliaryVoltage(final int auxiliaryDeviceId)
-      {
-      if (auxiliaryDeviceId >= 0 && auxiliaryDeviceId < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
-         {
-         return auxiliaryVoltages[auxiliaryDeviceId];
-         }
-      throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
-      }
-
    @Override
    public boolean equals(final Object o)
       {
@@ -115,10 +99,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
          {
          return false;
          }
-      if (!Arrays.equals(auxiliaryVoltages, voltages.auxiliaryVoltages))
-         {
-         return false;
-         }
       if (!Arrays.equals(batteryVoltages, voltages.batteryVoltages))
          {
          return false;
@@ -137,7 +117,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
       result = 31 * result + (int)(temp ^ (temp >>> 32));
       temp = accessoryVoltage != +0.0d ? Double.doubleToLongBits(accessoryVoltage) : 0L;
       result = 31 * result + (int)(temp ^ (temp >>> 32));
-      result = 31 * result + (auxiliaryVoltages != null ? Arrays.hashCode(auxiliaryVoltages) : 0);
       return result;
       }
 
@@ -153,11 +132,6 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
          }
       sb.append(", capacitorVoltage=").append(capacitorVoltage);
       sb.append(", accessoryVoltage=").append(accessoryVoltage);
-      sb.append(", auxiliaryVoltages=").append(auxiliaryVoltages == null ? "null" : "");
-      for (int i = 0; auxiliaryVoltages != null && i < auxiliaryVoltages.length; ++i)
-         {
-         sb.append(i == 0 ? "" : ", ").append(auxiliaryVoltages[i]);
-         }
       sb.append('}');
       return sb.toString();
       }

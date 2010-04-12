@@ -18,7 +18,6 @@ final class UpdatableVoltages implements Voltages
    private final UpdatableDouble[] batteryVoltages;
    private final UpdatableDouble capacitorVoltage;
    private final UpdatableDouble accessoryVoltage;
-   private final UpdatableDouble[] auxiliaryVoltages;
    private long timestamp = System.currentTimeMillis();
 
    private UpdatableVoltages(final UpdatableDouble.InstanceCreationStrategy updatableDoubleCreationStrategy)
@@ -26,7 +25,6 @@ final class UpdatableVoltages implements Voltages
       batteryVoltages = UpdatableDouble.createArray(updatableDoubleCreationStrategy, SensorBoardConstants.BATTERY_DEVICE_COUNT);
       capacitorVoltage = updatableDoubleCreationStrategy.createInstance(null);
       accessoryVoltage = updatableDoubleCreationStrategy.createInstance(null);
-      auxiliaryVoltages = UpdatableDouble.createArray(updatableDoubleCreationStrategy, SensorBoardConstants.AUXILIARY_DEVICE_COUNT);
       }
 
    public Double getBatteryVoltage(final int batteryId)
@@ -75,27 +73,6 @@ final class UpdatableVoltages implements Voltages
       accessoryVoltage.setValue(value);
       }
 
-   public Double getAuxiliaryVoltage(final int auxiliaryDeviceId)
-      {
-      if (auxiliaryDeviceId >= 0 && auxiliaryDeviceId < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
-         {
-         return auxiliaryVoltages[auxiliaryDeviceId].getValue();
-         }
-      throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
-      }
-
-   public void setAuxiliaryVoltage(final int auxiliaryDeviceId, final Double value)
-      {
-      if (auxiliaryDeviceId >= 0 && auxiliaryDeviceId < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
-         {
-         auxiliaryVoltages[auxiliaryDeviceId].setValue(value);
-         }
-      else
-         {
-         throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
-         }
-      }
-
    public long getTimestampMilliseconds()
       {
       return timestamp;
@@ -112,11 +89,6 @@ final class UpdatableVoltages implements Voltages
 
          capacitorVoltage.update(newVoltages.getCapacitorVoltage());
          accessoryVoltage.update(newVoltages.getAccessoryVoltage());
-
-         for (int i = 0; i < auxiliaryVoltages.length; i++)
-            {
-            auxiliaryVoltages[i].update(newVoltages.getAuxiliaryVoltage(i));
-            }
 
          timestamp = newVoltages.getTimestampMilliseconds();
          }

@@ -17,8 +17,6 @@ public final class SensorBoardConstants
 
    public static final int BATTERY_DEVICE_COUNT = 4;
 
-   public static final int AUXILIARY_DEVICE_COUNT = 2;
-
    private SensorBoardConstants()
       {
       // private to prevent instantiation

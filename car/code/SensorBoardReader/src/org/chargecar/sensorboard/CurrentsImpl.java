@@ -7,24 +7,13 @@ import java.util.Arrays;
  */
 public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
    {
-   private static final int ACCESSORY_CURRENT_CONVERSION_FACTOR = 15;
+   private static final double STANDARD_CURRENT_CONVERSION_FACTOR = -2.3;
    private static final int MOTOR_CURRENT_CONVERSION_FACTOR = 5;
-
-   private static final double[] DC_OFFSETS = new double[]{-18.8,       // 0 = battery
-                                                           0,           // 1 = aux 1
-                                                           0,           // 2 = aux 2
-                                                           -6.9,        // 3 = motor 1
-                                                           -6.9,        // 4 = motor 2
-                                                           -10.9,       // 5 = motor 3
-                                                           -9.75,       // 6 = motor 4
-                                                           -44.3,       // 7 = accessory
-                                                           -4.5};       // 8 = capacitor
 
    private final Double batteryCurrent;
    private final Double capacitorCurrent;
    private final Double accessoryCurrent;
    private final Double[] motorCurrents = new Double[SensorBoardConstants.MOTOR_DEVICE_COUNT];
-   private final Double[] auxiliaryCurrents = new Double[SensorBoardConstants.AUXILIARY_DEVICE_COUNT];
 
    /**
     * Copy constructor
@@ -38,23 +27,17 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
          {
          motorCurrents[i] = currents.getMotorCurrent(i);
          }
-      for (int i = 0; i < auxiliaryCurrents.length; i++)
-         {
-         auxiliaryCurrents[i] = currents.getAuxiliaryCurrent(i);
-         }
       }
 
    public CurrentsImpl(final String[] rawValues)
       {
-      batteryCurrent = convertToDouble(rawValues[0]) + DC_OFFSETS[0];
-      auxiliaryCurrents[0] = convertToDouble(rawValues[1]) + DC_OFFSETS[1];
-      auxiliaryCurrents[1] = convertToDouble(rawValues[2]) + DC_OFFSETS[2];
-      motorCurrents[0] = (convertToDouble(rawValues[3]) + DC_OFFSETS[3]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-      motorCurrents[1] = (convertToDouble(rawValues[4]) + DC_OFFSETS[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-      motorCurrents[2] = (convertToDouble(rawValues[5]) + DC_OFFSETS[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-      motorCurrents[3] = (convertToDouble(rawValues[6]) + DC_OFFSETS[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
-      accessoryCurrent = (convertToDouble(rawValues[7]) + DC_OFFSETS[7]) / ACCESSORY_CURRENT_CONVERSION_FACTOR;
-      capacitorCurrent = convertToDouble(rawValues[8]) + DC_OFFSETS[8];
+      batteryCurrent = convertToDouble(rawValues[0]) / STANDARD_CURRENT_CONVERSION_FACTOR;
+      capacitorCurrent = convertToDouble(rawValues[1]) / STANDARD_CURRENT_CONVERSION_FACTOR;
+      accessoryCurrent = convertToDouble(rawValues[2]) / STANDARD_CURRENT_CONVERSION_FACTOR;
+      motorCurrents[0] = convertToDouble(rawValues[3]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+      motorCurrents[1] = convertToDouble(rawValues[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+      motorCurrents[2] = convertToDouble(rawValues[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+      motorCurrents[3] = convertToDouble(rawValues[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       }
 
    public Double getBatteryCurrent()
@@ -79,15 +62,6 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
          return motorCurrents[motorId];
          }
       throw new IllegalArgumentException("Invalid motor ID [" + motorId + "], value must be a positive integer less than [" + SensorBoardConstants.MOTOR_DEVICE_COUNT + "]");
-      }
-
-   public Double getAuxiliaryCurrent(final int auxiliaryDeviceId)
-      {
-      if (auxiliaryDeviceId >= 0 && auxiliaryDeviceId < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
-         {
-         return auxiliaryCurrents[auxiliaryDeviceId];
-         }
-      throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
       }
 
    public boolean equals(final Object o)
@@ -115,10 +89,6 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
          {
          return false;
          }
-      if (!Arrays.equals(auxiliaryCurrents, currents.auxiliaryCurrents))
-         {
-         return false;
-         }
       if (!Arrays.equals(motorCurrents, currents.motorCurrents))
          {
          return false;
@@ -138,7 +108,6 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
       temp = accessoryCurrent != +0.0d ? Double.doubleToLongBits(accessoryCurrent) : 0L;
       result = 31 * result + (int)(temp ^ (temp >>> 32));
       result = 31 * result + (motorCurrents != null ? Arrays.hashCode(motorCurrents) : 0);
-      result = 31 * result + (auxiliaryCurrents != null ? Arrays.hashCode(auxiliaryCurrents) : 0);
       return result;
       }
 
@@ -153,11 +122,6 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
       for (int i = 0; motorCurrents != null && i < motorCurrents.length; ++i)
          {
          sb.append(i == 0 ? "" : ", ").append(motorCurrents[i]);
-         }
-      sb.append(", auxiliaryCurrents=").append(auxiliaryCurrents == null ? "null" : "");
-      for (int i = 0; auxiliaryCurrents != null && i < auxiliaryCurrents.length; ++i)
-         {
-         sb.append(i == 0 ? "" : ", ").append(auxiliaryCurrents[i]);
          }
       sb.append('}');
       return sb.toString();

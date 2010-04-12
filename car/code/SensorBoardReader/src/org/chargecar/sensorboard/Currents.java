@@ -12,6 +12,4 @@ public interface Currents extends SensorBoardData
    Double getAccessoryCurrent();
 
    Double getMotorCurrent(int motorId);
-
-   Double getAuxiliaryCurrent(int auxiliaryDeviceId);
    }

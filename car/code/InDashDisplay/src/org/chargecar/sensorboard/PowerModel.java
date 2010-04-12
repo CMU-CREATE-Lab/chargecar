@@ -416,10 +416,6 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
 
          sb.append(voltagesAndCurrents.getVoltages().getTimestampMilliseconds()).append(TO_STRING_DELIMITER);
          sb.append(voltagesAndCurrents.getVoltages().getAccessoryVoltage()).append(TO_STRING_DELIMITER);
-         for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
-            {
-            sb.append(voltagesAndCurrents.getVoltages().getAuxiliaryVoltage(i)).append(TO_STRING_DELIMITER);
-            }
          for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
             {
             sb.append(voltagesAndCurrents.getVoltages().getBatteryVoltage(i)).append(TO_STRING_DELIMITER);
@@ -429,10 +425,6 @@ public final class PowerModel extends Model<VoltagesAndCurrents, Power>
 
          sb.append(voltagesAndCurrents.getCurrents().getTimestampMilliseconds()).append(TO_STRING_DELIMITER);
          sb.append(voltagesAndCurrents.getCurrents().getAccessoryCurrent()).append(TO_STRING_DELIMITER);
-         for (int i = 0; i < SensorBoardConstants.AUXILIARY_DEVICE_COUNT; i++)
-            {
-            sb.append(voltagesAndCurrents.getCurrents().getAuxiliaryCurrent(i)).append(TO_STRING_DELIMITER);
-            }
          sb.append(voltagesAndCurrents.getCurrents().getBatteryCurrent()).append(TO_STRING_DELIMITER);
          sb.append(voltagesAndCurrents.getCurrents().getCapacitorCurrent()).append(TO_STRING_DELIMITER);
          for (int i = 0; i < SensorBoardConstants.MOTOR_DEVICE_COUNT; i++)
