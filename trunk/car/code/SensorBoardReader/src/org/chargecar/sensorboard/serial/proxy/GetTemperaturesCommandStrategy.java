@@ -14,10 +14,10 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
    private static final String COMMAND_PREFIX = "T";
 
    /** The size of the expected response, in bytes */
-   private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 78;
+   private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 64;
 
    /** The expected number of values in the response */
-   private static final int NUM_EXPECTED_VALUES_IN_RESPONSE = 11;
+   private static final int NUM_EXPECTED_VALUES_IN_RESPONSE = 9;
 
    private final byte[] command;
 
@@ -55,7 +55,6 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
       private final double batteryTemperature;
       private final double[] motorControllerTemperatures = new double[SensorBoardConstants.MOTOR_CONTROLLER_DEVICE_COUNT];
       private final double outsideTemperature;
-      private final double[] auxiliaryTemperatures = new double[SensorBoardConstants.AUXILIARY_DEVICE_COUNT];
 
       private TemperaturesImpl(final String[] rawValues)
          {
@@ -68,8 +67,6 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
          motorControllerTemperatures[0] = convertToDouble(rawValues[6]);
          motorControllerTemperatures[1] = convertToDouble(rawValues[7]);
          outsideTemperature = convertToDouble(rawValues[8]);
-         auxiliaryTemperatures[0] = convertToDouble(rawValues[9]);
-         auxiliaryTemperatures[1] = convertToDouble(rawValues[10]);
          }
 
       private double computeCapacitorTemperature(final double rawValue)
@@ -110,15 +107,6 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
          return outsideTemperature;
          }
 
-      public double getAuxiliaryTemperature(final int auxiliaryDeviceId)
-         {
-         if (auxiliaryDeviceId >= 0 && auxiliaryDeviceId < SensorBoardConstants.AUXILIARY_DEVICE_COUNT)
-            {
-            return auxiliaryTemperatures[auxiliaryDeviceId];
-            }
-         throw new IllegalArgumentException("Invalid auxiliary device ID [" + auxiliaryDeviceId + "], value must be a positive integer less than [" + SensorBoardConstants.AUXILIARY_DEVICE_COUNT + "]");
-         }
-
       public boolean equals(final Object o)
          {
          if (this == o)
@@ -141,10 +129,6 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
             return false;
             }
          if (Double.compare(that.outsideTemperature, outsideTemperature) != 0)
-            {
-            return false;
-            }
-         if (!Arrays.equals(auxiliaryTemperatures, that.auxiliaryTemperatures))
             {
             return false;
             }
@@ -172,7 +156,6 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
          result = 31 * result + (motorControllerTemperatures != null ? Arrays.hashCode(motorControllerTemperatures) : 0);
          temp = outsideTemperature != +0.0d ? Double.doubleToLongBits(outsideTemperature) : 0L;
          result = 31 * result + (int)(temp ^ (temp >>> 32));
-         result = 31 * result + (auxiliaryTemperatures != null ? Arrays.hashCode(auxiliaryTemperatures) : 0);
          return result;
          }
 
@@ -184,14 +167,13 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
                          ", batteryTemperature=",
                          ", motorControllerTemperatures=",
                          ", outsideTemperature=",
-                         ", auxiliaryTemperatures=",
                          ", "
          );
          }
 
       public String toLoggingString()
          {
-         return toString("", TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER);
+         return toString("", TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER, TO_STRING_DELIMITER);
          }
 
       private String toString(final String field1,
@@ -200,18 +182,12 @@ final class GetTemperaturesCommandStrategy extends ChargeCarSerialDeviceReturnVa
                               final String field4,
                               final String field5,
                               final String field6,
-                              final String field7,
                               final String subFieldDelimiter)
          {
          final StringBuilder sb = new StringBuilder();
          sb.append("Temperatures");
          sb.append("{");
          sb.append(field1).append(getTimestampMilliseconds());
-         sb.append(field7).append(auxiliaryTemperatures == null ? "null" : "");
-         for (int i = 0; auxiliaryTemperatures != null && i < auxiliaryTemperatures.length; ++i)
-            {
-            sb.append(i == 0 ? "" : subFieldDelimiter).append(auxiliaryTemperatures[i]);
-            }
          sb.append(field4).append(batteryTemperature);
          sb.append(field3).append(capacitorTemperature);
          sb.append(field2).append(motorTemperatures == null ? "null" : "");

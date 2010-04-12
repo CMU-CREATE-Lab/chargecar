@@ -12,6 +12,4 @@ public interface Voltages extends SensorBoardData
    Double getCapacitorVoltage();
 
    Double getAccessoryVoltage();
-
-   Double getAuxiliaryVoltage(final int auxiliaryDeviceId);
    }

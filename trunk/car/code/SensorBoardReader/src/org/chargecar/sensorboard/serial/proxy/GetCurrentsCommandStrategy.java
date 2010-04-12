@@ -12,10 +12,10 @@ final class GetCurrentsCommandStrategy extends ChargeCarSerialDeviceReturnValueC
    private static final String COMMAND_PREFIX = "C";
 
    /** The size of the expected response, in bytes */
-   private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 64;
+   private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 50;
 
    /** The expected number of values in the response */
-   private static final int NUM_EXPECTED_VALUES_IN_RESPONSE = 9;
+   private static final int NUM_EXPECTED_VALUES_IN_RESPONSE = 7;
 
    private final byte[] command;
 

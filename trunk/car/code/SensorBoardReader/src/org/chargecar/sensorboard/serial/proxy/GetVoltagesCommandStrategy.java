@@ -12,10 +12,10 @@ final class GetVoltagesCommandStrategy extends ChargeCarSerialDeviceReturnValueC
    private static final String COMMAND_PREFIX = "V";
 
    /** The size of the expected response, in bytes */
-   private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 49;
+   private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 37;
 
    /** The expected number of values in the response */
-   private static final int NUM_EXPECTED_VALUES_IN_RESPONSE = 8;
+   private static final int NUM_EXPECTED_VALUES_IN_RESPONSE = 6;
 
    private final byte[] command;
 

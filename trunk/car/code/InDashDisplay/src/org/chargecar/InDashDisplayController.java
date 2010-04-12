@@ -88,7 +88,7 @@ final class InDashDisplayController
                if (SerialDeviceConnectionState.CONNECTED.equals(newState))
                   {
                   // start the data acquisition executor
-                  scheduledFuture = dataAcquisitionExecutorService.scheduleAtFixedRate(new SensorBoardReader(), 0, 1, TimeUnit.SECONDS);
+                  scheduledFuture = dataAcquisitionExecutorService.scheduleAtFixedRate(new SensorBoardReader(), 0, 500, TimeUnit.MILLISECONDS);
                   }
                else if (SerialDeviceConnectionState.DISCONNECTED.equals(newState))
                   {
