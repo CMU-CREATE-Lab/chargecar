@@ -54,7 +54,8 @@ public final class EfficiencyModel extends Model<PowerAndOdometry, Efficiency>
             }
          else
             {
-            batteryEfficiency = distanceTraveled / batteryPowerUsed;
+            // multiply by -1 since battery power used is negative and we want efficiency to be a positive number
+            batteryEfficiency = distanceTraveled / batteryPowerUsed * -1;
             }
          }
 
