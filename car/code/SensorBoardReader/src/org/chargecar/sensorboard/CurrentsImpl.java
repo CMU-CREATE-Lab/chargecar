@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
    {
-   private static final double STANDARD_CURRENT_CONVERSION_FACTOR = -2.3;
+   private static final double STANDARD_CURRENT_CONVERSION_FACTOR = -1.44;
    private static final int MOTOR_CURRENT_CONVERSION_FACTOR = 5;
 
    private final Double batteryCurrent;
@@ -31,13 +31,33 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
 
    public CurrentsImpl(final String[] rawValues)
       {
-      batteryCurrent = convertToDouble(rawValues[0]) / STANDARD_CURRENT_CONVERSION_FACTOR;
-      capacitorCurrent = convertToDouble(rawValues[1]) / STANDARD_CURRENT_CONVERSION_FACTOR;
+      final double batteryCurrentTemp = convertToDouble(rawValues[0]) / STANDARD_CURRENT_CONVERSION_FACTOR;
+      final double capacitorCurrentTemp = convertToDouble(rawValues[1]) / STANDARD_CURRENT_CONVERSION_FACTOR;
       accessoryCurrent = convertToDouble(rawValues[2]) / STANDARD_CURRENT_CONVERSION_FACTOR;
       motorCurrents[0] = convertToDouble(rawValues[3]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[1] = convertToDouble(rawValues[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[2] = convertToDouble(rawValues[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[3] = convertToDouble(rawValues[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+
+      // adjust battery current
+      if (Double.compare(-25, batteryCurrentTemp) < 0 && Double.compare(batteryCurrentTemp, 25) < 0)
+         {
+         batteryCurrent = -1.5;
+         }
+      else
+         {
+         batteryCurrent = batteryCurrentTemp;
+         }
+
+      // adjust capacitor current
+      if (Double.compare(-25, capacitorCurrentTemp) < 0 && Double.compare(capacitorCurrentTemp, 25) < 0)
+         {
+         capacitorCurrent = 0.0;
+         }
+      else
+         {
+         capacitorCurrent = capacitorCurrentTemp;
+         }
       }
 
    public Double getBatteryCurrent()
