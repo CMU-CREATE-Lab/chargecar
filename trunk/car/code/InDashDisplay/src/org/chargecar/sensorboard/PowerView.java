@@ -15,7 +15,7 @@ public final class PowerView extends View<Power>
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(PowerView.class.getName());
 
-   private static final String POWER_STRING_FORMAT = "%06.1f";
+   private static final String POWER_STRING_FORMAT = "%07.2f";
 
    private final Meter batteryCurrentMeter;
    private final Meter batteryVoltageMeter;
@@ -106,8 +106,8 @@ public final class PowerView extends View<Power>
       // ---------------------------------------------------------------------------------------------------------------
 
       meterConfig.clearDialRanges();
-      meterConfig.setRange(8, 16);
-      meterConfig.setTicks(1, 9);
+      meterConfig.setRange(0, 16);
+      meterConfig.setTicks(1, 3);
       meterConfig.setNumberFormat(new DecimalFormat("#0.0"));
       meterConfig.setBackgroundColor(GUIConstants.ACCESSSORY_METER_COLOR);
       meterConfig.setLabel(RESOURCES.getString("label.accessory"), RESOURCES.getString("label.voltage"));
@@ -117,8 +117,8 @@ public final class PowerView extends View<Power>
       // ---------------------------------------------------------------------------------------------------------------
 
       meterConfig.clearDialRanges();
-      meterConfig.setRange(8, 16);
-      meterConfig.setTicks(1, 9);
+      meterConfig.setRange(0, 16);
+      meterConfig.setTicks(1, 3);
       meterConfig.setNumberFormat(new DecimalFormat("#0.0"));
       meterConfig.setBackgroundColor(GUIConstants.BATTERY_METER_COLOR);
       for (int i = 0; i < SensorBoardConstants.BATTERY_DEVICE_COUNT; i++)
