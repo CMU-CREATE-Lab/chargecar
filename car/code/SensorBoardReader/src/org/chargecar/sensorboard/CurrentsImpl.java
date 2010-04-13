@@ -1,12 +1,16 @@
 package org.chargecar.sensorboard;
 
 import java.util.Arrays;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
    {
+   private static final Log LOG = LogFactory.getLog(CurrentsImpl.class);
+
    private static final double STANDARD_CURRENT_CONVERSION_FACTOR = -1.44;
    private static final int MOTOR_CURRENT_CONVERSION_FACTOR = 5;
 
@@ -38,6 +42,13 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
       motorCurrents[1] = convertToDouble(rawValues[4]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[2] = convertToDouble(rawValues[5]) / MOTOR_CURRENT_CONVERSION_FACTOR;
       motorCurrents[3] = convertToDouble(rawValues[6]) / MOTOR_CURRENT_CONVERSION_FACTOR;
+
+      final StringBuilder s = new StringBuilder("RAW CURRENTS:");
+      for (int i = 0; i < rawValues.length; i++)
+         {
+         s.append("\t").append(rawValues[i]);
+         }
+      LOG.info(s);
 
       // adjust battery current
       if (Double.compare(-25, batteryCurrentTemp) < 0 && Double.compare(batteryCurrentTemp, 25) < 0)
