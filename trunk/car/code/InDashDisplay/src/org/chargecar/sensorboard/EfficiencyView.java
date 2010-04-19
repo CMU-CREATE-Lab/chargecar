@@ -9,7 +9,7 @@ public class EfficiencyView extends View<Efficiency>
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(EfficiencyView.class.getName());
 
-   private final Gauge<Double> batteryEfficiencyGauge = new Gauge<Double>(RESOURCES.getString("label.efficiency"), "%07.2f");
+   private final Gauge<Double> batteryEfficiencyGauge = new Gauge<Double>(RESOURCES.getString("label.efficiency"), "%07.3f");
 
    public Gauge getBatteryEfficiencyGauge()
       {
