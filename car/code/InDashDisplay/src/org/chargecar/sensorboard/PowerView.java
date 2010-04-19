@@ -15,7 +15,7 @@ public final class PowerView extends View<Power>
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(PowerView.class.getName());
 
-   private static final String POWER_STRING_FORMAT = "%07.2f";
+   private static final String POWER_STRING_FORMAT = "%07.3f";
 
    private final Meter batteryCurrentMeter;
    private final Meter batteryVoltageMeter;
