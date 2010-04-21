@@ -11,7 +11,7 @@ final class IsCapacitorOverVoltageCommandStrategy extends ChargeCarSerialDeviceR
    private static final Log LOG = LogFactory.getLog(IsCapacitorOverVoltageCommandStrategy.class);
 
    /** The command character used to request the speed. */
-   private static final String COMMAND_PREFIX = "S";
+   private static final String COMMAND_PREFIX = "O";
 
    /** The size of the expected response, in bytes */
    private static final int SIZE_IN_BYTES_OF_EXPECTED_RESPONSE = 7;
