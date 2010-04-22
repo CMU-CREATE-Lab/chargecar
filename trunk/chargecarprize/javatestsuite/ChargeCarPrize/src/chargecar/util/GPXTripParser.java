@@ -10,10 +10,10 @@ import org.xml.sax.*;
 
 
 public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
-	List<String> gmt_times;
-	List<String> latitudes;
-	List<String> longitudes;
-	List<String> elevations;
+	List<String> rawTimes;
+	List<String> rawLats;
+	List<String> rawLons;
+	List<String> rawEles;
 	Stack<String> elementNames;
     private StringBuilder contentBuffer;
 	private int points;
@@ -25,10 +25,10 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	public void clear() {
 		elementNames = new Stack<String>();
 	    contentBuffer = new StringBuilder();
-	    gmt_times = new ArrayList<String>();
-	    latitudes = new ArrayList<String>();
-	  	longitudes = new ArrayList<String>();
-	  	elevations = new ArrayList<String>();
+	    rawTimes = new ArrayList<String>();
+	    rawLats = new ArrayList<String>();
+	  	rawLons = new ArrayList<String>();
+	  	rawEles = new ArrayList<String>();
 	  	points = 0;
 	}
 	   
@@ -52,7 +52,34 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	}
 	
 	private Trip createTrip(){
+		removeDuplicates();
+		List<Double> correctedLats = new ArrayList<Double>(rawLats.size());
+		List<Double> correctedLongs = new ArrayList<Double>(rawLons.size());
+		for(String lat:rawLats){
+			correctedLats.add(Double.parseDouble(lat));
+		}
+		for(String lon:rawLons){
+			correctedLongs.add(Double.parseDouble(lon));
+		}
+		
+		//TODO: Correct lats/lons for tunnels, average them 
+		//Calculate accels, speeds, and power from model
+		
 		return null;
+	}
+
+	private void removeDuplicates() {
+		int length = rawTimes.size();
+		for(int i=1;i<length;i++){
+			if(rawTimes.get(i).compareTo(rawTimes.get(i-1))==0){
+				rawTimes.remove(i);
+				rawLats.remove(i);
+				rawLons.remove(i);
+				rawEles.remove(i);
+				i--;
+				length--;
+			}
+		}
 	}
 	   
 	   /*
@@ -62,8 +89,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 	         // the <trkpht> element has attributes which specify latitude and longitude (it has child elements that specify the time and elevation)
 	         if (localName.compareToIgnoreCase("trkpt") == 0) {
-	        	 latitudes.add(attributes.getValue("lat"));
-	        	 longitudes.add(attributes.getValue("lon"));
+	        	 rawLats.add(attributes.getValue("lat"));
+	        	 rawLons.add(attributes.getValue("lon"));
 	        	 points++;
 	         }
 	      // Clear content buffer
@@ -90,10 +117,10 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	      
 	      if (points > 0 && currentElement != null) {
 	         if (currentElement.compareToIgnoreCase("ele") == 0) {
-	            elevations.add(contentBuffer.toString());
+	            rawEles.add(contentBuffer.toString());
 	         }
 	         else if (currentElement.compareToIgnoreCase("time") == 0) {
-	          	gmt_times.add(contentBuffer.toString());
+	          	rawTimes.add(contentBuffer.toString());
 	         }
 	      }	      
 	   }
