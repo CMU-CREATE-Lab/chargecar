@@ -113,19 +113,23 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 
 	private void correctTunnels(List<Integer> times, List<Double> lats,
 			List<Double> lons, List<Double> eles) {
-		int consecutiveCounter = 0;
+		int consecutiveCounter = 1;
 		for(int i=1;i<times.size();i++){
 			if(lats.get(i).compareTo(lats.get(i-1)) == 0 &&
 					lons.get(i).compareTo(lons.get(i-1)) == 0){
 				//consecutive readings at the same position
 				consecutiveCounter++;				
 			}
-			else if(consecutiveCounter > 0){
+			else if(consecutiveCounter > 1){
 				//position has changed, after consectuive readings at same position
 				//can be tunnel, red light, etc...
 				
+				//if(POSITION HAS CHANGED ENOUGH TO SUGGEST A TUNNEL){
+				double latDiff = lats.get(i) - lats.get(i-consecutiveCounter);
+				double lonDiff = lons.get(i) - lons.get(i-consecutiveCounter);
 				
-				consecutiveCounter = 0;
+				//}
+				consecutiveCounter = 1;
 			}
 		}
 		
