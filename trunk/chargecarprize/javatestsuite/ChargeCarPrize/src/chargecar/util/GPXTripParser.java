@@ -32,7 +32,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	  	points = 0;
 	}
 	   
-	public List<PointFeatures> read(String filename, double carMass) throws IOException {
+	public List<List<PointFeatures>> read(String filename, double carMass) throws IOException {
 		clear();
 		FileInputStream in = new FileInputStream(new File(filename));
 	    InputSource source = new InputSource(in);
@@ -51,8 +51,12 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	    return calculateTrip(carMass);
 	}
 	
-	private List<PointFeatures> calculateTrip(double carMass){
+	private List<List<PointFeatures>> calculateTrip(double carMass){
+		List<List<PointFeatures>> trips = new ArrayList<List<PointFeatures>>();
 		removeDuplicates();
+		
+		//todo divide into multiple trips
+		
 		List<Double> correctedLats = new ArrayList<Double>(rawLats.size());
 		List<Double> correctedLons = new ArrayList<Double>(rawLons.size());
 		List<Double> correctedEles = new ArrayList<Double>(rawEles.size());
@@ -65,16 +69,16 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		for(String ele:rawEles){
 			correctedEles.add(Double.parseDouble(ele));
 		}
-		correctTunnels(correctedLats, correctedLons);
 		
+		
+		correctTunnels(correctedLats, correctedLons, correctedEles);		
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(rawLats.size());
-		
 		runPowerModel(tripPoints, rawTimes, correctedLats, correctedLons, correctedEles, rawLats, rawLons, rawEles);
-		//TODO: Correct lats/lons for tunnels, average them 
-		//Calculate accels, speeds, and power from model
+		trips.add(tripPoints);
+
 		
 		
-		return tripPoints;
+		return trips;
 	}
 
 	private void runPowerModel(List<PointFeatures> tripPoints,
@@ -86,8 +90,10 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	}
 
 	private void correctTunnels(List<Double> correctedLats,
-			List<Double> correctedLons) {
-		// TODO Auto-generated method stub
+			List<Double> correctedLons, List<Double> correctedEles) {
+		for(int i=1;i<correctedLats.size();i++){
+			
+		}
 		
 	}
 
