@@ -55,23 +55,51 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	
 	private List<List<PointFeatures>> calculateTrips(double carMass) {
 		List<List<PointFeatures>> trips = new ArrayList<List<PointFeatures>>();
+		if(rawTimes.isEmpty()){
+			return trips;
+		}
+		//clean of duplicate readings
 		removeDuplicates();
+		
 		List<Integer> times = new ArrayList<Integer>();
 		List<Double> lats = new ArrayList<Double>();
 		List<Double> lons = new ArrayList<Double>();
 		List<Double> eles = new ArrayList<Double>();
 		
-		//TODO divide into multiple trips
+		times.add(rawTimes.get(0));
+		lats.add(rawLats.get(0));
+		lons.add(rawLons.get(0));
+		eles.add(rawEles.get(0));
 		
+		for(int i=1;i<rawTimes.size();i++){
+			if(rawTimes.get(i) - rawTimes.get(i-1) > 360)
+			{
+				//if enough time has passed between points (360 seconds)
+				//consider them disjoint trips
+				trips.add(calculateTrip(times,lats,lons,eles,carMass));
+				times.clear();
+				lats.clear();
+				lons.clear();
+				eles.clear();
+			}		
+			
+			times.add(rawTimes.get(i));
+			lats.add(rawLats.get(i));
+			lons.add(rawLons.get(i));
+			eles.add(rawEles.get(i));			
+		}
 		
-		calculateTrip(times,lats,lons,eles,carMass);
+		if(times.size() > 10){
+			//get last trip
+			trips.add(calculateTrip(times,lats,lons,eles,carMass));			
+		}	
 		
 		return trips;
 	}
 
 	private List<PointFeatures> calculateTrip(List<Integer> times, List<Double> lats, List<Double> lons, List<Double> eles, double carMass){		
 		correctTunnels(times, lats, lons, eles);		
-		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(rawLats.size());
+		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
 		runPowerModel(tripPoints, times, lats, lons, eles, carMass);		
 		return tripPoints;
 	}
@@ -85,8 +113,20 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 
 	private void correctTunnels(List<Integer> times, List<Double> lats,
 			List<Double> lons, List<Double> eles) {
-		for(int i=1;i<lats.size();i++){
-			
+		int consecutiveCounter = 0;
+		for(int i=1;i<times.size();i++){
+			if(lats.get(i).compareTo(lats.get(i-1)) == 0 &&
+					lons.get(i).compareTo(lons.get(i-1)) == 0){
+				//consecutive readings at the same position
+				consecutiveCounter++;				
+			}
+			else if(consecutiveCounter > 0){
+				//position has changed, after consectuive readings at same position
+				//can be tunnel, red light, etc...
+				
+				
+				consecutiveCounter = 0;
+			}
 		}
 		
 	}
