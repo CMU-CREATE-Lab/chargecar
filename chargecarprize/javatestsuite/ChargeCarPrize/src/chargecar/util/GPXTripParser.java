@@ -10,10 +10,10 @@ import org.xml.sax.*;
 
 
 public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
-	List<String> rawTimes;
-	List<String> rawLats;
-	List<String> rawLons;
-	List<String> rawEles;
+	List<Integer> rawTimes;
+	List<Double> rawLats;
+	List<Double> rawLons;
+	List<Double> rawEles;
 	Stack<String> elementNames;
     private StringBuilder contentBuffer;
 	private int points;
@@ -25,10 +25,10 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	public void clear() {
 		elementNames = new Stack<String>();
 	    contentBuffer = new StringBuilder();
-	    rawTimes = new ArrayList<String>();
-	    rawLats = new ArrayList<String>();
-	  	rawLons = new ArrayList<String>();
-	  	rawEles = new ArrayList<String>();
+	    rawTimes = new ArrayList<Integer>();
+	    rawLats = new ArrayList<Double>();
+	  	rawLons = new ArrayList<Double>();
+	  	rawEles = new ArrayList<Double>();
 	  	points = 0;
 	}
 	   
@@ -48,50 +48,44 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 	    in.close();	    
 	    
-	    return calculateTrip(carMass);
+	    return calculateTrips(carMass);
 	}
 	
-	private List<List<PointFeatures>> calculateTrip(double carMass){
+	
+	
+	private List<List<PointFeatures>> calculateTrips(double carMass) {
 		List<List<PointFeatures>> trips = new ArrayList<List<PointFeatures>>();
 		removeDuplicates();
+		List<Integer> times = new ArrayList<Integer>();
+		List<Double> lats = new ArrayList<Double>();
+		List<Double> lons = new ArrayList<Double>();
+		List<Double> eles = new ArrayList<Double>();
 		
-		//todo divide into multiple trips
-		
-		List<Double> correctedLats = new ArrayList<Double>(rawLats.size());
-		List<Double> correctedLons = new ArrayList<Double>(rawLons.size());
-		List<Double> correctedEles = new ArrayList<Double>(rawEles.size());
-		for(String lat:rawLats){
-			correctedLats.add(Double.parseDouble(lat));
-		}
-		for(String lon:rawLons){
-			correctedLons.add(Double.parseDouble(lon));
-		}
-		for(String ele:rawEles){
-			correctedEles.add(Double.parseDouble(ele));
-		}
+		//TODO divide into multiple trips
 		
 		
-		correctTunnels(correctedLats, correctedLons, correctedEles);		
-		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(rawLats.size());
-		runPowerModel(tripPoints, rawTimes, correctedLats, correctedLons, correctedEles, rawLats, rawLons, rawEles);
-		trips.add(tripPoints);
-
-		
+		calculateTrip(times,lats,lons,eles,carMass);
 		
 		return trips;
 	}
 
+	private List<PointFeatures> calculateTrip(List<Integer> times, List<Double> lats, List<Double> lons, List<Double> eles, double carMass){		
+		correctTunnels(times, lats, lons, eles);		
+		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(rawLats.size());
+		runPowerModel(tripPoints, times, lats, lons, eles, carMass);		
+		return tripPoints;
+	}
+
 	private void runPowerModel(List<PointFeatures> tripPoints,
-			List<String> rawTimes2, List<Double> correctedLats,
-			List<Double> correctedLons, List<Double> correctedEles,
-			List<String> rawLats2, List<String> rawLons2, List<String> rawEles2) {
+			List<Integer> times, List<Double> lats,
+			List<Double> lons, List<Double> eles, double carMass) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	private void correctTunnels(List<Double> correctedLats,
-			List<Double> correctedLons, List<Double> correctedEles) {
-		for(int i=1;i<correctedLats.size();i++){
+	private void correctTunnels(List<Integer> times, List<Double> lats,
+			List<Double> lons, List<Double> eles) {
+		for(int i=1;i<lats.size();i++){
 			
 		}
 		
@@ -118,8 +112,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 	         // the <trkpht> element has attributes which specify latitude and longitude (it has child elements that specify the time and elevation)
 	         if (localName.compareToIgnoreCase("trkpt") == 0) {
-	        	 rawLats.add(attributes.getValue("lat"));
-	        	 rawLons.add(attributes.getValue("lon"));
+	        	 rawLats.add(Double.parseDouble(attributes.getValue("lat")));
+	        	 rawLons.add(Double.parseDouble(attributes.getValue("lon")));
 	        	 points++;
 	         }
 	      // Clear content buffer
@@ -146,13 +140,18 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	      
 	      if (points > 0 && currentElement != null) {
 	         if (currentElement.compareToIgnoreCase("ele") == 0) {
-	            rawEles.add(contentBuffer.toString());
+	            rawEles.add(Double.parseDouble(contentBuffer.toString()));
 	         }
 	         else if (currentElement.compareToIgnoreCase("time") == 0) {
-	          	rawTimes.add(contentBuffer.toString());
+	          	rawTimes.add(gmtStringToSeconds(contentBuffer.toString()));
 	         }
 	      }	      
 	   }
+
+	private Integer gmtStringToSeconds(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	   
 
 	
