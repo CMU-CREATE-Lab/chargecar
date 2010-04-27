@@ -32,7 +32,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	  	points = 0;
 	}
 	   
-	public Trip read(String filename) throws IOException {
+	public List<PointFeatures> read(String filename, double carMass) throws IOException {
 		clear();
 		FileInputStream in = new FileInputStream(new File(filename));
 	    InputSource source = new InputSource(in);
@@ -48,24 +48,47 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 	    in.close();	    
 	    
-	    return createTrip();
+	    return calculateTrip(carMass);
 	}
 	
-	private Trip createTrip(){
+	private List<PointFeatures> calculateTrip(double carMass){
 		removeDuplicates();
 		List<Double> correctedLats = new ArrayList<Double>(rawLats.size());
-		List<Double> correctedLongs = new ArrayList<Double>(rawLons.size());
+		List<Double> correctedLons = new ArrayList<Double>(rawLons.size());
+		List<Double> correctedEles = new ArrayList<Double>(rawEles.size());
 		for(String lat:rawLats){
 			correctedLats.add(Double.parseDouble(lat));
 		}
 		for(String lon:rawLons){
-			correctedLongs.add(Double.parseDouble(lon));
+			correctedLons.add(Double.parseDouble(lon));
 		}
+		for(String ele:rawEles){
+			correctedEles.add(Double.parseDouble(ele));
+		}
+		correctTunnels(correctedLats, correctedLons);
 		
+		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(rawLats.size());
+		
+		runPowerModel(tripPoints, rawTimes, correctedLats, correctedLons, correctedEles, rawLats, rawLons, rawEles);
 		//TODO: Correct lats/lons for tunnels, average them 
 		//Calculate accels, speeds, and power from model
 		
-		return null;
+		
+		return tripPoints;
+	}
+
+	private void runPowerModel(List<PointFeatures> tripPoints,
+			List<String> rawTimes2, List<Double> correctedLats,
+			List<Double> correctedLons, List<Double> correctedEles,
+			List<String> rawLats2, List<String> rawLons2, List<String> rawEles2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void correctTunnels(List<Double> correctedLats,
+			List<Double> correctedLons) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void removeDuplicates() {
