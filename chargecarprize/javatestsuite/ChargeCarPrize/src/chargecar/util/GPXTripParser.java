@@ -173,7 +173,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	private void removeDuplicates() {
 		int length = rawTimes.size();
 		for(int i=1;i<length;i++){
-			if(rawTimes.get(i).compareTo(rawTimes.get(i-1))==0){
+			if(rawTimes.get(i).compareTo(rawTimes.get(i-1))<=0){
 				rawTimes.remove(i);
 				rawLats.remove(i);
 				rawLons.remove(i);
@@ -228,12 +228,35 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	   }
 
 	private Integer gmtStringToSeconds(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	   
+		/* TODO grab the hour(s) from the gmt time strings
+		
+		time2_hour = @gmt_times[i][0,2].to_i
+		time1_hour = @gmt_times[i-1][0,2].to_i
 
-	
+		#grab the minute(s) from the gmt time strings
+		time2_minute = @gmt_times[i][2,2].to_i
+		time1_minute = @gmt_times[i-1][2,2].to_i
+
+		#grab the second(s) from the gmt time strings
+		time2_sec = @gmt_times[i][4,6].to_f		#taken as a float to handle fractional gpx time stamps
+		time1_sec = @gmt_times[i-1][4,6].to_f	#taken as a float to handle fractional gpx time stamps
+
+		#convert the full times into seconds
+		time1_seconds = time1_hour * 3600 + time1_minute * 60 + time1_sec
+		time2_seconds = time2_hour * 3600 + time2_minute * 60 + time2_sec
+
+		if (time1_seconds >= time2_seconds) #time wrap around - ie midnight
+			time = time + (((24 * 60 * 60) - time1_seconds) + time2_seconds)
+			@times << time
+		else
+			time = time + (time2_seconds - time1_seconds)
+			@times << time
+		end
+
+		i += 1
+*/
+		return null;
+	}	
 }
 		
 		
