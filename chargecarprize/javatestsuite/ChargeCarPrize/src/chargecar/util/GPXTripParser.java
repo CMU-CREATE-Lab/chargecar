@@ -98,10 +98,30 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	}
 
 	private List<PointFeatures> calculateTrip(List<Integer> times, List<Double> lats, List<Double> lons, List<Double> eles, double carMass){		
-		correctTunnels(times, lats, lons, eles);		
+		removeTunnels(times, lats, lons, eles);
+		interpolatePoints(times, lats, lons, eles);
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
 		runPowerModel(tripPoints, times, lats, lons, eles, carMass);		
 		return tripPoints;
+	}
+
+	private void interpolatePoints(List<Integer> times, List<Double> lats,
+			List<Double> lons, List<Double> eles) {
+		//make sure there is a point every 2 seconds, 
+		//as this is all gps based without car scantool
+		for(int i=1;i<times.size();i++){
+			int newTime = times.get(i);
+			int oldTime = times.get(i-1);
+			if(newTime - oldTime > 2){
+				double latps = (lats.get(i) - lats.get(i-1))/(newTime - oldTime);
+				double lonps = (lons.get(i) - lons.get(i-1))/(newTime - oldTime);
+				double eleps = (eles.get(i) - eles.get(i-1))/(newTime - oldTime);
+				times.add(i, oldTime+2);
+				lats.add(i, lats.get(i-1)+2*latps);
+				lons.add(i, lons.get(i-1)+2*lonps);
+				eles.add(i, eles.get(i-1)+2*eleps);				
+			}			
+		}		
 	}
 
 	private void runPowerModel(List<PointFeatures> tripPoints,
@@ -111,28 +131,43 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		
 	}
 
-	private void correctTunnels(List<Integer> times, List<Double> lats,
+	private void removeTunnels(List<Integer> times, List<Double> lats,
 			List<Double> lons, List<Double> eles) {
-		int consecutiveCounter = 1;
+		//removes tunnel points, tunnels will be fixed later by interpolation
+		int consecutiveCounter = 0;
 		for(int i=1;i<times.size();i++){
 			if(lats.get(i).compareTo(lats.get(i-1)) == 0 &&
 					lons.get(i).compareTo(lons.get(i-1)) == 0){
 				//consecutive readings at the same position
 				consecutiveCounter++;				
 			}
-			else if(consecutiveCounter > 1){
+			else if(consecutiveCounter > 0){
 				//position has changed, after consectuive readings at same position
-				//can be tunnel, red light, etc...
-				
-				//if(POSITION HAS CHANGED ENOUGH TO SUGGEST A TUNNEL){
-				double latDiff = lats.get(i) - lats.get(i-consecutiveCounter);
-				double lonDiff = lons.get(i) - lons.get(i-consecutiveCounter);
-				
-				//}
-				consecutiveCounter = 1;
+				//can be tunnel, red light, etc...		
+				if(Haversine(lats.get(i-1),lons.get(i-1),lats.get(i), lons.get(i)).compareTo(50.0) > 0){
+					//if traveled at least 50 metres, assume tunnel
+					times.subList(i-consecutiveCounter, i).clear();
+					lats.subList(i-consecutiveCounter, i).clear();
+					lons.subList(i-consecutiveCounter, i).clear();
+					eles.subList(i-consecutiveCounter, i).clear();
+					i = i - consecutiveCounter;
+				}
+				consecutiveCounter = 0;
 			}
 		}
 		
+	}
+
+	private Double Haversine(double lat1, double lon1, double lat2, double lon2) {
+	 	double R = 6371000; //earth radius, metres
+		double dLat = Math.toRadians(lat2-lat1);
+		double dLon = Math.toRadians(lon2-lon1); 
+		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		        Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * 
+		        Math.sin(dLon/2) * Math.sin(dLon/2); 
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		double d = R * c;
+		return d;
 	}
 
 	private void removeDuplicates() {
