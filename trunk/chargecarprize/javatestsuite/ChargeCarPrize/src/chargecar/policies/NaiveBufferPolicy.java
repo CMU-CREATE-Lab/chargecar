@@ -31,14 +31,14 @@ public class NaiveBufferPolicy implements Policy{
 	@Override
 	public PowerFlows calculatePowerFlows(PointFeatures pf) {
 		double watts = pf.getPowerDemand();
-		double period = pf.getPeriod();
-		double min = modelCap.getMinCurrent(period);
-		double max = modelCap.getMaxCurrent(period);
+		int periodMS = pf.getPeriodMS();
+		double min = modelCap.getMinCurrent(periodMS);
+		double max = modelCap.getMaxCurrent(periodMS);
 		double capWatts = watts > max ?  max : watts;		
 		capWatts = capWatts < min ? min : capWatts;
 		double battWatts = watts - capWatts;//battery handles whatever cap can't
-		modelCap.drawCurrent(capWatts, period);
-		modelBatt.drawCurrent(battWatts, period);
+		modelCap.drawCurrent(capWatts, periodMS);
+		modelBatt.drawCurrent(battWatts, periodMS);
 		return new PowerFlows(battWatts, capWatts, 0);
 	}
 

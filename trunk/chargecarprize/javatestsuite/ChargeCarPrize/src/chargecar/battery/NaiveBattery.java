@@ -7,7 +7,8 @@ package chargecar.battery;
 public class NaiveBattery extends BatteryModel {
 
 	public NaiveBattery(){
-		this.time = 0.0;
+		//TODO adjust time & history of battery and cap based on new pointfeature itnerpretation 
+		this.time = 0;
 		this.current = 0.0;
 		this.temperature = 0.0;
 		this.charge = Double.POSITIVE_INFINITY;		
@@ -20,12 +21,12 @@ public class NaiveBattery extends BatteryModel {
 	}
 
 	@Override
-	protected double calculateTemperatureAfterDraw(double current, double period) {
+	protected double calculateTemperatureAfterDraw(double current, double periodMS) {
 		return this.temperature; //naive ideal battery
 	}
 
 	@Override
-	public void drawCurrent(double current, double periodMS) {
+	public void drawCurrent(double current, int periodMS) {
 		this.current = current;
 		//record this current as starting at the current time
 		recordHistory();
@@ -33,8 +34,8 @@ public class NaiveBattery extends BatteryModel {
 		this.time = this.time + periodMS;
 		this.charge = calculateChargeAfterDraw(current, periodMS);
 		//temp and eff do not update in naive model
-		//this.temperature = calculateTemperatureAfterDraw(current, period);
-		//this.efficiency = calculateEfficiency();
+		this.temperature = calculateTemperatureAfterDraw(current, periodMS);
+		this.efficiency = calculateEfficiency();
 	}
 
 	@Override
