@@ -192,8 +192,6 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 					mgsintheta = (carMassKg * aGravity * Math.sin(Math.atan(eleDiff/planarDistances.get(i)))) * -1;
 				}
 			}
-			
-			//mgsinthetas << mgsintheta
 
 			double airRes = airResCoeff * speeds.get(i)*speeds.get(i);
 			double force = carMassKg * accelerations.get(i);
