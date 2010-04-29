@@ -12,11 +12,11 @@ public abstract class BatteryModel {
 		protected final List<Double> chargeHistory = new ArrayList<Double>();
 		protected final List<Double> efficiencyHistory = new ArrayList<Double>();
 		protected final List<Double> currentDrawHistory = new ArrayList<Double>();
-		protected final List<Double> timeHistory = new ArrayList<Double>();
+		protected final List<Integer> timeHistory = new ArrayList<Integer>();
 		protected double temperature;
 		protected double efficiency;
 		protected double charge;
-		protected double time;
+		protected int time;
 		protected double current;
 		
 		protected final double MS_PER_HOUR = 3600000;
@@ -25,7 +25,7 @@ public abstract class BatteryModel {
 		protected abstract double calculateTemperatureAfterDraw(double current, double time);
 		protected abstract double calculateChargeAfterDraw(double current, double time);
 		
-		public abstract void drawCurrent(double current, double time);
+		public abstract void drawCurrent(double current, int periodMS);
 		
 		public double getCharge() {
 			return this.charge;
@@ -51,7 +51,7 @@ public abstract class BatteryModel {
 			return this.temperature;
 		}
 		
-		public double getTime(){
+		public int getTime(){
 			return this.time;
 		}
 		
@@ -63,7 +63,7 @@ public abstract class BatteryModel {
 			return this.temperatureHistory;
 		}
 		
-		public List<Double> getTimeHistory(){
+		public List<Integer> getTimeHistory(){
 			return this.timeHistory;
 		}
 

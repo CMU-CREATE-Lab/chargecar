@@ -235,10 +235,10 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 		
 		for(int i=1;i<times.size();i++){
-			double period = (double)((times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis())/1000);
-			tripPoints.add(new PointFeatures(lats.get(i-1), lons.get(i-1), eles.get(i-1), accelerations.get(i), speeds.get(i), powerDemands.get(i), period, times.get(i-1)));
+			int periodMS = (int)(times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis());
+			tripPoints.add(new PointFeatures(lats.get(i-1), lons.get(i-1), eles.get(i-1), accelerations.get(i), speeds.get(i), powerDemands.get(i), periodMS, times.get(i-1)));
 		}
-		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), 0.0, 0.0, 0.0, 1.0, times.get(times.size()-1));
+		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), 0.0, 0.0, 0.0, 1000, times.get(times.size()-1));
 		tripPoints.add(endPoint);
 		
 	}

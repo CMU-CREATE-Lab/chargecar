@@ -11,7 +11,7 @@ public class NaiveCapacitor extends CapacitorModel {
 		this.charge = 0;
 		this.temperature = 0;
 		this.efficiency = 1.0;
-		this.time = 0.0;
+		this.time = 0;
 	}
 	@Override
 	public double getMaxCurrent(double periodMS) {
@@ -44,7 +44,7 @@ public class NaiveCapacitor extends CapacitorModel {
 	}
 
 	@Override
-	public void drawCurrent(double current, double periodMS) {
+	public void drawCurrent(double current, int periodMS) {
 		this.current = current;
 		//record this current as starting at the current time
 		recordHistory();
@@ -68,7 +68,7 @@ public class NaiveCapacitor extends CapacitorModel {
 		clone.temperatureHistory.addAll(cloneCollection(this.temperatureHistory));
 		clone.currentDrawHistory.addAll(cloneCollection(this.currentDrawHistory));
 		clone.efficiencyHistory.addAll(cloneCollection(this.efficiencyHistory));
-		clone.timeHistory.addAll(cloneCollection(this.timeHistory));
+		clone.periodHistory.addAll(cloneCollection(this.periodHistory));
 		return clone;
 	}
 

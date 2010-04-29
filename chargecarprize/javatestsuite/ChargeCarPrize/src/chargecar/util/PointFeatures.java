@@ -16,12 +16,12 @@ public class PointFeatures {
 	final private Double acceleration;
 	final private Double speed;
 	final private Double powerDemand;
-	final private Double period;
+	final private int periodMS;
 	final private Calendar time;
 
 	public PointFeatures(Double latitude, Double longitude, Double elevation,
 			Double acceleration, Double speed, Double powerDemand,
-			Double period, Calendar time) {
+			int periodMS, Calendar time) {
 		super();
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -29,7 +29,7 @@ public class PointFeatures {
 		this.acceleration = acceleration;
 		this.speed = speed;
 		this.powerDemand = powerDemand;
-		this.period = period;
+		this.periodMS = periodMS;
 		this.time = time;
 	}
 	public Double getLatitude() {
@@ -56,8 +56,8 @@ public class PointFeatures {
 		return powerDemand;
 	}
 
-	public Double getPeriod() {
-		return period;
+	public int getPeriodMS() {
+		return periodMS;
 	}
 
 	public Calendar getTime() {

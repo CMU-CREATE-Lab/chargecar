@@ -30,10 +30,10 @@ public class Simulator {
 		
 		BatteryModel judgingBattery = new NaiveBattery();
 		CapacitorModel judgingCap = new NaiveCapacitor(50);
-		simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
-		simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
-		simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
-		
+		List<BatteryModel> userBatteries = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
+		List<BatteryModel> noCapBatteries = simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
+		List<BatteryModel> naiveBatteries = simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
+		//TODO add capacitors
 		//grab Results, visualize
 		}
 		
@@ -54,8 +54,8 @@ public class Simulator {
 		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
 		for(PointFeatures point : trip.getPoints()){
 			PowerFlows pf = policy.calculatePowerFlows(point);
-			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point.getPeriod());
-			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point.getPeriod());
+			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point.getPeriodMS());
+			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point.getPeriodMS());
 		}
 		policy.endTrip();
 	}
