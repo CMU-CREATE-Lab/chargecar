@@ -53,7 +53,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	
 	
 	
-	private List<List<PointFeatures>> calculateTrips(double carMass) {
+	private List<List<PointFeatures>> calculateTrips(double carMassKg) {
 		List<List<PointFeatures>> trips = new ArrayList<List<PointFeatures>>();
 		if(rawTimes.isEmpty()){
 			return trips;
@@ -76,7 +76,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			{
 				//if enough time has passed between points (360 seconds)
 				//consider them disjoint trips
-				trips.add(calculateTrip(times,lats,lons,eles,carMass));
+				trips.add(calculateTrip(times,lats,lons,eles,carMassKg));
 				times.clear();
 				lats.clear();
 				lons.clear();
@@ -91,7 +91,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		
 		if(times.size() > 10){
 			//get last trip
-			trips.add(calculateTrip(times,lats,lons,eles,carMass));			
+			trips.add(calculateTrip(times,lats,lons,eles,carMassKg));			
 		}	
 		
 		return trips;
@@ -126,8 +126,115 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 
 	private void runPowerModel(List<PointFeatures> tripPoints,
 			List<Integer> times, List<Double> lats,
-			List<Double> lons, List<Double> eles, double carMass) {
-		// TODO Auto-generated method stub
+			List<Double> lons, List<Double> eles, double carMassKg) {
+		
+		List<Double> planarDistances = new ArrayList<Double>();
+		List<Double> adjustedDistances = new ArrayList<Double>();
+		List<Double> speeds = new ArrayList<Double>();
+		List<Double> accelerations = new ArrayList<Double>();
+		List<Double> powerDemands = new ArrayList<Double>();
+				
+		planarDistances.add(0.0);
+		adjustedDistances.add(0.0);
+		speeds.add(0.0);
+		accelerations.add(0.0);
+
+		for(int i=1; i<times.size();i++){
+			double eleDiff = eles.get(i) - eles.get(i-1);
+			double tempDist = Haversine(lats.get(i-1), lons.get(i-1), lats.get(i), lons.get(i));
+			planarDistances.add(tempDist);			
+			tempDist = Math.sqrt((tempDist*tempDist)+(eleDiff*eleDiff));
+			adjustedDistances.add(tempDist);			
+			double tempSpeed = tempDist/(times.get(i) - times.get(i-1));
+			
+			if(tempDist < 1E-6){
+				speeds.add(0.0);
+			}else{
+				speeds.add(tempSpeed);
+			}			
+		}		
+
+		for(int i = 1;i<speeds.size();i++){
+			accelerations.add((speeds.get(i) - speeds.get(i-1))/(times.get(i) - times.get(i-1)));			
+		}
+
+		final double carArea =1;//TODO
+		final double carDragCoeff=1;//TODO		
+		final double mu = 0.015; //#rolling resistance coef
+		final double aGravity = 9.81;
+        final double offset = -0.35;
+        final double ineff = 1/0.85;
+        final double rollingRes = mu*carMassKg*aGravity; 
+        final double outsideTemp = ((60 + 459.67) * 5/9);//60F to kelvin
+		
+		for(int i=0;i<accelerations.size();i++)
+		{
+			double pressure = 101325 * Math.pow((1-((0.0065 * eles.get(i))/288.15)), ((aGravity*0.0289)/(8.314*0.0065)));			
+			double rho = (pressure * 0.0289) / (8.314 * outsideTemp);			
+			double airResCoeff = 0.5*rho*carArea*carDragCoeff;
+			double mgsintheta = 0;
+
+			if (i > 0){
+				final double eleDiff = eles.get(i) - eles.get(i-1);
+
+				if(planarDistances.get(i) < 1E-6){
+					mgsintheta = 0;
+				}
+				else if (Math.abs(speeds.get(i)) < 0.50){
+					mgsintheta = 0;			
+				}
+				else if(eles.get(i) > eles.get(i-1))
+				{
+					mgsintheta = (carMassKg * aGravity * Math.sin(Math.atan(eleDiff/planarDistances.get(i)))) * -1;
+				}
+				else if (eles.get(i) < eles.get(i-1))
+				{
+					mgsintheta = (carMassKg * aGravity * Math.sin(Math.atan(eleDiff/planarDistances.get(i)))) * -1;
+				}
+			}
+			
+			//mgsinthetas << mgsintheta
+
+			double airRes = airResCoeff * speeds.get(i)*speeds.get(i);
+			double force = carMassKg * accelerations.get(i);
+			double pwr = 0.0;
+			double speed = speeds.get(i);
+			if (Math.abs(mgsintheta) < 1E-6)
+			{
+				if (Math.abs(force) < 1E-6 || force > (rollingRes + airRes))
+					pwr = (((force + rollingRes + airRes) * speed) * ineff);
+				else if (force <= (rollingRes + airRes))
+					pwr = 0.35 * (force - rollingRes - airRes) * speed;
+			}		
+			//#uphill
+			else if (eles.get(i) > eles.get(i-1)){
+				if (force <= (mgsintheta + rollingRes + airRes))
+					pwr = 0.35 * (force - mgsintheta - rollingRes - airRes) * speed;
+				else if (force > (mgsintheta + rollingRes + airRes))
+					pwr = (((force - rollingRes - airRes - mgsintheta) * speed) * ineff);
+				else if (Math.abs(force) <1E-6)
+					pwr = (((mgsintheta + rollingRes + airRes)) * ineff);
+
+			}
+			//#downhill	
+			else if (eles.get(i) < eles.get(i-1)){
+				if (force <= (mgsintheta + rollingRes + airRes))
+					pwr = 0.35 * (force - mgsintheta - rollingRes - airRes) * speed;
+				else if (Math.abs(force) < 1E-6 || force > (mgsintheta + rollingRes + airRes))
+					pwr = (((force + rollingRes + airRes - mgsintheta) * speed) * ineff);
+			}
+
+			pwr = ((pwr/-1000.0) + offset);
+
+			if (speed > 12.0)
+				pwr = ((pwr - (0.056*(speed*speed))) + (0.68*speed));
+
+			powerDemands.add(pwr);		
+		}
+		
+		for(int i=1;i<times.size();i++){
+			//TODO translate points into point features (periods for algo)
+		}
 		
 	}
 
@@ -222,105 +329,34 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	            rawEles.add(Double.parseDouble(contentBuffer.toString()));
 	         }
 	         else if (currentElement.compareToIgnoreCase("time") == 0) {
-	          	rawTimes.add(gmtStringToSeconds(contentBuffer.toString()));
+	        	 int time = gmtStringToSeconds(contentBuffer.toString());
+	        	 if(rawTimes.isEmpty() == false){
+	        		 while(time < rawTimes.get(rawTimes.size() -1)){
+	        			 time = time + 24*3600;
+	        		 }
+	        	 }
+	          	rawTimes.add(time);
 	         }
 	      }	      
 	   }
 
-	private Integer gmtStringToSeconds(String string) {
-		/* TODO grab the hour(s) from the gmt time strings
+	private int gmtStringToSeconds(String timeString) {
+		//incoming format: 2010-02-25T22:44:57Z
+		timeString = timeString.substring(timeString.indexOf('T')+1, timeString.indexOf('Z'));
+		//format: 22:44:57
+		String[] times = timeString.split(":");
+		int hours = Integer.parseInt(times[0]);
+		int minutes = Integer.parseInt(times[1]);
+		int seconds = Integer.parseInt(times[2]);
 		
-		time2_hour = @gmt_times[i][0,2].to_i
-		time1_hour = @gmt_times[i-1][0,2].to_i
-
-		#grab the minute(s) from the gmt time strings
-		time2_minute = @gmt_times[i][2,2].to_i
-		time1_minute = @gmt_times[i-1][2,2].to_i
-
-		#grab the second(s) from the gmt time strings
-		time2_sec = @gmt_times[i][4,6].to_f		#taken as a float to handle fractional gpx time stamps
-		time1_sec = @gmt_times[i-1][4,6].to_f	#taken as a float to handle fractional gpx time stamps
-
-		#convert the full times into seconds
-		time1_seconds = time1_hour * 3600 + time1_minute * 60 + time1_sec
-		time2_seconds = time2_hour * 3600 + time2_minute * 60 + time2_sec
-
-		if (time1_seconds >= time2_seconds) #time wrap around - ie midnight
-			time = time + (((24 * 60 * 60) - time1_seconds) + time2_seconds)
-			@times << time
-		else
-			time = time + (time2_seconds - time1_seconds)
-			@times << time
-		end
-
-		i += 1
-*/
-		return null;
-	}	
+		seconds = 3600*hours + 60*minutes + seconds;
+		
+		return seconds;
+	}
 }
 		
 		
-/*		#This old code would query the USGS server for elevaiton data. Extremely slow. Instead, we use our own copy of USGS data
-
-		i = 1	
-		counter = 0
-		start_index = -1
-
-		num_times = @gmt_times.size
-		while i < num_times do
-
-			#this check is done if we have duplicate gmt entries (happens with the iPhone due to sub-second tracking)
-			#this would cause a problem where the diff in gmt time would be 0 and it would seem that 24 hours had 
-			#passed between these two points. Easiest method is to just filt out the 2nd point rather than account for it.
-			if @gmt_times[i] == @gmt_times[i-1]
-				@gmt_times.delete_at(i)
-				@lats.delete_at(i)
-				@lngs.delete_at(i)
-				@elvs.delete_at(i)
-				#puts "Bad GPS Data Was Removed."
-				i -= 1
-				num_times -= 1
-			elsif @lats[i] == @lats[i-1] && @lngs[i] == @lngs[i-1]				
-
-
-				if start_index == -1
-					start_index = i-1
-				end
-
-				counter += 1
-
-			else
-				if (counter >= 20)		#20 steps (corresponding on average to 20-40 seconds)
-					(counter+1).times do
-						@gmt_times.delete_at(start_index)
-						@lats.delete_at(start_index)
-						@lngs.delete_at(start_index)
-						@elvs.delete_at(start_index)
-						#puts "Bad GPS Data Was Removed."
-					end
-					i = i - counter - 2
-					num_times = @gmt_times.size
-				end
-				counter = 0
-				start_index = -1	
-			end
-
-			i += 1
-		end
-
-		#we've gone through the file, but the last 20 have been flagged for removal
-		if (counter >= 20)				#20 steps (corresponding on average to 20-40 seconds)
-			(counter+1).times do
-				@gmt_times.delete_at(start_index)
-				@lats.delete_at(start_index)
-				@lngs.delete_at(start_index)
-				@elvs.delete_at(start_index)
-				#puts "Bad GPS Data Was Removed."
-			end
-		end
-
-	end
-
+/*
 
 	#after parsing the data file, do the main calculation on it - power, speeds, etc
 	def self.do_calculations(carWeight,cargoWeight,passengerWeight,carArea,carDragCoeff,temperature)
