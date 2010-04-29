@@ -3,6 +3,7 @@ package chargecar.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Stack;
 import java.io.*;
@@ -10,7 +11,7 @@ import org.xml.sax.*;
 
 
 public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
-	List<Integer> rawTimes;
+	List<Calendar> rawTimes;
 	List<Double> rawLats;
 	List<Double> rawLons;
 	List<Double> rawEles;
@@ -25,7 +26,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	public void clear() {
 		elementNames = new Stack<String>();
 	    contentBuffer = new StringBuilder();
-	    rawTimes = new ArrayList<Integer>();
+	    rawTimes = new ArrayList<Calendar>();
 	    rawLats = new ArrayList<Double>();
 	  	rawLons = new ArrayList<Double>();
 	  	rawEles = new ArrayList<Double>();
@@ -61,7 +62,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		//clean of duplicate readings
 		removeDuplicates();
 		
-		List<Integer> times = new ArrayList<Integer>();
+		List<Calendar> times = new ArrayList<Calendar>();
 		List<Double> lats = new ArrayList<Double>();
 		List<Double> lons = new ArrayList<Double>();
 		List<Double> eles = new ArrayList<Double>();
@@ -72,7 +73,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		eles.add(rawEles.get(0));
 		
 		for(int i=1;i<rawTimes.size();i++){
-			if(rawTimes.get(i) - rawTimes.get(i-1) > 360)
+			long msDiff = rawTimes.get(i).getTimeInMillis() - rawTimes.get(i-1).getTimeInMillis();
+			if(msDiff > 360000)
 			{
 				//if enough time has passed between points (360 seconds)
 				//consider them disjoint trips
@@ -97,7 +99,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		return trips;
 	}
 
-	private List<PointFeatures> calculateTrip(List<Integer> times, List<Double> lats, List<Double> lons, List<Double> eles, double carMass){		
+	private List<PointFeatures> calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles, double carMass){		
 		removeTunnels(times, lats, lons, eles);
 		interpolatePoints(times, lats, lons, eles);
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
@@ -105,18 +107,20 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		return tripPoints;
 	}
 
-	private void interpolatePoints(List<Integer> times, List<Double> lats,
+	private void interpolatePoints(List<Calendar> times, List<Double> lats,
 			List<Double> lons, List<Double> eles) {
 		//make sure there is a point every 2 seconds, 
 		//as this is all gps based without car scantool
 		for(int i=1;i<times.size();i++){
-			int newTime = times.get(i);
-			int oldTime = times.get(i-1);
-			if(newTime - oldTime > 2){
+			long newTime = times.get(i).getTimeInMillis();
+			long oldTime = times.get(i-1).getTimeInMillis();
+			if(newTime - oldTime > 2000){
 				double latps = (lats.get(i) - lats.get(i-1))/(newTime - oldTime);
 				double lonps = (lons.get(i) - lons.get(i-1))/(newTime - oldTime);
 				double eleps = (eles.get(i) - eles.get(i-1))/(newTime - oldTime);
-				times.add(i, oldTime+2);
+				Calendar interpTime = Calendar.getInstance();
+				interpTime.setTimeInMillis(oldTime+2000);
+				times.add(i, interpTime);
 				lats.add(i, lats.get(i-1)+2*latps);
 				lons.add(i, lons.get(i-1)+2*lonps);
 				eles.add(i, eles.get(i-1)+2*eleps);				
@@ -125,7 +129,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	}
 
 	private void runPowerModel(List<PointFeatures> tripPoints,
-			List<Integer> times, List<Double> lats,
+			List<Calendar> times, List<Double> lats,
 			List<Double> lons, List<Double> eles, double carMassKg) {
 		
 		List<Double> planarDistances = new ArrayList<Double>();
@@ -140,26 +144,26 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		accelerations.add(0.0);
 
 		for(int i=1; i<times.size();i++){
+			long sDiff = (times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis())/1000;
 			double eleDiff = eles.get(i) - eles.get(i-1);
 			double tempDist = Haversine(lats.get(i-1), lons.get(i-1), lats.get(i), lons.get(i));
 			planarDistances.add(tempDist);			
 			tempDist = Math.sqrt((tempDist*tempDist)+(eleDiff*eleDiff));
 			adjustedDistances.add(tempDist);			
-			double tempSpeed = tempDist/(times.get(i) - times.get(i-1));
+			double tempSpeed = tempDist/(sDiff);
 			
 			if(tempDist < 1E-6){
 				speeds.add(0.0);
 			}else{
 				speeds.add(tempSpeed);
-			}			
+			}		
+			accelerations.add((speeds.get(i) - speeds.get(i-1))/sDiff);	
 		}		
 
-		for(int i = 1;i<speeds.size();i++){
-			accelerations.add((speeds.get(i) - speeds.get(i-1))/(times.get(i) - times.get(i-1)));			
-		}
 
-		final double carArea =1;//TODO
-		final double carDragCoeff=1;//TODO		
+
+		final double carArea =1.988;//honda civic 2001 si fronta area in metres sq
+		final double carDragCoeff=0.31;//honda civic 2006 sedan		
 		final double mu = 0.015; //#rolling resistance coef
 		final double aGravity = 9.81;
         final double offset = -0.35;
@@ -231,12 +235,15 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 		
 		for(int i=1;i<times.size();i++){
-			//TODO translate points into point features (periods for algo)
+			double period = (double)((times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis())/1000);
+			tripPoints.add(new PointFeatures(lats.get(i-1), lons.get(i-1), eles.get(i-1), accelerations.get(i), speeds.get(i), powerDemands.get(i), period, times.get(i-1)));
 		}
+		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), 0.0, 0.0, 0.0, 1.0, times.get(times.size()-1));
+		tripPoints.add(endPoint);
 		
 	}
 
-	private void removeTunnels(List<Integer> times, List<Double> lats,
+	private void removeTunnels(List<Calendar> times, List<Double> lats,
 			List<Double> lons, List<Double> eles) {
 		//removes tunnel points, tunnels will be fixed later by interpolation
 		int consecutiveCounter = 0;
@@ -327,29 +334,29 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	            rawEles.add(Double.parseDouble(contentBuffer.toString()));
 	         }
 	         else if (currentElement.compareToIgnoreCase("time") == 0) {
-	        	 int time = gmtStringToSeconds(contentBuffer.toString());
-	        	 if(rawTimes.isEmpty() == false){
-	        		 while(time < rawTimes.get(rawTimes.size() -1)){
-	        			 time = time + 24*3600;
-	        		 }
-	        	 }
-	          	rawTimes.add(time);
+	        	 rawTimes.add(gmtStringToCalendar(contentBuffer.toString()));	      
 	         }
 	      }	      
 	   }
 
-	private int gmtStringToSeconds(String timeString) {
+	private static Calendar gmtStringToCalendar(String dateTimeString) {
 		//incoming format: 2010-02-25T22:44:57Z
-		timeString = timeString.substring(timeString.indexOf('T')+1, timeString.indexOf('Z'));
+		String dateString = dateTimeString.substring(0,dateTimeString.indexOf('T'));
+		String[] dates = dateString.split("-");
+		int year = Integer.parseInt(dates[0]);
+		int month = Integer.parseInt(dates[0]);
+		int day = Integer.parseInt(dates[0]);
 		//format: 22:44:57
+		String timeString = dateTimeString.substring(dateTimeString.indexOf('T')+1, dateTimeString.indexOf('Z'));
 		String[] times = timeString.split(":");
-		int hours = Integer.parseInt(times[0]);
-		int minutes = Integer.parseInt(times[1]);
-		int seconds = Integer.parseInt(times[2]);
+		int hour = Integer.parseInt(times[0]);
+		int minute = Integer.parseInt(times[1]);
+		int second = Integer.parseInt(times[2]);
 		
-		seconds = 3600*hours + 60*minutes + seconds;
+		Calendar calTime = Calendar.getInstance();
+		calTime.set(year, month, day, hour, minute, second);
 		
-		return seconds;
+		return calTime;
 	}
 }
 		
