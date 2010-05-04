@@ -1,5 +1,7 @@
 package chargecar.capacitor;
 
+import chargecar.util.PointFeatures;
+
 /**
  * @author Alex Styler
  * DO NOT EDIT
@@ -11,7 +13,6 @@ public class NaiveCapacitor extends CapacitorModel {
 		this.charge = 0;
 		this.temperature = 0;
 		this.efficiency = 1.0;
-		this.time = 0;
 	}
 	@Override
 	public double getMaxCurrent(double periodMS) {
@@ -28,32 +29,13 @@ public class NaiveCapacitor extends CapacitorModel {
 	}
 
 	@Override
-	protected double calculateChargeAfterDraw(double currentWatts, double periodMS) {
-		double wattHoursDrawn = currentWatts * (periodMS / MS_PER_HOUR);
-		return this.charge + wattHoursDrawn;
-	}
-
-	@Override
-	protected double calculateEfficiency() {
-		return 1.0;//always 100% efficient
-	}
-
-	@Override
-	protected double calculateTemperatureAfterDraw(double current, double time) {
-		return this.temperature;//no temp changing
-	}
-
-	@Override
-	public void drawCurrent(double current, int periodMS) {
+	public void drawCurrent(double current, PointFeatures point) {
 		this.current = current;
 		//record this current as starting at the current time
-		recordHistory();
+		recordHistory(point);
 		//after the period is up, update charge, temp, and eff.
-		this.time = this.time + periodMS;
-		this.charge = calculateChargeAfterDraw(current, periodMS);
+		this.charge = this.charge + current * (point.getPeriodMS() / MS_PER_HOUR);
 		//temp and eff don't update in naive model
-		//this.temperature = calculateTemperatureAfterDraw(current, periodMS);
-		//this.efficiency = calculateEfficiency();
 	}
 
 	@Override
@@ -63,12 +45,11 @@ public class NaiveCapacitor extends CapacitorModel {
 		clone.current = this.current;
 		clone.efficiency = this.efficiency;
 		clone.temperature = this.temperature;
-		clone.time = this.time;
 		clone.chargeHistory.addAll(cloneCollection(this.chargeHistory));
 		clone.temperatureHistory.addAll(cloneCollection(this.temperatureHistory));
 		clone.currentDrawHistory.addAll(cloneCollection(this.currentDrawHistory));
 		clone.efficiencyHistory.addAll(cloneCollection(this.efficiencyHistory));
-		clone.periodHistory.addAll(cloneCollection(this.periodHistory));
+		clone.tripHistory.addAll(cloneTripCollection(this.tripHistory));
 		return clone;
 	}
 

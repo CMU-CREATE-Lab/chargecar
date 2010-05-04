@@ -18,7 +18,6 @@ public class ConsoleWriter implements Visualizer {
 	@Override
 	public void visualizeTrip(Trip trip, BatteryModel battery,
 			CapacitorModel capacitor) {
-		battery.
 
 	}
 
@@ -30,7 +29,8 @@ public class ConsoleWriter implements Visualizer {
 	}
 	
 	private Double currentSquaredIntegral(BatteryModel battery){
-		List<Double> periods = battery.getTimeHistory();
+		return null;
+
 	}
 
 }

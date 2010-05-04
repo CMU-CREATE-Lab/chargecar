@@ -37,8 +37,8 @@ public class NaiveBufferPolicy implements Policy{
 		double capWatts = watts > max ?  max : watts;		
 		capWatts = capWatts < min ? min : capWatts;
 		double battWatts = watts - capWatts;//battery handles whatever cap can't
-		modelCap.drawCurrent(capWatts, periodMS);
-		modelBatt.drawCurrent(battWatts, periodMS);
+		modelCap.drawCurrent(capWatts, pf);
+		modelBatt.drawCurrent(battWatts, pf);
 		return new PowerFlows(battWatts, capWatts, 0);
 	}
 

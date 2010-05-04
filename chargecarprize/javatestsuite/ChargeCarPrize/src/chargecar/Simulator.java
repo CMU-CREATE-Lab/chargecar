@@ -54,8 +54,8 @@ public class Simulator {
 		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
 		for(PointFeatures point : trip.getPoints()){
 			PowerFlows pf = policy.calculatePowerFlows(point);
-			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point.getPeriodMS());
-			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point.getPeriodMS());
+			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
+			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
 		}
 		policy.endTrip();
 	}

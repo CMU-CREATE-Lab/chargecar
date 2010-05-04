@@ -10,19 +10,18 @@ import java.util.Date;
  * such as GPS coordinates, power demand, speed, etc...
  */
 public class PointFeatures {
-	final private Double latitude;
-	final private Double longitude;
-	final private Double elevation;
-	final private Double acceleration;
-	final private Double speed;
-	final private Double powerDemand;
+	final private double latitude;
+	final private double longitude;
+	final private double elevation;
+	final private double acceleration;
+	final private double speed;
+	final private double powerDemand;
 	final private int periodMS;
 	final private Calendar time;
 
 	public PointFeatures(Double latitude, Double longitude, Double elevation,
 			Double acceleration, Double speed, Double powerDemand,
 			int periodMS, Calendar time) {
-		super();
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.elevation = elevation;
@@ -32,15 +31,20 @@ public class PointFeatures {
 		this.periodMS = periodMS;
 		this.time = time;
 	}
-	public Double getLatitude() {
+	
+	public PointFeatures clone(){
+		return new PointFeatures(this.latitude,this.longitude,this.elevation,this.acceleration,this.speed,this.powerDemand,this.periodMS,(Calendar) this.time.clone());
+	}
+	
+	public double getLatitude() {
 		return latitude;
 	}
 
-	public Double getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 
-	public Double getElevation() {
+	public double getElevation() {
 		return elevation;
 	}
 
