@@ -11,8 +11,8 @@ public abstract class CapacitorModel extends BatteryModel{
 	public double getMaxCharge(){
 		return maxCharge;
 	}	
-	public abstract double getMaxCurrent(double period);
-	public abstract double getMinCurrent(double period);
+	public abstract double getMaxCurrent(double periodMS);
+	public abstract double getMinCurrent(double periodMS);
 	
 	public abstract CapacitorModel createClone();
 }

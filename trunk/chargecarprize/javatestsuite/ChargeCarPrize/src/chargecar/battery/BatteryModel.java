@@ -3,6 +3,8 @@ package chargecar.battery;
 import java.util.ArrayList;
 import java.util.List;
 
+import chargecar.util.PointFeatures;
+
 /**
  * @author Alex Styler
  * DO NOT EDIT
@@ -12,20 +14,15 @@ public abstract class BatteryModel {
 		protected final List<Double> chargeHistory = new ArrayList<Double>();
 		protected final List<Double> efficiencyHistory = new ArrayList<Double>();
 		protected final List<Double> currentDrawHistory = new ArrayList<Double>();
-		protected final List<Integer> timeHistory = new ArrayList<Integer>();
+		protected final List<PointFeatures> tripHistory = new ArrayList<PointFeatures>();
 		protected double temperature;
 		protected double efficiency;
 		protected double charge;
-		protected int time;
 		protected double current;
 		
 		protected final double MS_PER_HOUR = 3600000;
 		
-		protected abstract double calculateEfficiency();
-		protected abstract double calculateTemperatureAfterDraw(double current, double time);
-		protected abstract double calculateChargeAfterDraw(double current, double time);
-		
-		public abstract void drawCurrent(double current, int periodMS);
+		public abstract void drawCurrent(double current, PointFeatures point);
 		
 		public double getCharge() {
 			return this.charge;
@@ -51,10 +48,6 @@ public abstract class BatteryModel {
 			return this.temperature;
 		}
 		
-		public int getTime(){
-			return this.time;
-		}
-		
 		public double getCurrent(){
 			return this.current;
 		}
@@ -63,16 +56,16 @@ public abstract class BatteryModel {
 			return this.temperatureHistory;
 		}
 		
-		public List<Integer> getTimeHistory(){
-			return this.timeHistory;
+		public List<PointFeatures> getTripHistory(){
+			return this.tripHistory;
 		}
 
-		protected void recordHistory()
+		protected void recordHistory(PointFeatures point)
 		{
 			this.temperatureHistory.add(temperature);
 			this.chargeHistory.add(charge);
 			this.efficiencyHistory.add(efficiency);
-			this.timeHistory.add(time);
+			this.tripHistory.add(point);
 			this.currentDrawHistory.add(current);			
 		}
 		
@@ -81,8 +74,15 @@ public abstract class BatteryModel {
 			for(Double d : collection){
 				clone.add(new Double(d));
 			}			
-			return clone;
-			
+			return clone;			
+		}
+		
+		protected List<PointFeatures> cloneTripCollection(List<PointFeatures> collection){
+			List<PointFeatures> clone = new ArrayList<PointFeatures>();
+			for(PointFeatures d : collection){
+				clone.add(d.clone());
+			}			
+			return clone;			
 		}
 		
 		public abstract BatteryModel createClone();
