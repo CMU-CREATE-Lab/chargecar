@@ -7,6 +7,7 @@ import java.util.List;
 
 import chargecar.battery.BatteryModel;
 import chargecar.capacitor.CapacitorModel;
+import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
 
 /**
@@ -15,6 +16,6 @@ import chargecar.util.Trip;
  */
 public interface Visualizer {
 	public void visualizeTrip(Trip trip, BatteryModel battery, CapacitorModel capacitor);
-	public void visualizeTrips(List<Trip> trips, List<BatteryModel> batteries, List<CapacitorModel> capacitors);
-	public void visualizeSummary(List<Trip> trips, List<BatteryModel> batteries, List<CapacitorModel> capacitors);
+	public void visualizeTrips(SimulationResults simResults);
+	public void visualizeSummary(SimulationResults simResults);
 }
