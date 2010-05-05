@@ -1,11 +1,14 @@
 package chargecar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import chargecar.util.GPXTripParser;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlows;
 import chargecar.util.Trip;
+import chargecar.util.TripFeatures;
 import chargecar.battery.BatteryModel;
 import chargecar.battery.NaiveBattery;
 import chargecar.capacitor.CapacitorModel;
@@ -27,6 +30,20 @@ public class Simulator {
 		Policy naiveBaseline = new NaiveBufferPolicy();
 		Policy userPolicy = new UserPolicy();
 		userPolicy.loadState();
+		
+		double carMass = 2500;
+		
+		GPXTripParser gpxparser = new GPXTripParser();
+		
+		try {
+			for(List<PointFeatures> tripPoints : gpxparser.read(args[0], carMass)){
+				TripFeatures tf = new TripFeatures(args[1],carMass,tripPoints.get(0));
+				tripsToTest.add(new Trip(tf, tripPoints));
+			}
+		} catch (IOException e) {			
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		BatteryModel judgingBattery = new NaiveBattery();
 		CapacitorModel judgingCap = new NaiveCapacitor(50);
