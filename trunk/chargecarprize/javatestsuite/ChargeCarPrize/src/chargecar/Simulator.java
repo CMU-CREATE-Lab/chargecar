@@ -1,7 +1,9 @@
 package chargecar;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import chargecar.util.GPXTripParser;
@@ -33,7 +35,7 @@ public class Simulator {
 		Policy userPolicy = new UserPolicy();
 		userPolicy.loadState();
 		
-		double carMass = 2500;
+		double carMass = 1200;
 		
 		GPXTripParser gpxparser = new GPXTripParser();
 		
@@ -47,6 +49,11 @@ public class Simulator {
 			System.exit(1);
 		}
 		System.out.println("Testing "+tripsToTest.size()+" trips.");
+		
+		for(Trip t:tripsToTest){
+			debugTrip(t);
+		}		
+		
 		BatteryModel judgingBattery = new NaiveBattery();
 		CapacitorModel judgingCap = new NaiveCapacitor(50);
 		//SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
@@ -60,6 +67,43 @@ public class Simulator {
 		writer.visualizeTrips(naiveResults);
 		}
 		
+	private static void debugTrip(Trip trip) {
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+		System.out.println("==================");
+		System.out.println("Debug: "+trip);
+		List<PointFeatures> pfs = trip.getPoints();
+		System.out.println("Point count:" + pfs.size());
+		System.out.println("Start time: " + sdf.format(pfs.get(0).getTime().getTime()));
+		System.out.println("End time: " + sdf.format(pfs.get(pfs.size()-1).getTime().getTime()));
+		int periodMax = pfs.get(0).getPeriodMS();
+		int periodMin = periodMax;
+		double speedMax = pfs.get(0).getSpeed();
+		double speedMin = speedMax;
+		double powerMax = pfs.get(0).getPowerDemand();
+		double powerMin = powerMax;
+		
+		for(PointFeatures pf : pfs){
+			if(pf.getPeriodMS() > periodMax)
+				periodMax = pf.getPeriodMS();
+			if(pf.getPeriodMS() < periodMin)
+				periodMin = pf.getPeriodMS();
+			if(pf.getSpeed() > speedMax)
+				speedMax = pf.getSpeed();
+			if(pf.getSpeed() < speedMin)
+				speedMin = pf.getSpeed();
+			if(pf.getPowerDemand() > powerMax)
+				powerMax = pf.getPowerDemand();
+			if(pf.getPowerDemand() < powerMin)
+				powerMin = pf.getPowerDemand();
+		}
+		System.out.println("Period range: "+periodMin+" to "+periodMax);
+		System.out.println("Speed range: "+speedMin+" to "+speedMax);
+		System.out.println("Power range: "+powerMin+" to "+powerMax);
+		System.out.println("==================");
+		
+		
+	}
+
 	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
 		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
 		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();		
