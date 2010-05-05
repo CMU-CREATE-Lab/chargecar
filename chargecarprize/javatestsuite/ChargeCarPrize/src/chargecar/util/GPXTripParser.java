@@ -20,6 +20,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	Stack<String> elementNames;
     private StringBuilder contentBuffer;
 	private int points;
+	private double carMass;
+	private List<List<PointFeatures>> trips;
 	   
 	public GPXTripParser() {
 		clear();
@@ -28,15 +30,21 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	public void clear() {
 		elementNames = new Stack<String>();
 	    contentBuffer = new StringBuilder();
+	    trips = new ArrayList<List<PointFeatures>>();
+	    clearRawData();	  	
+	  	points = 0;
+	}
+	
+	private void clearRawData(){
 	    rawTimes = new ArrayList<Calendar>();
 	    rawLats = new ArrayList<Double>();
 	  	rawLons = new ArrayList<Double>();
 	  	rawEles = new ArrayList<Double>();
-	  	points = 0;
 	}
 	   
 	public List<List<PointFeatures>> read(String filename, double carMass) throws IOException {
 		clear();
+		this.carMass = carMass;
 		FileInputStream in = new FileInputStream(new File(filename));
 	    InputSource source = new InputSource(in);
 	    XMLReader parser;
@@ -51,15 +59,12 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 	    in.close();	    
 	    
-	    return calculateTrips(carMass);
-	}
+	    return trips;
+	}		
 	
-	
-	
-	private List<List<PointFeatures>> calculateTrips(double carMassKg) {
-		List<List<PointFeatures>> trips = new ArrayList<List<PointFeatures>>();
+	private void processTrips() {
 		if(rawTimes.isEmpty()){
-			return trips;
+			return;
 		}
 		//clean of duplicate readings
 		removeDuplicates();
@@ -80,7 +85,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			{
 				//if enough time has passed between points (360 seconds)
 				//consider them disjoint trips
-				trips.add(calculateTrip(times,lats,lons,eles,carMassKg));
+				trips.add(calculateTrip(times,lats,lons,eles));
 				times.clear();
 				lats.clear();
 				lons.clear();
@@ -95,14 +100,15 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		
 		if(times.size() > 3){
 			//get last trip
-			trips.add(calculateTrip(times,lats,lons,eles,carMassKg));			
-		}	
+			trips.add(calculateTrip(times,lats,lons,eles));			
+		}
 		
-		return trips;
+		clearRawData();
+
 	}
 
-	private List<PointFeatures> calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles, double carMass){		
-		//removeTunnels(times, lats, lons, eles);
+	private List<PointFeatures> calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles){		
+		//TODO removeTunnels(times, lats, lons, eles);
 		//interpolatePoints(times, lats, lons, eles);
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
 		runPowerModel(tripPoints, times, lats, lons, eles, carMass);		
@@ -337,6 +343,9 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	         }
 	         else if (currentElement.compareToIgnoreCase("time") == 0) {
 	        	 rawTimes.add(gmtStringToCalendar(contentBuffer.toString()));	      
+	         }
+	         else if(currentElement.compareToIgnoreCase("trk")==0){
+	        	 processTrips();
 	         }
 	      }	      
 	   }
