@@ -18,7 +18,11 @@ public class ConsoleWriter implements Visualizer {
 	@Override
 	public void visualizeTrip(Trip trip, BatteryModel battery,
 			CapacitorModel capacitor) {
-
+		String driver = trip.getFeatures().getDriver();
+		String time = trip.getFeatures().getStartTime().getTime().toLocaleString();
+		String lat = Double.toString(trip.getFeatures().getStartLat());
+		String lon = Double.toString(trip.getFeatures().getStartLon());
+		System.out.print("TRIP: "+driver + " at "+time+", from ("+lat+", "+lon+").");
 	}
 
 	@Override
