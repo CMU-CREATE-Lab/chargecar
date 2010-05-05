@@ -39,7 +39,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	    InputSource source = new InputSource(in);
 	    XMLReader parser;
 		try {
-			parser = org.xml.sax.helpers.XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+			parser = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();//"org.apache.xerces.parsers.SAXParser");
 			parser.setContentHandler(this);
 		    parser.parse(source);
 			

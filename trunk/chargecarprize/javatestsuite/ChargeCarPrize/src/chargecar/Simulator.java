@@ -7,8 +7,10 @@ import java.util.List;
 import chargecar.util.GPXTripParser;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlows;
+import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
 import chargecar.util.TripFeatures;
+import chargecar.visualization.ConsoleWriter;
 import chargecar.battery.BatteryModel;
 import chargecar.battery.NaiveBattery;
 import chargecar.capacitor.CapacitorModel;
@@ -44,17 +46,21 @@ public class Simulator {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+		System.out.println("Testing "+tripsToTest.size()+" trips.");
 		BatteryModel judgingBattery = new NaiveBattery();
 		CapacitorModel judgingCap = new NaiveCapacitor(50);
-		List<BatteryModel> userBatteries = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
-		List<BatteryModel> noCapBatteries = simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
-		List<BatteryModel> naiveBatteries = simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
-		//TODO add capacitors
-		//grab Results, visualize
+		//SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
+		SimulationResults noCapResults = simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
+		SimulationResults naiveResults = simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
+		
+		ConsoleWriter writer = new ConsoleWriter();
+		System.out.println("NO CAP");
+		writer.visualizeTrips(noCapResults);
+		System.out.println("NAIVE");
+		writer.visualizeTrips(naiveResults);
 		}
 		
-	private static List<BatteryModel> simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
+	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
 		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
 		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();		
 		for(Trip trip : trips){
@@ -64,7 +70,7 @@ public class Simulator {
 				tripBatteries.add(tripBattery);
 				tripCapacitors.add(tripCap);
 		}
-		return tripBatteries;//return both for visualizer		
+		return new SimulationResults(trips,tripBatteries,tripCapacitors);//return both for visualizer		
 	}
 
 	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) {
