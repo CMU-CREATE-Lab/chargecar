@@ -16,11 +16,12 @@ public class PointFeatures {
 	final private double acceleration;
 	final private double speed;
 	final private double powerDemand;
+	final private double planarDist;
 	final private int periodMS;
 	final private Calendar time;
 
-	public PointFeatures(Double latitude, Double longitude, Double elevation,
-			Double acceleration, Double speed, Double powerDemand,
+	public PointFeatures(double latitude, double longitude, double elevation, double planarDist,
+			double acceleration, double speed, double powerDemand,
 			int periodMS, Calendar time) {
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -29,43 +30,47 @@ public class PointFeatures {
 		this.speed = speed;
 		this.powerDemand = powerDemand;
 		this.periodMS = periodMS;
+		this.planarDist = planarDist;
 		this.time = time;
 	}
 	
 	public PointFeatures clone(){
-		return new PointFeatures(this.latitude,this.longitude,this.elevation,this.acceleration,this.speed,this.powerDemand,this.periodMS,(Calendar) this.time.clone());
+		return new PointFeatures(this.latitude,this.longitude,this.elevation,this.planarDist,this.acceleration,this.speed,this.powerDemand,this.periodMS,(Calendar) this.time.clone());
 	}
 	
 	public double getLatitude() {
-		return latitude;
+		return this.latitude;
 	}
 
 	public double getLongitude() {
-		return longitude;
+		return this.longitude;
 	}
 
 	public double getElevation() {
-		return elevation;
+		return this.elevation;
 	}
 
+	public double getPlanarDist(){
+		return this.planarDist;
+	}
 	public Double getAcceleration() {
-		return acceleration;
+		return this.acceleration;
 	}
 
 	public Double getSpeed() {
-		return speed;
+		return this.speed;
 	}
 
 	public Double getPowerDemand() {
-		return powerDemand;
+		return this.powerDemand;
 	}
 
 	public int getPeriodMS() {
-		return periodMS;
+		return this.periodMS;
 	}
 
 	public Calendar getTime() {
-		return time;
+		return this.time;
 	}
 
 }
