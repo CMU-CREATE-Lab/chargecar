@@ -5,6 +5,10 @@ import java.util.List;
 import chargecar.battery.BatteryModel;
 import chargecar.capacitor.CapacitorModel;
 
+/**
+ * @author Alex Styler
+ * DO NOT EDIT
+ */
 public class SimulationResults {
 	private List<BatteryModel> batteries;
 	private List<CapacitorModel> capacitors;

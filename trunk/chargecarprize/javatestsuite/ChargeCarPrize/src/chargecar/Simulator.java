@@ -29,9 +29,12 @@ public class Simulator {
 	 * @param args
 	 */
 	public static void main(String[] args) {		
+		String gpxFileName = args[0];
+		String driverName = args[1];
+		
 		List<Trip> tripsToTest = new ArrayList<Trip>();
 		Policy noCapBaseline = new NoCapPolicy();
-		Policy naiveBaseline = new NaiveBufferPolicy();
+		Policy naiveBuffer = new NaiveBufferPolicy();
 		Policy userPolicy = new UserPolicy();
 		userPolicy.loadState();
 		
@@ -40,8 +43,8 @@ public class Simulator {
 		GPXTripParser gpxparser = new GPXTripParser();
 		
 		try {
-			for(List<PointFeatures> tripPoints : gpxparser.read(args[0], carMass)){
-				TripFeatures tf = new TripFeatures(args[1],carMass,tripPoints.get(0));
+			for(List<PointFeatures> tripPoints : gpxparser.read(gpxFileName, carMass)){
+				TripFeatures tf = new TripFeatures(driverName,carMass,tripPoints.get(0));
 				tripsToTest.add(new Trip(tf, tripPoints));
 			}
 		} catch (IOException e) {			
@@ -56,9 +59,9 @@ public class Simulator {
 		
 		BatteryModel judgingBattery = new SimpleBattery();
 		CapacitorModel judgingCap = new SimpleCapacitor(50);
-		//SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
+		SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
 		SimulationResults noCapResults = simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
-		SimulationResults naiveResults = simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
+		SimulationResults naiveResults = simulateTripsNaive(naiveBuffer, tripsToTest,judgingBattery, judgingCap);
 		
 		ConsoleWriter writer = new ConsoleWriter();
 		System.out.println("NO CAP");

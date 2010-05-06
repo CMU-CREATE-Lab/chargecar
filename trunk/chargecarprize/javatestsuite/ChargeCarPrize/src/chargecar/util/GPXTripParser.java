@@ -11,7 +11,10 @@ import java.util.Stack;
 import java.io.*;
 import org.xml.sax.*;
 
-
+/**
+ * @author Alex Styler
+ * DO NOT EDIT
+ */
 public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	List<Calendar> rawTimes;
 	List<Double> rawLats;

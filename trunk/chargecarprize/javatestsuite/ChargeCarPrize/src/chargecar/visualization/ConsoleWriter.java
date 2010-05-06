@@ -8,6 +8,10 @@ import chargecar.util.PointFeatures;
 import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
 
+/**
+ * @author Alex Styler
+ * 
+ */
 public class ConsoleWriter implements Visualizer {
 
 	@Override
