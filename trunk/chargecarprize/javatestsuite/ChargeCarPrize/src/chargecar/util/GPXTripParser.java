@@ -85,7 +85,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			{
 				//if enough time has passed between points (360 seconds)
 				//consider them disjoint trips
-				trips.add(calculateTrip(times,lats,lons,eles));
+				calculateTrip(times,lats,lons,eles);
 				times.clear();
 				lats.clear();
 				lons.clear();
@@ -98,21 +98,27 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			eles.add(rawEles.get(i));			
 		}
 		
-		if(times.size() > 3){
+		if(times.size() > 60){
 			//get last trip
-			trips.add(calculateTrip(times,lats,lons,eles));			
+			calculateTrip(times,lats,lons,eles);			
 		}
 		
 		clearRawData();
 
 	}
 
-	private List<PointFeatures> calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles){		
+	private void calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles){		
 		//TODO removeTunnels(times, lats, lons, eles);
 		//interpolatePoints(times, lats, lons, eles);
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
-		runPowerModel(tripPoints, times, lats, lons, eles, carMass);		
-		return tripPoints;
+		runPowerModel(tripPoints, times, lats, lons, eles, carMass);	
+		double sumPlanarDist = 0.0;
+		for(PointFeatures pf : tripPoints){
+			sumPlanarDist += pf.getPlanarDist();
+		}
+		if(sumPlanarDist > 500.0){
+			trips.add(tripPoints);			
+		}
 	}
 
 	private void interpolatePoints(List<Calendar> times, List<Double> lats,
@@ -244,9 +250,9 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		
 		for(int i=1;i<times.size();i++){
 			int periodMS = (int)(times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis());
-			tripPoints.add(new PointFeatures(lats.get(i-1), lons.get(i-1), eles.get(i-1), accelerations.get(i), speeds.get(i), powerDemands.get(i), periodMS, times.get(i-1)));
+			tripPoints.add(new PointFeatures(lats.get(i-1), lons.get(i-1), eles.get(i-1), planarDistances.get(i), accelerations.get(i), speeds.get(i), powerDemands.get(i), periodMS, times.get(i-1)));
 		}
-		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), 0.0, 0.0, 0.0, 1000, times.get(times.size()-1));
+		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), 0.0, 0.0, 0.0, 0.0, 1000, times.get(times.size()-1));
 		tripPoints.add(endPoint);
 		
 	}
