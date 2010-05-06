@@ -6,9 +6,9 @@ import chargecar.util.PointFeatures;
  * @author Alex Styler
  * DO NOT EDIT
  */
-public class NaiveBattery extends BatteryModel {
+public class SimpleBattery extends BatteryModel {
 
-	public NaiveBattery(){
+	public SimpleBattery(){
 		this.current = 0.0;
 		this.temperature = 0.0;
 		this.charge = 0.0;		
@@ -27,7 +27,7 @@ public class NaiveBattery extends BatteryModel {
 
 	@Override
 	public BatteryModel createClone() {
-		BatteryModel clone = new NaiveBattery();
+		BatteryModel clone = new SimpleBattery();
 		clone.charge = this.charge;
 		clone.current = this.current;
 		clone.efficiency = this.efficiency;

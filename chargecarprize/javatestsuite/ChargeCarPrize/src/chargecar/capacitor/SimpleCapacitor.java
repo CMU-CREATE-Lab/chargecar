@@ -6,9 +6,9 @@ import chargecar.util.PointFeatures;
  * @author Alex Styler
  * DO NOT EDIT
  */
-public class NaiveCapacitor extends CapacitorModel {
+public class SimpleCapacitor extends CapacitorModel {
 
-	public NaiveCapacitor(double maxCharge){
+	public SimpleCapacitor(double maxCharge){
 		this.maxCharge = maxCharge;
 		this.charge = 0;
 		this.temperature = 0;
@@ -40,7 +40,7 @@ public class NaiveCapacitor extends CapacitorModel {
 
 	@Override
 	public CapacitorModel createClone() {
-		NaiveCapacitor clone = new NaiveCapacitor(this.maxCharge);
+		SimpleCapacitor clone = new SimpleCapacitor(this.maxCharge);
 		clone.charge = this.charge;
 		clone.current = this.current;
 		clone.efficiency = this.efficiency;

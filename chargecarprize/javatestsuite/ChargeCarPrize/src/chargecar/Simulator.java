@@ -14,9 +14,9 @@ import chargecar.util.Trip;
 import chargecar.util.TripFeatures;
 import chargecar.visualization.ConsoleWriter;
 import chargecar.battery.BatteryModel;
-import chargecar.battery.NaiveBattery;
+import chargecar.battery.SimpleBattery;
 import chargecar.capacitor.CapacitorModel;
-import chargecar.capacitor.NaiveCapacitor;
+import chargecar.capacitor.SimpleCapacitor;
 import chargecar.policies.*;
 
 /**
@@ -54,8 +54,8 @@ public class Simulator {
 			debugTrip(t);
 		}		
 		
-		BatteryModel judgingBattery = new NaiveBattery();
-		CapacitorModel judgingCap = new NaiveCapacitor(50);
+		BatteryModel judgingBattery = new SimpleBattery();
+		CapacitorModel judgingCap = new SimpleCapacitor(50);
 		//SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
 		SimulationResults noCapResults = simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
 		SimulationResults naiveResults = simulateTripsNaive(naiveBaseline, tripsToTest,judgingBattery, judgingCap);
