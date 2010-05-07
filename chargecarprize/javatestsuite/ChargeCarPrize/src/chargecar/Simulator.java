@@ -53,9 +53,11 @@ public class Simulator {
 		}
 		System.out.println("Testing "+tripsToTest.size()+" trips.");
 		
-		for(Trip t:tripsToTest){
+		for(Trip t:tripsToTest)
+		{
 			debugTrip(t);
-		}		
+		}
+				
 		
 		BatteryModel judgingBattery = new SimpleBattery();
 		CapacitorModel judgingCap = new SimpleCapacitor(50);
@@ -83,21 +85,33 @@ public class Simulator {
 		double speedMax = pfs.get(0).getSpeed();
 		double speedMin = speedMax;
 		double powerMax = pfs.get(0).getPowerDemand();
-		double powerMin = powerMax;
+		double powerMin = 0;
 		
 		for(PointFeatures pf : pfs){
 			if(pf.getPeriodMS() > periodMax)
+			{
 				periodMax = pf.getPeriodMS();
+			}
 			if(pf.getPeriodMS() < periodMin)
+			{
 				periodMin = pf.getPeriodMS();
+			}
 			if(pf.getSpeed() > speedMax)
+			{
 				speedMax = pf.getSpeed();
+			}
 			if(pf.getSpeed() < speedMin)
+			{
 				speedMin = pf.getSpeed();
+			}
 			if(pf.getPowerDemand() > powerMax)
+			{
 				powerMax = pf.getPowerDemand();
+			}
 			if(pf.getPowerDemand() < powerMin)
+			{
 				powerMin = pf.getPowerDemand();
+			}
 		}
 		System.out.println("Period range: "+periodMin+" to "+periodMax);
 		System.out.println("Speed range: "+speedMin+" to "+speedMax);
