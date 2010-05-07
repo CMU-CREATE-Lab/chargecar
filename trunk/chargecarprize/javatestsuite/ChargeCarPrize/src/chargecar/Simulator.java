@@ -31,17 +31,15 @@ public class Simulator {
 	public static void main(String[] args) {		
 		String gpxFileName = args[0];
 		String driverName = args[1];
+		double carMass = 1200;
 		
 		List<Trip> tripsToTest = new ArrayList<Trip>();
 		Policy noCapBaseline = new NoCapPolicy();
 		Policy naiveBuffer = new NaiveBufferPolicy();
 		Policy userPolicy = new UserPolicy();
-		userPolicy.loadState();
+		userPolicy.loadState();		
 		
-		double carMass = 1200;
-		
-		GPXTripParser gpxparser = new GPXTripParser();
-		
+		GPXTripParser gpxparser = new GPXTripParser();		
 		try {
 			for(List<PointFeatures> tripPoints : gpxparser.read(gpxFileName, carMass)){
 				TripFeatures tf = new TripFeatures(driverName,carMass,tripPoints.get(0));
@@ -56,8 +54,7 @@ public class Simulator {
 		for(Trip t:tripsToTest)
 		{
 			debugTrip(t);
-		}
-				
+		}				
 		
 		BatteryModel judgingBattery = new SimpleBattery();
 		CapacitorModel judgingCap = new SimpleCapacitor(50);
@@ -72,6 +69,29 @@ public class Simulator {
 		writer.visualizeTrips(naiveResults);
 		}
 		
+	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
+		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
+		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();		
+		for(Trip trip : trips){
+				BatteryModel tripBattery = battery.createClone();
+				CapacitorModel tripCap = cap.createClone();				
+				simulateTrip(policy, trip, tripBattery, tripCap);				
+				tripBatteries.add(tripBattery);
+				tripCapacitors.add(tripCap);
+		}
+		return new SimulationResults(trips,tripBatteries,tripCapacitors);//return both for visualizer		
+	}
+
+	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) {
+		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
+		for(PointFeatures point : trip.getPoints()){
+			PowerFlows pf = policy.calculatePowerFlows(point);
+			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
+			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
+		}
+		policy.endTrip();
+	}
+
 	private static void debugTrip(Trip trip) {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
 		System.out.println("==================");
@@ -116,32 +136,6 @@ public class Simulator {
 		System.out.println("Period range: "+periodMin+" to "+periodMax);
 		System.out.println("Speed range: "+speedMin+" to "+speedMax);
 		System.out.println("Power range: "+powerMin+" to "+powerMax);
-		System.out.println("==================");
-		
-		
+		System.out.println("==================");	
 	}
-
-	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
-		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
-		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();		
-		for(Trip trip : trips){
-				BatteryModel tripBattery = battery.createClone();
-				CapacitorModel tripCap = cap.createClone();				
-				simulateTrip(policy, trip, tripBattery, tripCap);				
-				tripBatteries.add(tripBattery);
-				tripCapacitors.add(tripCap);
-		}
-		return new SimulationResults(trips,tripBatteries,tripCapacitors);//return both for visualizer		
-	}
-
-	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) {
-		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
-		for(PointFeatures point : trip.getPoints()){
-			PowerFlows pf = policy.calculatePowerFlows(point);
-			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
-			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
-		}
-		policy.endTrip();
-	}
-
 }
