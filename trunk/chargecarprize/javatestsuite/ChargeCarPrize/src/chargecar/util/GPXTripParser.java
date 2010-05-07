@@ -176,7 +176,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			}		
 			accelerations.add((speeds.get(i) - speeds.get(i-1))/sDiff);	
 		}		
-
+		speeds.set(0, speeds.get(1));
+		accelerations.set(1, 0.0);
 
 
 		final double carArea =1.988;//honda civic 2001 si fronta area in metres sq
@@ -187,7 +188,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
         final double ineff = 1/0.85;
         final double rollingRes = mu*carMassKg*aGravity; 
         final double outsideTemp = ((60 + 459.67) * 5/9);//60F to kelvin
-		
+       
 		for(int i=0;i<accelerations.size();i++)
 		{
 			double pressure = 101325 * Math.pow((1-((0.0065 * eles.get(i))/288.15)), ((aGravity*0.0289)/(8.314*0.0065)));			
@@ -250,6 +251,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 
 			powerDemands.add(pwr);		
 		}
+		
 		
 		for(int i=1;i<times.size();i++){
 			int periodMS = (int)(times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis());
