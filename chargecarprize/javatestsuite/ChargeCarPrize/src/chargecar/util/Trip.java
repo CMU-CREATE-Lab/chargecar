@@ -1,5 +1,6 @@
 package chargecar.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +32,58 @@ public class Trip {
 		return points;
 	}
 	
-	public String toString(){
-		String driver = this.getFeatures().getDriver();
-		String time = this.getFeatures().getStartTime().getTime().toLocaleString();
-		String lat = Double.toString(this.getFeatures().getStartLat());
-		String lon = Double.toString(this.getFeatures().getStartLon());
-		return "TRIP: "+driver + " at "+time+", from ("+lat+", "+lon+").";
+	public String toLongString(){
+		StringBuilder tripString = new StringBuilder();
+		tripString.append("Driver: " + this.getFeatures().getDriver() +"\n");				
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+		List<PointFeatures> pfs = getPoints();
+		tripString.append("Point count:" + pfs.size()+"\n");
+		tripString.append("Start time: " + sdf.format(pfs.get(0).getTime().getTime())+"\n");
+		tripString.append("End time: " + sdf.format(pfs.get(pfs.size()-1).getTime().getTime())+"\n");
+		int periodMax = pfs.get(0).getPeriodMS();
+		int periodMin = periodMax;
+		double speedMax = pfs.get(0).getSpeed();
+		double speedMin = speedMax;
+		double powerMax = pfs.get(0).getPowerDemand();
+		double powerMin = 0;
+			
+		for(PointFeatures pf : pfs){
+			if(pf.getPeriodMS() > periodMax)
+			{
+				periodMax = pf.getPeriodMS();
+			}
+			if(pf.getPeriodMS() < periodMin)
+			{
+				periodMin = pf.getPeriodMS();
+			}
+			if(pf.getSpeed() > speedMax)
+			{
+				speedMax = pf.getSpeed();
+			}
+			if(pf.getSpeed() < speedMin)
+			{
+				speedMin = pf.getSpeed();
+			}
+			if(pf.getPowerDemand() > powerMax)
+			{
+				powerMax = pf.getPowerDemand();
+			}
+			if(pf.getPowerDemand() < powerMin)
+			{
+				powerMin = pf.getPowerDemand();
+			}
+		}
+		
+		tripString.append("Period range: "+periodMin+" to "+periodMax +"\n");
+		tripString.append("Speed range: "+speedMin+" to "+speedMax +"\n");
+		tripString.append("Power range: "+powerMin+" to "+powerMax);
+		
+		return tripString.toString();
 	}
+	
+	public String toString(){
+		List<PointFeatures> pfs = getPoints();
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+		return "Driver:" + this.getFeatures().getDriver() +" Time:"+sdf.format(pfs.get(0).getTime().getTime());				
+	}		
 }

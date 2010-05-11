@@ -10,8 +10,8 @@ public class SimpleCapacitor extends CapacitorModel {
 
 	public SimpleCapacitor(double maxCharge){
 		this.maxCharge = maxCharge;
-		this.charge = 0;
-		this.temperature = 0;
+		this.charge = 0.0;
+		this.temperature = 0.0;
 		this.efficiency = 1.0;
 	}
 	@Override
@@ -49,7 +49,8 @@ public class SimpleCapacitor extends CapacitorModel {
 		clone.temperatureHistory.addAll(cloneCollection(this.temperatureHistory));
 		clone.currentDrawHistory.addAll(cloneCollection(this.currentDrawHistory));
 		clone.efficiencyHistory.addAll(cloneCollection(this.efficiencyHistory));
-		clone.tripHistory.addAll(cloneTripCollection(this.tripHistory));
+		clone.periodHistory.addAll(clonePeriodCollection(this.periodHistory));
+		
 		return clone;
 	}
 

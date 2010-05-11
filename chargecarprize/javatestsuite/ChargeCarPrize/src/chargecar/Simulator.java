@@ -1,5 +1,6 @@
 package chargecar;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
 import chargecar.util.TripFeatures;
 import chargecar.visualization.ConsoleWriter;
+import chargecar.visualization.Visualizer;
 import chargecar.battery.BatteryModel;
 import chargecar.battery.SimpleBattery;
 import chargecar.capacitor.CapacitorModel;
@@ -24,118 +26,92 @@ import chargecar.policies.*;
  * DO NOT EDIT
  */
 public class Simulator {
-
+	static Visualizer visualizer = new ConsoleWriter();
+	
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {		
-		String gpxFileName = args[0];
-		String driverName = args[1];
+	
+	public static void main(String[] args) throws IOException 
+	{		
+		String gpxFolder = args[0];
 		double carMass = 1200;
 		
 		List<Trip> tripsToTest = new ArrayList<Trip>();
+		
 		Policy noCapBaseline = new NoCapPolicy();
-		Policy naiveBuffer = new NaiveBufferPolicy();
-		Policy userPolicy = new UserPolicy();
+		Policy userPolicy = new NaiveBufferPolicy();		
 		userPolicy.loadState();		
 		
-		GPXTripParser gpxparser = new GPXTripParser();		
-		try {
-			for(List<PointFeatures> tripPoints : gpxparser.read(gpxFileName, carMass)){
+		parseTrips(gpxFolder, carMass, tripsToTest);
+
+		System.out.println("Testing "+tripsToTest.size()+" trips.");
+		
+		SimulationResults baselineResults = simulateTripsNaive(noCapBaseline, tripsToTest);
+		SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest);
+		
+		visualizer.visualizeSummary(userResults, baselineResults);
+	}
+
+	private static void parseTrips(String gpxFolder, double carMass, List<Trip> tripsToTest) throws IOException 
+	{
+		File folder = new File(gpxFolder);
+		List<File> gpxFiles = getGPXFiles(folder);		
+		GPXTripParser gpxparser = new GPXTripParser();	
+
+		for(File gpxFile:gpxFiles)
+		{			
+			for(List<PointFeatures> tripPoints : gpxparser.read(gpxFile, carMass)){
+				String driverName = gpxFile.getParentFile().getName();
 				TripFeatures tf = new TripFeatures(driverName,carMass,tripPoints.get(0));
 				tripsToTest.add(new Trip(tf, tripPoints));
 			}
-		} catch (IOException e) {			
-			e.printStackTrace();
-			System.exit(1);
 		}
-		System.out.println("Testing "+tripsToTest.size()+" trips.");
+	}
 		
-		for(Trip t:tripsToTest)
+	private static List<File> getGPXFiles(File gpxFolder) 
+	{		
+		List<File> gpxFiles = new ArrayList<File>();
+		File[] files = gpxFolder.listFiles();
+		for(File f: files)
 		{
-			debugTrip(t);
-		}				
-		
-		BatteryModel judgingBattery = new SimpleBattery();
-		CapacitorModel judgingCap = new SimpleCapacitor(50);
-		SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest, judgingBattery, judgingCap);
-		SimulationResults noCapResults = simulateTripsNaive(noCapBaseline, tripsToTest, judgingBattery, judgingCap);
-		SimulationResults naiveResults = simulateTripsNaive(naiveBuffer, tripsToTest,judgingBattery, judgingCap);
-		
-		ConsoleWriter writer = new ConsoleWriter();
-		System.out.println("NO CAP");
-		writer.visualizeTrips(noCapResults);
-		System.out.println("NAIVE");
-		writer.visualizeTrips(naiveResults);
+			if(f.isDirectory())
+			{
+				gpxFiles.addAll(getGPXFiles(f));
+			}
+			else if(f.isFile() && (f.getAbsolutePath().endsWith("gpx") || f.getAbsolutePath().endsWith("GPX")) )
+			{
+				gpxFiles.add(f);
+			}		
 		}
-		
-	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips, BatteryModel battery, CapacitorModel cap){
-		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
-		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();		
-		for(Trip trip : trips){
-				BatteryModel tripBattery = battery.createClone();
-				CapacitorModel tripCap = cap.createClone();				
-				simulateTrip(policy, trip, tripBattery, tripCap);				
-				tripBatteries.add(tripBattery);
-				tripCapacitors.add(tripCap);
-		}
-		return new SimulationResults(trips,tripBatteries,tripCapacitors);//return both for visualizer		
+		return gpxFiles;	
 	}
 
-	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) {
+	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips)
+	{
+		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
+		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();
+		SimulationResults results = new SimulationResults();
+		for(Trip trip : trips)
+		{
+				BatteryModel tripBattery = new SimpleBattery();
+				CapacitorModel tripCap = new SimpleCapacitor(50);				
+				simulateTrip(policy, trip, tripBattery, tripCap);				
+				results.addTrip(trip, tripBattery, tripCap);
+		}
+		return results;		
+	}
+
+	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) 
+	{
 		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
-		for(PointFeatures point : trip.getPoints()){
+		for(PointFeatures point : trip.getPoints())
+		{
 			PowerFlows pf = policy.calculatePowerFlows(point);
 			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
 			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
 		}
 		policy.endTrip();
-	}
-
-	private static void debugTrip(Trip trip) {
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
-		System.out.println("==================");
-		System.out.println("Debug: "+trip);
-		List<PointFeatures> pfs = trip.getPoints();
-		System.out.println("Point count:" + pfs.size());
-		System.out.println("Start time: " + sdf.format(pfs.get(0).getTime().getTime()));
-		System.out.println("End time: " + sdf.format(pfs.get(pfs.size()-1).getTime().getTime()));
-		int periodMax = pfs.get(0).getPeriodMS();
-		int periodMin = periodMax;
-		double speedMax = pfs.get(0).getSpeed();
-		double speedMin = speedMax;
-		double powerMax = pfs.get(0).getPowerDemand();
-		double powerMin = 0;
-		
-		for(PointFeatures pf : pfs){
-			if(pf.getPeriodMS() > periodMax)
-			{
-				periodMax = pf.getPeriodMS();
-			}
-			if(pf.getPeriodMS() < periodMin)
-			{
-				periodMin = pf.getPeriodMS();
-			}
-			if(pf.getSpeed() > speedMax)
-			{
-				speedMax = pf.getSpeed();
-			}
-			if(pf.getSpeed() < speedMin)
-			{
-				speedMin = pf.getSpeed();
-			}
-			if(pf.getPowerDemand() > powerMax)
-			{
-				powerMax = pf.getPowerDemand();
-			}
-			if(pf.getPowerDemand() < powerMin)
-			{
-				powerMin = pf.getPowerDemand();
-			}
-		}
-		System.out.println("Period range: "+periodMin+" to "+periodMax);
-		System.out.println("Speed range: "+speedMin+" to "+speedMax);
-		System.out.println("Power range: "+powerMin+" to "+powerMax);
-		System.out.println("==================");	
 	}
 }

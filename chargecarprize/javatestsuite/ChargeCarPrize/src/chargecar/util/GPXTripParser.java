@@ -45,10 +45,10 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	  	rawEles = new ArrayList<Double>();
 	}
 	   
-	public List<List<PointFeatures>> read(String filename, double carMass) throws IOException {
+	public List<List<PointFeatures>> read(File gpxFile, double carMass) throws IOException {
 		clear();
-		this.carMass = carMass;
-		FileInputStream in = new FileInputStream(new File(filename));
+		this.carMass = carMass;		
+		FileInputStream in = new FileInputStream(gpxFile);
 	    InputSource source = new InputSource(in);
 	    XMLReader parser;
 		try {
@@ -107,7 +107,6 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 		
 		clearRawData();
-
 	}
 
 	private void calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles){		
