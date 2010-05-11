@@ -19,10 +19,11 @@ public class SimpleBattery extends BatteryModel {
 	@Override
 	public void drawCurrent(double current, PointFeatures point) {
 		this.current = current;
+		this.periodMS = point.getPeriodMS();
 		//record this current as starting at the current time
 		recordHistory(point);
 		//after the period is up, update charge, temp, and eff.
-		this.charge = charge + current * (point.getPeriodMS() / MS_PER_HOUR);
+		this.charge = charge + current * (periodMS / MS_PER_HOUR);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class SimpleBattery extends BatteryModel {
 		clone.temperatureHistory.addAll(cloneCollection(this.temperatureHistory));
 		clone.currentDrawHistory.addAll(cloneCollection(this.currentDrawHistory));
 		clone.efficiencyHistory.addAll(cloneCollection(this.efficiencyHistory));
-		clone.tripHistory.addAll(cloneTripCollection(this.tripHistory));
+		clone.periodHistory.addAll(clonePeriodCollection(this.periodHistory));
 		return clone;
 	}
 }
