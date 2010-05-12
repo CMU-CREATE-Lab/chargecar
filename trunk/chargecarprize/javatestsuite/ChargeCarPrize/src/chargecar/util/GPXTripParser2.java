@@ -9,13 +9,22 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Stack;
 import java.io.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.*;
 
 /**
  * @author Alex Styler
  * DO NOT EDIT
  */
-public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
+public class GPXTripParser2 {
 	List<Calendar> rawTimes;
 	List<Double> rawLats;
 	List<Double> rawLons;
@@ -26,7 +35,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	private double carMass;
 	private List<List<PointFeatures>> trips;
 	   
-	public GPXTripParser() {
+	public GPXTripParser2() {
 		clear();
 	}
 	   
@@ -48,19 +57,19 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	public List<List<PointFeatures>> read(File gpxFile, double carMass) throws IOException {
 		clear();
 		this.carMass = carMass;		
-		FileInputStream in = new FileInputStream(gpxFile);
-	    InputSource source = new InputSource(in);
-	    XMLReader parser;
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		try {
-			parser = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();//"org.apache.xerces.parsers.SAXParser");
-			parser.setContentHandler(this);
-		    parser.parse(source);
-			
+			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+			Document doc = docBuilder.parse(gpxFile);
+			processNode(doc);
+			//TODO write doc
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-			throw new IOException();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	    in.close();	    
 	    
 	    return trips;
 	}		
@@ -110,8 +119,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	}
 
 	private void calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles){		
-		removeTunnels(times, lats, lons, eles);
-		interpolatePoints(times, lats, lons, eles);
+		//TODO removeTunnels(times, lats, lons, eles);
+		//interpolatePoints(times, lats, lons, eles);
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
 		runPowerModel(tripPoints, times, lats, lons, eles, carMass);	
 		double sumPlanarDist = 0.0;
@@ -270,8 +279,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		//removes tunnel points, tunnels will be fixed later by interpolation
 		int consecutiveCounter = 0;
 		for(int i=1;i<times.size();i++){
-			if(Math.abs(lats.get(i) - lats.get(i-1)) <= 1E-6 &&
-					Math.abs(lons.get(i) - lons.get(i-1)) <= 1E-6){
+			if(lats.get(i).compareTo(lats.get(i-1)) == 0 &&
+					lons.get(i).compareTo(lons.get(i-1)) == 0){
 				//consecutive readings at the same position
 				consecutiveCounter++;				
 			}
@@ -319,45 +328,42 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		}
 	}
 	   
-	   /*
-	    * DefaultHandler::startElement() fires whenever an XML start tag is encountered
-	    * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	    */
-	   public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-	         // the <trkpht> element has attributes which specify latitude and longitude (it has child elements that specify the time and elevation)
-	         if (localName.compareToIgnoreCase("trkpt") == 0) {
-	        	 rawLats.add(Double.parseDouble(attributes.getValue("lat")));
-	        	 rawLons.add(Double.parseDouble(attributes.getValue("lon")));
-	        	 points++;
-	         }
-	      // Clear content buffer
-	      contentBuffer.delete(0, contentBuffer.length());
-	      
-	      // Store name of current element in stack
-	      elementNames.push(qName);
-	   }
-	   
-	   /*
-	    * the DefaultHandler::characters() function fires 1 or more times for each text node encountered
-	    *
-	    */
-	   public void characters(char[] ch, int start, int length) throws SAXException {
-	      contentBuffer.append(String.copyValueOf(ch, start, length));
-	   }
-	   
-	   /*
-	    * the DefaultHandler::endElement() function fires for each end tag
-	    *
-	    */
+	
+	public void processNode(Document doc){
+		NodeList trkElements = doc.getElementsByTagName("trk");
+		
+		for(int i=0;i<trkElements.getLength();i++){
+			Element trkElem = (Element) trkElements.item(i);
+			NodeList trkptElements = trkElem.getElementsByTagName("trkpt");
+			for(int j=0;j<trkptElements.getLength();j++){
+				Element trkptElem = (Element) trkptElements.item(j);
+				double lat = Double.parseDouble(trkptElem.getAttribute("lat"));
+				double lon = Double.parseDouble(trkptElem.getAttribute("lat"));
+				NodeList ele = trkptElem.getElementsByTagName("ele");
+				Element eleElem =(Element)ele.item(0);
+				NodeList time = trkptElem.getElementsByTagName("time");
+				Element timeElem =(Element)time.item(0);
+				rawLats.add(lat);
+				rawLons.add(lon);
+				rawEles.add(Double.parseDouble(eleElem.getChildNodes().item(0).getNodeValue()));
+				rawTimes.add(gmtStringToCalendar(timeElem.getChildNodes().item(0).getNodeValue()));				
+			}	
+			processTrips();
+		}
+
+
+
+	}
+
 	   public void endElement(String uri, String localName, String qName) throws SAXException {
 	      String currentElement = elementNames.pop();
 	      
 	      if (points > 0 && currentElement != null) {
 	         if (currentElement.compareToIgnoreCase("ele") == 0) {
-	            rawEles.add(Double.parseDouble(contentBuffer.toString()));
+	            
 	         }
 	         else if (currentElement.compareToIgnoreCase("time") == 0) {
-	        	 rawTimes.add(gmtStringToCalendar(contentBuffer.toString()));	      
+	        	 ;	      
 	         }
 	         else if(currentElement.compareToIgnoreCase("trk")==0){
 	        	 processTrips();

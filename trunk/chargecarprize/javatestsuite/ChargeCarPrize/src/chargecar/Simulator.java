@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import chargecar.util.GPXTripParser;
+import chargecar.util.GPXTripParser2;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlows;
 import chargecar.util.SimulationResults;
@@ -58,7 +59,7 @@ public class Simulator {
 	{
 		File folder = new File(gpxFolder);
 		List<File> gpxFiles = getGPXFiles(folder);		
-		GPXTripParser gpxparser = new GPXTripParser();	
+		GPXTripParser2 gpxparser = new GPXTripParser2();	
 
 		for(File gpxFile:gpxFiles)
 		{			
@@ -97,8 +98,13 @@ public class Simulator {
 		{
 				BatteryModel tripBattery = new SimpleBattery();
 				CapacitorModel tripCap = new SimpleCapacitor(50);				
-				simulateTrip(policy, trip, tripBattery, tripCap);				
-				results.addTrip(trip, tripBattery, tripCap);
+				simulateTrip(policy, trip, tripBattery, tripCap);	
+				if(tripBattery.currentSquaredIntegral() > 1E6){
+					System.out.println(trip.toLongString());
+				}
+				else{
+					results.addTrip(trip, tripBattery, tripCap);
+				}
 		}
 		return results;		
 	}
