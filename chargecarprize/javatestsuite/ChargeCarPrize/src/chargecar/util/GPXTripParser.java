@@ -172,7 +172,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			
 			if(tempDist < 1E-6){
 				speeds.add(0.0);
-			}else{
+			}else{				
 				speeds.add(tempSpeed);
 			}		
 			accelerations.add(1000.0*(speeds.get(i) - speeds.get(i-1))/msDiff);	
@@ -250,7 +250,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 			if (speed > 12.0)
 			{
 				pwr = ((pwr - (0.056*(speed*speed))) + (0.68*speed));
-				}
+			}
 
 			powerDemands.add(pwr);		
 

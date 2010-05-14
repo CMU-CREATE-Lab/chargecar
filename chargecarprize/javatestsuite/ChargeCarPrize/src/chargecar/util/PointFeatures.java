@@ -1,5 +1,6 @@
 package chargecar.util;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -10,18 +11,18 @@ import java.util.Date;
  * such as GPS coordinates, power demand, speed, etc...
  */
 public class PointFeatures {
-	final private double latitude;
-	final private double longitude;
-	final private double elevation;
-	final private double acceleration;
-	final private double speed;
-	final private double powerDemand;
-	final private double planarDist;
+	final private BigDecimal latitude;
+	final private BigDecimal longitude;
+	final private BigDecimal elevation;
+	final private BigDecimal acceleration;
+	final private BigDecimal speed;
+	final private BigDecimal powerDemand;
+	final private BigDecimal planarDist;
 	final private int periodMS;
 	final private Calendar time;
 
-	public PointFeatures(double latitude, double longitude, double elevation, double planarDist,
-			double acceleration, double speed, double powerDemand,
+	public PointFeatures(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation, BigDecimal planarDist,
+			BigDecimal acceleration, BigDecimal speed, BigDecimal powerDemand,
 			int periodMS, Calendar time) {
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -38,30 +39,30 @@ public class PointFeatures {
 		return new PointFeatures(this.latitude,this.longitude,this.elevation,this.planarDist,this.acceleration,this.speed,this.powerDemand,this.periodMS,(Calendar) this.time.clone());
 	}
 	
-	public double getLatitude() {
+	public BigDecimal getLatitude() {
 		return this.latitude;
 	}
 
-	public double getLongitude() {
+	public BigDecimal getLongitude() {
 		return this.longitude;
 	}
 
-	public double getElevation() {
+	public BigDecimal getElevation() {
 		return this.elevation;
 	}
 
-	public double getPlanarDist(){
+	public BigDecimal getPlanarDist(){
 		return this.planarDist;
 	}
-	public Double getAcceleration() {
+	public BigDecimal getAcceleration() {
 		return this.acceleration;
 	}
 
-	public Double getSpeed() {
+	public BigDecimal getSpeed() {
 		return this.speed;
 	}
 
-	public Double getPowerDemand() {
+	public BigDecimal getPowerDemand() {
 		return this.powerDemand;
 	}
 
