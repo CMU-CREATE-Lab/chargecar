@@ -3,6 +3,8 @@
  */
 package chargecar.policies;
 
+import java.math.BigDecimal;
+
 import chargecar.battery.BatteryModel;
 import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
@@ -30,7 +32,7 @@ public class NaiveBufferPolicy implements Policy{
 	
 	@Override
 	public PowerFlows calculatePowerFlows(PointFeatures pf) {
-		double watts = pf.getPowerDemand();
+		double watts = pf.getPowerDemand().doubleValue();
 		int periodMS = pf.getPeriodMS();
 		double min = modelCap.getMinCurrent(periodMS);
 		double max = modelCap.getMaxCurrent(periodMS);

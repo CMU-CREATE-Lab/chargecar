@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Stack;
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -171,69 +172,75 @@ public class GPXTripParser2 {
 		adjustedDistances.add(new BigDecimal(0));
 		speeds.add(new BigDecimal(0));
 		accelerations.add(new BigDecimal(0));
-
+		
+		MathContext precision = new MathContext(6);
+		
 		for(int i=1; i<times.size();i++){
 			long msDiff = (times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis());
+			BigDecimal sDiff = (new BigDecimal(msDiff)).divide(new BigDecimal(1000));
 			if(msDiff == 0){
 				break;
 			}
-			BigDecimal eleDiff = eles.get(i).subtract(eles.get(i-1));
-			BigDecimal tempDist = Haversine(lats.get(i-1), lons.get(i-1), lats.get(i), lons.get(i));
-			planarDistances.add(tempDist);			
+			double eleDiff = eles.get(i).subtract(eles.get(i-1)).doubleValue();
+			double tempDist = Haversine(lats.get(i-1), lons.get(i-1), lats.get(i), lons.get(i));
+			planarDistances.add(new BigDecimal(tempDist,precision));
+			
 			tempDist = Math.sqrt((tempDist*tempDist)+(eleDiff*eleDiff));
-			adjustedDistances.add(tempDist);			
-			BigDecimal tempSpeed = 1000.0*tempDist/msDiff;
+			adjustedDistances.add(new BigDecimal(tempDist,precision));			
+			double tempSpeed = 1000.0*tempDist/msDiff;
 			
 			if(tempDist < 1E-6){
-				speeds.add(0.0);
+				speeds.add(new BigDecimal(0));
 			}else{
-				speeds.add(tempSpeed);
+				speeds.add(new BigDecimal(tempSpeed,precision));
 			}		
-			accelerations.add(1000.0*(speeds.get(i) - speeds.get(i-1))/msDiff);	
+			BigDecimal accel = speeds.get(i).subtract(speeds.get(i-1)).divide(sDiff);
+			accelerations.add(accel);	
 		}		
 		speeds.set(0, speeds.get(1));
-		accelerations.set(1, 0.0);
+		accelerations.set(1, new BigDecimal(0));
 
 
-		final BigDecimal carArea =1.988;//honda civic 2001 si fronta area in metres sq
-		final BigDecimal carDragCoeff=0.31;//honda civic 2006 sedan		
-		final BigDecimal mu = 0.015; //#rolling resistance coef
-		final BigDecimal aGravity = 9.81;
-        final BigDecimal offset = -0.35;
-        final BigDecimal ineff = 1/0.85;
-        final BigDecimal rollingRes = mu*carMassKg*aGravity; 
-        final BigDecimal outsideTemp = ((60 + 459.67) * 5/9);//60F to kelvin
+		final double carArea = 1.988;//honda civic 2001 si fronta area in metres sq
+		final double carDragCoeff = 0.31;//honda civic 2006 sedan		
+		final double mu = 0.015; //#rolling resistance coef
+		final double aGravity = 9.81;
+        final double offset = -0.35;
+        final double ineff = 1/0.85;
+        final double rollingRes = mu*carMassKg*aGravity; 
+        final double outsideTemp = ((60 + 459.67) * 5/9);//60F to kelvin
        
 		for(int i=0;i<accelerations.size();i++)
 		{
-			BigDecimal pressure = 101325 * Math.pow((1-((0.0065 * eles.get(i))/288.15)), ((aGravity*0.0289)/(8.314*0.0065)));			
-			BigDecimal rho = (pressure * 0.0289) / (8.314 * outsideTemp);			
-			BigDecimal airResCoeff = 0.5*rho*carArea*carDragCoeff;
-			BigDecimal mgsintheta = 0;
+			double pressure = 101325 * Math.pow((1-((0.0065 * eles.get(i).doubleValue())/288.15)), ((aGravity*0.0289)/(8.314*0.0065)));			
+			double rho = (pressure * 0.0289) / (8.314 * outsideTemp);			
+			double airResCoeff = 0.5*rho*carArea*carDragCoeff;
+			double mgsintheta = 0;
 
 			if (i > 0){
-				final BigDecimal eleDiff = eles.get(i) - eles.get(i-1);
+				final BigDecimal eleDiff = eles.get(i).subtract(eles.get(i-1));
 
-				if(planarDistances.get(i) < 1E-6){
+				if(planarDistances.get(i).compareTo(new BigDecimal(0)) == 0){
 					mgsintheta = 0;
 				}
-				else if (Math.abs(speeds.get(i)) < 0.50){
+				else if (speeds.get(i).abs().compareTo(new BigDecimal(0.50)) < 0)
+				{
 					mgsintheta = 0;			
 				}
-				else if(eles.get(i) > eles.get(i-1))
+				else if(eles.get(i).compareTo(eles.get(i-1)) > 0)
 				{
-					mgsintheta = (carMassKg * aGravity * Math.sin(Math.atan(eleDiff/planarDistances.get(i)))) * -1;
+					mgsintheta = -1*carMassKg * aGravity * Math.sin(Math.atan(eleDiff.divide(planarDistances.get(i)).doubleValue()));
 				}
-				else if (eles.get(i) < eles.get(i-1))
+				else if (eles.get(i).compareTo(eles.get(i-1)) < 0)
 				{
-					mgsintheta = (carMassKg * aGravity * Math.sin(Math.atan(eleDiff/planarDistances.get(i)))) * -1;
+					mgsintheta = -1*carMassKg * aGravity * Math.sin(Math.atan(eleDiff.divide(planarDistances.get(i)).doubleValue()));
 				}
 			}
 
-			BigDecimal airRes = airResCoeff * speeds.get(i)*speeds.get(i);
-			BigDecimal force = carMassKg * accelerations.get(i);
-			BigDecimal pwr = 0.0;
-			BigDecimal speed = speeds.get(i);
+			double airRes = airResCoeff * speeds.get(i).pow(2).doubleValue();
+			double force = carMassKg * accelerations.get(i).doubleValue();
+			double pwr = 0.0;
+			double speed = speeds.get(i).doubleValue();
 			if (Math.abs(mgsintheta) < 1E-6)
 			{
 				if (Math.abs(force) < 1E-6 || force > (rollingRes + airRes))
@@ -242,7 +249,7 @@ public class GPXTripParser2 {
 					pwr = 0.35 * (force - rollingRes - airRes) * speed;
 			}		
 			//#uphill
-			else if (eles.get(i) > eles.get(i-1)){
+			else if (eles.get(i).compareTo(eles.get(i-1)) > 0){
 				if (force <= (mgsintheta + rollingRes + airRes))
 					pwr = 0.35 * (force - mgsintheta - rollingRes - airRes) * speed;
 				else if (force > (mgsintheta + rollingRes + airRes))
@@ -252,7 +259,7 @@ public class GPXTripParser2 {
 
 			}
 			//#downhill	
-			else if (eles.get(i) < eles.get(i-1)){
+			else if (eles.get(i).compareTo(eles.get(i-1))<0){
 				if (force <= (mgsintheta + rollingRes + airRes))
 					pwr = 0.35 * (force - mgsintheta - rollingRes - airRes) * speed;
 				else if (Math.abs(force) < 1E-6 || force > (mgsintheta + rollingRes + airRes))
@@ -266,7 +273,7 @@ public class GPXTripParser2 {
 				pwr = ((pwr - (0.056*(speed*speed))) + (0.68*speed));
 				}
 
-			powerDemands.add(pwr);		
+			powerDemands.add(new BigDecimal(pwr,precision));		
 
 		}
 		
@@ -275,7 +282,7 @@ public class GPXTripParser2 {
 			int periodMS = (int)(times.get(i).getTimeInMillis() - times.get(i-1).getTimeInMillis());
 			tripPoints.add(new PointFeatures(lats.get(i-1), lons.get(i-1), eles.get(i-1), planarDistances.get(i), accelerations.get(i), speeds.get(i), powerDemands.get(i), periodMS, times.get(i-1)));
 		}
-		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), 0.0, 0.0, 0.0, 0.0, 1000, times.get(times.size()-1));
+		PointFeatures endPoint = new PointFeatures(lats.get(lats.size()-1),lons.get(lons.size()-1), eles.get(eles.size()-1), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), new BigDecimal(0), 1000, times.get(times.size()-1));
 		tripPoints.add(endPoint);
 		
 	}
@@ -292,7 +299,7 @@ public class GPXTripParser2 {
 			else if(consecutiveCounter > 0){
 				//position has changed, after consectuive readings at same position
 				//can be tunnel, red light, etc...		
-				if(Haversine(lats.get(i-1),lons.get(i-1),lats.get(i), lons.get(i)).compareTo(50.0) > 0){
+				if(Haversine(lats.get(i-1),lons.get(i-1),lats.get(i), lons.get(i)) > 50.0){
 					//if traveled at least 50 metres, assume tunnel
 					times.subList(i-consecutiveCounter, i).clear();
 					lats.subList(i-consecutiveCounter, i).clear();
@@ -306,16 +313,15 @@ public class GPXTripParser2 {
 		
 	}
 
-	private BigDecimal Haversine(BigDecimal lat1, BigDecimal lon1, BigDecimal lat2, BigDecimal lon2) {
-		BigDecimal R = new BigDecimal(6371000); //earth radius, metres TODO
-		BigDecimal radConv = new BigDecimal(Math.PI,).divide(new BigDecimal(180));
-		BigDecimal dLat = lat2.subtract(lat1).divide();
-		BigDecimal dLon = Math.toRadians(lon2-lon1);
-		BigDecimal a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-		        Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * 
+	private double Haversine(BigDecimal lat1, BigDecimal lon1, BigDecimal lat2, BigDecimal lon2) {
+		int R =6371000; //earth radius, metres TODO
+		double dLat = Math.toRadians(lat2.subtract(lat1).doubleValue());
+		double dLon = Math.toRadians(lon2.subtract(lon1).doubleValue());
+		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		        Math.cos(Math.toRadians(lat1.doubleValue())) * Math.cos(Math.toRadians(lat2.doubleValue())) * 
 		        Math.sin(dLon/2) * Math.sin(dLon/2); 
-		BigDecimal c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-		BigDecimal d = R * c;
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		double d = R * c;
 		return d;
 	}
 
@@ -343,15 +349,15 @@ public class GPXTripParser2 {
 			NodeList trkptElements = trkElem.getElementsByTagName("trkpt");
 			for(int j=0;j<trkptElements.getLength();j++){
 				Element trkptElem = (Element) trkptElements.item(j);
-				double lat = BigDecimal.parseBigDecimal(trkptElem.getAttribute("lat"));
-				double lon = BigDecimal.parseBigDecimal(trkptElem.getAttribute("lat"));
+				BigDecimal lat = new BigDecimal(trkptElem.getAttribute("lat"));
+				BigDecimal lon = new BigDecimal(trkptElem.getAttribute("lat"));
 				NodeList ele = trkptElem.getElementsByTagName("ele");
 				Element eleElem =(Element)ele.item(0);
 				NodeList time = trkptElem.getElementsByTagName("time");
 				Element timeElem =(Element)time.item(0);
 				rawLats.add(lat);
 				rawLons.add(lon);
-				rawEles.add(BigDecimal.parseBigDecimal(eleElem.getChildNodes().item(0).getNodeValue()));
+				rawEles.add(new BigDecimal(eleElem.getChildNodes().item(0).getNodeValue()));
 				rawTimes.add(gmtStringToCalendar(timeElem.getChildNodes().item(0).getNodeValue()));				
 			}	
 			processTrips();
