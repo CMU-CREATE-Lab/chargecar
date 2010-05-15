@@ -37,7 +37,7 @@ public class Simulator {
 	public static void main(String[] args) throws IOException 
 	{		
 		String gpxFolder = args[0];
-		double carMass = 1200;
+		int carMass = 1200;
 		
 		List<Trip> tripsToTest = new ArrayList<Trip>();
 		
@@ -55,7 +55,7 @@ public class Simulator {
 		visualizer.visualizeSummary(userResults, baselineResults);
 	}
 
-	private static void parseTrips(String gpxFolder, double carMass, List<Trip> tripsToTest) throws IOException 
+	private static void parseTrips(String gpxFolder, int carMass, List<Trip> tripsToTest) throws IOException 
 	{
 		File folder = new File(gpxFolder);
 		List<File> gpxFiles = getGPXFiles(folder);		
