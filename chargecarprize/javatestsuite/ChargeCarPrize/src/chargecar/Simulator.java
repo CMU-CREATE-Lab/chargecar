@@ -59,7 +59,7 @@ public class Simulator {
 	{
 		File folder = new File(gpxFolder);
 		List<File> gpxFiles = getGPXFiles(folder);		
-		GPXTripParser2 gpxparser = new GPXTripParser2();	
+		GPXTripParser gpxparser = new GPXTripParser();	
 
 		for(File gpxFile:gpxFiles)
 		{			
@@ -91,8 +91,6 @@ public class Simulator {
 
 	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips)
 	{
-		List<BatteryModel> tripBatteries = new ArrayList<BatteryModel>();
-		List<CapacitorModel> tripCapacitors = new ArrayList<CapacitorModel>();
 		SimulationResults results = new SimulationResults();
 		for(Trip trip : trips)
 		{
@@ -100,7 +98,7 @@ public class Simulator {
 				CapacitorModel tripCap = new SimpleCapacitor(50);				
 				simulateTrip(policy, trip, tripBattery, tripCap);	
 				if(tripBattery.currentSquaredIntegral() > 1E6){
-					System.out.println(trip.toLongString());
+					//System.out.println(trip.toLongString());
 				}
 				else{
 					results.addTrip(trip, tripBattery, tripCap);

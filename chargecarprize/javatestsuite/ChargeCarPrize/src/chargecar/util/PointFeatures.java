@@ -1,6 +1,5 @@
 package chargecar.util;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -11,18 +10,18 @@ import java.util.Date;
  * such as GPS coordinates, power demand, speed, etc...
  */
 public class PointFeatures {
-	final private BigDecimal latitude;
-	final private BigDecimal longitude;
-	final private BigDecimal elevation;
-	final private BigDecimal acceleration;
-	final private BigDecimal speed;
-	final private BigDecimal powerDemand;
-	final private BigDecimal planarDist;
+	final private double latitude;
+	final private double longitude;
+	final private double elevation;
+	final private double acceleration;
+	final private double speed;
+	final private double powerDemand;
+	final private double planarDist;
 	final private int periodMS;
 	final private Calendar time;
 
-	public PointFeatures(BigDecimal latitude, BigDecimal longitude, BigDecimal elevation, BigDecimal planarDist,
-			BigDecimal acceleration, BigDecimal speed, BigDecimal powerDemand,
+	public PointFeatures(double latitude, double longitude, double elevation, double planarDist,
+			double acceleration, double speed, double powerDemand,
 			int periodMS, Calendar time) {
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -39,30 +38,30 @@ public class PointFeatures {
 		return new PointFeatures(this.latitude,this.longitude,this.elevation,this.planarDist,this.acceleration,this.speed,this.powerDemand,this.periodMS,(Calendar) this.time.clone());
 	}
 	
-	public BigDecimal getLatitude() {
+	public double getLatitude() {
 		return this.latitude;
 	}
 
-	public BigDecimal getLongitude() {
+	public double getLongitude() {
 		return this.longitude;
 	}
 
-	public BigDecimal getElevation() {
+	public double getElevation() {
 		return this.elevation;
 	}
 
-	public BigDecimal getPlanarDist(){
+	public double getPlanarDist(){
 		return this.planarDist;
 	}
-	public BigDecimal getAcceleration() {
+	public double getAcceleration() {
 		return this.acceleration;
 	}
 
-	public BigDecimal getSpeed() {
+	public double getSpeed() {
 		return this.speed;
 	}
 
-	public BigDecimal getPowerDemand() {
+	public double getPowerDemand() {
 		return this.powerDemand;
 	}
 
