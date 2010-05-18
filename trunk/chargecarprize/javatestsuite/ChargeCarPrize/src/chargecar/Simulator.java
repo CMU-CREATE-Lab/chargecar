@@ -95,11 +95,11 @@ public class Simulator {
 		SimulationResults results = new SimulationResults();
 		for(Trip trip : trips)
 		{
-				BatteryModel tripBattery = new SimpleBattery();
-				CapacitorModel tripCap = new SimpleCapacitor(50);				
+				BatteryModel tripBattery = new SimpleBattery(Double.MAX_VALUE, Double.MAX_VALUE);
+				BatteryModel tripCap = new SimpleCapacitor(50, 0);				
 				simulateTrip(policy, trip, tripBattery, tripCap);	
 				if(tripBattery.currentSquaredIntegral() > 1E6){
-					//System.out.println(trip.toLongString());
+					System.out.println(trip.toLongString());
 				}
 				else{
 					results.addTrip(trip, tripBattery, tripCap);
@@ -108,12 +108,16 @@ public class Simulator {
 		return results;		
 	}
 
-	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, CapacitorModel cap) 
+	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, BatteryModel cap) 
 	{
 		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
 		for(PointFeatures point : trip.getPoints())
 		{
 			PowerFlows pf = policy.calculatePowerFlows(point);
+			if(!cap.check(pf,point.getPeriodMS())){
+				System.out.println("Illegal current");
+			}
+			pf.adjust(point.getPowerDemand());
 			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
 			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
 		}

@@ -17,5 +17,5 @@ public interface Policy {
 	public void loadState();
 	public void endTrip();
 	public PowerFlows calculatePowerFlows(PointFeatures pointFeatures);
-	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone, CapacitorModel capacitorClone); 
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone, BatteryModel capacitorClone); 
 }

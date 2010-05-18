@@ -21,13 +21,22 @@ public class PowerFlows {
 		this.capacitorToMotor = capacitorToMotor;
 		this.batteryToCapacitor = batteryToCapacitor;
 	}
-	public double getBatteryToMotor() {
+	
+	public void adjust(double powerDemand)
+	{
+		this.batteryToMotor = powerDemand - this.capacitorToMotor;
+	}
+	
+	public double getBatteryToMotor() 
+	{
 		return batteryToMotor;
 	}
-	public double getCapacitorToMotor() {
+	public double getCapacitorToMotor() 
+	{
 		return capacitorToMotor;
 	}
-	public double getBatteryToCapacitor() {
+	public double getBatteryToCapacitor() 
+	{
 		return batteryToCapacitor;
 	}
 }

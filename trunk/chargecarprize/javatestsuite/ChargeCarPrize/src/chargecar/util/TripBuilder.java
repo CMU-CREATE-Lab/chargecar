@@ -6,8 +6,8 @@ import java.util.List;
 
 public class TripBuilder {
 	public static List<PointFeatures> calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles, int carMassKg){		
-		//TODO removeTunnels(times, lats, lons, eles);
-		//interpolatePoints(times, lats, lons, eles);
+		removeTunnels(times, lats, lons, eles);
+		interpolatePoints(times, lats, lons, eles);
 		List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times.size());
 		runPowerModel(tripPoints, times, lats, lons, eles, carMassKg);	
 		return tripPoints;		

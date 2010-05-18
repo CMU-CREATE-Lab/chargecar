@@ -29,8 +29,7 @@ public class UserPolicy implements Policy {
 	}
 
 	@Override
-	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
-			CapacitorModel capacitorClone) {
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,	BatteryModel capacitorClone) {
 		// TODO implement the initiating/reseting policy for a new trip, given a clone of 
 		// the battery and cap as a reference, can spawn additional clones with .createClone()
 	}

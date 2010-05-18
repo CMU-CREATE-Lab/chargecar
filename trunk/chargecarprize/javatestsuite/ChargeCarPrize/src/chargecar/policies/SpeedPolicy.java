@@ -6,13 +6,12 @@ import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
-public class SpeedPolicy extends UserPolicy {
-	private CapacitorModel modelCap;
+public class SpeedPolicy implements Policy {
+	private BatteryModel modelCap;
 	private BatteryModel modelBatt;
 	
 	@Override
-	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
-			CapacitorModel capacitorClone) {
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone, BatteryModel capacitorClone) {
 		modelCap = capacitorClone;
 		modelBatt = batteryClone;		
 	}
@@ -57,5 +56,17 @@ public class SpeedPolicy extends UserPolicy {
 		modelCap.drawCurrent(capToMotorWatts - batteryToCapWatts, pf);
 		modelBatt.drawCurrent(batteryToMotorWatts + batteryToCapWatts, pf);
 		return new PowerFlows(batteryToMotorWatts, capToMotorWatts, batteryToCapWatts);
+	}
+
+	@Override
+	public void endTrip() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadState() {
+		// TODO Auto-generated method stub
+		
 	}
 }
