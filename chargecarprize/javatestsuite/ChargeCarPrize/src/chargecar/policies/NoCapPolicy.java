@@ -27,8 +27,7 @@ public class NoCapPolicy implements Policy {
 	}
 
 	@Override
-	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
-			CapacitorModel capacitorClone) {
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,	BatteryModel capacitorClone) {
 		//no trip-state for nocap policy		
 	}
 

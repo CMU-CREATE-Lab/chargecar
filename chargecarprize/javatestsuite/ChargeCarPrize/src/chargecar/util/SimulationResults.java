@@ -20,7 +20,7 @@ public class SimulationResults {
 		batteryCurrentSquaredIntegrals = new ArrayList<Double>();		
 	}
 	
-	public void addTrip(Trip trip, BatteryModel battery, CapacitorModel capactior)
+	public void addTrip(Trip trip, BatteryModel battery, BatteryModel capactior)
 	{
 		batteryCurrentSquaredIntegrals.add(battery.currentSquaredIntegral());
 		tripStrings.add(trip.toString());

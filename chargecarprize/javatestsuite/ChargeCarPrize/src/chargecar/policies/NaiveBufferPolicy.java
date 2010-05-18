@@ -13,8 +13,9 @@ import chargecar.util.TripFeatures;
  * @author Alex Styler
  * DO NOT EDIT
  */
-public class NaiveBufferPolicy implements Policy{
-	private CapacitorModel modelCap;
+public class NaiveBufferPolicy implements Policy
+{
+	private BatteryModel modelCap;
 	private BatteryModel modelBatt;
 	
 	public NaiveBufferPolicy(){
@@ -22,14 +23,15 @@ public class NaiveBufferPolicy implements Policy{
 	}
 	
 	@Override
-	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
-			CapacitorModel capacitorClone) {
+	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,	BatteryModel capacitorClone) 
+	{
 		modelCap = capacitorClone;
 		modelBatt = batteryClone;		
 	}
 	
 	@Override
-	public PowerFlows calculatePowerFlows(PointFeatures pf) {
+	public PowerFlows calculatePowerFlows(PointFeatures pf) 
+	{
 		double watts = pf.getPowerDemand();
 		int periodMS = pf.getPeriodMS();
 		double min = modelCap.getMinCurrent(periodMS);
@@ -43,12 +45,14 @@ public class NaiveBufferPolicy implements Policy{
 	}
 
 	@Override
-	public void endTrip() {
+	public void endTrip() 
+	{
 		// nothing to do here		
 	}
 
 	@Override
-	public void loadState() {
+	public void loadState() 
+	{
 		// no policy-state
 		
 	}
