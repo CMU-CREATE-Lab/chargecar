@@ -31,4 +31,9 @@ public class NoCapPolicy implements Policy {
 		//no trip-state for nocap policy		
 	}
 
+	@Override
+	public String getName() {
+		return "No Capacitor Policy";
+	}
+
 }

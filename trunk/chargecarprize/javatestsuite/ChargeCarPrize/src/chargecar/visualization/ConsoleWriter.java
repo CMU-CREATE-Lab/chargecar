@@ -1,5 +1,6 @@
 package chargecar.visualization;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import chargecar.battery.BatteryModel;
@@ -15,30 +16,29 @@ import chargecar.util.Trip;
 public class ConsoleWriter implements Visualizer {
 
 	@Override
-	public void visualizeSummary(SimulationResults userResults, SimulationResults baselineResults) 
+	public void visualizeSummary(List<SimulationResults> results) 
 	{
-		System.out.println("Per trip percent i^2 reduction vs. baseline:");
-		double integralsSumUser = 0.0;
-		double integralsSumBaseline = 0.0;
-		for(int i=0; i<userResults.getBatteryCurrentSquaredIntegrals().size();i++)
-		{
-			double user = userResults.getBatteryCurrentSquaredIntegrals().get(i);
-			double baseline = baselineResults.getBatteryCurrentSquaredIntegrals().get(i);
-			
-			int percentRedux = (int) Math.round(100 - 100*(user/baseline));
-			
-			System.out.println(""+percentRedux+"%: "+userResults.getTripStrings().get(i)+" :: "+baseline+" vs. "+user);
-			
-			integralsSumBaseline += baseline;
-			integralsSumUser += user;
+		List<Double> integrals = new ArrayList<Double>();
+		for(SimulationResults r:results){
+			double integral = 0.0;
+			for(Double d : r.getBatteryCurrentSquaredIntegrals()){
+				integral += d;
+			}
+			integrals.add(integral);
 		}
 		
-		double percentRedux = (100 - 100*(integralsSumUser/integralsSumBaseline));
+		double baseline = integrals.get(0);
 
 		System.out.println("=============");
-		System.out.println("Total baseline i^2: "+integralsSumBaseline);
-		System.out.println("Total user i^2: "+integralsSumUser);
-		System.out.println("Overall reduction: "+percentRedux+"%");
+		System.out.println("Baseline, "+results.get(0).getPolicyName()+", i^2: "+baseline);
+		for(int i=1;i<results.size();i++){
+			System.out.println(results.get(i).getPolicyName()+ " i^2: "+integrals.get(i));	
+		}
+		for(int i=1;i<results.size();i++){
+			double percent = (100*(integrals.get(i)/baseline));
+			System.out.println(results.get(i).getPolicyName()+ " i^2 % of baseline: "+percent);
+		}
+		
 		System.out.println("=============");
 		
 	}
@@ -46,6 +46,8 @@ public class ConsoleWriter implements Visualizer {
 	@Override
 	public void visualizeTrip(Trip trip, BatteryModel battery,CapacitorModel capacitor) 
 	{		
+		//int percentRedux = (int) Math.round(100 - 100*(user/baseline));			
+		//System.out.println(""+percentRedux+"%: "+userResults.getTripStrings().get(i)+" :: "+baseline+" vs. "+user);	
 		System.out.println(trip);
 		System.out.println("Integral of current squared: "+battery.currentSquaredIntegral());
 	}

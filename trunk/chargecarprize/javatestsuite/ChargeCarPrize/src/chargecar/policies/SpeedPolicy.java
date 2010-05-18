@@ -3,12 +3,14 @@ package chargecar.policies;
 import chargecar.battery.BatteryModel;
 import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
+import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 public class SpeedPolicy implements Policy {
 	private BatteryModel modelCap;
 	private BatteryModel modelBatt;
+	private String name = "Speed Trickle Policy";
 	
 	@Override
 	public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone, BatteryModel capacitorClone) {
@@ -26,7 +28,7 @@ public class SpeedPolicy implements Policy {
 		double targetCharge = modelCap.getMaxCharge() - 1.7*speed;
 		double min = modelCap.getMinCurrent(periodMS);
 		double max = modelCap.getMaxCurrent(periodMS);		
-		double rate = -2.5;
+		double rate = -5;
 		double capToMotorWatts = 0.0;
 		double batteryToCapWatts = 0.0;
 		double batteryToMotorWatts = 0.0;
@@ -53,8 +55,11 @@ public class SpeedPolicy implements Policy {
 			}			
 		}  
 		
-		modelCap.drawCurrent(capToMotorWatts - batteryToCapWatts, pf);
-		modelBatt.drawCurrent(batteryToMotorWatts + batteryToCapWatts, pf);
+		try {
+			modelCap.drawCurrent(capToMotorWatts - batteryToCapWatts, pf);
+			modelBatt.drawCurrent(batteryToMotorWatts + batteryToCapWatts, pf);
+		} catch (PowerFlowException e) {}
+		
 		return new PowerFlows(batteryToMotorWatts, capToMotorWatts, batteryToCapWatts);
 	}
 
@@ -68,5 +73,10 @@ public class SpeedPolicy implements Policy {
 	public void loadState() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }
