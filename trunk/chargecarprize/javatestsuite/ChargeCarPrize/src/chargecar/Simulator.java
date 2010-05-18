@@ -42,7 +42,7 @@ public class Simulator {
 		List<Trip> tripsToTest = new ArrayList<Trip>();
 		
 		Policy noCapBaseline = new NoCapPolicy();
-		Policy userPolicy = new NaiveBufferPolicy();		
+		Policy userPolicy = new SpeedPolicy();		
 		userPolicy.loadState();		
 		
 		parseTrips(gpxFolder, carMass, tripsToTest);
@@ -58,7 +58,7 @@ public class Simulator {
 	private static void parseTrips(String gpxFolder, int carMass, List<Trip> tripsToTest) throws IOException 
 	{
 		File folder = new File(gpxFolder);
-		List<File> gpxFiles = getGPXFiles(folder);		
+		List<File> gpxFiles = getGPXFiles(folder);
 		GPXTripParser gpxparser = new GPXTripParser();	
 
 		for(File gpxFile:gpxFiles)
@@ -67,6 +67,7 @@ public class Simulator {
 				String driverName = gpxFile.getParentFile().getName();
 				TripFeatures tf = new TripFeatures(driverName,carMass,tripPoints.get(0));
 				tripsToTest.add(new Trip(tf, tripPoints));
+				gpxparser.clear();
 			}
 		}
 	}
