@@ -14,6 +14,7 @@ import chargecar.util.TripFeatures;
  * DO NOT EDIT
  */
 public interface Policy {
+	public String getName();
 	public void loadState();
 	public void endTrip();
 	public PowerFlows calculatePowerFlows(PointFeatures pointFeatures);

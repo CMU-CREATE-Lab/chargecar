@@ -10,4 +10,8 @@ public class PowerFlowException extends Exception {
 	public PowerFlowException(){
 		super();
 	}
+	
+	public PowerFlowException(String s){
+		super(s);
+	}
 }

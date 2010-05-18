@@ -13,9 +13,11 @@ import chargecar.capacitor.CapacitorModel;
 public class SimulationResults {
 	private List<Double> batteryCurrentSquaredIntegrals;
 	private List<String> tripStrings;
+	private String policyName;
 
-	public SimulationResults()
+	public SimulationResults(String policyName)
 	{
+		this.policyName = policyName;
 		tripStrings = new ArrayList<String>();
 		batteryCurrentSquaredIntegrals = new ArrayList<Double>();		
 	}
@@ -32,6 +34,10 @@ public class SimulationResults {
 	
 	public List<String> getTripStrings(){
 		return tripStrings;
+	}
+
+	public String getPolicyName() {
+		return policyName;
 	}
 	
 }

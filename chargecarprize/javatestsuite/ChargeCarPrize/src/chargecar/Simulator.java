@@ -10,6 +10,7 @@ import java.util.List;
 import chargecar.util.GPXTripParser;
 import chargecar.util.GPXTripParser2;
 import chargecar.util.PointFeatures;
+import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
 import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
@@ -28,7 +29,7 @@ import chargecar.policies.*;
  */
 public class Simulator {
 	static Visualizer visualizer = new ConsoleWriter();
-	
+	static int carMass = 1200;
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -37,39 +38,79 @@ public class Simulator {
 	public static void main(String[] args) throws IOException 
 	{		
 		String gpxFolder = args[0];
-		int carMass = 1200;
-		
-		List<Trip> tripsToTest = new ArrayList<Trip>();
-		
-		Policy noCapBaseline = new NoCapPolicy();
-		Policy userPolicy = new SpeedPolicy();		
-		userPolicy.loadState();		
-		
-		parseTrips(gpxFolder, carMass, tripsToTest);
-
-		System.out.println("Testing "+tripsToTest.size()+" trips.");
-		
-		SimulationResults baselineResults = simulateTripsNaive(noCapBaseline, tripsToTest);
-		SimulationResults userResults = simulateTripsNaive(userPolicy, tripsToTest);
-		
-		visualizer.visualizeSummary(userResults, baselineResults);
-	}
-
-	private static void parseTrips(String gpxFolder, int carMass, List<Trip> tripsToTest) throws IOException 
-	{
 		File folder = new File(gpxFolder);
 		List<File> gpxFiles = getGPXFiles(folder);
-		GPXTripParser gpxparser = new GPXTripParser();	
-
-		for(File gpxFile:gpxFiles)
-		{			
-			for(List<PointFeatures> tripPoints : gpxparser.read(gpxFile, carMass)){
-				String driverName = gpxFile.getParentFile().getName();
-				TripFeatures tf = new TripFeatures(driverName,carMass,tripPoints.get(0));
-				tripsToTest.add(new Trip(tf, tripPoints));
-				gpxparser.clear();
-			}
+		
+		List<Policy> policies = new ArrayList<Policy>();
+		policies.add(new NoCapPolicy());
+		policies.add(new NaiveBufferPolicy());
+		policies.add(new SpeedPolicy());		
+		
+		for(Policy p:policies)
+		{
+			p.loadState();
 		}
+		
+		List<SimulationResults> results = simulateTrips(policies, gpxFiles);
+		
+		visualizer.visualizeSummary(results);
+	}
+
+	private static List<SimulationResults> simulateTrips(List<Policy> policies, List<File> tripFiles) throws IOException
+	{
+		List<SimulationResults> results = new ArrayList<SimulationResults>();
+		for(Policy p:policies){
+			results.add(new SimulationResults(p.getName()));
+		}
+		for(File tripFile : tripFiles)
+		{
+				List<Trip> tripsToTest = parseTrips(tripFile);
+				for(Trip t: tripsToTest){
+					for(int i=0;i<policies.size();i++){
+						try {
+							simulateTrip(policies.get(i),t,results.get(i));
+						} catch (PowerFlowException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+						
+		}
+		return results;		
+	}
+
+	private static void simulateTrip(Policy policy, Trip trip, SimulationResults results) throws PowerFlowException
+	{
+		BatteryModel tripBattery = new SimpleBattery(Double.MAX_VALUE, Double.MAX_VALUE);
+		BatteryModel tripCap = new SimpleCapacitor(50, 0);	
+		simulate(policy, trip, tripBattery, tripCap);
+		results.addTrip(trip, tripBattery, tripCap);
+	}
+	private static void simulate(Policy policy, Trip trip, BatteryModel battery, BatteryModel cap) throws PowerFlowException 
+	{
+		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
+		for(PointFeatures point : trip.getPoints())
+		{
+			PowerFlows pf = policy.calculatePowerFlows(point);
+			pf.adjust(point.getPowerDemand());
+			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
+			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
+		}
+		policy.endTrip();
+	}
+	
+	private static List<Trip> parseTrips(File gpxFile) throws IOException 
+	{		
+		List<Trip> trips = new ArrayList<Trip>();
+		GPXTripParser gpxparser = new GPXTripParser();		
+		for(List<PointFeatures> tripPoints : gpxparser.read(gpxFile, carMass)){
+			String driverName = gpxFile.getParentFile().getName();
+			TripFeatures tf = new TripFeatures(driverName,carMass,tripPoints.get(0));
+			trips.add(new Trip(tf, tripPoints));
+			gpxparser.clear();
+		}
+		return trips;
+
 	}
 		
 	private static List<File> getGPXFiles(File gpxFolder) 
@@ -88,39 +129,5 @@ public class Simulator {
 			}		
 		}
 		return gpxFiles;	
-	}
-
-	private static SimulationResults simulateTripsNaive(Policy policy, List<Trip> trips)
-	{
-		SimulationResults results = new SimulationResults();
-		for(Trip trip : trips)
-		{
-				BatteryModel tripBattery = new SimpleBattery(Double.MAX_VALUE, Double.MAX_VALUE);
-				BatteryModel tripCap = new SimpleCapacitor(50, 0);				
-				simulateTrip(policy, trip, tripBattery, tripCap);	
-				if(tripBattery.currentSquaredIntegral() > 1E6){
-					System.out.println(trip.toLongString());
-				}
-				else{
-					results.addTrip(trip, tripBattery, tripCap);
-				}
-		}
-		return results;		
-	}
-
-	private static void simulateTrip(Policy policy, Trip trip, BatteryModel battery, BatteryModel cap) 
-	{
-		policy.beginTrip(trip.getFeatures(),battery.createClone(),cap.createClone());
-		for(PointFeatures point : trip.getPoints())
-		{
-			PowerFlows pf = policy.calculatePowerFlows(point);
-			if(!cap.check(pf,point.getPeriodMS())){
-				System.out.println("Illegal current");
-			}
-			pf.adjust(point.getPowerDemand());
-			battery.drawCurrent(pf.getBatteryToCapacitor() + pf.getBatteryToMotor(), point);
-			cap.drawCurrent(pf.getCapacitorToMotor() - pf.getBatteryToCapacitor(), point);
-		}
-		policy.endTrip();
 	}
 }

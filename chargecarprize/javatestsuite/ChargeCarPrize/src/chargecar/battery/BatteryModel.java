@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chargecar.util.PointFeatures;
+import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
 
 /**
@@ -11,7 +12,7 @@ import chargecar.util.PowerFlows;
  * DO NOT EDIT
  */
 public abstract class BatteryModel {
-		protected final double MS_PER_HOUR = 3600000;	
+		public static double MS_PER_HOUR = 3600000;	
 		protected final List<Double> temperatureHistory = new ArrayList<Double>();
 		protected final List<Double> chargeHistory = new ArrayList<Double>();
 		protected final List<Double> efficiencyHistory = new ArrayList<Double>();
@@ -24,7 +25,7 @@ public abstract class BatteryModel {
 		protected int periodMS;
 		protected double maxCharge;
 
-		public abstract void drawCurrent(double current, PointFeatures point);		
+		public abstract void drawCurrent(double current, PointFeatures point) throws PowerFlowException;		
 		public abstract BatteryModel createClone();
 		
 		public double getMaxCharge(){

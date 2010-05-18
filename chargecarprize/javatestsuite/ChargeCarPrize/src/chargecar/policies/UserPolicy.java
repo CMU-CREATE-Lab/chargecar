@@ -34,4 +34,10 @@ public class UserPolicy implements Policy {
 		// the battery and cap as a reference, can spawn additional clones with .createClone()
 	}
 
+	@Override
+	public String getName() {
+		// TODO return the name of your policy, e.g. Potential/Kinetic Energy Policy
+		return null;
+	}
+
 }

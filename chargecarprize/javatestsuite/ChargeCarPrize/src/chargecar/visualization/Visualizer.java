@@ -17,5 +17,5 @@ import chargecar.util.Trip;
 public interface Visualizer {
 	public void visualizeTrip(Trip trip, BatteryModel battery, CapacitorModel capacitor);
 	public void visualizeTrips(SimulationResults simResults);
-	public void visualizeSummary(SimulationResults simResults, SimulationResults baseline);
+	public void visualizeSummary(List<SimulationResults> simResults);
 }

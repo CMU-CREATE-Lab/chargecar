@@ -6,6 +6,7 @@ package chargecar.policies;
 import chargecar.battery.BatteryModel;
 import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
+import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
@@ -39,9 +40,11 @@ public class NaiveBufferPolicy implements Policy
 		double capWatts = watts > max ?  max : watts;		
 		capWatts = capWatts < min ? min : capWatts;
 		double battWatts = watts - capWatts;//battery handles whatever cap can't
-		modelCap.drawCurrent(capWatts, pf);
-		modelBatt.drawCurrent(battWatts, pf);
-		return new PowerFlows(battWatts, capWatts, 0);
+		try {
+			modelCap.drawCurrent(capWatts, pf);
+			modelBatt.drawCurrent(battWatts, pf);			
+		} catch (PowerFlowException e) {}
+		return new PowerFlows(battWatts, capWatts, 0);		
 	}
 
 	@Override
@@ -55,6 +58,11 @@ public class NaiveBufferPolicy implements Policy
 	{
 		// no policy-state
 		
+	}
+
+	@Override
+	public String getName() {
+		return "Naive Buffer Policy";
 	}
 
 
