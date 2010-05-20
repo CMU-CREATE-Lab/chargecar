@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chargecar.battery.BatteryModel;
-import chargecar.capacitor.CapacitorModel;
+
 
 /**
  * @author Alex Styler
