@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chargecar.battery.BatteryModel;
-import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
 import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
@@ -44,7 +43,7 @@ public class ConsoleWriter implements Visualizer {
 	}
 
 	@Override
-	public void visualizeTrip(Trip trip, BatteryModel battery,CapacitorModel capacitor) 
+	public void visualizeTrip(Trip trip, BatteryModel battery, BatteryModel capacitor) 
 	{		
 		//int percentRedux = (int) Math.round(100 - 100*(user/baseline));			
 		//System.out.println(""+percentRedux+"%: "+userResults.getTripStrings().get(i)+" :: "+baseline+" vs. "+user);	

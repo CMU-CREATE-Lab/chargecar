@@ -2,13 +2,10 @@ package chargecar;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import chargecar.util.GPXTripParser;
-import chargecar.util.GPXTripParser2;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
@@ -19,8 +16,7 @@ import chargecar.visualization.ConsoleWriter;
 import chargecar.visualization.Visualizer;
 import chargecar.battery.BatteryModel;
 import chargecar.battery.SimpleBattery;
-import chargecar.capacitor.CapacitorModel;
-import chargecar.capacitor.SimpleCapacitor;
+import chargecar.battery.SimpleCapacitor;
 import chargecar.policies.*;
 
 /**

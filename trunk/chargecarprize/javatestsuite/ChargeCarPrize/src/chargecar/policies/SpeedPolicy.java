@@ -1,7 +1,6 @@
 package chargecar.policies;
 
 import chargecar.battery.BatteryModel;
-import chargecar.capacitor.CapacitorModel;
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
