@@ -109,7 +109,7 @@ public class Simulator {
 
 	}
 		
-	private static List<File> getGPXFiles(File gpxFolder) 
+	static List<File> getGPXFiles(File gpxFolder) 
 	{		
 		List<File> gpxFiles = new ArrayList<File>();
 		File[] files = gpxFolder.listFiles();
