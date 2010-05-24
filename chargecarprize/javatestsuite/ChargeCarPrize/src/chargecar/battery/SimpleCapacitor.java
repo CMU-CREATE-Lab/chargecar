@@ -2,7 +2,6 @@ package chargecar.battery;
 
 import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlowException;
-import chargecar.util.PowerFlows;
 
 /**
  * @author Alex Styler

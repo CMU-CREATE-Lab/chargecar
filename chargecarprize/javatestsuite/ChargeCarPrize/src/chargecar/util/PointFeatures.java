@@ -1,7 +1,6 @@
 package chargecar.util;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * @author Alex Styler

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chargecar.battery.BatteryModel;
-import chargecar.util.PointFeatures;
 import chargecar.util.SimulationResults;
 import chargecar.util.Trip;
 
