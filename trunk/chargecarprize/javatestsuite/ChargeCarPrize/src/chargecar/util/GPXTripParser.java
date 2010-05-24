@@ -16,16 +16,15 @@ import org.xml.sax.*;
  * DO NOT EDIT
  */
 public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
-	List<Calendar> rawTimes;
-	List<Double> rawLats;
-	List<Double> rawLons;
-	List<Double> rawEles;
-	Stack<String> elementNames;
-    private StringBuilder contentBuffer;
-	private int points;
+	private List<Calendar> rawTimes;
+	private List<Double> rawLats;
+	private List<Double> rawLons;
+	private List<Double> rawEles;
 	private int carMassKg;
 	private List<List<PointFeatures>> trips;
-	   
+	private Stack<String> elementNames;
+    private StringBuilder contentBuffer;
+	private int points;   
 	public GPXTripParser() {
 		clear();
 	}
