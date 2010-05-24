@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * DO NOT EDIT
+ * 
+ * Used by GPX parsers to build the trips using the power+physics model for the 2006 Accord.
+ * 
+ * @author Alex Styler
+ */
 public class TripBuilder {
 	public static List<PointFeatures> calculateTrip(List<Calendar> times, List<Double> lats, List<Double> lons, List<Double> eles, int carMassKg){		
 		removeTunnels(times, lats, lons, eles);

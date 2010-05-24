@@ -7,8 +7,12 @@ import chargecar.battery.BatteryModel;
 
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * Stores the result of running a simulation over multiple trips for a single policy.
+ * At the moment, only stores the batteryCurrent integral for each trip, as that is
+ * what we're interested in with the simple batteries.
+ * @author Alex Styler
+ * 
  */
 public class SimulationResults {
 	private List<Double> batteryCurrentSquaredIntegrals;

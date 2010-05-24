@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * Java class for storing a commute.  GPX files are parsed into trips.  Trips contain
+ * overarching trip features, then a list of points during the trip, each with it's own features.
+ * 
+ * @author Alex Styler
  */
 public class Trip {
 	private TripFeatures features;

@@ -10,8 +10,12 @@ import java.io.*;
 import org.xml.sax.*;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * A class to read a GPX file into a java class containing the lat, lon, elevation
+ * and time information.  
+ * 
+ * @author Alex Styler
  */
 public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	private List<Calendar> rawTimes;

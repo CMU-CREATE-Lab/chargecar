@@ -5,10 +5,19 @@ import java.io.IOException;
 import java.util.List;
 
 import chargecar.util.GPXPrivatizer;
-
+/**
+ * DO NOT EDIT
+ * 
+ * Modifies GPX files, removing any points in a track that fall within a certain
+ * radius of a desired "private-point"
+ *   
+ * @author Alex Styler
+ */
 public class PrivatizeGPX {
+	/**
+	 *  @param args	Directory of GPX files to privatized, followed by GPS coordinates and radii.
+	 */
 	public static void main(String[] args) throws IOException {	
-		//arg format: directory lat1 lon1 radius1 lat2 lon2 radius2....
 		if(args.length < 4 || (args.length-1)%3 != 0){
 			System.out.println("Args must be of the format: \"directory lat1 lon1 radius1 lat2 lon2 radius2...\"");
 			System.out.println("Radii must be in meters");

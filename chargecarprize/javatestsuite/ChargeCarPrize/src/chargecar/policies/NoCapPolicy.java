@@ -6,8 +6,12 @@ import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * A baseline policy that uses the battery for all energy storage.
+ * This serves as a comparison to traditional electric vehicles.
+ * 
+ * @author Alex Styler 
  */
 public class NoCapPolicy implements Policy {
 	@Override

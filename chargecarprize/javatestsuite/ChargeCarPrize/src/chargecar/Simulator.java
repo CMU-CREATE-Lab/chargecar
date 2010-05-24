@@ -20,17 +20,24 @@ import chargecar.battery.SimpleCapacitor;
 import chargecar.policies.*;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * Runs the simulation of an electric car running over a commute defined
+ * by GPX file from real world commutes.  Uses a compound energy storage
+ * Policy to decide whether to get/store power in either the capacitor or
+ * battery inside the car.
+ * 
+ * Competitors need only modify UserPolicy with their algorithm.
+ * @author Alex Styler
+ * 
  */
 public class Simulator {
 	static Visualizer visualizer = new ConsoleWriter();
 	static int carMass = 1200;
-	/**
-	 * @param args
-	 * @throws IOException 
-	 */
 	
+	/**
+	 * @param args	A pathname to a GPX file or folder containing GPX files (will be recursively traversed)
+	 * @throws IOException 
+	 */	
 	public static void main(String[] args) throws IOException 
 	{		
 		String gpxFolder = args[0];
@@ -40,7 +47,7 @@ public class Simulator {
 		List<Policy> policies = new ArrayList<Policy>();
 		policies.add(new NoCapPolicy());
 		policies.add(new NaiveBufferPolicy());
-		policies.add(new SpeedPolicy());		
+		policies.add(new UserPolicy());
 		
 		for(Policy p:policies)
 		{
@@ -55,7 +62,8 @@ public class Simulator {
 	private static List<SimulationResults> simulateTrips(List<Policy> policies, List<File> tripFiles) throws IOException
 	{
 		List<SimulationResults> results = new ArrayList<SimulationResults>();
-		for(Policy p:policies){
+		for(Policy p:policies)
+		{
 			results.add(new SimulationResults(p.getName()));
 		}
 		for(File tripFile : tripFiles)

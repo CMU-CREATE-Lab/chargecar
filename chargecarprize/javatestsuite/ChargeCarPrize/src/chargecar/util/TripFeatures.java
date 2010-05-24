@@ -6,10 +6,12 @@ package chargecar.util;
 import java.util.Calendar;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
  * Contains the features for a new trip, including driver id,
  * car weight, starting GPS location, temperature, etc..
+ * 
+ * @author Alex Styler
  */
 public class TripFeatures {
 	private String driver;

@@ -1,8 +1,8 @@
 package chargecar.util;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * @author Alex Styler
  */
 public class PowerFlowException extends Exception {
 	private static final long serialVersionUID = 1L;
