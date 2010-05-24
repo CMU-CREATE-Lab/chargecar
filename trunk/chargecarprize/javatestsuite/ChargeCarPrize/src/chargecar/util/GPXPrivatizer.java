@@ -25,7 +25,7 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	private Stack<String> elementNames;
     private StringBuilder contentBuffer;
 	private int points;	
-	private ContentHandler hd;
+	private ContentHandler xmlSAXWriter;
 	private boolean writeCurrentElement = true;
 	private boolean adjusted = false;
 	
@@ -56,25 +56,26 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	public void privatizeGPX(File gpxFile) throws IOException 
 	{
 		reset();
+		//gpx writing
 		File privGpxFile = new File(gpxFile.getParentFile().getCanonicalPath()+"\\p"+gpxFile.getName());
 		FileOutputStream fos = new FileOutputStream(privGpxFile, false);
 		OutputFormat of = new OutputFormat();
 		of.setIndent(1);
 		of.setIndenting(true);
 		XMLSerializer serializer = new XMLSerializer(fos,of);
-		hd = serializer.asContentHandler();
+		xmlSAXWriter = serializer.asContentHandler();
+
+		//gpx reading
 		FileInputStream in = new FileInputStream(gpxFile);
 	    InputSource source = new InputSource(in);
-	    XMLReader parser;
-	   
-	    
+	    XMLReader parser;	    
 		try 
 		{
 			parser = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();//"org.apache.xerces.parsers.SAXParser");
 			parser.setContentHandler(this);
-			hd.startDocument();
+			xmlSAXWriter.startDocument();
 		    parser.parse(source);
-		    hd.endDocument();
+		    xmlSAXWriter.endDocument();
 			
 		} catch (SAXException e) 
 		{
@@ -128,7 +129,7 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	      
 	      if(writeCurrentElement)
 	      {
-	    	  hd.startElement(uri, localName, qName, attributes);
+	    	  xmlSAXWriter.startElement(uri, localName, qName, attributes);
 	      }
 	   }
 	   
@@ -140,7 +141,7 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	   {
 	      contentBuffer.append(String.copyValueOf(ch, start, length));
 	      if(writeCurrentElement){
-	    	  hd.characters(ch, start, length);
+	    	  xmlSAXWriter.characters(ch, start, length);
 	      }
 	   }
 	   
@@ -150,19 +151,19 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	    */
 	   public void endElement(String uri, String localName, String qName) throws SAXException 
 	   {
-	      String currentElement = elementNames.pop();
+		   String currentElement = elementNames.pop();
 	      
-	      if (points > 0 && currentElement != null) {
-	         if(writeCurrentElement){
-	        	 hd.endElement(uri, localName, qName);
-	         }
-	      }	     
-	      if (localName.compareToIgnoreCase("trkpt") == 0) 
-	         {
-	    	  writeCurrentElement = true;
-	         
-	         }
-	     
+		   if (points > 0 && currentElement != null) 
+		   {	
+			   if(writeCurrentElement)
+			   {
+				   xmlSAXWriter.endElement(uri, localName, qName);
+			   }
+		   }	     
+		   if (localName.compareToIgnoreCase("trkpt") == 0) 
+		   {
+			   writeCurrentElement = true;
+	       }
 	   }
 	
 	private static double Haversine(double lat1, double lon1, double lat2, double lon2) 
