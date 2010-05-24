@@ -13,10 +13,15 @@ import org.xml.sax.*;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
-	/**
-	 * @author Alex Styler
-	 * DO NOT EDIT
-	 */
+/**
+ * DO NOT EDIT
+ * 
+ * Does the grunt work of reading, modifying, and writing XML
+ * files for privitization.  Does event-driven handling system
+ * to save memory and increase speed.
+ *   
+ * @author Alex Styler
+ */
 public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler 
 {
 	private List<Double> latitudes;

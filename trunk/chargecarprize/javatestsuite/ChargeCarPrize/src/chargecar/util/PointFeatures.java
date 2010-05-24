@@ -3,10 +3,12 @@ package chargecar.util;
 import java.util.Calendar;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
  * Contains the features for an individual point in a trip,
  * such as GPS coordinates, power demand, speed, etc...
+ * 
+ * @author Alex Styler
  */
 public class PointFeatures {
 	final private double latitude;

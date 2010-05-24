@@ -10,8 +10,14 @@ import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * A simple buffer policy that puts regen into the cap until it is full,
+ * or takes energy from the cap until it is empty.  Overflow is handled 
+ * by the battery.  Does not utilize Battery<->Capacitor flow degree of
+ * freedom.
+ * 
+ * @author Alex Styler
  */
 public class NaiveBufferPolicy implements Policy
 {

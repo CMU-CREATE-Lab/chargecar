@@ -9,8 +9,12 @@ import chargecar.util.PowerFlows;
 import chargecar.util.TripFeatures;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * Policy interface for compound energy storage policies.
+ * 
+ * @author Alex Styler
+ * 
  */
 public interface Policy {
 	public String getName();

@@ -3,8 +3,16 @@ package chargecar.battery;
 import chargecar.util.PointFeatures;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * Extremely naive battery implementation that operates at
+ * 100% efficiency at all charges and temperatures.  Used
+ * primarily to analyze current^2 on batteries.  More complex
+ * models of batteries would be used for temp/efficiency optimization
+ * and range experimentation.
+ * 
+ * @author Alex Styler
+ * 
  */
 public class SimpleBattery extends BatteryModel {
 

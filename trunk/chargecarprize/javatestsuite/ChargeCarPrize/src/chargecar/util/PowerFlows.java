@@ -1,14 +1,13 @@
-/**
- * 
- */
 package chargecar.util;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
  * Contains the flow commands to meet the power demand for 
  * an individual point of a trip. (Battery to Motor, Cap to Motor,
  * and Battery to Cap)
+ * 
+ * @author Alex Styler
  */
 public class PowerFlows {
 	private double batteryToMotor;

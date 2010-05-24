@@ -4,8 +4,11 @@ import chargecar.util.PointFeatures;
 import chargecar.util.PowerFlowException;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * Extremely simple, 100% efficient capacitor model.
+ * 
+ * @author Alex Styler
  */
 public class SimpleCapacitor extends BatteryModel {
 

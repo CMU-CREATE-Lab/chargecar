@@ -8,8 +8,12 @@ import chargecar.util.PowerFlowException;
 import chargecar.util.PowerFlows;
 
 /**
- * @author Alex Styler
  * DO NOT EDIT
+ * 
+ * Abstract battery model class to be extended for different types
+ * of batteries or capacitors.
+ * 
+ * @author Alex Styler
  */
 public abstract class BatteryModel {
 		public static double MS_PER_HOUR = 3600000;	
