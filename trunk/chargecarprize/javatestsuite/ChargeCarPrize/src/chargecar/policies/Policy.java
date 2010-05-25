@@ -16,7 +16,8 @@ import chargecar.util.TripFeatures;
  * @author Alex Styler
  * 
  */
-public interface Policy {
+public interface Policy 
+{
 	public String getName();
 	public void loadState();
 	public void endTrip();

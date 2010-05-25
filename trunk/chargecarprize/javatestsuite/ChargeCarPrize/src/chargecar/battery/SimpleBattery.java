@@ -26,7 +26,8 @@ public class SimpleBattery extends BatteryModel {
 
 
 	@Override
-	public void drawCurrent(double current, PointFeatures point) {
+	public void drawCurrent(double current, PointFeatures point) 
+	{
 		this.current = current;
 		this.periodMS = point.getPeriodMS();
 		//record this current as starting at the current time
@@ -37,7 +38,8 @@ public class SimpleBattery extends BatteryModel {
 	}
 
 	@Override
-	public BatteryModel createClone() {
+	public BatteryModel createClone() 
+	{
 		BatteryModel clone = new SimpleBattery(this.maxCharge, this.charge);
 		clone.charge = this.charge;
 		clone.current = this.current;

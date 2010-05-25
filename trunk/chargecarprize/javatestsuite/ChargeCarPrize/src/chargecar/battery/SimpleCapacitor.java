@@ -21,14 +21,16 @@ public class SimpleCapacitor extends BatteryModel {
 	}
 
 	@Override
-	public void drawCurrent(double current, PointFeatures point) throws PowerFlowException {
+	public void drawCurrent(double current, PointFeatures point) throws PowerFlowException
+	{
 		this.current = current;
 		//record this current as starting at the current time
 		recordHistory(point);
 		//after the period is up, update charge, temp, and eff.
 		this.charge = this.charge + current * (point.getPeriodMS() / MS_PER_HOUR);
 		this.charge = this.charge > this.maxCharge ? this.maxCharge : this.charge;
-		if(this.charge < -1E-6){
+		if(this.charge < -1E-6)
+		{
 			throw new PowerFlowException("Capacitor overdrawn: "+this.charge);
 		}
 		//temp and eff don't update in naive model
