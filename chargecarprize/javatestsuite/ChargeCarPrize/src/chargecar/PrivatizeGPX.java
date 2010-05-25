@@ -13,11 +13,13 @@ import chargecar.util.GPXPrivatizer;
  *   
  * @author Alex Styler
  */
-public class PrivatizeGPX {
+public class PrivatizeGPX 
+{
 	/**
 	 *  @param args	Directory of GPX files to privatized, followed by GPS coordinates and radii.
 	 */
-	public static void main(String[] args) throws IOException {	
+	public static void main(String[] args) throws IOException 
+	{	
 		if(args.length < 4 || (args.length-1)%3 != 0){
 			System.out.println("Args must be of the format: \"directory lat1 lon1 radius1 lat2 lon2 radius2...\"");
 			System.out.println("Radii must be in meters");

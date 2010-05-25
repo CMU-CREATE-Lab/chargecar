@@ -13,7 +13,8 @@ import java.util.Calendar;
  * 
  * @author Alex Styler
  */
-public class TripFeatures {
+public class TripFeatures
+{
 	private String driver;
 	private double carMass;
 	private Calendar startTime;
