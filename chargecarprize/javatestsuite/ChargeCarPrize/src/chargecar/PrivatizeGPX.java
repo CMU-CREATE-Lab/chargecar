@@ -50,7 +50,8 @@ public class PrivatizeGPX
 				}
 			}
 			catch(IOException x){}
-			
 		}
+		
+		System.out.println("Complete!");
 	}
 }

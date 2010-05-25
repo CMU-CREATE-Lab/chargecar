@@ -54,7 +54,6 @@ public class GPXTripParser2 {
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(gpxFile);
 			processNode(doc);
-			//TODO write doc
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
