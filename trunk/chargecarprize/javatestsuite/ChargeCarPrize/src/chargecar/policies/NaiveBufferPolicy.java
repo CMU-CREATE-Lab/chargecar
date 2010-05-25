@@ -23,9 +23,10 @@ public class NaiveBufferPolicy implements Policy
 {
 	private BatteryModel modelCap;
 	private BatteryModel modelBatt;
+	private String name = "Naive Buffer Policy";
 	
 	public NaiveBufferPolicy(){
-		//no policy-state
+		//no policy-wide-state, only per-trip state
 	}
 	
 	@Override
@@ -38,36 +39,47 @@ public class NaiveBufferPolicy implements Policy
 	@Override
 	public PowerFlows calculatePowerFlows(PointFeatures pf) 
 	{
-		double watts = pf.getPowerDemand();
-		int periodMS = pf.getPeriodMS();
+		double wattsDemanded = pf.getPowerDemand();
+		int periodMS = pf.getPeriodMS();		
+		
+		//get min and max currents capacitor can handle based on charge-state and max charge
 		double min = modelCap.getMinCurrent(periodMS);
 		double max = modelCap.getMaxCurrent(periodMS);
-		double capWatts = watts > max ?  max : watts;		
-		capWatts = capWatts < min ? min : capWatts;
-		double battWatts = watts - capWatts;//battery handles whatever cap can't
+		
+		//limit watts from capacitor based on min/max
+		double wattsFromCapacitor = wattsDemanded > max ?  max : wattsDemanded;		
+		wattsFromCapacitor = wattsFromCapacitor < min ? min : wattsFromCapacitor;
+		
+		//battery handles whatever cap can't
+		double wattsFromBattery = wattsDemanded - wattsFromCapacitor;
+		
+		//record what we're sending to the car with our local models
 		try {
-			modelCap.drawCurrent(capWatts, pf);
-			modelBatt.drawCurrent(battWatts, pf);			
+			modelCap.drawCurrent(wattsFromCapacitor, pf);
+			modelBatt.drawCurrent(wattsFromBattery, pf);			
 		} catch (PowerFlowException e) {}
-		return new PowerFlows(battWatts, capWatts, 0);		
+		
+		//send commands to car
+		return new PowerFlows(wattsFromBattery, wattsFromCapacitor, 0);		
 	}
 
 	@Override
 	public void endTrip() 
 	{
-		// nothing to do here		
+		//clear any trip-wide-state
+		modelCap = null;
+		modelBatt = null;
 	}
 
 	@Override
 	public void loadState() 
 	{
-		// no policy-state
-		
+		// no policy-state file to load
 	}
 
 	@Override
 	public String getName() {
-		return "Naive Buffer Policy";
+		return name;
 	}
 
 
