@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
-
 import org.xml.sax.*;
 
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
@@ -27,9 +25,6 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	private List<Double> latitudes;
 	private List<Double> longitudes; 
 	private List<Double> radii;
-	private Stack<String> elementNames;
-    private StringBuilder contentBuffer;
-	private int points;	
 	private ContentHandler xmlSAXWriter;
 	private boolean writeCurrentElement = true;
 	private boolean adjusted = false;
@@ -51,9 +46,6 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	
 	private void reset()
 	{
-		elementNames = new Stack<String>();
-	    contentBuffer = new StringBuilder();
-	    points = 0;
 	    adjusted = false;
 	    writeCurrentElement = true;
 	}
@@ -65,8 +57,9 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 		File privGpxFile = new File(gpxFile.getParentFile().getCanonicalPath()+"\\p"+gpxFile.getName());
 		FileOutputStream fos = new FileOutputStream(privGpxFile, false);
 		OutputFormat of = new OutputFormat();
-		of.setIndent(1);
-		of.setIndenting(true);
+		of.setStandalone(false);
+		of.setIndent(2);
+		//of.setIndenting(true);
 		XMLSerializer serializer = new XMLSerializer(fos,of);
 		xmlSAXWriter = serializer.asContentHandler();
 
@@ -112,10 +105,9 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	         // the <trkpht> element has attributes which specify latitude and longitude (it has child elements that specify the time and elevation)
 	         if (localName.compareToIgnoreCase("trkpt") == 0) 
 	         {
-	        	 double lat = Double.parseDouble(attributes.getValue("lat"));
-	        	 double lon = Double.parseDouble(attributes.getValue("lon"));
-	        	 points++;
 	        	 writeCurrentElement=true;
+	        	 double lat = Double.parseDouble(attributes.getValue("lat"));
+	        	 double lon = Double.parseDouble(attributes.getValue("lon"));	        	 
 	        	 for(int i=0;i<latitudes.size();i++)
 	        	 {
 	        		 if(Haversine(latitudes.get(i),longitudes.get(i),lat,lon) < radii.get(i))
@@ -125,12 +117,6 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	        		 }
 	        	 }
 	         }
-
-	      // Clear content buffer
-	      contentBuffer.delete(0, contentBuffer.length());
-	      
-	      // Store name of current element in stack
-	      elementNames.push(qName);
 	      
 	      if(writeCurrentElement)
 	      {
@@ -144,7 +130,6 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	    */
 	   public void characters(char[] ch, int start, int length) throws SAXException 
 	   {
-	      contentBuffer.append(String.copyValueOf(ch, start, length));
 	      if(writeCurrentElement){
 	    	  xmlSAXWriter.characters(ch, start, length);
 	      }
@@ -156,15 +141,11 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler
 	    */
 	   public void endElement(String uri, String localName, String qName) throws SAXException 
 	   {
-		   String currentElement = elementNames.pop();
-	      
-		   if (points > 0 && currentElement != null) 
-		   {	
-			   if(writeCurrentElement)
-			   {
-				   xmlSAXWriter.endElement(uri, localName, qName);
-			   }
-		   }	     
+		   if(writeCurrentElement)
+		   {
+			   xmlSAXWriter.endElement(uri, localName, qName);
+		   }
+    
 		   if (localName.compareToIgnoreCase("trkpt") == 0) 
 		   {
 			   writeCurrentElement = true;
