@@ -33,8 +33,7 @@ import chargecar.visualization.Visualizer;
  * @author Alex Styler
  * 
  */
-public class Simulator
-{
+public class Simulator {
     static Visualizer visualizer = new ConsoleWriter();
     static int carMass = 1200;
     
@@ -44,10 +43,8 @@ public class Simulator
      *            be recursively traversed)
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException
-    {
-	if (args == null || args.length < 1)
-	{
+    public static void main(String[] args) throws IOException {
+	if (args == null || args.length < 1) {
 	    System.err.println("ERROR: No GPX directory path provided.");
 	    System.exit(1);
 	}
@@ -61,21 +58,17 @@ public class Simulator
 	policies.add(new NaiveBufferPolicy());
 	
 	// load policies specified on the command-line, if any
-	if (args.length > 1)
-	{
-	    for (int i = 1; i < args.length; i++)
-	    {
+	if (args.length > 1) {
+	    for (int i = 1; i < args.length; i++) {
 		System.out.println("Loading Policy: " + args[i]);
 		final Policy policy = instantiatePolicy(args[i]);
-		if (policy != null)
-		{
+		if (policy != null) {
 		    policies.add(policy);
 		}
 	    }
 	}
 	
-	for (Policy p : policies)
-	{
+	for (Policy p : policies) {
 	    p.loadState();
 	}
 	
@@ -85,25 +78,18 @@ public class Simulator
     }
     
     private static List<SimulationResults> simulateTrips(List<Policy> policies,
-	    List<File> tripFiles) throws IOException
-    {
+	    List<File> tripFiles) throws IOException {
 	List<SimulationResults> results = new ArrayList<SimulationResults>();
-	for (Policy p : policies)
-	{
+	for (Policy p : policies) {
 	    results.add(new SimulationResults(p.getName()));
 	}
-	for (File tripFile : tripFiles)
-	{
+	for (File tripFile : tripFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
-	    for (Trip t : tripsToTest)
-	    {
-		for (int i = 0; i < policies.size(); i++)
-		{
-		    try
-		    {
+	    for (Trip t : tripsToTest) {
+		for (int i = 0; i < policies.size(); i++) {
+		    try {
 			simulateTrip(policies.get(i), t, results.get(i));
-		    } catch (PowerFlowException e)
-		    {
+		    } catch (PowerFlowException e) {
 			e.printStackTrace();
 		    }
 		}
@@ -113,8 +99,7 @@ public class Simulator
     }
     
     private static void simulateTrip(Policy policy, Trip trip,
-	    SimulationResults results) throws PowerFlowException
-    {
+	    SimulationResults results) throws PowerFlowException {
 	BatteryModel tripBattery = new SimpleBattery(Double.MAX_VALUE,
 		Double.MAX_VALUE);
 	BatteryModel tripCap = new SimpleCapacitor(50, 0);
@@ -123,12 +108,10 @@ public class Simulator
     }
     
     private static void simulate(Policy policy, Trip trip,
-	    BatteryModel battery, BatteryModel cap) throws PowerFlowException
-    {
+	    BatteryModel battery, BatteryModel cap) throws PowerFlowException {
 	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
 		.createClone());
-	for (PointFeatures point : trip.getPoints())
-	{
+	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
 	    pf.adjust(point.getPowerDemand());
 	    battery.drawCurrent(pf.getBatteryToCapacitor()
@@ -139,12 +122,10 @@ public class Simulator
 	policy.endTrip();
     }
     
-    private static List<Trip> parseTrips(File gpxFile) throws IOException
-    {
+    private static List<Trip> parseTrips(File gpxFile) throws IOException {
 	List<Trip> trips = new ArrayList<Trip>();
 	GPXTripParser gpxparser = new GPXTripParser();
-	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, carMass))
-	{
+	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, carMass)) {
 	    String driverName = gpxFile.getParentFile().getName();
 	    TripFeatures tf = new TripFeatures(driverName, carMass, tripPoints
 		    .get(0));
@@ -154,65 +135,51 @@ public class Simulator
 	return trips;
     }
     
-    static List<File> getGPXFiles(File gpxFolder)
-    {
+    static List<File> getGPXFiles(File gpxFolder) {
 	List<File> gpxFiles = new ArrayList<File>();
 	File[] files = gpxFolder.listFiles();
-	for (File f : files)
-	{
-	    if (f.isDirectory())
-	    {
+	for (File f : files) {
+	    if (f.isDirectory()) {
 		gpxFiles.addAll(getGPXFiles(f));
 	    } else if (f.isFile()
 		    && (f.getAbsolutePath().endsWith("gpx") || f
-			    .getAbsolutePath().endsWith("GPX")))
-	    {
+			    .getAbsolutePath().endsWith("GPX"))) {
 		gpxFiles.add(f);
 	    }
 	}
 	return gpxFiles;
     }
     
-    private static Policy instantiatePolicy(final String policyClassName)
-    {
-	try
-	{
+    private static Policy instantiatePolicy(final String policyClassName) {
+	try {
 	    final Class clazz = Class.forName(policyClassName);
 	    final Constructor constructor = clazz.getConstructor();
-	    if (constructor != null)
-	    {
+	    if (constructor != null) {
 		final Policy policy = (Policy) constructor.newInstance();
-		if (policy == null)
-		{
+		if (policy == null) {
 		    System.err
 			    .println("Instantiation of Policy implementation [\" + policyClassName + \"] returned null.  Weird.");
-		} else
-		{
+		} else {
 		    return policy;
 		}
 	    }
-	} catch (ClassNotFoundException e)
-	{
+	} catch (ClassNotFoundException e) {
 	    System.err
 		    .println("ClassNotFoundException while trying to find Policy implementation ["
 			    + policyClassName + "]: " + e);
-	} catch (NoSuchMethodException e)
-	{
+	} catch (NoSuchMethodException e) {
 	    System.err
 		    .println("NoSuchMethodException while trying to find no-arg constructor for Policy implementation ["
 			    + policyClassName + "]: " + e);
-	} catch (IllegalAccessException e)
-	{
+	} catch (IllegalAccessException e) {
 	    System.err
 		    .println("IllegalAccessException while trying to instantiate Policy implementation ["
 			    + policyClassName + "]: " + e);
-	} catch (InvocationTargetException e)
-	{
+	} catch (InvocationTargetException e) {
 	    System.err
 		    .println("InvocationTargetException while trying to instantiate Policy implementation ["
 			    + policyClassName + "]: " + e);
-	} catch (InstantiationException e)
-	{
+	} catch (InstantiationException e) {
 	    System.err
 		    .println("InstantiationException while trying to instantiate Policy implementation ["
 			    + policyClassName + "]: " + e);

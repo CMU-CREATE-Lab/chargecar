@@ -13,11 +13,9 @@ import chargecar.util.PointFeatures;
  * @author Alex Styler
  * 
  */
-public class SimpleBattery extends BatteryModel
-{
+public class SimpleBattery extends BatteryModel {
     
-    public SimpleBattery(double maxCharge, double charge)
-    {
+    public SimpleBattery(double maxCharge, double charge) {
 	this.current = 0.0;
 	this.temperature = 0.0;
 	this.efficiency = 1.0;
@@ -26,27 +24,23 @@ public class SimpleBattery extends BatteryModel
     }
     
     @Override
-    public void drawCurrent(double current, PointFeatures point)
-    {
+    public void drawCurrent(double current, PointFeatures point) {
 	this.current = current;
 	this.periodMS = point.getPeriodMS();
 	// record this current as starting at the current time
 	recordHistory(point);
 	// after the period is up, update charge, temp, and eff.
-	if (current < 0)
-	{
+	if (current < 0) {
 	    this.charge = charge + current / this.efficiency
 		    * (periodMS / MS_PER_HOUR);
-	} else
-	{
+	} else {
 	    this.charge = charge + current * this.efficiency
 		    * (periodMS / MS_PER_HOUR);
 	}
     }
     
     @Override
-    public BatteryModel createClone()
-    {
+    public BatteryModel createClone() {
 	BatteryModel clone = new SimpleBattery(this.maxCharge, this.charge);
 	clone.current = this.current;
 	clone.efficiency = this.efficiency;
