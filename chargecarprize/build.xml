@@ -113,13 +113,6 @@
          </jar-manifest-attributes>
       </create-dist>
 
-      <!-- copy required jar files  -->
-      <!--
-      <copy todir="${contestant-policies.dist.dir}" flatten="true">
-         <fileset file="${javatestsuite.dist.dir}/${javatestsuite.jar.filename}"/>
-      </copy>
-      -->
-
       <property name="dist-contestant-policies-is-complete" value="true"/>
    </target>
 
