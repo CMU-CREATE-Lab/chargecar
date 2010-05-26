@@ -15,8 +15,7 @@ import chargecar.util.PowerFlows;
  * 
  * @author Alex Styler
  */
-public abstract class BatteryModel
-{
+public abstract class BatteryModel {
     public static double MS_PER_HOUR = 3600000;
     protected final List<Double> temperatureHistory = new ArrayList<Double>();
     protected final List<Double> chargeHistory = new ArrayList<Double>();
@@ -35,63 +34,51 @@ public abstract class BatteryModel
     
     public abstract BatteryModel createClone();
     
-    public double getMaxCharge()
-    {
+    public double getMaxCharge() {
 	return this.maxCharge;
     }
     
-    public double getCharge()
-    {
+    public double getCharge() {
 	return this.charge;
     }
     
-    public double getEfficiency()
-    {
+    public double getEfficiency() {
 	return this.efficiency;
     }
     
-    public List<Double> getEfficiencyHistory()
-    {
+    public List<Double> getEfficiencyHistory() {
 	return this.efficiencyHistory;
     }
     
-    public double getTemperature()
-    {
+    public double getTemperature() {
 	return this.temperature;
     }
     
-    public double getCurrent()
-    {
+    public double getCurrent() {
 	return this.current;
     }
     
-    public int getPeriodMS()
-    {
+    public int getPeriodMS() {
 	return this.periodMS;
     }
     
-    public List<Double> getTemperatureHistory()
-    {
+    public List<Double> getTemperatureHistory() {
 	return this.temperatureHistory;
     }
     
-    public List<Double> getChargeHistory()
-    {
+    public List<Double> getChargeHistory() {
 	return this.chargeHistory;
     }
     
-    public List<Double> getCurrentDrawHistory()
-    {
+    public List<Double> getCurrentDrawHistory() {
 	return this.currentDrawHistory;
     }
     
-    public List<Integer> getPeriodHistory()
-    {
+    public List<Integer> getPeriodHistory() {
 	return this.periodHistory;
     }
     
-    protected void recordHistory(PointFeatures point)
-    {
+    protected void recordHistory(PointFeatures point) {
 	this.temperatureHistory.add(temperature);
 	this.chargeHistory.add(charge);
 	this.efficiencyHistory.add(efficiency);
@@ -99,13 +86,11 @@ public abstract class BatteryModel
 	this.currentDrawHistory.add(current);
     }
     
-    public Double currentSquaredIntegral()
-    {
+    public Double currentSquaredIntegral() {
 	List<Double> currents = this.getCurrentDrawHistory();
 	List<Integer> periods = this.getPeriodHistory();
 	double integral = 0;
-	for (int i = 0; i < currents.size(); i++)
-	{
+	for (int i = 0; i < currents.size(); i++) {
 	    double currentSquared = Math.pow(currents.get(i), 2);
 	    double timeLength = ((double) periods.get(i)) / 1000.0;
 	    integral += currentSquared * timeLength;
@@ -113,8 +98,7 @@ public abstract class BatteryModel
 	return integral;
     }
     
-    public double getMaxCurrent(int periodMS)
-    {
+    public double getMaxCurrent(int periodMS) {
 	double currentActualMax = (this.maxCharge - this.charge)
 		/ (periodMS / MS_PER_HOUR);
 	return currentActualMax / efficiency;
@@ -122,8 +106,7 @@ public abstract class BatteryModel
 	// would fill the capacitor to maximum over the given period
     }
     
-    public double getMinCurrent(int periodMS)
-    {
+    public double getMinCurrent(int periodMS) {
 	double currentActualMin = (-1.0) * this.charge
 		/ (periodMS / MS_PER_HOUR);
 	return currentActualMin * efficiency;
@@ -131,8 +114,7 @@ public abstract class BatteryModel
 	// would empty the current charge over the given period
     }
     
-    public boolean check(PowerFlows pf, int periodMS)
-    {
+    public boolean check(PowerFlows pf, int periodMS) {
 	double current = pf.getCapacitorToMotor() - pf.getBatteryToCapacitor();
 	return current <= getMaxCurrent(periodMS)
 		&& current >= getMinCurrent(periodMS);

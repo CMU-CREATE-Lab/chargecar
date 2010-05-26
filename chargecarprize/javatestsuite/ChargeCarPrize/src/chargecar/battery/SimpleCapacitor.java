@@ -10,11 +10,9 @@ import chargecar.util.PowerFlowException;
  * 
  * @author Alex Styler
  */
-public class SimpleCapacitor extends BatteryModel
-{
+public class SimpleCapacitor extends BatteryModel {
     
-    public SimpleCapacitor(double maxCharge, double charge)
-    {
+    public SimpleCapacitor(double maxCharge, double charge) {
 	this.maxCharge = maxCharge;
 	this.charge = charge;
 	this.temperature = 0.0;
@@ -24,28 +22,23 @@ public class SimpleCapacitor extends BatteryModel
     
     @Override
     public void drawCurrent(double current, PointFeatures point)
-	    throws PowerFlowException
-    {
+	    throws PowerFlowException {
 	this.current = current;
 	this.periodMS = point.getPeriodMS();
 	// record this current as starting at the current time
 	recordHistory(point);
 	// after the period is up, update charge, temp, and eff.
-	if (current < 0)
-	{
+	if (current < 0) {
 	    this.charge = this.charge + (current / this.efficiency)
 		    * (periodMS / MS_PER_HOUR);
-	} else
-	{
+	} else {
 	    this.charge = this.charge + (current * this.efficiency)
 		    * (periodMS / MS_PER_HOUR);
 	}
 	
-	if (this.charge < -1E-6)
-	{
+	if (this.charge < -1E-6) {
 	    throw new PowerFlowException("Capacitor overdrawn: " + this.charge);
-	} else if (this.charge - this.maxCharge > 1E-6)
-	{
+	} else if (this.charge - this.maxCharge > 1E-6) {
 	    throw new PowerFlowException("Capacitor overcharged: "
 		    + this.charge);
 	}
@@ -53,8 +46,7 @@ public class SimpleCapacitor extends BatteryModel
     }
     
     @Override
-    public BatteryModel createClone()
-    {
+    public BatteryModel createClone() {
 	SimpleCapacitor clone = new SimpleCapacitor(this.maxCharge, this.charge);
 	clone.charge = this.charge;
 	clone.current = this.current;
