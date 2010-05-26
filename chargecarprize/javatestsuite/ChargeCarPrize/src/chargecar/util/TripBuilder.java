@@ -150,7 +150,7 @@ public class TripBuilder {
 				pwr = ((pwr - (0.056*(speed*speed))) + (0.68*speed));
 				}
 
-			powerDemands.add(pwr);		
+			powerDemands.add(pwr*1000.0);//convert back to watts		
 
 		}
 		
