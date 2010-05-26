@@ -474,6 +474,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/car/Car.iml" filepath="$PROJECT_DIR$/car/Car.iml" />
       <module fileurl="file://$PROJECT_DIR$/chargecar.org/ChargeCar.org.iml" filepath="$PROJECT_DIR$/chargecar.org/ChargeCar.org.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ChargeCarPrize/ChargeCarPrize.iml" filepath="$PROJECT_DIR$/ChargeCarPrize/ChargeCarPrize.iml" />
       <module fileurl="file://$PROJECT_DIR$/iphone/iPhone.iml" filepath="$PROJECT_DIR$/iphone/iPhone.iml" />
     </modules>
   </component>
