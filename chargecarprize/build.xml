@@ -73,7 +73,7 @@
       <property name="build-javatestsuite-is-complete" value="true"/>
    </target>
 
-   <target name="build-contestant-policies" description="compiles the java source for contestant-policies" unless="build-contestant-policies-is-complete">
+   <target name="build-contestant-policies" depends="build-javatestsuite" description="compiles the java source for contestant-policies" unless="build-contestant-policies-is-complete">
       <compile-code-and-copy-resources src.dir="${contestant-policies.src.dir}"
                                        build.dir="${contestant-policies.build.dir}"
                                        classpath-ref="contestant-policies-classpath"/>
@@ -98,7 +98,7 @@
       <property name="dist-javatestsuite-is-complete" value="true"/>
    </target>
 
-   <target name="dist-contestant-policies" depends="build-contestant-policies" description="builds the contestant-policies" unless="dist-contestant-policies-is-complete">
+   <target name="dist-contestant-policies" depends="dist-javatestsuite, build-contestant-policies" description="builds the contestant-policies" unless="dist-contestant-policies-is-complete">
       <!-- create the dist directory -->
       <mkdir dir="${contestant-policies.dist.dir}"/>
 
