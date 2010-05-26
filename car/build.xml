@@ -181,7 +181,8 @@
                 memorymaximumsize="${java.compiler.max.memory}"
                 source="${java.compiler.source.level}"
                 target="${java.compiler.target.level}"
-                fork="true">
+                fork="true"
+                includeantruntime="false">
             <compilerarg line="${java.compiler.args}"/>
          </javac>
 
