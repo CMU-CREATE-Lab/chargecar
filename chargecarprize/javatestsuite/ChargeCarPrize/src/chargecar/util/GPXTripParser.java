@@ -72,7 +72,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		sumPlanarDist += p.getPlanarDist();
 		sumPowerDemand += Math.pow(p.getPowerDemand(), 2);
 	    }
-	    if (sumPlanarDist < 500.0 || sumPowerDemand > 1E10) {
+	    if (sumPlanarDist < 500.0 || sumPowerDemand > 1E13) {
 		trips.remove(i);
 	    } else {
 		i++;

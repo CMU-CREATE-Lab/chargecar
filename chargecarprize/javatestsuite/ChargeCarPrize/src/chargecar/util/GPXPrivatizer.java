@@ -66,7 +66,8 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler {
 	XMLReader parser;
 	try {
 	    parser = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();// "org.apache.xerces.parsers.SAXParser");
-	    parser.setContentHandler(this);
+	    parser.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+	    parser.setContentHandler(this);	    
 	    xmlSAXWriter.startDocument();
 	    parser.parse(source);
 	    xmlSAXWriter.endDocument();
