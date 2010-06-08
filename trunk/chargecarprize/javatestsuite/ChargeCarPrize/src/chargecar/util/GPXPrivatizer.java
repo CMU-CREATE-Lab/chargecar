@@ -47,7 +47,7 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler {
 	writeCurrentElement = true;
     }
     
-    public void privatizeGPX(File gpxFile) throws IOException {
+    public boolean privatizeGPX(File gpxFile) throws IOException {
 	reset();
 	// gpx writing
 	File privGpxFile = new File(gpxFile.getParentFile().getCanonicalPath()
@@ -82,8 +82,11 @@ public class GPXPrivatizer extends org.xml.sax.helpers.DefaultHandler {
 	fos.close();
 	if (!adjusted) {
 	    privGpxFile.delete();
-	} else {
-	    System.out.println("Privatized: " + gpxFile.getCanonicalPath());
+	    return false;
+	} else {	    
+	    gpxFile.delete();
+	    privGpxFile.renameTo(gpxFile);
+	    return true;
 	}
     }
     

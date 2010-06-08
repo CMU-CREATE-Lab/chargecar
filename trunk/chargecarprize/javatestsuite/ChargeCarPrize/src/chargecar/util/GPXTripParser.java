@@ -60,6 +60,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	    parser.parse(source);
 	    
 	} catch (SAXException e) {
+	    System.err.println("Error reading file: "+gpxFile.getCanonicalPath());
 	    e.printStackTrace();
 	    throw new IOException();
 	}
