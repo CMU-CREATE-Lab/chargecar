@@ -34,10 +34,10 @@ public class SpeedPolicy implements Policy {
 	int periodMS = pf.getPeriodMS();
 	double speed = pf.getSpeed();
 	// leave more room in cap for regen braking from higher speeds
-	double targetCharge = modelCap.getMaxCharge() / 2;// - 1.7*speed;
+	double targetCharge = modelCap.getMaxCharge() - 1.7*speed;
 	double minCapCurrent = modelCap.getMinCurrent(periodMS);
 	double maxCapCurrent = modelCap.getMaxCurrent(periodMS);
-	double defaultTrickleRate = -5000;
+	double defaultTrickleRate = -8000.0;
 	double capToMotorWatts = 0.0;
 	double batteryToCapWatts = 0.0;
 	double batteryToMotorWatts = 0.0;
@@ -60,10 +60,12 @@ public class SpeedPolicy implements Policy {
 	    if (modelCap.getCharge() < targetCharge) {
 		batteryToCapWatts = defaultTrickleRate;
 	    } else {
-		// batteryToCapWatts = -defaultTrickleRate;
+		//batteryToCapWatts = -defaultTrickleRate;
 	    }
 	    if (capToMotorWatts - batteryToCapWatts > maxCapCurrent) {
 		batteryToCapWatts = capToMotorWatts - maxCapCurrent;
+	    } else if(capToMotorWatts - batteryToCapWatts < minCapCurrent){
+		batteryToCapWatts = capToMotorWatts - minCapCurrent;
 	    }
 	}
 	

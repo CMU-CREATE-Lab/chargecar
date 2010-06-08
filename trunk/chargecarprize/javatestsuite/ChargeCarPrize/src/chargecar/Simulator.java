@@ -52,7 +52,7 @@ public class Simulator {
 	String gpxFolder = args[0];
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles = getGPXFiles(folder);
-	
+	System.out.println("Testing on "+gpxFiles.size()+" files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 	policies.add(new NaiveBufferPolicy());
@@ -89,19 +89,20 @@ public class Simulator {
 		for (int i = 0; i < policies.size(); i++) {
 		    try {
 			simulateTrip(policies.get(i), t, results.get(i));
+			System.out.print('.');
 		    } catch (PowerFlowException e) {
 			e.printStackTrace();
 		    }
 		}
 	    }
 	}
+	System.out.println();
 	return results;
     }
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new SimpleBattery(Double.MAX_VALUE,
-		Double.MAX_VALUE);
+	BatteryModel tripBattery = new SimpleBattery(50000, 50000);
 	BatteryModel tripCap = new SimpleCapacitor(50, 0);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
