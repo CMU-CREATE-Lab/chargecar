@@ -48,9 +48,7 @@ public class NaiveBufferPolicy implements Policy {
 	
 	// battery handles whatever cap can't
 	double batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	if (batteryToMotorWatts > 0) batteryToMotorWatts = 0;// dont regen into
-							     // battery to avoid
-							     // bad i2
+
 	// record what we're sending to the car with our local models
 	try {
 	    modelCap.drawCurrent(capToMotorWatts, pf);

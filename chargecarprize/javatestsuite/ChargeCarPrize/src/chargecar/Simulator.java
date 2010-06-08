@@ -151,9 +151,15 @@ public class Simulator {
 	return gpxFiles;
     }
     
-    private static Policy instantiatePolicy(final String policyClassName) {
+    private static Policy instantiatePolicy(String policyClassName) {
 	try {
-	    final Class clazz = Class.forName(policyClassName);
+	    Class clazz;
+	    try{
+		clazz = Class.forName("chargecar.policies."+policyClassName);
+		policyClassName = "chargecar.policies."+policyClassName;
+	    }
+	    catch(ClassNotFoundException e){}
+	    clazz = Class.forName(policyClassName);
 	    final Constructor constructor = clazz.getConstructor();
 	    if (constructor != null) {
 		final Policy policy = (Policy) constructor.newInstance();

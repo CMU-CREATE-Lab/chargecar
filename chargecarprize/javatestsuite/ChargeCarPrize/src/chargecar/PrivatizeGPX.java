@@ -43,14 +43,19 @@ public class PrivatizeGPX {
 	
 	for (File f : gpxFiles) {
 	    try {
-		if (!f.getName().startsWith("p")) {
-		    gpxPrivatizer.privatizeGPX(f);
-		    System.out.print('.');
+		if(!f.getName().startsWith("p")){
+		    if(gpxPrivatizer.privatizeGPX(f)){
+			System.out.println();
+			System.out.println("Privatized: "+f.getParentFile().getParentFile().getName()+"\\"+f.getParentFile().getName()+"\\"+f.getName());
+		    }
+		    else{
+			System.out.print('.');
+		    }
 		}
 	    } catch (IOException x) {
 	    }
 	}
-	
+	System.out.println();
 	System.out.println("Complete!");
     }
 }
