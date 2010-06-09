@@ -10,7 +10,6 @@ import java.util.List;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
-import org.chargecar.prize.policies.NaiveBufferPolicy;
 import org.chargecar.prize.policies.NoCapPolicy;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.GPXTripParser;
@@ -42,6 +41,10 @@ public class Simulator {
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
      *            be recursively traversed)
+     *            Alternate policies to test, either in a referenced JAR file or 
+     *            within the project
+     *        	  e.g. java Simulator "C:\testdata\may" org.chargecar.policies.SpeedPolicy
+     *        	       java Simulator "C:\testdata" NaiveBufferPolicy SpeedPolicy
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
@@ -53,10 +56,9 @@ public class Simulator {
 	String gpxFolder = args[0];
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles = getGPXFiles(folder);
-	System.out.println("Testing on "+gpxFiles.size()+" files.");
+	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new NaiveBufferPolicy());
 	
 	// load policies specified on the command-line, if any
 	if (args.length > 1) {
@@ -154,14 +156,14 @@ public class Simulator {
     
     private static Policy instantiatePolicy(String policyClassName) {
 	try {
-	    Class clazz;
+	    Class<?> clazz;
 	    try{
 		clazz = Class.forName("org.chargecar.prize.policies."+policyClassName);
 		policyClassName = "org.chargecar.prize.policies."+policyClassName;
 	    }
 	    catch(ClassNotFoundException e){}
 	    clazz = Class.forName(policyClassName);
-	    final Constructor constructor = clazz.getConstructor();
+	    final Constructor<?> constructor = clazz.getConstructor();
 	    if (constructor != null) {
 		final Policy policy = (Policy) constructor.newInstance();
 		if (policy == null) {
