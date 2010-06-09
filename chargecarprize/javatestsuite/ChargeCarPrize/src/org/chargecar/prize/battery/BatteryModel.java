@@ -30,10 +30,27 @@ public abstract class BatteryModel {
     protected int periodMS;
     protected double maxCharge;
     
-    public abstract void drawCurrent(double current, PointFeatures point)
-	    throws PowerFlowException;
-    
     public abstract BatteryModel createClone();
+    
+    public abstract double calculateTemperature(double current, int periodMS);
+    public abstract double calculateEfficiency(double current, int periodMS);
+    
+    public void drawCurrent(double current, PointFeatures point) throws PowerFlowException{
+	this.current = current;
+	this.periodMS = point.getPeriodMS();
+	this.efficiency = calculateEfficiency(this.current, this.periodMS);
+	// record this current as starting at the current time
+	recordHistory(point);
+	// after the period is up, update charge & temp
+	this.temperature = calculateTemperature(this.current, this.periodMS);
+	if (current < 0) {
+	    this.charge = charge + current / this.efficiency
+		    * (periodMS / MS_PER_HOUR);
+	} else {
+	    this.charge = charge + current * this.efficiency
+		    * (periodMS / MS_PER_HOUR);
+	}
+    }
     
     public double getMaxCharge() {
 	return this.maxCharge;

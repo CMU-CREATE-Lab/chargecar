@@ -1,7 +1,5 @@
 package org.chargecar.prize.battery;
 
-import org.chargecar.prize.util.PointFeatures;
-
 /**
  * DO NOT EDIT
  * 
@@ -22,23 +20,7 @@ public class SimpleBattery extends BatteryModel {
 	this.charge = charge;
 	this.maxCharge = maxCharge;
     }
-    
-    @Override
-    public void drawCurrent(double current, PointFeatures point) {
-	this.current = current;
-	this.periodMS = point.getPeriodMS();
-	// record this current as starting at the current time
-	recordHistory(point);
-	// after the period is up, update charge, temp, and eff.
-	if (current < 0) {
-	    this.charge = charge + current / this.efficiency
-		    * (periodMS / MS_PER_HOUR);
-	} else {
-	    this.charge = charge + current * this.efficiency
-		    * (periodMS / MS_PER_HOUR);
-	}
-    }
-    
+
     @Override
     public BatteryModel createClone() {
 	BatteryModel clone = new SimpleBattery(this.maxCharge, this.charge);
@@ -52,4 +34,15 @@ public class SimpleBattery extends BatteryModel {
 	clone.periodHistory.addAll(this.periodHistory);
 	return clone;
     }
+
+    @Override
+    public double calculateEfficiency(double current, int periodMS) {
+	return 1.0;
+    }
+
+    @Override
+    public double calculateTemperature(double current, int periodMS) {
+	return 0.0;
+    }
 }
+ 
