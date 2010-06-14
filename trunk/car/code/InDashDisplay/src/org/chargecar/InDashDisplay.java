@@ -52,31 +52,39 @@ public class InDashDisplay
 
    public static void main(final String[] args)
       {
-      final NMEAReader gpsReader;
+      NMEAReader nmeaReader;
       if (args.length < 1)
          {
          LOG.warn("GPS receiver serial port not specified, so no GPS data will be available!");
-         gpsReader = null;
+         nmeaReader = null;
          }
       else
          {
-         gpsReader = new NMEAReader(APPLICATION_NAME);
+         nmeaReader = new NMEAReader(APPLICATION_NAME);
          final String gpsSerialPortName = args[0];
          try
             {
-            gpsReader.connect(gpsSerialPortName);
+            nmeaReader.connect(gpsSerialPortName);
             }
          catch (SerialPortException e)
             {
-            LOG.error("SerialPortException while connecting to the GPS receiver", e);
+            LOG.error("SerialPortException while connecting to the GPS receiver.  Setting the NMEAReader to null, so no reading will be attempted.", e);
+            nmeaReader = null;
             }
          catch (IOException e)
             {
-            LOG.error("IOException while connecting to the GPS receiver", e);
+            LOG.error("IOException while connecting to the GPS receiver.  Setting the NMEAReader to null, so no reading will be attempted.", e);
+            nmeaReader = null;
+            }
+         catch (Exception e)
+            {
+            LOG.error("Exception while connecting to the GPS receiver.  Setting the NMEAReader to null, so no reading will be attempted.", e);
+            nmeaReader = null;
             }
          }
 
       //Schedule a job for the event-dispatching thread: creating and showing this application's GUI.
+      final NMEAReader gpsReader = nmeaReader;
       SwingUtilities.invokeLater(
             new Runnable()
             {
