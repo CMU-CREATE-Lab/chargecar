@@ -52,13 +52,15 @@ public class InDashDisplay
 
    public static void main(final String[] args)
       {
-      final NMEAReader gpsReader = new NMEAReader(APPLICATION_NAME);
+      final NMEAReader gpsReader;
       if (args.length < 1)
          {
          LOG.warn("GPS receiver serial port not specified, so no GPS data will be available!");
+         gpsReader = null;
          }
       else
          {
+         gpsReader = new NMEAReader(APPLICATION_NAME);
          final String gpsSerialPortName = args[0];
          try
             {
@@ -105,25 +107,28 @@ public class InDashDisplay
 
    private InDashDisplay(final GraphicsDevice graphicsDevice, final NMEAReader gpsReader)
       {
-      gpsReader.addEventListener(
-            new GPSEventListener()
-            {
-            public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
+      if (gpsReader != null)
+         {
+         gpsReader.addEventListener(
+               new GPSEventListener()
                {
-               if (LOG.isInfoEnabled())
+               public void handleLocationEvent(final String latitude, final String longitude, final int numSatellitesBeingTracked)
                   {
-                  LOG.info("GPS{" + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked + "}");
+                  if (LOG.isInfoEnabled())
+                     {
+                     LOG.info("GPS{" + latitude + "\t" + longitude + "\t" + numSatellitesBeingTracked + "}");
+                     }
                   }
-               }
 
-            public void handleElevationEvent(final int elevationInFeet)
-               {
-               if (LOG.isInfoEnabled())
+               public void handleElevationEvent(final int elevationInFeet)
                   {
-                  LOG.info("GPS Elevation{" + elevationInFeet + "}");
+                  if (LOG.isInfoEnabled())
+                     {
+                     LOG.info("GPS Elevation{" + elevationInFeet + "}");
+                     }
                   }
-               }
-            });
+               });
+         }
 
       // create and configure the GUI
       final JPanel panel = new JPanel();
@@ -281,7 +286,15 @@ public class InDashDisplay
                   {
                   // start scanning
                   serialDeviceConnectivityManager.scanAndConnect();
-                  gpsReader.startReading();
+                  if (gpsReader == null)
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): NMEA Reader given to the LifecycleManager constructor was null, so GPS data won't be read.");
+                     }
+                  else
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the NMEAReader...");
+                     gpsReader.startReading();
+                     }
                   }
                };
 
@@ -292,8 +305,17 @@ public class InDashDisplay
                   {
                   // disconnect so we can exit gracefully
                   serialDeviceConnectivityManager.disconnect();
-                  gpsReader.stopReading();
-                  gpsReader.disconnect();
+                  if (gpsReader == null)
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): NMEA Reader given to the LifecycleManager constructor was null, so we won't try to shut it down.");
+                     }
+                  else
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Stopping the NMEAReader...");
+                     gpsReader.stopReading();
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the GPS...");
+                     gpsReader.disconnect();
+                     }
 
                   // Exit full-screen mode
                   graphicsDevice.setFullScreenWindow(null);

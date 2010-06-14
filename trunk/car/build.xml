@@ -17,6 +17,7 @@
       <pathelement path="${jfreechart1.jar}"/>
       <pathelement path="${jfreechart2.jar}"/>
       <pathelement path="${log4j.jar}"/>
+      <pathelement path="${log4j-extras.jar}"/>
       <pathelement path="${rxtx.jar}"/>
       <pathelement path="${swing-layout.jar}"/>
    </path>
@@ -209,6 +210,7 @@
          <copy todir="${@{component.name}.dist.dir}" flatten="true">
             <fileset file="${commons-logging.jar}"/>
             <fileset file="${log4j.jar}"/>
+            <fileset file="${log4j-extras.jar}"/>
             <fileset file="${rxtx.jar}"/>
             <fileset file="${rxtx-macos.native}"/>
             <fileset file="${rxtx-linux.native}"/>
