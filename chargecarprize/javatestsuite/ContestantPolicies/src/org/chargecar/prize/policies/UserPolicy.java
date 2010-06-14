@@ -1,10 +1,9 @@
 package org.chargecar.prize.policies;
 
-import chargecar.battery.BatteryModel;
-import chargecar.policies.Policy;
-import chargecar.util.PointFeatures;
-import chargecar.util.PowerFlows;
-import chargecar.util.TripFeatures;
+import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.PointFeatures;
+import org.chargecar.prize.util.PowerFlows;
+import org.chargecar.prize.util.TripFeatures;
 
 /**
  * The policy to be implemented by the competitor.  The policy is constructed once,
