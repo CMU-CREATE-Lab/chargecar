@@ -16,7 +16,7 @@ import org.chargecar.ned.gridfloat.GridFloatDataset;
 
 /**
  * <p>
- * <code>SpeedCalculator</code> reads a given GPX file prints out speed and distances over time.
+ * <code>SpeedCalculator</code> reads a given GPX file and prints out speed and distances over time.
  * </p>
  *
  * @author Chris Bartley (bartley@cmu.edu)
