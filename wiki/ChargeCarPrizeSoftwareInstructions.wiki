@@ -1,13 +1,21 @@
 #summary Installation and first-use instructions
 
 = Introduction =
-
-Add your content here.
-
+Here we detail how to install and use the testing suite.
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+The software archive contains an Eclipse project.  For those using Eclipse with a Java IDE, or any other Java IDE, can import the project directly into the IDE, which will manage building.
+
+In Eclipse:
+  # Goto File: Import
+  # Select General: Existing projects into workspace
+  # Select the archive file option, and select the software archive
+  # Create a run configuration, that points to the main function of the Simulator class
+  # In the arguments tab, enter in the software directory of GPX files you wish to test, followed by any policies you wish to test versus the baseline. Be sure not to include a trailing backslash in the directory path, as it will escape the " and break the argument input.
+
+For example:
+"C:\Users\astyler\Desktop\My Dropbox\work\testdata_release_060910\may" NaiveBufferPolicy SpeedPolicy
+
+
+For command line users, run the Simulator class with the same arguments above.  We have ANT scripts for building in the source tree.
