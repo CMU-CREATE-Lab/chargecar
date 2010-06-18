@@ -6,13 +6,9 @@ import org.apache.commons.logging.LogFactory;
 import org.chargecar.gpx.DistanceCalculator;
 import org.chargecar.gpx.GPXEventHandlerAdapter;
 import org.chargecar.gpx.GPXReader;
-import org.chargecar.gpx.MinMaxLatLongCalculator;
 import org.chargecar.gpx.SphericalLawOfCosinesDistanceCalculator;
 import org.chargecar.gpx.TrackPoint;
 import org.chargecar.gpx.UTCHelper;
-import org.chargecar.ned.ElevationDataset;
-import org.chargecar.ned.ElevationDatasetException;
-import org.chargecar.ned.gridfloat.GridFloatDataset;
 
 /**
  * <p>
@@ -48,34 +44,10 @@ public final class SpeedCalculator
          // create the GPX reader
          final GPXReader gpxReader = new GPXReader(gpxFile);
 
-         // add the event handler which computes the lat/long ranges
-         final MinMaxLatLongCalculator minMaxLatLongCalculator = new MinMaxLatLongCalculator();
-         gpxReader.addGPXEventHandler(minMaxLatLongCalculator);
-
-         // read the GPX so we can get the lat/long ranges
-         gpxReader.read();
-
-         // remove the event handler
-         gpxReader.removeEventHandlers();
-
-         // create the elevation dataset
-         ElevationDataset elevationDataset = null;
-         try
-            {
-            elevationDataset = new GridFloatDataset(minMaxLatLongCalculator.getMinLongitude(),
-                                                    minMaxLatLongCalculator.getMaxLongitude(),
-                                                    minMaxLatLongCalculator.getMinLatitude(),
-                                                    minMaxLatLongCalculator.getMaxLatitude());
-            }
-         catch (ElevationDatasetException e)
-            {
-            LOG.error("ElevationDatasetException while trying to create the ElevationDataset", e);
-            }
-
          // add the event handler which will print the speeds
-         gpxReader.addGPXEventHandler(new SpeedPrinter(elevationDataset));
+         gpxReader.addGPXEventHandler(new SpeedPrinter());
 
-         // read the GPX so we can get the lat/long ranges
+         // read the GPX
          gpxReader.read();
 
          final long endTime = System.currentTimeMillis();
@@ -98,26 +70,19 @@ public final class SpeedCalculator
       {
       private static final double MILES_PER_KM = 0.621371192;
 
-      private final ElevationDataset elevationDataset;
       private TrackPoint previousTrackPoint = null;
       private final DistanceCalculator distanceCalculator = SphericalLawOfCosinesDistanceCalculator.getInstance();
       private double runningSumDistanceInMiles = 0;
 
-      private SpeedPrinter(final ElevationDataset elevationDataset) throws ElevationDatasetException
+      private SpeedPrinter()
          {
-
-         this.elevationDataset = elevationDataset;
-         if (elevationDataset != null)
-            {
-            this.elevationDataset.open();
-            }
+         // nothing to do
          }
 
       public void handleTrackPoint(final TrackPoint trackPoint)
          {
          final Double longitude = trackPoint.getLongitude();
          final Double latitude = trackPoint.getLatitude();
-         final Double elevation = (longitude != null && latitude != null && elevationDataset != null) ? elevationDataset.getElevation(longitude, latitude) : null;
 
          final double distanceInMeters = distanceCalculator.compute2DDistance(trackPoint, previousTrackPoint);
          final double distanceInKilometers = distanceInMeters / 1000;
@@ -136,26 +101,17 @@ public final class SpeedCalculator
             milesPerHour = distanceInMiles / elapsedSeconds * 3600.0;
             }
 
-         System.out.printf("%s\t%5f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\n",
+         System.out.printf("%s\t%5f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\t%10.15f\n",
                            trackPoint.getTimestampAsDateTime().toString(UTCHelper.ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS),
                            elapsedSeconds,
                            longitude,
                            latitude,
                            trackPoint.getElevation(),
-                           elevation,
                            distanceInMiles,
                            runningSumDistanceInMiles,
                            milesPerHour);
 
          previousTrackPoint = trackPoint;
-         }
-
-      public void handleGPXEnd()
-         {
-         if (elevationDataset != null)
-            {
-            elevationDataset.close();
-            }
          }
       }
 
