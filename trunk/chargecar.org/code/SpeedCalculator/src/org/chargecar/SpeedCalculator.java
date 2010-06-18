@@ -72,7 +72,7 @@ public final class SpeedCalculator
             LOG.error("ElevationDatasetException while trying to create the ElevationDataset", e);
             }
 
-         // add the event handler which will produce the new GPX
+         // add the event handler which will print the speeds
          gpxReader.addGPXEventHandler(new SpeedPrinter(elevationDataset));
 
          // read the GPX so we can get the lat/long ranges
