@@ -121,20 +121,16 @@ public final class SpeedCalculator
 
          final double distanceInMeters = distanceCalculator.compute2DDistance(trackPoint, previousTrackPoint);
          final double distanceInKilometers = distanceInMeters / 1000;
-         final double elapsedSeconds;
+         final double elapsedSeconds = previousTrackPoint == null ? 0.0 : (trackPoint.getTimestampAsDate().getTime() - previousTrackPoint.getTimestampAsDate().getTime()) / 1000.0;
          final double distanceInMiles;
          final double milesPerHour;
          if (Double.compare(distanceInKilometers, 0) == 0)
             {
-            elapsedSeconds = 0.0;
             distanceInMiles = 0.0;
             milesPerHour = 0.0;
             }
          else
             {
-            elapsedSeconds = (trackPoint.getTimestampAsDate().getTime() -
-                              previousTrackPoint.getTimestampAsDate().getTime()) / 1000.0;
-
             distanceInMiles = distanceInKilometers * MILES_PER_KM;
             runningSumDistanceInMiles += distanceInMiles;
             milesPerHour = distanceInMiles / elapsedSeconds * 3600.0;
