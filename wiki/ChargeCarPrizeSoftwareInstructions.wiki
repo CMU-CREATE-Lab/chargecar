@@ -15,7 +15,9 @@ In Eclipse:
   # In the arguments tab, enter in the software directory of GPX files you wish to test, followed by any policies you wish to test versus the baseline. Be sure not to include a trailing backslash in the directory path, as it will escape the " and break the argument input.
 
 For example:
-"C:\Users\astyler\Desktop\My Dropbox\work\testdata_release_060910\may" NaiveBufferPolicy SpeedPolicy
+"C:\Users\astyler\Desktop\My Dropbox\work\testdata_release_060910\may" !NaiveBufferPolicy !SpeedPolicy
 
 
 For command line users, run the Simulator class with the same arguments above.  We have ANT scripts for building in the source tree.
+
+Once you got the examples running, try creating your own class in org.chargecar.policies, that extends Policy, and get it testing as well, then begin modifying it and trying out your ideas.
