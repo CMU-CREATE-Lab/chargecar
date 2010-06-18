@@ -100,7 +100,7 @@ public final class SpeedCalculator
 
       private final ElevationDataset elevationDataset;
       private TrackPoint previousTrackPoint = null;
-      private final DistanceCalculator distanceCalculator1 = SphericalLawOfCosinesDistanceCalculator.getInstance();
+      private final DistanceCalculator distanceCalculator = SphericalLawOfCosinesDistanceCalculator.getInstance();
       private double runningSumDistanceInMiles = 0;
 
       private SpeedPrinter(final ElevationDataset elevationDataset) throws ElevationDatasetException
@@ -119,7 +119,7 @@ public final class SpeedCalculator
          final Double latitude = trackPoint.getLatitude();
          final Double elevation = (longitude != null && latitude != null && elevationDataset != null) ? elevationDataset.getElevation(longitude, latitude) : null;
 
-         final double distanceInMeters = distanceCalculator1.compute2DDistance(trackPoint, previousTrackPoint);
+         final double distanceInMeters = distanceCalculator.compute2DDistance(trackPoint, previousTrackPoint);
          final double distanceInKilometers = distanceInMeters / 1000;
          final double elapsedSeconds;
          final double distanceInMiles;
