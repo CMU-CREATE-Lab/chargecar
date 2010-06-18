@@ -5,7 +5,7 @@ Here we detail how to install and use the testing suite.
 
 = Details =
 
-The software archive contains an Eclipse project.  For those using Eclipse with a Java IDE, or any other Java IDE, can import the project directly into the IDE, which will manage building.
+The software archive contains an Eclipse project.  Those using Eclipse with a Java IDE, or any other Java IDE, can import the project directly into the IDE, which will manage building.
 
 In Eclipse:
   # Goto File: Import
