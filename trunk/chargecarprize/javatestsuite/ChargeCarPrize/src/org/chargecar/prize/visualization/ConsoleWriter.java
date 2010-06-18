@@ -44,12 +44,12 @@ public class ConsoleWriter implements Visualizer {
 		+ ", charge spent: " + d.format(baseChargeSpentSum));
 	
 	for (int i = 1; i < results.size(); i++) {
-	    double i2Percent = currentSquaredSums.get(i) / i2BaseSum;
+	    double i2Percent = 1 - (currentSquaredSums.get(i) / i2BaseSum);
 	    System.out.println(results.get(i).getPolicyName()
 		    + " i^2, vs. baseline: "
 		    + d.format(currentSquaredSums.get(i)) + " :: "
-		    + p.format(i2Percent));
-	    double rangePercent = baseChargeSpentSum / chargeSpentSums.get(i);
+		    + p.format(i2Percent) + " reduction");
+	    double rangePercent = Math.abs((baseChargeSpentSum / chargeSpentSums.get(i))-1);
 	    System.out.println(results.get(i).getPolicyName()
 		    + " charge spent, range vs. baseline: "
 		    + d.format(chargeSpentSums.get(i)) + " :: "
