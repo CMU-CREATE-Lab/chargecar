@@ -36,7 +36,7 @@ public final class SpeedCalculator
 
       if (LOG.isDebugEnabled())
          {
-         LOG.debug("Converting elevations for GPX [" + gpxFile.getAbsolutePath() + "]...");
+         LOG.debug("Calculating speeds for GPX [" + gpxFile.getAbsolutePath() + "]...");
          }
 
       try
