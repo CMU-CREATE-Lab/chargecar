@@ -126,6 +126,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="Log4j Extras">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/log4j-extras/apache-log4j-extras-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="RxTx">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/rxtx/RXTXcomm.jar!/" />

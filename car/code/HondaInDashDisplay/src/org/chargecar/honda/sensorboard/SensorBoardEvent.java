@@ -24,6 +24,11 @@ public final class SensorBoardEvent
       this.regenValue = regenValue;
       }
 
+   public long getTimestampMilliseconds()
+      {
+      return timestamp.getTime();
+      }
+
    public double getMotorTemperature()
       {
       return motorTemperature;
