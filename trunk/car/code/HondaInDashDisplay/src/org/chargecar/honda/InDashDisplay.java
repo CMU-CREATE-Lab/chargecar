@@ -15,13 +15,19 @@ import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.honda.motorcontroller.FakeMotorController;
+import org.chargecar.honda.motorcontroller.MotorControllerEvent;
+import org.chargecar.honda.motorcontroller.MotorControllerReader;
+import org.chargecar.honda.sensorboard.FakeSensorBoard;
 import org.chargecar.honda.sensorboard.SensorBoardEvent;
 import org.chargecar.honda.sensorboard.SensorBoardReader;
 import org.chargecar.serial.streaming.StreamingSerialPortEventListener;
+import org.chargecar.serial.streaming.StreamingSerialPortReader;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
+@SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class InDashDisplay
    {
    private static final Log LOG = LogFactory.getLog(InDashDisplay.class);
@@ -30,56 +36,73 @@ public final class InDashDisplay
 
    public static void main(final String[] args)
       {
-      SensorBoardReader tempSensorBoardReader;
-      if (args.length < 1)
+      final SensorBoardReader sensorBoardReader;
+      final MotorControllerReader motorControllerReader;
+
+      // see whether we're using real or fake devices
+      if (Boolean.valueOf(System.getProperty("use-fake-devices", "false")))
          {
-         LOG.warn("Sensor Board serial port not specified, so no Sensor Board data will be available!");
-         tempSensorBoardReader = null;
+         LOG.debug("InDashDisplay.main(): Using fake serial devices");
+         sensorBoardReader = (SensorBoardReader)connectToStreamingSerialPortReader("Fake Sensor Board", new SensorBoardReader(new FakeSensorBoard()));
+         motorControllerReader = (MotorControllerReader)connectToStreamingSerialPortReader("Fake Motor Controller", new MotorControllerReader(new FakeMotorController()));
          }
       else
          {
-         tempSensorBoardReader = new SensorBoardReader(args[0]);
-         //tempSensorBoardReader = new SensorBoardReader(new FakeSensorBoard());
-         try
+         LOG.debug("InDashDisplay.main(): Using real serial devices");
+         if (args.length < 2)
             {
-            // TODO: do something better here
-            if (!tempSensorBoardReader.connect())
-               {
-               LOG.error("InDashDisplay.main(): failed to connect to the Sensor Board");
-               tempSensorBoardReader = null;
-               }
+            System.err.println("Usage:  InDashDisplay <SENSOR_BOARD_SERIAL_PORT_NAME> <MOTOR_CONTROLLER_SERIAL_PORT_NAME>");
+            System.exit(1);
             }
-         catch (SerialPortException e)
-            {
-            LOG.error("SerialPortException while connecting to the Sensor Board.  Setting the SensorBoardReader to null, so no reading will be attempted.", e);
-            tempSensorBoardReader = null;
-            }
-         catch (IOException e)
-            {
-            LOG.error("IOException while connecting to the Sensor Board.  Setting the SensorBoardReader to null, so no reading will be attempted.", e);
-            tempSensorBoardReader = null;
-            }
-         catch (Exception e)
-            {
-            LOG.error("Exception while connecting to the Sensor Board.  Setting the SensorBoardReader to null, so no reading will be attempted.", e);
-            tempSensorBoardReader = null;
-            }
+         sensorBoardReader = (SensorBoardReader)connectToStreamingSerialPortReader("Sensor Board", new SensorBoardReader(args[0]));
+         motorControllerReader = (MotorControllerReader)connectToStreamingSerialPortReader("Motor Controller", new MotorControllerReader(args[1]));
          }
 
-      //Schedule a job for the event-dispatching thread: creating and showing this application's GUI.
-      final SensorBoardReader sensorBoardReader = tempSensorBoardReader;
       SwingUtilities.invokeLater(
             new Runnable()
             {
             public void run()
                {
-               new InDashDisplay(sensorBoardReader);
+               new InDashDisplay(sensorBoardReader, motorControllerReader);
                }
             });
       }
 
-   private InDashDisplay(final SensorBoardReader sensorBoardReader)
+   private static StreamingSerialPortReader connectToStreamingSerialPortReader(final String name,
+                                                                               final StreamingSerialPortReader reader)
       {
+      try
+         {
+         // TODO: do something better here
+         if (reader.connect())
+            {
+            return reader;
+            }
+         else
+            {
+            LOG.error("InDashDisplay.connectToStreamingSerialPortReader(): failed to connect to the " + name);
+            }
+         }
+      catch (SerialPortException e)
+         {
+         LOG.error("SerialPortException while connecting to the " + name, e);
+         }
+      catch (IOException e)
+         {
+         LOG.error("IOException while connecting to the " + name, e);
+         }
+      catch (Exception e)
+         {
+         LOG.error("Exception while connecting to the " + name, e);
+         }
+
+      return null;
+      }
+
+   private InDashDisplay(final SensorBoardReader sensorBoardReader,
+                         final MotorControllerReader motorControllerReader)
+      {
+      LOG.debug("InDashDisplay.InDashDisplay(" + sensorBoardReader + "," + motorControllerReader + ")");
       // create and configure the GUI
       final JPanel panel = new JPanel();
       panel.setBackground(Color.WHITE);
@@ -90,19 +113,35 @@ public final class InDashDisplay
 
       if (sensorBoardReader != null)
          {
-         sensorBoardReader.addEventListener(new StreamingSerialPortEventListener<SensorBoardEvent>()
-         {
-         public void handleEvent(final SensorBoardEvent sensorBoardEvent)
-            {
-            if (LOG.isInfoEnabled())
+         sensorBoardReader.addEventListener(
+               new StreamingSerialPortEventListener<SensorBoardEvent>()
                {
-               LOG.info(sensorBoardEvent.toLoggingString());
-               }
-            }
-         });
+               public void handleEvent(final SensorBoardEvent sensorBoardEvent)
+                  {
+                  if (LOG.isInfoEnabled())
+                     {
+                     LOG.info(sensorBoardEvent.toLoggingString());
+                     }
+                  }
+               });
          }
 
-      final LifecycleManager lifecycleManager = new MyLifecycleManager(jFrame, sensorBoardReader);
+      if (motorControllerReader != null)
+         {
+         motorControllerReader.addEventListener(
+               new StreamingSerialPortEventListener<MotorControllerEvent>()
+               {
+               public void handleEvent(final MotorControllerEvent motorControllerEvent)
+                  {
+                  if (LOG.isInfoEnabled())
+                     {
+                     LOG.info(motorControllerEvent.toLoggingString());
+                     }
+                  }
+               });
+         }
+
+      final LifecycleManager lifecycleManager = new MyLifecycleManager(jFrame, sensorBoardReader, motorControllerReader);
 
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -132,7 +171,9 @@ public final class InDashDisplay
       private final Runnable shutdownRunnable;
       private final JFrame jFrame;
 
-      private MyLifecycleManager(final JFrame jFrame, final SensorBoardReader sensorBoardReader)
+      private MyLifecycleManager(final JFrame jFrame,
+                                 final SensorBoardReader sensorBoardReader,
+                                 final MotorControllerReader motorControllerReader)
          {
          this.jFrame = jFrame;
          startupRunnable =
@@ -149,6 +190,16 @@ public final class InDashDisplay
                      {
                      LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the SensorBoardReader...");
                      sensorBoardReader.startReading();
+                     }
+
+                  if (motorControllerReader == null)
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): MotorControllerReader given to the LifecycleManager constructor was null, so Motor Controller data won't be read.");
+                     }
+                  else
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the MotorControllerReader...");
+                     motorControllerReader.startReading();
                      }
                   }
                };
@@ -169,6 +220,18 @@ public final class InDashDisplay
                      sensorBoardReader.stopReading();
                      LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the Sensor Board...");
                      sensorBoardReader.disconnect();
+                     }
+
+                  if (sensorBoardReader == null)
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): MotorControllerReader given to the LifecycleManager constructor was null, so we won't try to shut it down.");
+                     }
+                  else
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Stopping the MotorControllerReader...");
+                     motorControllerReader.stopReading();
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the Motor Controller...");
+                     motorControllerReader.disconnect();
                      }
 
                   System.exit(0);
