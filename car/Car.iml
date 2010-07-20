@@ -6,6 +6,9 @@
       <sourceFolder url="file://$MODULE_DIR$/code/SensorBoardReader/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/InDashDisplay/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/InDashDisplay/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/code/HondaInDashDisplay/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/code/HondaInDashDisplay/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/HondaInDashDisplay/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/build-test" />
       <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/dist" />
