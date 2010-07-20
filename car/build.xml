@@ -20,6 +20,24 @@
       <pathelement path="${swing-layout.jar}"/>
    </path>
 
+   <path id="in-dash-display-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${sensor-board-reader.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-logging.jar}"/>
+      <pathelement path="${create-lab-commons-collections.jar}"/>
+      <pathelement path="${create-lab-commons-serial.jar}"/>
+      <pathelement path="${create-lab-commons-user-interface.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${jfreechart1.jar}"/>
+      <pathelement path="${jfreechart2.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${log4j-extras.jar}"/>
+      <pathelement path="${rxtx.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
+   </path>
+
    <path id="in-dash-display-test-classpath">
       <pathelement path="${in-dash-display.build-test.dir}"/>
 
