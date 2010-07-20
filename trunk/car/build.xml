@@ -4,13 +4,11 @@
    <property file="build.properties"/>
 
    <!-- Paths -->
-   <path id="in-dash-display-classpath">
+   <path id="honda-in-dash-display-classpath">
       <!-- other classes within this project -->
-      <pathelement path="${sensor-board-reader.build.dir}"/>
 
       <!-- third-party jars -->
       <pathelement path="${commons-logging.jar}"/>
-      <pathelement path="${create-lab-commons-collections.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
       <pathelement path="${create-lab-commons-util.jar}"/>
@@ -75,7 +73,14 @@
 
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
-   <target name="clean" depends="clean-in-dash-display,clean-sensor-board-reader" description="clean up everything"/>
+   <target name="clean" depends="clean-honda-in-dash-display,
+                                 clean-in-dash-display,
+                                 clean-sensor-board-reader" description="clean up everything"/>
+
+   <target name="clean-honda-in-dash-display" description="clean up honda-in-dash-display">
+      <delete dir="${honda-in-dash-display.build.dir}"/>
+      <delete dir="${honda-in-dash-display.dist.dir}"/>
+   </target>
 
    <target name="clean-in-dash-display" description="clean up in-dash-display">
       <delete dir="${in-dash-display.build.dir}"/>
@@ -88,8 +93,16 @@
       <delete dir="${sensor-board-reader.dist.dir}"/>
    </target>
 
-   <target name="build" depends="build-sensor-board-reader, build-in-dash-display" description="builds the source code" unless="build-is-complete">
+   <target name="build" depends="build-honda-in-dash-display, build-sensor-board-reader, build-in-dash-display" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
+   </target>
+
+   <target name="build-honda-in-dash-display" description="compiles the java source for honda-in-dash-display" unless="build-honda-in-dash-display-is-complete">
+      <compile-code-and-copy-resources src.dir="${honda-in-dash-display.src.dir}"
+                                       build.dir="${honda-in-dash-display.build.dir}"
+                                       classpath-ref="honda-in-dash-display-classpath"/>
+
+      <property name="build-honda-in-dash-display-is-complete" value="true"/>
    </target>
 
    <target name="build-in-dash-display" depends="build-sensor-board-reader" description="compiles the java source for in-dash-display" unless="build-in-dash-display-is-complete">
@@ -122,8 +135,26 @@
       <property name="build-sensor-board-reader-is-complete" value="true"/>
    </target>
 
-   <target name="dist" depends="dist-sensor-board-reader, dist-in-dash-display" description="builds the project" unless="dist-is-complete">
+   <target name="dist" depends="dist-honda-in-dash-display, dist-sensor-board-reader, dist-in-dash-display" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-honda-in-dash-display" depends="build-honda-in-dash-display" description="builds the honda-in-dash-display" unless="dist-honda-in-dash-display-is-complete">
+      <create-dist component.name="honda-in-dash-display">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.honda.InDashDisplay"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-user-interface.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${jfreechart1.jar}"/>
+            <fileset file="${jfreechart2.jar}"/>
+            <fileset file="${swing-layout.jar}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-honda-in-dash-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-in-dash-display" depends="dist-sensor-board-reader, build-in-dash-display" description="builds the in-dash-display" unless="dist-in-dash-display-is-complete">
