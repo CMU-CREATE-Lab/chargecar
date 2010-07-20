@@ -1,6 +1,7 @@
 package org.chargecar.serial.streaming;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -96,7 +97,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
       scheduledFuture = executor.scheduleAtFixedRate(new StreamingSerialPortSentenceParser(), 0, 1, TimeUnit.MILLISECONDS);
       }
 
-   protected abstract void processSentence(final String sentence);
+   protected abstract void processSentence(final Date timestamp, final String sentence);
 
    public final void stopReading()
       {
@@ -158,7 +159,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
          if (b == null)
             {
-            LOG.debug("StreamingSerialPortReader$StreamingSerialPortSentenceParser.run(): ignoring null byte");
+            LOG.trace("StreamingSerialPortReader$StreamingSerialPortSentenceParser.run(): ignoring null byte");
             }
          else
             {
@@ -174,7 +175,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
                else
                   {
                   // process sentence
-                  processSentence(sentence.toString());
+                  processSentence(new Date(System.currentTimeMillis()), sentence.toString());
 
                   // start building a new sentence
                   sentence = new StringBuilder();

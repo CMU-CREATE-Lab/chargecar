@@ -15,7 +15,6 @@ import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.honda.sensorboard.FakeSensorBoard;
 import org.chargecar.honda.sensorboard.SensorBoardEvent;
 import org.chargecar.honda.sensorboard.SensorBoardReader;
 import org.chargecar.serial.streaming.StreamingSerialPortEventListener;
@@ -39,8 +38,8 @@ public final class InDashDisplay
          }
       else
          {
-         //tempSensorBoardReader = new SensorBoardReader(args[0]);
-         tempSensorBoardReader = new SensorBoardReader(new FakeSensorBoard());
+         tempSensorBoardReader = new SensorBoardReader(args[0]);
+         //tempSensorBoardReader = new SensorBoardReader(new FakeSensorBoard());
          try
             {
             // TODO: do something better here
@@ -95,7 +94,10 @@ public final class InDashDisplay
          {
          public void handleEvent(final SensorBoardEvent sensorBoardEvent)
             {
-            LOG.debug("InDashDisplay.handleEvent(): " + sensorBoardEvent);
+            if (LOG.isInfoEnabled())
+               {
+               LOG.info(sensorBoardEvent.toLoggingString());
+               }
             }
          });
          }
