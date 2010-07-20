@@ -1,5 +1,6 @@
 package org.chargecar.honda.sensorboard;
 
+import java.util.Date;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -40,7 +41,7 @@ public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoa
       super(SENTENCE_DELIMETER, serialIOManager);
       }
 
-   protected void processSentence(final String sentence)
+   protected void processSentence(final Date timestamp, final String sentence)
       {
       if (sentence != null)
          {
@@ -58,7 +59,8 @@ public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoa
                 throttleValue != null &&
                 regenValue != null)
                {
-               publishEvent(new SensorBoardEvent(motorTemperature,
+               publishEvent(new SensorBoardEvent(timestamp,
+                                                 motorTemperature,
                                                  controllerTemperature,
                                                  throttleValue,
                                                  regenValue));
