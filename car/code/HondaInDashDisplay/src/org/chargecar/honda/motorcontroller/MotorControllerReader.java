@@ -43,15 +43,32 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
 
    protected void processSentence(final Date timestamp, final String sentence)
       {
-      LOG.debug("MotorControllerReader.processSentence(" + sentence + ")");
+      if (LOG.isDebugEnabled())
+         {
+         LOG.debug("MotorControllerReader.processSentence(" + sentence + ")");
+         }
 
       if (sentence != null)
          {
          final int errorPos = sentence.indexOf(ERROR_PREFIX);
          if (errorPos > 0)
             {
-            // TODO: handle error
-            LOG.error("ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            final String errorCodeStr = sentence.substring(errorPos + ERROR_PREFIX.length());
+            final Integer errorCode = StringUtils.convertStringToInteger(errorCodeStr.trim());
+
+            if (LOG.isErrorEnabled())
+               {
+               if (errorCode == null)
+                  {
+                  LOG.error("MotorControllerReader.processSentence(): error condition detected, but could not parse sentence [" + sentence + "]");
+                  }
+               else
+                  {
+                  LOG.error("MotorControllerReader.processSentence(): error condition detected, code [" + errorCode + "]");
+                  }
+               }
+
+            publishEvent(MotorControllerEvent.createErrorEvent(timestamp, errorCode == null ? 0 : errorCode));
             }
          else
             {
@@ -66,13 +83,16 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
 
                   if (rpm != null)
                      {
-                     publishEvent(new MotorControllerEvent(timestamp, rpm));
+                     publishEvent(MotorControllerEvent.createNormalEvent(timestamp, rpm));
                      }
                   }
                }
             else
                {
-               LOG.error("MotorControllerReader.processSentence(): Unexpected sentence [" + sentence + "]");
+               if (LOG.isErrorEnabled())
+                  {
+                  LOG.error("MotorControllerReader.processSentence(): Unexpected sentence [" + sentence + "]");
+                  }
                }
             }
          }
