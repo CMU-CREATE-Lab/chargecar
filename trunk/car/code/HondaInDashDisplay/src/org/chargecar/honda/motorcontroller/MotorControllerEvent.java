@@ -3,10 +3,6 @@ package org.chargecar.honda.motorcontroller;
 import java.util.Date;
 
 /**
- * <p>
- * <code>MotorControllerEvent</code> does something...
- * </p>
- *
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public class MotorControllerEvent
@@ -14,12 +10,24 @@ public class MotorControllerEvent
    private static final String TO_STRING_DELIMITER = "\t";
 
    private final Date timestamp;
-   private final int rpm;
+   private final Integer rpm;
+   private final Integer errorCode;
 
-   public MotorControllerEvent(final Date timestamp, final int rpm)
+   public static MotorControllerEvent createNormalEvent(final Date timestamp, final int rpm)
+      {
+      return new MotorControllerEvent(timestamp, rpm, null);
+      }
+
+   public static MotorControllerEvent createErrorEvent(final Date timestamp, final int errorCode)
+      {
+      return new MotorControllerEvent(timestamp, null, errorCode);
+      }
+
+   private MotorControllerEvent(final Date timestamp, final Integer rpm, final Integer errorCode)
       {
       this.timestamp = timestamp;
       this.rpm = rpm;
+      this.errorCode = errorCode;
       }
 
    public long getTimestampMilliseconds()
@@ -27,9 +35,19 @@ public class MotorControllerEvent
       return timestamp.getTime();
       }
 
-   public int getRPM()
+   public Integer getRPM()
       {
       return rpm;
+      }
+
+   public Integer getErrorCode()
+      {
+      return errorCode;
+      }
+
+   public boolean isError()
+      {
+      return errorCode != null;
       }
 
    @Override
@@ -46,7 +64,11 @@ public class MotorControllerEvent
 
       final MotorControllerEvent that = (MotorControllerEvent)o;
 
-      if (rpm != that.rpm)
+      if (errorCode != null ? !errorCode.equals(that.errorCode) : that.errorCode != null)
+         {
+         return false;
+         }
+      if (rpm != null ? !rpm.equals(that.rpm) : that.rpm != null)
          {
          return false;
          }
@@ -62,7 +84,8 @@ public class MotorControllerEvent
    public int hashCode()
       {
       int result = timestamp != null ? timestamp.hashCode() : 0;
-      result = 31 * result + rpm;
+      result = 31 * result + (rpm != null ? rpm.hashCode() : 0);
+      result = 31 * result + (errorCode != null ? errorCode.hashCode() : 0);
       return result;
       }
 
@@ -70,21 +93,23 @@ public class MotorControllerEvent
    public String toString()
       {
       return toString("timestamp=",
-                      ", rpm=");
+                      ", rpm=",
+                      ", errorCode=");
       }
 
    public String toLoggingString()
       {
-      return toString("", TO_STRING_DELIMITER);
+      return toString("", TO_STRING_DELIMITER, TO_STRING_DELIMITER);
       }
 
-   private String toString(final String field1, final String field2)
+   private String toString(final String field1, final String field2, final String field3)
       {
       final StringBuilder sb = new StringBuilder();
       sb.append("MotorControllerEvent");
       sb.append("{");
       sb.append(field1).append(timestamp.getTime());
       sb.append(field2).append(rpm);
+      sb.append(field3).append(errorCode);
       sb.append('}');
       return sb.toString();
       }
