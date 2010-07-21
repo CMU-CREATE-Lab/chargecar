@@ -45,7 +45,7 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
       {
       if (LOG.isDebugEnabled())
          {
-         LOG.debug("MotorControllerReader.processSentence(" + sentence + ")");
+         //LOG.debug("MotorControllerReader.processSentence(" + sentence + ")");
          }
 
       if (sentence != null)

@@ -1,15 +1,13 @@
 package org.chargecar.honda.motorcontroller;
 
 import java.util.Date;
+import org.chargecar.serial.streaming.BaseStreamingSerialPortEvent;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class MotorControllerEvent
+public class MotorControllerEvent extends BaseStreamingSerialPortEvent
    {
-   private static final String TO_STRING_DELIMITER = "\t";
-
-   private final Date timestamp;
    private final Integer rpm;
    private final Integer errorCode;
 
@@ -25,14 +23,9 @@ public class MotorControllerEvent
 
    private MotorControllerEvent(final Date timestamp, final Integer rpm, final Integer errorCode)
       {
-      this.timestamp = timestamp;
+      super(timestamp);
       this.rpm = rpm;
       this.errorCode = errorCode;
-      }
-
-   public long getTimestampMilliseconds()
-      {
-      return timestamp.getTime();
       }
 
    public Integer getRPM()
@@ -61,6 +54,10 @@ public class MotorControllerEvent
          {
          return false;
          }
+      if (!super.equals(o))
+         {
+         return false;
+         }
 
       final MotorControllerEvent that = (MotorControllerEvent)o;
 
@@ -72,10 +69,6 @@ public class MotorControllerEvent
          {
          return false;
          }
-      if (timestamp != null ? !timestamp.equals(that.timestamp) : that.timestamp != null)
-         {
-         return false;
-         }
 
       return true;
       }
@@ -83,7 +76,7 @@ public class MotorControllerEvent
    @Override
    public int hashCode()
       {
-      int result = timestamp != null ? timestamp.hashCode() : 0;
+      int result = super.hashCode();
       result = 31 * result + (rpm != null ? rpm.hashCode() : 0);
       result = 31 * result + (errorCode != null ? errorCode.hashCode() : 0);
       return result;
@@ -107,7 +100,7 @@ public class MotorControllerEvent
       final StringBuilder sb = new StringBuilder();
       sb.append("MotorControllerEvent");
       sb.append("{");
-      sb.append(field1).append(timestamp.getTime());
+      sb.append(field1).append(getTimestampMilliseconds());
       sb.append(field2).append(rpm);
       sb.append(field3).append(errorCode);
       sb.append('}');
