@@ -1,15 +1,13 @@
 package org.chargecar.honda.sensorboard;
 
 import java.util.Date;
+import org.chargecar.serial.streaming.BaseStreamingSerialPortEvent;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class SensorBoardEvent
+public final class SensorBoardEvent extends BaseStreamingSerialPortEvent
    {
-   private static final String TO_STRING_DELIMITER = "\t";
-
-   private final Date timestamp;
    private final double motorTemperature;
    private final double controllerTemperature;
    private final int throttleValue;
@@ -17,16 +15,11 @@ public final class SensorBoardEvent
 
    public SensorBoardEvent(final Date timestamp, final double motorTemperature, final double controllerTemperature, final int throttleValue, final int regenValue)
       {
-      this.timestamp = timestamp;
+      super(timestamp);
       this.motorTemperature = motorTemperature;
       this.controllerTemperature = controllerTemperature;
       this.throttleValue = throttleValue;
       this.regenValue = regenValue;
-      }
-
-   public long getTimestampMilliseconds()
-      {
-      return timestamp.getTime();
       }
 
    public double getMotorTemperature()
@@ -60,6 +53,10 @@ public final class SensorBoardEvent
          {
          return false;
          }
+      if (!super.equals(o))
+         {
+         return false;
+         }
 
       final SensorBoardEvent that = (SensorBoardEvent)o;
 
@@ -79,10 +76,6 @@ public final class SensorBoardEvent
          {
          return false;
          }
-      if (timestamp != null ? !timestamp.equals(that.timestamp) : that.timestamp != null)
-         {
-         return false;
-         }
 
       return true;
       }
@@ -90,9 +83,8 @@ public final class SensorBoardEvent
    @Override
    public int hashCode()
       {
-      int result;
+      int result = super.hashCode();
       long temp;
-      result = timestamp != null ? timestamp.hashCode() : 0;
       temp = motorTemperature != +0.0d ? Double.doubleToLongBits(motorTemperature) : 0L;
       result = 31 * result + (int)(temp ^ (temp >>> 32));
       temp = controllerTemperature != +0.0d ? Double.doubleToLongBits(controllerTemperature) : 0L;
@@ -122,7 +114,7 @@ public final class SensorBoardEvent
       final StringBuilder sb = new StringBuilder();
       sb.append("SensorBoardEvent");
       sb.append("{");
-      sb.append(field1).append(timestamp.getTime());
+      sb.append(field1).append(getTimestampMilliseconds());
       sb.append(field2).append(motorTemperature);
       sb.append(field3).append(controllerTemperature);
       sb.append(field4).append(throttleValue);
