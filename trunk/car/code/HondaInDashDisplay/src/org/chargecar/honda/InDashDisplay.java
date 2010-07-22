@@ -15,10 +15,8 @@ import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.honda.gps.FakeGPS;
 import org.chargecar.honda.gps.NMEAEvent;
 import org.chargecar.honda.gps.NMEAReader;
-import org.chargecar.honda.motorcontroller.FakeMotorController;
 import org.chargecar.honda.motorcontroller.MotorControllerEvent;
 import org.chargecar.honda.motorcontroller.MotorControllerReader;
 import org.chargecar.honda.sensorboard.FakeSensorBoard;
@@ -48,8 +46,8 @@ public final class InDashDisplay
          {
          LOG.debug("InDashDisplay.main(): Using fake serial devices");
          sensorBoardReader = (SensorBoardReader)connectToStreamingSerialPortReader("Fake Sensor Board", new SensorBoardReader(new FakeSensorBoard()));
-         motorControllerReader = (MotorControllerReader)connectToStreamingSerialPortReader("Fake Motor Controller", new MotorControllerReader(new FakeMotorController()));
-         nmeaReader = (NMEAReader)connectToStreamingSerialPortReader("Fake GPS", new NMEAReader(new FakeGPS()));
+         motorControllerReader = null;//(MotorControllerReader)connectToStreamingSerialPortReader("Fake Motor Controller", new MotorControllerReader(new FakeMotorController()));
+         nmeaReader = null;//(NMEAReader)connectToStreamingSerialPortReader("Fake GPS", new NMEAReader(new FakeGPS()));
          }
       else
          {
@@ -156,7 +154,7 @@ public final class InDashDisplay
                   {
                   if (LOG.isInfoEnabled())
                      {
-                     LOG.info("[" + nmeaEvent.toLoggingString() + "]=[" + nmeaEvent + "]");
+                     LOG.info(nmeaEvent.toLoggingString());
                      }
                   }
                });

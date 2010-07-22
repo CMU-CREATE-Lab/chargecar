@@ -1,6 +1,7 @@
 package org.chargecar.honda.motorcontroller;
 
 import java.util.Date;
+import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -10,9 +11,11 @@ import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.serial.streaming.BaseStreamingSerialPortSentenceReadingStrategy;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
+import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -20,7 +23,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
 public class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEvent>
    {
    private static final Log LOG = LogFactory.getLog(MotorControllerReader.class);
-   private static final char SENTENCE_DELIMETER = '\f';
+   private static final Character SENTENCE_DELIMETER = '\f';
    private static final String SENTENCE_PREFIX = ":SRPM";
    private static final String SENTENCE_PREFIX_REGEX = ".:SRPM";
    private static final String ERROR_PREFIX = ":SCode";
@@ -38,18 +41,26 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
 
    public MotorControllerReader(final SerialIOManager serialIOManager)
       {
-      super(SENTENCE_DELIMETER, serialIOManager);
+      super(serialIOManager);
       }
 
-   protected void processSentence(final Date timestamp, final String sentence)
+   @Override
+   protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
+      {
+      return new SentenceReadingStrategy(serialPortIoHelper);
+      }
+
+   protected void processSentence(final Date timestamp, final byte[] sentenceBytes)
       {
       if (LOG.isDebugEnabled())
          {
          //LOG.debug("MotorControllerReader.processSentence(" + sentence + ")");
          }
 
-      if (sentence != null)
+      if (sentenceBytes != null)
          {
+         final String sentence = new String(sentenceBytes);
+
          final int errorPos = sentence.indexOf(ERROR_PREFIX);
          if (errorPos > 0)
             {
@@ -95,6 +106,34 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
                   }
                }
             }
+         }
+      }
+
+   private class SentenceReadingStrategy extends BaseStreamingSerialPortSentenceReadingStrategy
+      {
+      private SentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
+         {
+         super(serialPortIoHelper);
+         }
+
+      public byte[] getNextSentence()
+         {
+         final StringBuilder sb = new StringBuilder();
+
+         Byte b;
+         while ((b = readByte()) != null)
+            {
+            final char c = (char)b.byteValue();
+            if (SENTENCE_DELIMETER.equals(c))
+               {
+               return sb.toString().getBytes();
+               }
+            else
+               {
+               sb.append(c);
+               }
+            }
+         return null;
          }
       }
    }

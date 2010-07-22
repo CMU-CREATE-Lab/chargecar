@@ -1,6 +1,7 @@
 package org.chargecar.honda.sensorboard;
 
 import java.util.Date;
+import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -12,7 +13,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
+import org.chargecar.serial.streaming.StreamingSerialPortPlainTextSentenceReadingStrategy;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
+import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -20,7 +23,6 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
 public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent>
    {
    private static final Log LOG = LogFactory.getLog(SensorBoardReader.class);
-   private static final char SENTENCE_DELIMETER = '\r';
    private static final String WORD_DELIMETER = ",";
    private static final int NUM_WORDS_PER_SENTENCE = 5;
    private static final String KEY_VALUE_DELIMITER = "=";
@@ -38,13 +40,21 @@ public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoa
 
    public SensorBoardReader(final SerialIOManager serialIOManager)
       {
-      super(SENTENCE_DELIMETER, serialIOManager);
+      super(serialIOManager);
       }
 
-   protected void processSentence(final Date timestamp, final String sentence)
+   @Override
+   protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
       {
-      if (sentence != null)
+      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper);
+      }
+
+   public void processSentence(final Date timestamp, final byte[] sentenceBytes)
+      {
+      if (sentenceBytes != null)
          {
+         final String sentence = new String(sentenceBytes);
+
          // process the sentence and then create the SensorBoardEvent
          final String[] words = sentence.split(WORD_DELIMETER);
          if (words.length >= NUM_WORDS_PER_SENTENCE)
