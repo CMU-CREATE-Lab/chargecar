@@ -127,16 +127,19 @@ public final class StreamingSerialPortRecorder extends BaseCommandLineApplicatio
                   final long endTime = System.currentTimeMillis() + numSecondsToRead * 1000;
                   while (System.currentTimeMillis() < endTime)
                      {
-                     final int b = ioHelper.read();
-                     if (b >= 0)
+                     if (ioHelper.isDataAvailable())
                         {
-                        System.out.println((byte)b + (b >= 32 ? " = [" + (char)b + "]" : ""));
-                        outputStream.writeByte(b);
-                        }
-                     else
-                        {
-                        LOG.error("End of stream.");
-                        break;
+                        final int b = ioHelper.read();
+                        if (b >= 0)
+                           {
+                           System.out.println((byte)b + (b >= 32 ? " = [" + (char)b + "]" : ""));
+                           outputStream.writeByte(b);
+                           }
+                        else
+                           {
+                           LOG.error("End of stream.");
+                           break;
+                           }
                         }
                      }
                   serialIOManager.disconnect();
