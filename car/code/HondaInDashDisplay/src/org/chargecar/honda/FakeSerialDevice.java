@@ -1,6 +1,10 @@
 package org.chargecar.honda;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,13 +17,12 @@ public abstract class FakeSerialDevice implements SerialIOManager
    {
    private static final Log LOG = LogFactory.getLog(FakeSerialDevice.class);
 
-   private final SerialPortIOHelper serialPortIOHelper = new MySerialPortIOHelper();
-   private final String fakeData;
+   private final SerialPortIOHelper serialPortIOHelper;
 
    protected FakeSerialDevice(final String fakeData)
       {
       LOG.debug("FakeSerialDevice.FakeSerialDevice(): fake data length = [" + (fakeData == null ? "null" : fakeData.length()) + "]");
-      this.fakeData = fakeData;
+      serialPortIOHelper = new MySerialPortIOHelper(fakeData);
       }
 
    public final boolean connect()
@@ -40,48 +43,46 @@ public abstract class FakeSerialDevice implements SerialIOManager
 
    private final class MySerialPortIOHelper implements SerialPortIOHelper
       {
-      private int currentCharacter = 0;
+      private BufferedInputStream inputStream;
 
-      public int available()
+      private MySerialPortIOHelper(final String fakeData)
          {
-         return 1;
+         inputStream = new BufferedInputStream(new ByteArrayInputStream(fakeData.getBytes()));
          }
 
-      public boolean isDataAvailable()
+      public int available() throws IOException
          {
-         return true;
+         return inputStream.available();
          }
 
-      public int read()
+      public boolean isDataAvailable() throws IOException
          {
-         return getCharacter();
+         return available() > 0;
          }
 
-      public int read(final byte[] buffer)
+      public InputStream getInputStream()
          {
-         buffer[0] = (byte)getCharacter();
+         return inputStream;
+         }
 
-         return 1;
+      public OutputStream getOutputStream()
+         {
+         throw new UnsupportedOperationException("Write is not supported");
+         }
+
+      public int read() throws IOException
+         {
+         return inputStream.read();
+         }
+
+      public int read(final byte[] buffer) throws IOException
+         {
+         return inputStream.read(buffer);
          }
 
       public void write(final byte[] data) throws IOException
          {
          throw new IOException("Write is not supported");
-         }
-
-      public char getCharacter()
-         {
-         // get the character
-         final char c = fakeData.charAt(currentCharacter);
-
-         // increment the pointer, being careful to wrap-around
-         currentCharacter++;
-         if (currentCharacter >= fakeData.length())
-            {
-            currentCharacter = 0;
-            }
-
-         return c;
          }
       }
    }

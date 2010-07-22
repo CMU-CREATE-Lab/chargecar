@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -14,14 +15,15 @@ import edu.cmu.ri.createlab.serial.config.StopBits;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortEventPublisher;
+import org.chargecar.serial.streaming.StreamingSerialPortPlainTextSentenceReadingStrategy;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
+import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
    {
-   private static final char SENTENCE_DELIMETER = '\n';
    private static final String WORD_DELIMITER = ",";
    private static final String DEGREES_SYMBOL = "\u00b0";
    private static final String GPS_FIX_DATA_SENTENCE_PREFIX = "$GPGGA";
@@ -83,13 +85,21 @@ public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
 
    public NMEAReader(final SerialIOManager serialIOManager)
       {
-      super(SENTENCE_DELIMETER, serialIOManager);
+      super(serialIOManager);
       }
 
-   protected void processSentence(final Date timestamp, final String sentence)
+   @Override
+   protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
       {
-      if (sentence != null)
+      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper);
+      }
+
+   protected void processSentence(final Date timestamp, final byte[] sentenceBytes)
+      {
+      if (sentenceBytes != null)
          {
+         final String sentence = new String(sentenceBytes);
+
          final int firstDelimiter = sentence.indexOf(WORD_DELIMITER);
          final String command = sentence.substring(0, firstDelimiter);
          final NMEASentenceProcessor sentenceProcessor = SENTENCE_PROCESSORS.get(command);

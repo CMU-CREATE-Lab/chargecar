@@ -5,11 +5,14 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.serial.SerialPortException;
+import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
@@ -22,23 +25,18 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
    {
    private static final Log LOG = LogFactory.getLog(StreamingSerialPortReader.class);
 
-   private final char sentenceDelimiter;
    private final SerialIOManager serialIIOManager;
    private ScheduledExecutorService executor;
    private ScheduledFuture<?> scheduledFuture;
    private final Set<StreamingSerialPortEventListener<E>> eventListeners = new HashSet<StreamingSerialPortEventListener<E>>();
 
-   public StreamingSerialPortReader(final char sentenceDelimiter,
-                                    final String applicationName,
-                                    final SerialIOConfiguration config)
+   public StreamingSerialPortReader(final String applicationName, final SerialIOConfiguration config)
       {
-      this(sentenceDelimiter, new DefaultSerialIOManager(applicationName, config));
+      this(new DefaultSerialIOManager(applicationName, config));
       }
 
-   public StreamingSerialPortReader(final char sentenceDelimiter,
-                                    final SerialIOManager serialIIOManager)
+   public StreamingSerialPortReader(final SerialIOManager serialIIOManager)
       {
-      this.sentenceDelimiter = sentenceDelimiter;
       this.serialIIOManager = serialIIOManager;
       }
 
@@ -94,10 +92,32 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
    public final void startReading()
       {
-      scheduledFuture = executor.scheduleAtFixedRate(new StreamingSerialPortSentenceParser(), 0, 1, TimeUnit.MILLISECONDS);
+      final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy = createStreamingSerialPortSentenceReadingStrategy(serialIIOManager.getSerialPortIoHelper());
+
+      LOG.debug("StreamingSerialPortReader.startReading(): Scheduling the SentenceReader for execution");
+      scheduledFuture = executor.schedule(new SentenceReader(sentenceReadingStrategy), 0, TimeUnit.MILLISECONDS);
+      try
+         {
+         scheduledFuture.get();
+         LOG.debug("StreamingSerialPortReader.startReading(): SentenceReader has finished executing");
+         }
+      catch (CancellationException e)
+         {
+         LOG.error("CancellationException while waiting for the SentenceReader to finish executing", e);
+         }
+      catch (InterruptedException e)
+         {
+         LOG.error("InterruptedException while waiting for the SentenceReader to finish executing", e);
+         }
+      catch (ExecutionException e)
+         {
+         LOG.error("ExecutionException while waiting for the SentenceReader to finish executing", e);
+         }
       }
 
-   protected abstract void processSentence(final Date timestamp, final String sentence);
+   protected abstract StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper);
+
+   protected abstract void processSentence(final Date timestamp, final byte[] sentence);
 
    public final void stopReading()
       {
@@ -145,78 +165,27 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
          }
       }
 
-   /**
-    * @author Chris Bartley (bartley@cmu.edu)
-    */
-   final class StreamingSerialPortSentenceParser implements Runnable
+   private final class SentenceReader implements Runnable
       {
-      private boolean inSlurpMode = true;
-      private StringBuilder sentence = new StringBuilder();
+      private final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy;
 
-      public final void run()
+      private SentenceReader(final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy)
          {
-         final Byte b = readByte();
-
-         if (b == null)
-            {
-            LOG.trace("StreamingSerialPortReader$StreamingSerialPortSentenceParser.run(): ignoring null byte");
-            }
-         else
-            {
-            // see whether we've found the sentence delimiter
-            if (b.equals((byte)sentenceDelimiter))
-               {
-               // if we're in slurp mode, finding the sentence delimiter means we can get out of slurp mode, otherwise
-               // it means we've found the end of sentence and can process it
-               if (inSlurpMode)
-                  {
-                  inSlurpMode = false;
-                  }
-               else
-                  {
-                  // process sentence
-                  processSentence(new Date(System.currentTimeMillis()), sentence.toString());
-
-                  // start building a new sentence
-                  sentence = new StringBuilder();
-                  }
-               }
-            else
-               {
-               // if we're in slurp mode, then we just ignore this byte, otherwise add it to the sentence we're building
-               if (!inSlurpMode)
-                  {
-                  sentence.append((char)b.byteValue());
-                  }
-               }
-            }
+         this.sentenceReadingStrategy = sentenceReadingStrategy;
          }
 
-      private Byte readByte()
+      public void run()
          {
-         try
-            {
-            if (serialIIOManager.getSerialPortIoHelper().isDataAvailable())
-               {
-               final int b = serialIIOManager.getSerialPortIoHelper().read();
+         // slurp up the first sentence, since it's likely a fragment
+         sentenceReadingStrategy.getNextSentence();
 
-               if (b >= 0)
-                  {
-                  return (byte)b;
-                  }
-               else
-                  {
-                  // todo: handle this better
-                  LOG.error("StreamingSerialPortReader$StreamingSerialPortSentenceParser.readByte(): End of stream reached while trying to read the data");
-                  }
-               }
-            }
-         catch (IOException ignored)
+         byte[] sentence;
+         while ((sentence = sentenceReadingStrategy.getNextSentence()) != null)
             {
-            LOG.error("StreamingSerialPortReader$StreamingSerialPortSentenceParser.readByte(): IOException while trying to read a byte");
+            processSentence(new Date(), sentence);
             }
 
-         return null;
+         LOG.debug("StreamingSerialPortReader$SentenceReader.run(): getNextSentence() returned null, so I'm done reading");
          }
       }
    }
