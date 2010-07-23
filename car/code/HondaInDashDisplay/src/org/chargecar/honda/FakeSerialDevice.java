@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chargecar.serial.streaming.SerialIOManager;
 
 /**
@@ -15,14 +13,16 @@ import org.chargecar.serial.streaming.SerialIOManager;
  */
 public abstract class FakeSerialDevice implements SerialIOManager
    {
-   private static final Log LOG = LogFactory.getLog(FakeSerialDevice.class);
-
    private final SerialPortIOHelper serialPortIOHelper;
 
    protected FakeSerialDevice(final String fakeData)
       {
-      LOG.debug("FakeSerialDevice.FakeSerialDevice(): fake data length = [" + (fakeData == null ? "null" : fakeData.length()) + "]");
-      serialPortIOHelper = new MySerialPortIOHelper(fakeData);
+      this(new BufferedInputStream(new ByteArrayInputStream(fakeData.getBytes())));
+      }
+
+   protected FakeSerialDevice(final InputStream inputStream)
+      {
+      serialPortIOHelper = new MySerialPortIOHelper(new BufferedInputStream(inputStream));
       }
 
    public final boolean connect()
@@ -45,9 +45,9 @@ public abstract class FakeSerialDevice implements SerialIOManager
       {
       private BufferedInputStream inputStream;
 
-      private MySerialPortIOHelper(final String fakeData)
+      private MySerialPortIOHelper(final BufferedInputStream bufferedInputStream)
          {
-         inputStream = new BufferedInputStream(new ByteArrayInputStream(fakeData.getBytes()));
+         inputStream = bufferedInputStream;
          }
 
       public int available() throws IOException

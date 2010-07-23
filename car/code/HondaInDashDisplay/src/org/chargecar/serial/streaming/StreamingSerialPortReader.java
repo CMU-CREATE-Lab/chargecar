@@ -103,6 +103,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
          }
       catch (CancellationException e)
          {
+         // TODO: test cancelling!
          LOG.error("CancellationException while waiting for the SentenceReader to finish executing", e);
          }
       catch (InterruptedException e)

@@ -58,6 +58,7 @@
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
       <entry name="?*.flt" />
+      <entry name="?*.bin" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
