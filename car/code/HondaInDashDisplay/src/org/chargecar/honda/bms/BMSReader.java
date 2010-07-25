@@ -124,16 +124,130 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
       final ByteBuffer cellDataTemperaturesByteBuffer = ByteBuffer.wrap(cellDataTemperatures);
       final ByteBuffer cellDataResistancesByteBuffer = ByteBuffer.wrap(cellDataResistances);
 
-      final BMSFault bmsFault = BMSFault.findByCode(contentGroupByteBuffer.get(0));
-      final int numOnOffCycles = contentGroupByteBuffer.getShort(1);
+      final BMSFault bmsFault = BMSFault.findByCode(ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(0)));
+
+      final int numOnOffCycles = ByteUtils.unsignedShortToInt(contentGroupByteBuffer.getShort(1));
+
       final int timeSincePowerUpInSecs = convertBytesToInt(contentGroupByteBuffer.get(3),
                                                            contentGroupByteBuffer.get(4),
                                                            contentGroupByteBuffer.get(5));
 
+      // reported value is in 100 mA units, so divide by 10 to get A
+      final double sourceCurrentAmps = contentGroupByteBuffer.getShort(6) / 10.0;
+
+      // reported value is in 100 mA units, so divide by 10 to get A
+      final double loadCurrentAmps = contentGroupByteBuffer.getShort(8) / 10.0;
+
+      final byte variousIOState = contentGroupByteBuffer.get(10);
+
+      final int relativeChargeCurrentLimitPercentage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(11)) / 255 * 100;
+
+      final int relativeDischargeCurrentLimitPercentage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(12)) / 255 * 100;
+
+      final boolean areRelaysOn = contentGroupByteBuffer.get(13) != 0; // TODO: is this right?
+
+      final int stateOfChargePercentage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(14));
+
+      // reported value is in 100 mV units, so divide by 10 to get V
+      final double packTotalVoltage = ByteUtils.unsignedShortToInt(contentGroupByteBuffer.getShort(15)) / 10.0;
+
+      final byte missingBankInfo = contentGroupByteBuffer.get(17);
+      final int numOfMissingBanks = missingBankInfo & 0xF;           // low nibble is number of missing banks
+      final int numOfAMissingBank = (missingBankInfo >> 4) & 0xF;    // high nibble is number of a missing bank
+
+      final int numMissingCells = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(18));
+
+      final int numOfAMissingCell = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(19));
+
+      // reported value is in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
+      final double minimumCellVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(20)) / 100.0 + 2.0;
+
+      final int cellNumWithLowestVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(21));
+
+      // reported value is in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
+      final double averageCellVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(22)) / 100.0 + 2.0;
+
+      // reported value is in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
+      final double maximumCellVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(23)) / 100.0d + 2.0d;
+
+      final int cellNumWithHighestVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(24));
+
+      // reported value is in degrees C + 0x80, value is signed -127 to 127 (e.g. 0x80 = 0 degrees C, 0x81 = 1 degrees C, 0x7F = -1)
+      final int minimumCellBoardTemp = (byte)(contentGroupByteBuffer.get(25) - 0x80);
+
+      final int cellBoardNumWithLowestTemp = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(26));
+
+      // reported value is in degrees C + 0x80, value is signed -127 to 127 (e.g. 0x80 = 0 degrees C, 0x81 = 1 degrees C, 0x7F = -1)
+      final int averageCellBoardTemp = (byte)(contentGroupByteBuffer.get(27) - 0x80);
+
+      // reported value is in degrees C + 0x80, value is signed -127 to 127 (e.g. 0x80 = 0 degrees C, 0x81 = 1 degrees C, 0x7F = -1)
+      final int maximumCellBoardTemp = (byte)(contentGroupByteBuffer.get(28) - 0x80);
+
+      final int cellBoardNumWithHighestTemp = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(29));
+
+      final int numLoadsOn = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(30));
+
+      // reported value is in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
+      final double cellVoltageAboveWhichWeTurnOnItsLoad = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(31)) / 100.0 + 2.0;
+
+      // ---------------------------------------------------------------------------------------------------------------
+
+      // TODO: do something with this value
+      final byte auxDataState = auxiliaryGroupByteBuffer.get(0); // TODO: is this right?
+
+      // TODO: do something with this value
+      final byte faultLevelFlags = auxiliaryGroupByteBuffer.get(1); // TODO: is this right?
+
+      // total energy in of the battery, since manufacture. Unsigned, overflows back to 0 [kWH]
+      final int totalEnergyInOfBatterySinceManufacture = convertBytesToInt(auxiliaryGroupByteBuffer.get(2),
+                                                                           auxiliaryGroupByteBuffer.get(3),
+                                                                           auxiliaryGroupByteBuffer.get(4));
+
+      // total energy out of the battery, since manufacture. Unsigned, overflows back to 0 [kWH]
+      final int totalEnergyOutOfBatterySinceManufacture = convertBytesToInt(auxiliaryGroupByteBuffer.get(5),
+                                                                            auxiliaryGroupByteBuffer.get(6),
+                                                                            auxiliaryGroupByteBuffer.get(7));
+
+      final int depthOfDischarge = ByteUtils.unsignedShortToInt(auxiliaryGroupByteBuffer.getShort(8));
+      final int capacity = ByteUtils.unsignedShortToInt(auxiliaryGroupByteBuffer.getShort(10));
+
+      final int stateOfHealthPercentage = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(12));
+
       return new BMSEvent(timestamp,
                           bmsFault,
                           numOnOffCycles,
-                          timeSincePowerUpInSecs);
+                          timeSincePowerUpInSecs,
+                          sourceCurrentAmps,
+                          loadCurrentAmps,
+                          variousIOState,
+                          relativeChargeCurrentLimitPercentage,
+                          relativeDischargeCurrentLimitPercentage,
+                          areRelaysOn,
+                          stateOfChargePercentage,
+                          numOfMissingBanks,
+                          numOfAMissingBank,
+                          numMissingCells,
+                          numOfAMissingCell,
+                          packTotalVoltage,
+                          minimumCellVoltage,
+                          maximumCellVoltage,
+                          averageCellVoltage,
+                          cellNumWithLowestVoltage,
+                          cellNumWithHighestVoltage,
+                          minimumCellBoardTemp,
+                          maximumCellBoardTemp,
+                          averageCellBoardTemp,
+                          cellBoardNumWithLowestTemp,
+                          cellBoardNumWithHighestTemp,
+                          numLoadsOn,
+                          cellVoltageAboveWhichWeTurnOnItsLoad,
+                          auxDataState,
+                          faultLevelFlags,
+                          totalEnergyInOfBatterySinceManufacture,
+                          totalEnergyOutOfBatterySinceManufacture,
+                          depthOfDischarge,
+                          capacity,
+                          stateOfHealthPercentage);
       }
 
    private static int convertBytesToInt(final byte b2, final byte b1, final byte b0)
