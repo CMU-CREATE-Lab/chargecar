@@ -12,6 +12,7 @@ import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.ByteUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.honda.HondaConstants;
 import org.chargecar.serial.streaming.BaseStreamingSerialPortSentenceReadingStrategy;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
@@ -120,9 +121,6 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
 
       final ByteBuffer contentGroupByteBuffer = ByteBuffer.wrap(contentGroup);
       final ByteBuffer auxiliaryGroupByteBuffer = ByteBuffer.wrap(auxiliaryGroup);
-      final ByteBuffer cellDataVoltagesByteBuffer = ByteBuffer.wrap(cellDataVoltages);
-      final ByteBuffer cellDataTemperaturesByteBuffer = ByteBuffer.wrap(cellDataTemperatures);
-      final ByteBuffer cellDataResistancesByteBuffer = ByteBuffer.wrap(cellDataResistances);
 
       final BMSFault bmsFault = BMSFault.findByCode(ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(0)));
 
@@ -213,6 +211,48 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
 
       final int stateOfHealthPercentage = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(12));
 
+      // reported value is in 100 u Ohms units (where 0x01 = 100 uOhms), so multiply by 100 to get uOhms
+      final int packTotalResistance = ByteUtils.unsignedShortToInt(auxiliaryGroupByteBuffer.getShort(13)) * 100;
+
+      // reported value is in 100 u Ohms units (where 0x01 = 100 uOhms), so multiply by 100 to get uOhms
+      final int minimumCellResistance = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(15)) * 100;
+
+      final int cellNumWithMinimumResistance = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(16));
+
+      // reported value is in 100 u Ohms units (where 0x01 = 100 uOhms), so multiply by 100 to get uOhms
+      final int averageCellResistance = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(17)) * 100;
+
+      // reported value is in 100 u Ohms units (where 0x01 = 100 uOhms), so multiply by 100 to get uOhms
+      final int maximumCellResistance = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(18)) * 100;
+
+      final int cellNumWithMaximumResistance = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(19));
+
+      final int numberOfCellsSeen = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(20));
+
+      // reported value is in 100 W units, so multiply by 100 to get W
+      final int power = (int)auxiliaryGroupByteBuffer.getShort(21) * 100;
+
+      // reported values are in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
+      final double[] cellVoltages = new double[HondaConstants.NUM_BATTERIES];
+      for (int i = 0; i < Math.min(cellDataVoltages.length, HondaConstants.NUM_BATTERIES); i++)
+         {
+         cellVoltages[i] = ByteUtils.unsignedByteToInt(cellDataVoltages[i]) / 100.0 + 2.0;
+         }
+
+      // reported values are in degrees C + 0x80, value is signed -127 to 127 (e.g. 0x80 = 0 degrees C, 0x81 = 1 degrees C, 0x7F = -1)
+      final int[] cellTemperatures = new int[HondaConstants.NUM_BATTERIES];
+      for (int i = 0; i < Math.min(cellDataTemperatures.length, HondaConstants.NUM_BATTERIES); i++)
+         {
+         cellTemperatures[i] = (byte)(cellDataTemperatures[i] - 0x80);
+         }
+
+      // reported values are in 100 u Ohms units (where 0x01 = 100 uOhms), so multiply by 100 to get uOhms
+      final int[] cellResistances = new int[HondaConstants.NUM_BATTERIES];
+      for (int i = 0; i < Math.min(cellDataResistances.length, HondaConstants.NUM_BATTERIES); i++)
+         {
+         cellResistances[i] = ByteUtils.unsignedByteToInt(cellDataResistances[i]) * 100;
+         }
+
       return new BMSEvent(timestamp,
                           bmsFault,
                           numOnOffCycles,
@@ -247,7 +287,18 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
                           totalEnergyOutOfBatterySinceManufacture,
                           depthOfDischarge,
                           capacity,
-                          stateOfHealthPercentage);
+                          stateOfHealthPercentage,
+                          packTotalResistance,
+                          minimumCellResistance,
+                          maximumCellResistance,
+                          averageCellResistance,
+                          cellNumWithMinimumResistance,
+                          cellNumWithMaximumResistance,
+                          numberOfCellsSeen,
+                          power,
+                          cellVoltages,
+                          cellTemperatures,
+                          cellResistances);
       }
 
    private static int convertBytesToInt(final byte b2, final byte b1, final byte b0)
