@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 import javax.swing.JPanel;
+import edu.cmu.ri.createlab.util.mvc.View;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)

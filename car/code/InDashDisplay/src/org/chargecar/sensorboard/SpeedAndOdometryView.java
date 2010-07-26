@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.PropertyResourceBundle;
 import javax.swing.JPanel;
+import edu.cmu.ri.createlab.util.mvc.View;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)

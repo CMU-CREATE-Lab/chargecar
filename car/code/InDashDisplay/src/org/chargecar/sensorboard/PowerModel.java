@@ -1,5 +1,7 @@
 package org.chargecar.sensorboard;
 
+import edu.cmu.ri.createlab.util.mvc.Model;
+
 /**
  * <p>
  * <code>PowerModel</code> keeps track of voltage, current, and power data.
