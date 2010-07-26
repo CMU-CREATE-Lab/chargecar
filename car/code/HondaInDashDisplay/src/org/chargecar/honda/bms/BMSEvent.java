@@ -12,8 +12,8 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final BMSFault bmsFault;
    private final int numOnOffCycles;
    private final int timeSincePowerUpInSecs;
-   private final double sourceCurrentAmps;             // signed, positive when discharging
-   private final double loadCurrentAmps;               // signed, positive when discharging
+   private final double sourceCurrentAmps;                     // signed, positive when discharging
+   private final double loadCurrentAmps;                       // signed, positive when discharging
    private final boolean isFanOn;
    private final boolean isLLIMSet;
    private final boolean isHLIMSet;
@@ -31,9 +31,9 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final int numMissingCells;
    private final int numOfAMissingCell;
    private final double packTotalVoltage;                      // 0 to 6.55 kV
-   private final double minimumCellVoltage;                    // 2.0V is min
-   private final double maximumCellVoltage;                    // 2.0V is min
-   private final double averageCellVoltage;                    // 2.0V is min
+   private final double minimumCellVoltage;                    // in V, 2.0V is min
+   private final double maximumCellVoltage;                    // in V, 2.0V is min
+   private final double averageCellVoltage;                    // in V, 2.0V is min
    private final int cellNumWithLowestVoltage;
    private final int cellNumWithHighestVoltage;
    private final int minimumCellBoardTemp;                     // in degrees C
@@ -42,14 +42,25 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final int cellBoardNumWithLowestTemp;               // in degrees C
    private final int cellBoardNumWithHighestTemp;              // in degrees C
    private final int numLoadsOn;
-   private final double cellVoltageAboveWhichWeTurnOnItsLoad;  // 2.0V is min
+   private final double cellVoltageAboveWhichWeTurnOnItsLoad;  // in V, 2.0V is min
    private final byte auxDataState;
    private final byte faultLevelFlags;
-   private final int totalEnergyInOfBatterySinceManufacture;
-   private final int totalEnergyOutOfBatterySinceManufacture;
-   private final int depthOfDischarge;
-   private final int capacity;
-   private final int stateOfHealthPercentage;
+   private final int totalEnergyInOfBatterySinceManufacture;   // kWh
+   private final int totalEnergyOutOfBatterySinceManufacture;  // kWh
+   private final int depthOfDischarge;                         // Ah
+   private final int capacity;                                 // Ah
+   private final int stateOfHealthPercentage;                  // u Ohms
+   private final int packTotalResistance;                      // u Ohms
+   private final int minimumCellResistance;                    // u Ohms
+   private final int maximumCellResistance;                    // u Ohms
+   private final int averageCellResistance;                    // u Ohms
+   private final int cellNumWithMinimumResistance;
+   private final int cellNumWithMaximumResistance;
+   private final int numberOfCellsSeen;
+   private final int power;                                    // W
+   private final double[] cellVoltages;                           // in V, 2.0V is min
+   private final int[] cellTemperatures;                       // in degrees C
+   private final int[] cellResistances;                        // u Ohms
 
    public BMSEvent(final Date timestamp,
                    final BMSFault bmsFault,
@@ -85,7 +96,18 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
                    final int totalEnergyOutOfBatterySinceManufacture,
                    final int depthOfDischarge,
                    final int capacity,
-                   final int stateOfHealthPercentage)
+                   final int stateOfHealthPercentage,
+                   final int packTotalResistance,
+                   final int minimumCellResistance,
+                   final int maximumCellResistance,
+                   final int averageCellResistance,
+                   final int cellNumWithMinimumResistance,
+                   final int cellNumWithMaximumResistance,
+                   final int numberOfCellsSeen,
+                   final int power,
+                   final double[] cellVoltages,
+                   final int[] cellTemperatures,
+                   final int[] cellResistances)
       {
       super(timestamp);
       this.bmsFault = bmsFault;
@@ -130,6 +152,17 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       this.depthOfDischarge = depthOfDischarge;
       this.capacity = capacity;
       this.stateOfHealthPercentage = stateOfHealthPercentage;
+      this.packTotalResistance = packTotalResistance;
+      this.minimumCellResistance = minimumCellResistance;
+      this.maximumCellResistance = maximumCellResistance;
+      this.averageCellResistance = averageCellResistance;
+      this.cellNumWithMinimumResistance = cellNumWithMinimumResistance;
+      this.cellNumWithMaximumResistance = cellNumWithMaximumResistance;
+      this.numberOfCellsSeen = numberOfCellsSeen;
+      this.power = power;
+      this.cellVoltages = cellVoltages.clone();
+      this.cellTemperatures = cellTemperatures.clone();
+      this.cellResistances = cellResistances.clone();
       }
 
    @Override
@@ -178,8 +211,49 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       sb.append(", depthOfDischarge=").append(depthOfDischarge);
       sb.append(", capacity=").append(capacity);
       sb.append(", stateOfHealthPercentage=").append(stateOfHealthPercentage);
+      sb.append(", packTotalResistance=").append(packTotalResistance);
+      sb.append(", minimumCellResistance=").append(minimumCellResistance);
+      sb.append(", maximumCellResistance=").append(maximumCellResistance);
+      sb.append(", averageCellResistance=").append(averageCellResistance);
+      sb.append(", cellNumWithMinimumResistance=").append(cellNumWithMinimumResistance);
+      sb.append(", cellNumWithMaximumResistance=").append(cellNumWithMaximumResistance);
+      sb.append(", numberOfCellsSeen=").append(numberOfCellsSeen);
+      sb.append(", power=").append(power);
+
+      appendArrayData(sb, "voltages", cellVoltages);
+      appendArrayData(sb, "temperatures", cellTemperatures);
+      appendArrayData(sb, "resistances", cellResistances);
+
       sb.append('}');
       return sb.toString();
+      }
+
+   private void appendArrayData(final StringBuilder sb, final String label, final double[] a)
+      {
+      sb.append(", " + label + "=").append("[");
+      for (int i = 0; i < a.length; i++)
+         {
+         sb.append(a[i]);
+         if (i < a.length - 1)
+            {
+            sb.append(", ");
+            }
+         }
+      sb.append("").append("]");
+      }
+
+   private void appendArrayData(final StringBuilder sb, final String label, final int[] a)
+      {
+      sb.append(", " + label + "=").append("[");
+      for (int i = 0; i < a.length; i++)
+         {
+         sb.append(a[i]);
+         if (i < a.length - 1)
+            {
+            sb.append(", ");
+            }
+         }
+      sb.append("").append("]");
       }
 
    @Override
