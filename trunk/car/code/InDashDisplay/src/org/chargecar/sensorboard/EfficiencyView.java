@@ -1,6 +1,7 @@
 package org.chargecar.sensorboard;
 
 import java.util.PropertyResourceBundle;
+import edu.cmu.ri.createlab.util.mvc.View;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)

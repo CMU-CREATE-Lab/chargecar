@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
+import edu.cmu.ri.createlab.util.mvc.View;
 import org.jfree.chart.ChartMouseEvent;
 
 /**

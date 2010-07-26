@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionEventListener;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionState;
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManager;
+import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

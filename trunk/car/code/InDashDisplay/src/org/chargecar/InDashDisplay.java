@@ -22,6 +22,7 @@ import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityM
 import edu.cmu.ri.createlab.userinterface.component.Spinner;
 import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
+import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.gps.GPSEventListener;
