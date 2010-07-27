@@ -3,7 +3,8 @@ package org.chargecar.serial.streaming;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public interface StreamingSerialPortEventListener<E>
+public interface StreamingSerialPortEventListener<E> extends StreamingSerialPortDeviceConnectionStateListener,
+                                                             StreamingSerialPortDeviceReadingStateListener
    {
-   void handleEvent(final E sensorBoardEvent);
+   void handleDataEvent(final E event);
    }

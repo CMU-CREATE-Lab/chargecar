@@ -1,13 +1,13 @@
 package org.chargecar.honda.sensorboard;
 
-import org.chargecar.honda.FakeSerialDevice;
+import org.chargecar.serial.streaming.FakeStreamingSerialDevice;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class FakeSensorBoard extends FakeSerialDevice
+class FakeSensorBoard extends FakeStreamingSerialDevice
    {
-   public FakeSensorBoard()
+   FakeSensorBoard()
       {
       super(DATA);
       }

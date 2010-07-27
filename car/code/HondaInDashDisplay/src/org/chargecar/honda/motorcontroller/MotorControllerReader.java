@@ -20,7 +20,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEvent>
+class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEvent>
    {
    private static final Log LOG = LogFactory.getLog(MotorControllerReader.class);
    private static final Character SENTENCE_DELIMETER = '\f';
@@ -28,7 +28,7 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
    private static final String SENTENCE_PREFIX_REGEX = ".:SRPM";
    private static final String ERROR_PREFIX = ":SCode";
 
-   public MotorControllerReader(final String serialPortName)
+   MotorControllerReader(final String serialPortName)
       {
       this(new DefaultSerialIOManager(MotorControllerReader.class.getClass().getSimpleName(),
                                       new SerialIOConfiguration(serialPortName,
@@ -39,7 +39,7 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
                                                                 FlowControl.NONE)));
       }
 
-   public MotorControllerReader(final SerialIOManager serialIOManager)
+   MotorControllerReader(final SerialIOManager serialIOManager)
       {
       super(serialIOManager);
       }
@@ -79,7 +79,7 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
                   }
                }
 
-            publishEvent(MotorControllerEvent.createErrorEvent(timestamp, errorCode == null ? 0 : errorCode));
+            publishDataEvent(MotorControllerEvent.createErrorEvent(timestamp, errorCode == null ? 0 : errorCode));
             }
          else
             {
@@ -94,7 +94,7 @@ public class MotorControllerReader extends StreamingSerialPortReader<MotorContro
 
                   if (rpm != null)
                      {
-                     publishEvent(MotorControllerEvent.createNormalEvent(timestamp, rpm));
+                     publishDataEvent(MotorControllerEvent.createNormalEvent(timestamp, rpm));
                      }
                   }
                }

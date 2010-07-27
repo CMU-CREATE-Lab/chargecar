@@ -65,6 +65,11 @@ public enum BMSFault
       return message;
       }
 
+   public String getMessageAndCode()
+      {
+      return message + " (" + code + ")";
+      }
+
    @Override
    public String toString()
       {

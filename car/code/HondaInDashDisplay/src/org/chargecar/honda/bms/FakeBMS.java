@@ -1,13 +1,13 @@
 package org.chargecar.honda.bms;
 
-import org.chargecar.honda.FakeSerialDevice;
+import org.chargecar.serial.streaming.FakeStreamingSerialDevice;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class FakeBMS extends FakeSerialDevice
+class FakeBMS extends FakeStreamingSerialDevice
    {
-   public FakeBMS()
+   FakeBMS()
       {
       super(FakeBMS.class.getResourceAsStream("/org/chargecar/honda/bms/honda-bms-300secs.bin"));
       }

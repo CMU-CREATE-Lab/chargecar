@@ -20,14 +20,14 @@ import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent>
+final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent>
    {
    private static final Log LOG = LogFactory.getLog(SensorBoardReader.class);
    private static final String WORD_DELIMETER = ",";
    private static final int NUM_WORDS_PER_SENTENCE = 5;
    private static final String KEY_VALUE_DELIMITER = "=";
 
-   public SensorBoardReader(final String serialPortName)
+   SensorBoardReader(final String serialPortName)
       {
       this(new DefaultSerialIOManager(SensorBoardReader.class.getClass().getSimpleName(),
                                       new SerialIOConfiguration(serialPortName,
@@ -38,7 +38,7 @@ public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoa
                                                                 FlowControl.NONE)));
       }
 
-   public SensorBoardReader(final SerialIOManager serialIOManager)
+   SensorBoardReader(final SerialIOManager serialIOManager)
       {
       super(serialIOManager);
       }
@@ -69,11 +69,11 @@ public final class SensorBoardReader extends StreamingSerialPortReader<SensorBoa
                 throttleValue != null &&
                 regenValue != null)
                {
-               publishEvent(new SensorBoardEvent(timestamp,
-                                                 motorTemperature,
-                                                 controllerTemperature,
-                                                 throttleValue,
-                                                 regenValue));
+               publishDataEvent(new SensorBoardEvent(timestamp,
+                                                     motorTemperature,
+                                                     controllerTemperature,
+                                                     throttleValue,
+                                                     regenValue));
                }
             }
          else

@@ -39,8 +39,8 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final int minimumCellBoardTemp;                     // in degrees C
    private final int maximumCellBoardTemp;                     // in degrees C
    private final int averageCellBoardTemp;                     // in degrees C
-   private final int cellBoardNumWithLowestTemp;               // in degrees C
-   private final int cellBoardNumWithHighestTemp;              // in degrees C
+   private final int cellBoardNumWithLowestTemp;
+   private final int cellBoardNumWithHighestTemp;
    private final int numLoadsOn;
    private final double cellVoltageAboveWhichWeTurnOnItsLoad;  // in V, 2.0V is min
    private final byte auxDataState;
@@ -49,7 +49,7 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final int totalEnergyOutOfBatterySinceManufacture;  // kWh
    private final int depthOfDischarge;                         // Ah
    private final int capacity;                                 // Ah
-   private final int stateOfHealthPercentage;                  // u Ohms
+   private final int stateOfHealthPercentage;
    private final int packTotalResistance;                      // u Ohms
    private final int minimumCellResistance;                    // u Ohms
    private final int maximumCellResistance;                    // u Ohms
@@ -58,7 +58,7 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final int cellNumWithMaximumResistance;
    private final int numberOfCellsSeen;
    private final int power;                                    // W
-   private final double[] cellVoltages;                           // in V, 2.0V is min
+   private final double[] cellVoltages;                        // in V, 2.0V is min
    private final int[] cellTemperatures;                       // in degrees C
    private final int[] cellResistances;                        // u Ohms
 
@@ -165,6 +165,262 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       this.cellResistances = cellResistances.clone();
       }
 
+   public BMSFault getBMSFault()
+      {
+      return bmsFault;
+      }
+
+   public int getNumOnOffCycles()
+      {
+      return numOnOffCycles;
+      }
+
+   public int getTimeSincePowerUpInSecs()
+      {
+      return timeSincePowerUpInSecs;
+      }
+
+   /** Returns a signed value in amps, positive when discharging. */
+   public double getSourceCurrentAmps()
+      {
+      return sourceCurrentAmps;
+      }
+
+   /** Returns a signed value in amps, positive when discharging. */
+   public double getLoadCurrentAmps()
+      {
+      return loadCurrentAmps;
+      }
+
+   public boolean isFanOn()
+      {
+      return isFanOn;
+      }
+
+   public boolean isLLIMSet()
+      {
+      return isLLIMSet;
+      }
+
+   public boolean isHLIMSet()
+      {
+      return isHLIMSet;
+      }
+
+   public boolean isCANContactorRequest()
+      {
+      return isCANContactorRequest;
+      }
+
+   public boolean isHardwareContactorRequest()
+      {
+      return isHardwareContactorRequest;
+      }
+
+   public boolean isInterlockTripped()
+      {
+      return isInterlockTripped;
+      }
+
+   public boolean isPowerFromLoad()
+      {
+      return isPowerFromLoad;
+      }
+
+   public boolean isPowerFromSource()
+      {
+      return isPowerFromSource;
+      }
+
+   /** Returns the maximum regen and charging current accepted as a percentage. */
+   public int getRelativeChargeCurrentLimitPercentage()
+      {
+      return relativeChargeCurrentLimitPercentage;
+      }
+
+   /** Returns the maximum discharging current accepted as a percentage. */
+   public int getRelativeDischargeCurrentLimitPercentage()
+      {
+      return relativeDischargeCurrentLimitPercentage;
+      }
+
+   public boolean isAreRelaysOn()
+      {
+      return areRelaysOn;
+      }
+
+   public int getStateOfChargePercentage()
+      {
+      return stateOfChargePercentage;
+      }
+
+   public int getNumOfMissingBanks()
+      {
+      return numOfMissingBanks;
+      }
+
+   public int getNumOfAMissingBank()
+      {
+      return numOfAMissingBank;
+      }
+
+   public int getNumMissingCells()
+      {
+      return numMissingCells;
+      }
+
+   public int getNumOfAMissingCell()
+      {
+      return numOfAMissingCell;
+      }
+
+   /** Returns the total voltage of the pack, within the range [0, 6.55] kV. */
+   public double getPackTotalVoltage()
+      {
+      return packTotalVoltage;
+      }
+
+   /** Returns the minimum cell voltage, with the lowest possible value being 2.0 volts. */
+   public double getMinimumCellVoltage()
+      {
+      return minimumCellVoltage;
+      }
+
+   /** Returns the maximum cell voltage, with the lowest possible value being 2.0 volts. */
+   public double getMaximumCellVoltage()
+      {
+      return maximumCellVoltage;
+      }
+
+   /** Returns the average cell voltage, with the lowest possible value being 2.0 volts. */
+   public double getAverageCellVoltage()
+      {
+      return averageCellVoltage;
+      }
+
+   public int getCellNumWithLowestVoltage()
+      {
+      return cellNumWithLowestVoltage;
+      }
+
+   public int getCellNumWithHighestVoltage()
+      {
+      return cellNumWithHighestVoltage;
+      }
+
+   /** Returns the minimum cell temperature in degrees Celsius. */
+   public int getMinimumCellBoardTemp()
+      {
+      return minimumCellBoardTemp;
+      }
+
+   /** Returns the maximum cell temperature in degrees Celsius. */
+   public int getMaximumCellBoardTemp()
+      {
+      return maximumCellBoardTemp;
+      }
+
+   /** Returns the average cell temperature in degrees Celsius. */
+   public int getAverageCellBoardTemp()
+      {
+      return averageCellBoardTemp;
+      }
+
+   public int getCellBoardNumWithLowestTemp()
+      {
+      return cellBoardNumWithLowestTemp;
+      }
+
+   public int getCellBoardNumWithHighestTemp()
+      {
+      return cellBoardNumWithHighestTemp;
+      }
+
+   public int getNumLoadsOn()
+      {
+      return numLoadsOn;
+      }
+
+   /** Returns the voltage, with the lowest possible value being 2.0 volts. */
+   public double getCellVoltageAboveWhichWeTurnOnItsLoad()
+      {
+      return cellVoltageAboveWhichWeTurnOnItsLoad;
+      }
+
+   /** Returns the total energy in (kWh) of the battery since manufacture. */
+   public int getTotalEnergyInOfBatterySinceManufacture()
+      {
+      return totalEnergyInOfBatterySinceManufacture;
+      }
+
+   /** Returns the total energy out (kWh) of the battery since manufacture. */
+   public int getTotalEnergyOutOfBatterySinceManufacture()
+      {
+      return totalEnergyOutOfBatterySinceManufacture;
+      }
+
+   /** Returns the depth of discharge in Ah. */
+   public int getDepthOfDischarge()
+      {
+      return depthOfDischarge;
+      }
+
+   /** Returns the capacity in Ah. */
+   public int getCapacity()
+      {
+      return capacity;
+      }
+
+   public int getStateOfHealthPercentage()
+      {
+      return stateOfHealthPercentage;
+      }
+
+   /** Returns the total resistance of the pack in u Ohms. */
+   public int getPackTotalResistance()
+      {
+      return packTotalResistance;
+      }
+
+   /** Returns the minimum cell resistance u Ohms. */
+   public int getMinimumCellResistance()
+      {
+      return minimumCellResistance;
+      }
+
+   /** Returns the maximum cell resistance u Ohms. */
+   public int getMaximumCellResistance()
+      {
+      return maximumCellResistance;
+      }
+
+   /** Returns the average cell resistance u Ohms. */
+   public int getAverageCellResistance()
+      {
+      return averageCellResistance;
+      }
+
+   public int getCellNumWithMinimumResistance()
+      {
+      return cellNumWithMinimumResistance;
+      }
+
+   public int getCellNumWithMaximumResistance()
+      {
+      return cellNumWithMaximumResistance;
+      }
+
+   public int getNumberOfCellsSeen()
+      {
+      return numberOfCellsSeen;
+      }
+
+   /** Returns the power in W. */
+   public int getPower()
+      {
+      return power;
+      }
+
    @Override
    public String toString()
       {
@@ -230,7 +486,7 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
 
    private void appendArrayData(final StringBuilder sb, final String label, final double[] a)
       {
-      sb.append(", " + label + "=").append("[");
+      sb.append(", ").append(label).append("=").append("[");
       for (int i = 0; i < a.length; i++)
          {
          sb.append(a[i]);
@@ -244,7 +500,7 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
 
    private void appendArrayData(final StringBuilder sb, final String label, final int[] a)
       {
-      sb.append(", " + label + "=").append("[");
+      sb.append(", ").append(label).append("=").append("[");
       for (int i = 0; i < a.length; i++)
          {
          sb.append(a[i]);

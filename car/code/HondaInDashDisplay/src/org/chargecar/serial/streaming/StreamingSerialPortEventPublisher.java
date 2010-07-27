@@ -5,5 +5,7 @@ package org.chargecar.serial.streaming;
  */
 public interface StreamingSerialPortEventPublisher<E>
    {
-   void publishEvent(final E event);
+   void addStreamingSerialPortEventListener(final StreamingSerialPortEventListener<E> listener);
+
+   void removeStreamingSerialPortEventListener(final StreamingSerialPortEventListener<E> listener);
    }

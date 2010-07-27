@@ -1,13 +1,13 @@
 package org.chargecar.honda.motorcontroller;
 
-import org.chargecar.honda.FakeSerialDevice;
+import org.chargecar.serial.streaming.FakeStreamingSerialDevice;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class FakeMotorController extends FakeSerialDevice
+class FakeMotorController extends FakeStreamingSerialDevice
    {
-   public FakeMotorController()
+   FakeMotorController()
       {
       super(DATA);
       }
