@@ -24,6 +24,7 @@ import org.chargecar.honda.motorcontroller.MotorControllerView;
 import org.chargecar.honda.sensorboard.SensorBoardModel;
 import org.chargecar.honda.sensorboard.SensorBoardView;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
+import org.jdesktop.layout.GroupLayout;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -108,83 +109,130 @@ public final class InDashDisplayView extends JPanel
       row2.setBackground(Color.WHITE);
       row2.setLayout(new BoxLayout(row2, BoxLayout.X_AXIS));
       row2.add(Box.createGlue());
-      row2.add(sensorBoardView.getMotorTempGauge());
-      row2.add(Box.createGlue());
-      row2.add(sensorBoardView.getMotorControllerTempGauge());
-      row2.add(Box.createGlue());
-      row2.add(motorControllerView.getRpmGauge());
+      row2.add(bmsView.getFaultStatusPanel());
       row2.add(Box.createGlue());
 
-      final JPanel row3 = new JPanel();
-      row3.setBackground(Color.WHITE);
-      row3.setLayout(new BoxLayout(row3, BoxLayout.X_AXIS));
-      row3.add(Box.createGlue());
-      row3.add(bmsView.getMinimumCellTempGauge());
-      row3.add(Box.createGlue());
-      row3.add(bmsView.getMaximumCellTempGauge());
-      row3.add(Box.createGlue());
-      row3.add(bmsView.getAverageCellTempGauge());
-      row3.add(Box.createGlue());
-      row3.add(bmsView.getCellNumWithLowestTempGauge());
-      row3.add(Box.createGlue());
-      row3.add(bmsView.getCellNumWithHighestTempGauge());
-      row3.add(Box.createGlue());
+      final Component horizontalSpacer1 = SwingUtils.createRigidSpacer(30);
+      final Component horizontalSpacer2 = SwingUtils.createRigidSpacer(30);
+      final Component horizontalSpacer3 = SwingUtils.createRigidSpacer(30);
+      final Component horizontalSpacer4 = SwingUtils.createRigidSpacer(30);
 
-      final JPanel row4 = new JPanel();
-      row4.setBackground(Color.WHITE);
-      row4.setLayout(new BoxLayout(row4, BoxLayout.X_AXIS));
-      row4.add(Box.createGlue());
-      row4.add(bmsView.getPackTotalVoltageGauge());
-      row4.add(Box.createGlue());
-      row4.add(bmsView.getMinimumCellVoltageGauge());
-      row4.add(Box.createGlue());
-      row4.add(bmsView.getMaximumCellVoltageGauge());
-      row4.add(Box.createGlue());
-      row4.add(bmsView.getAverageCellVoltageGauge());
-      row4.add(Box.createGlue());
-      row4.add(bmsView.getCellNumWithLowestVoltageGauge());
-      row4.add(Box.createGlue());
-      row4.add(bmsView.getCellNumWithHighestVoltageGauge());
-      row4.add(Box.createGlue());
+      final Component verticalSpacer1 = SwingUtils.createRigidSpacer(20);
+      final Component verticalSpacer2 = SwingUtils.createRigidSpacer(20);
+      final Component verticalSpacer3 = SwingUtils.createRigidSpacer(20);
+      final Component verticalSpacer4 = SwingUtils.createRigidSpacer(20);
 
-      final JPanel row5 = new JPanel();
-      row5.setBackground(Color.WHITE);
-      row5.setLayout(new BoxLayout(row5, BoxLayout.X_AXIS));
-      row5.add(Box.createGlue());
-      row5.add(bmsView.getSourceCurrentAmpsGauge());
-      row5.add(Box.createGlue());
-      row5.add(bmsView.getLoadCurrentAmpsGauge());
-      row5.add(Box.createGlue());
-      row5.add(bmsView.getDepthOfDischargeGauge());
-      row5.add(Box.createGlue());
-      row5.add(bmsView.getCapacityGauge());
-      row5.add(Box.createGlue());
-
-      final JPanel row6 = new JPanel();
-      row6.setBackground(Color.WHITE);
-      row6.setLayout(new BoxLayout(row6, BoxLayout.X_AXIS));
-      row6.add(Box.createGlue());
-      row6.add(bmsView.getPowerGauge());
-      row6.add(Box.createGlue());
-      row6.add(bmsView.getStateOfChargeGauge());
-      row6.add(Box.createGlue());
-      row6.add(bmsView.getStateOfHealthGauge());
-      row6.add(Box.createGlue());
-      row6.add(bmsView.getLifetimeEnergyInGauge());
-      row6.add(Box.createGlue());
-      row6.add(bmsView.getLifetimeEnergyOutGauge());
-      row6.add(Box.createGlue());
-
-      final JPanel row7 = new JPanel();
-      row7.setBackground(Color.WHITE);
-      row7.setLayout(new BoxLayout(row7, BoxLayout.X_AXIS));
-      row7.add(Box.createGlue());
-      row7.add(bmsView.getLLIMSetGauge());
-      row7.add(Box.createGlue());
-      row7.add(bmsView.getFaultStatusPanel());
-      row7.add(Box.createGlue());
-      row7.add(bmsView.getHLIMSetGauge());
-      row7.add(Box.createGlue());
+      final JPanel grid = new JPanel();
+      final GroupLayout layout = new GroupLayout(grid);
+      grid.setLayout(layout);
+      layout.setHorizontalGroup(
+            layout.createSequentialGroup()
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(sensorBoardView.getMotorTempGauge())
+                        .add(horizontalSpacer1)
+                        .add(bmsView.getMinimumCellTempGauge())
+                        .add(horizontalSpacer2)
+                        .add(bmsView.getMinimumCellVoltageGauge())
+                        .add(horizontalSpacer3)
+                        .add(bmsView.getPackTotalVoltageGauge())
+                        .add(horizontalSpacer4)
+                        .add(bmsView.getPowerGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(verticalSpacer1)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(sensorBoardView.getMotorControllerTempGauge())
+                        .add(bmsView.getMaximumCellTempGauge())
+                        .add(bmsView.getMaximumCellVoltageGauge())
+                        .add(bmsView.getSourceCurrentAmpsGauge())
+                        .add(bmsView.getStateOfChargeGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(verticalSpacer2)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(motorControllerView.getRpmGauge())
+                        .add(bmsView.getAverageCellTempGauge())
+                        .add(bmsView.getAverageCellVoltageGauge())
+                        .add(bmsView.getLoadCurrentAmpsGauge())
+                        .add(bmsView.getStateOfHealthGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(verticalSpacer3)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(bmsView.getLLIMSetGauge())
+                        .add(bmsView.getCellNumWithLowestTempGauge())
+                        .add(bmsView.getCellNumWithLowestVoltageGauge())
+                        .add(bmsView.getDepthOfDischargeGauge())
+                        .add(bmsView.getLifetimeEnergyInGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(verticalSpacer4)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                  .add(bmsView.getHLIMSetGauge())
+                  .add(bmsView.getCellNumWithHighestTempGauge())
+                  .add(bmsView.getCellNumWithHighestVoltageGauge())
+                  .add(bmsView.getCapacityGauge())
+                  .add(bmsView.getLifetimeEnergyOutGauge())
+            )
+      );
+      layout.setVerticalGroup(
+            layout.createSequentialGroup()
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(sensorBoardView.getMotorTempGauge())
+                        .add(verticalSpacer1)
+                        .add(sensorBoardView.getMotorControllerTempGauge())
+                        .add(verticalSpacer2)
+                        .add(motorControllerView.getRpmGauge())
+                        .add(verticalSpacer3)
+                        .add(bmsView.getLLIMSetGauge())
+                        .add(verticalSpacer4)
+                        .add(bmsView.getHLIMSetGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(horizontalSpacer1)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(bmsView.getMinimumCellTempGauge())
+                        .add(bmsView.getMaximumCellTempGauge())
+                        .add(bmsView.getAverageCellTempGauge())
+                        .add(bmsView.getCellNumWithLowestTempGauge())
+                        .add(bmsView.getCellNumWithHighestTempGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(horizontalSpacer2)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(bmsView.getMinimumCellVoltageGauge())
+                        .add(bmsView.getMaximumCellVoltageGauge())
+                        .add(bmsView.getAverageCellVoltageGauge())
+                        .add(bmsView.getCellNumWithLowestVoltageGauge())
+                        .add(bmsView.getCellNumWithHighestVoltageGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(horizontalSpacer3)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(bmsView.getPackTotalVoltageGauge())
+                        .add(bmsView.getSourceCurrentAmpsGauge())
+                        .add(bmsView.getLoadCurrentAmpsGauge())
+                        .add(bmsView.getDepthOfDischargeGauge())
+                        .add(bmsView.getCapacityGauge())
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                        .add(horizontalSpacer4)
+                  )
+                  .add(layout.createParallelGroup(GroupLayout.LEADING)
+                  .add(bmsView.getPowerGauge())
+                  .add(bmsView.getStateOfChargeGauge())
+                  .add(bmsView.getStateOfHealthGauge())
+                  .add(bmsView.getLifetimeEnergyInGauge())
+                  .add(bmsView.getLifetimeEnergyOutGauge())
+            )
+      );
 
       // register self as a connection state listener for the various models so we can display connection status
       bmsModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(bmsConnectionState));
@@ -195,18 +243,10 @@ public final class InDashDisplayView extends JPanel
       this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
       this.add(Box.createGlue());
       this.add(row1);
-      this.add(Box.createGlue());
+      this.add(SwingUtils.createRigidSpacer(20));
       this.add(row2);
-      this.add(Box.createGlue());
-      this.add(row3);
-      this.add(Box.createGlue());
-      this.add(row4);
-      this.add(Box.createGlue());
-      this.add(row5);
-      this.add(Box.createGlue());
-      this.add(row6);
-      this.add(Box.createGlue());
-      this.add(row7);
+      this.add(SwingUtils.createRigidSpacer(20));
+      this.add(grid);
       this.add(Box.createGlue());
       }
 
