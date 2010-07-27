@@ -2,6 +2,7 @@ package org.chargecar.honda.motorcontroller;
 
 import java.util.PropertyResourceBundle;
 import org.chargecar.honda.Gauge;
+import org.chargecar.honda.HondaConstants;
 import org.chargecar.honda.StreamingSerialPortDeviceView;
 
 /**
@@ -24,7 +25,7 @@ public final class MotorControllerView extends StreamingSerialPortDeviceView<Mot
          {
          if (eventData.isError())
             {
-            rpmGauge.setValue(RESOURCES.getString("label.error") + " " + eventData.getErrorCode());
+            rpmGauge.setValue(RESOURCES.getString("label.error") + " " + eventData.getErrorCode(), HondaConstants.RED);
             }
          else
             {
