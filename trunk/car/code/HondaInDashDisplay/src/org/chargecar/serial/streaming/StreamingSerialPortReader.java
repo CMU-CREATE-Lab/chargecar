@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -40,7 +38,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
       this.serialIIOManager = serialIIOManager;
       }
 
-   public final void addEventListener(final StreamingSerialPortEventListener<E> listener)
+   public final void addStreamingSerialPortEventListener(final StreamingSerialPortEventListener<E> listener)
       {
       if (listener != null)
          {
@@ -48,7 +46,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
          }
       }
 
-   public final void removeEventListener(final StreamingSerialPortEventListener<E> listener)
+   public final void removeStreamingSerialPortEventListener(final StreamingSerialPortEventListener<E> listener)
       {
       if (listener != null)
          {
@@ -57,7 +55,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
       }
 
    @SuppressWarnings({"ConstantConditions"})
-   public final void publishEvent(final E event)
+   protected final void publishDataEvent(final E event)
       {
       if (!eventListeners.isEmpty())
          {
@@ -65,11 +63,49 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
             {
             try
                {
-               listener.handleEvent(event);
+               listener.handleDataEvent(event);
                }
             catch (Exception e)
                {
                LOG.error("StreamingSerialPortReader.publishEvent(): Exception thrown by StreamingSerialPortEventListener", e);
+               }
+            }
+         }
+      }
+
+   @SuppressWarnings({"ConstantConditions"})
+   private void publishConnectionStateChangeEvent(final boolean isConnected)
+      {
+      if (!eventListeners.isEmpty())
+         {
+         for (final StreamingSerialPortEventListener<E> listener : eventListeners)
+            {
+            try
+               {
+               listener.handleConnectionStateChange(isConnected);
+               }
+            catch (Exception e)
+               {
+               LOG.error("StreamingSerialPortReader.publishConnectionStateChangeEvent(): Exception thrown by StreamingSerialPortEventListener", e);
+               }
+            }
+         }
+      }
+
+   @SuppressWarnings({"ConstantConditions"})
+   private void publishReadingStateChangeEvent(final boolean isReading)
+      {
+      if (!eventListeners.isEmpty())
+         {
+         for (final StreamingSerialPortEventListener<E> listener : eventListeners)
+            {
+            try
+               {
+               listener.handleReadingStateChange(isReading);
+               }
+            catch (Exception e)
+               {
+               LOG.error("StreamingSerialPortReader.publishConnectionStateChangeEvent(): Exception thrown by StreamingSerialPortEventListener", e);
                }
             }
          }
@@ -84,6 +120,9 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
       if (wasConnectSuccessful)
          {
          executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("StreamingSerialPortReader.executor"));
+
+         publishConnectionStateChangeEvent(true);
+
          return true;
          }
 
@@ -96,24 +135,6 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
       LOG.debug("StreamingSerialPortReader.startReading(): Scheduling the SentenceReader for execution");
       scheduledFuture = executor.schedule(new SentenceReader(sentenceReadingStrategy), 0, TimeUnit.MILLISECONDS);
-      try
-         {
-         scheduledFuture.get();
-         LOG.debug("StreamingSerialPortReader.startReading(): SentenceReader has finished executing");
-         }
-      catch (CancellationException e)
-         {
-         // TODO: test cancelling!
-         LOG.error("CancellationException while waiting for the SentenceReader to finish executing", e);
-         }
-      catch (InterruptedException e)
-         {
-         LOG.error("InterruptedException while waiting for the SentenceReader to finish executing", e);
-         }
-      catch (ExecutionException e)
-         {
-         LOG.error("ExecutionException while waiting for the SentenceReader to finish executing", e);
-         }
       }
 
    protected abstract StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper);
@@ -126,6 +147,8 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
          {
          scheduledFuture = null;
          }
+
+      publishReadingStateChangeEvent(false);
       }
 
    public final void disconnect()
@@ -177,6 +200,8 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
       public void run()
          {
+         publishReadingStateChangeEvent(true);
+
          // slurp up the first sentence, since it's likely a fragment
          sentenceReadingStrategy.getNextSentence();
 
@@ -187,6 +212,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
             }
 
          LOG.debug("StreamingSerialPortReader$SentenceReader.run(): getNextSentence() returned null, so I'm done reading");
+         publishReadingStateChangeEvent(false);
          }
       }
    }

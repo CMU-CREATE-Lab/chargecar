@@ -22,7 +22,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class BMSReader extends StreamingSerialPortReader<BMSEvent>
+class BMSReader extends StreamingSerialPortReader<BMSEvent>
    {
    private static final Log LOG = LogFactory.getLog(BMSReader.class);
    private static final Character SENTENCE_DELIMETER = 0x1B;      // ESC
@@ -42,7 +42,7 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
    private static final int CELL_DATA_GROUP_3_OFFSET = 1140;
    private static final int CELL_DATA_GROUP_LENGTH_IN_BYTES = 512;
 
-   public BMSReader(final String serialPortName)
+   BMSReader(final String serialPortName)
       {
       this(new DefaultSerialIOManager(BMSReader.class.getClass().getSimpleName(),
                                       new SerialIOConfiguration(serialPortName,
@@ -53,7 +53,7 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
                                                                 FlowControl.NONE)));
       }
 
-   public BMSReader(final SerialIOManager serialIOManager)
+   BMSReader(final SerialIOManager serialIOManager)
       {
       super(serialIOManager);
       }
@@ -93,12 +93,12 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
             // convert the cell data resistances group bytes
             final byte[] cellDataResistances = ByteUtils.asciiHexBytesToByteArray(sentenceBytes, CELL_DATA_GROUP_3_OFFSET, CELL_DATA_GROUP_LENGTH_IN_BYTES);
 
-            publishEvent(createBMSEvent(timestamp,
-                                        contentGroup,
-                                        auxiliaryGroup,
-                                        cellDataVoltages,
-                                        cellDataTemperatures,
-                                        cellDataResistances));
+            publishDataEvent(createBMSEvent(timestamp,
+                                            contentGroup,
+                                            auxiliaryGroup,
+                                            cellDataVoltages,
+                                            cellDataTemperatures,
+                                            cellDataResistances));
             }
          else
             {
@@ -120,7 +120,6 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
       {
 
       final ByteBuffer contentGroupByteBuffer = ByteBuffer.wrap(contentGroup);
-      final ByteBuffer auxiliaryGroupByteBuffer = ByteBuffer.wrap(auxiliaryGroup);
 
       final BMSFault bmsFault = BMSFault.findByCode(ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(0)));
 
@@ -190,6 +189,8 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
 
       // ---------------------------------------------------------------------------------------------------------------
 
+      final ByteBuffer auxiliaryGroupByteBuffer = ByteBuffer.wrap(auxiliaryGroup);
+
       // TODO: do something with this value
       final byte auxDataState = auxiliaryGroupByteBuffer.get(0); // TODO: is this right?
 
@@ -232,12 +233,16 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
       // reported value is in 100 W units, so multiply by 100 to get W
       final int power = (int)auxiliaryGroupByteBuffer.getShort(21) * 100;
 
+      // ---------------------------------------------------------------------------------------------------------------
+
       // reported values are in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
       final double[] cellVoltages = new double[HondaConstants.NUM_BATTERIES];
       for (int i = 0; i < Math.min(cellDataVoltages.length, HondaConstants.NUM_BATTERIES); i++)
          {
          cellVoltages[i] = ByteUtils.unsignedByteToInt(cellDataVoltages[i]) / 100.0 + 2.0;
          }
+
+      // ---------------------------------------------------------------------------------------------------------------
 
       // reported values are in degrees C + 0x80, value is signed -127 to 127 (e.g. 0x80 = 0 degrees C, 0x81 = 1 degrees C, 0x7F = -1)
       final int[] cellTemperatures = new int[HondaConstants.NUM_BATTERIES];
@@ -246,12 +251,16 @@ public class BMSReader extends StreamingSerialPortReader<BMSEvent>
          cellTemperatures[i] = (byte)(cellDataTemperatures[i] - 0x80);
          }
 
+      // ---------------------------------------------------------------------------------------------------------------
+
       // reported values are in 100 u Ohms units (where 0x01 = 100 uOhms), so multiply by 100 to get uOhms
       final int[] cellResistances = new int[HondaConstants.NUM_BATTERIES];
       for (int i = 0; i < Math.min(cellDataResistances.length, HondaConstants.NUM_BATTERIES); i++)
          {
          cellResistances[i] = ByteUtils.unsignedByteToInt(cellDataResistances[i]) * 100;
          }
+
+      // ---------------------------------------------------------------------------------------------------------------
 
       return new BMSEvent(timestamp,
                           bmsFault,

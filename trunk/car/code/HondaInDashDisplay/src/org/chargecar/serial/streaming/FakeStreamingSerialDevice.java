@@ -1,4 +1,4 @@
-package org.chargecar.honda;
+package org.chargecar.serial.streaming;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -6,21 +6,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
-import org.chargecar.serial.streaming.SerialIOManager;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public abstract class FakeSerialDevice implements SerialIOManager
+public abstract class FakeStreamingSerialDevice implements SerialIOManager
    {
    private final SerialPortIOHelper serialPortIOHelper;
 
-   protected FakeSerialDevice(final String fakeData)
+   protected FakeStreamingSerialDevice(final String fakeData)
       {
       this(new BufferedInputStream(new ByteArrayInputStream(fakeData.getBytes())));
       }
 
-   protected FakeSerialDevice(final InputStream inputStream)
+   protected FakeStreamingSerialDevice(final InputStream inputStream)
       {
       serialPortIOHelper = new MySerialPortIOHelper(new BufferedInputStream(inputStream));
       }

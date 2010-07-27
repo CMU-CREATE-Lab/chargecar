@@ -14,7 +14,6 @@ import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
-import org.chargecar.serial.streaming.StreamingSerialPortEventPublisher;
 import org.chargecar.serial.streaming.StreamingSerialPortPlainTextSentenceReadingStrategy;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
 import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
@@ -22,7 +21,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
+class NMEAReader extends StreamingSerialPortReader<GPSEvent>
    {
    private static final String WORD_DELIMITER = ",";
    private static final String DEGREES_SYMBOL = "\u00b0";
@@ -37,7 +36,7 @@ public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
       sentenceProcessors.put(GPS_FIX_DATA_SENTENCE_PREFIX,
                              new NMEASentenceProcessor()
                              {
-                             public void process(final Date timestamp, final String sentence, final StreamingSerialPortEventPublisher<NMEAEvent> eventPublisher)
+                             public void process(final Date timestamp, final String sentence, final NMEAReader nmeaReader)
                                 {
                                 final Scanner s = new Scanner(sentence).useDelimiter(WORD_DELIMITER);
                                 s.next();  // ignore the time
@@ -52,27 +51,27 @@ public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
                                 final int numSatellites = s.nextInt();  // number of satellites being tracked
 
                                 // publish the event
-                                eventPublisher.publishEvent(NMEAEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites));
+                                nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites));
                                 }
                              });
 
       sentenceProcessors.put(GARMIN_ALTITUDE_SENTENCE_PREFIX,
                              new NMEASentenceProcessor()
                              {
-                             public void process(final Date timestamp, final String sentence, final StreamingSerialPortEventPublisher<NMEAEvent> eventPublisher)
+                             public void process(final Date timestamp, final String sentence, final NMEAReader nmeaReader)
                                 {
                                 final Scanner s = new Scanner(sentence).useDelimiter(WORD_DELIMITER);
                                 final int elevationInFeet = s.nextInt();  // elevation in feet
 
                                 // publish the event
-                                eventPublisher.publishEvent(NMEAEvent.createElevationEvent(timestamp, elevationInFeet));
+                                nmeaReader.publishDataEvent(GPSEvent.createElevationEvent(timestamp, elevationInFeet));
                                 }
                              });
 
       SENTENCE_PROCESSORS = Collections.unmodifiableMap(sentenceProcessors);
       }
 
-   public NMEAReader(final String serialPortName)
+   NMEAReader(final String serialPortName)
       {
       this(new DefaultSerialIOManager(NMEAReader.class.getClass().getSimpleName(),
                                       new SerialIOConfiguration(serialPortName,
@@ -83,7 +82,7 @@ public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
                                                                 FlowControl.NONE)));
       }
 
-   public NMEAReader(final SerialIOManager serialIOManager)
+   NMEAReader(final SerialIOManager serialIOManager)
       {
       super(serialIOManager);
       }
@@ -112,6 +111,6 @@ public class NMEAReader extends StreamingSerialPortReader<NMEAEvent>
 
    private interface NMEASentenceProcessor
       {
-      void process(final Date timestamp, final String sentence, final StreamingSerialPortEventPublisher<NMEAEvent> eventPublisher);
+      void process(final Date timestamp, final String sentence, final NMEAReader nmeaReader);
       }
    }

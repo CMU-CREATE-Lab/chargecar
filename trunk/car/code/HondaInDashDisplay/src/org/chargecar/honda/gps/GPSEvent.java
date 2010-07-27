@@ -6,24 +6,24 @@ import org.chargecar.serial.streaming.BaseStreamingSerialPortEvent;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class NMEAEvent extends BaseStreamingSerialPortEvent
+public final class GPSEvent extends BaseStreamingSerialPortEvent
    {
    private final String latitude;
    private final String longitude;
    private final Integer numSatellitesBeingTracked;
    private final Integer elevationInFeet;
 
-   public static NMEAEvent createLocationEvent(final Date timestamp, final String latitude, final String longitude, final int numSatellitesBeingTracked)
+   public static GPSEvent createLocationEvent(final Date timestamp, final String latitude, final String longitude, final int numSatellitesBeingTracked)
       {
-      return new NMEAEvent(timestamp, latitude, longitude, numSatellitesBeingTracked, null);
+      return new GPSEvent(timestamp, latitude, longitude, numSatellitesBeingTracked, null);
       }
 
-   public static NMEAEvent createElevationEvent(final Date timestamp, final int elevationInFeet)
+   public static GPSEvent createElevationEvent(final Date timestamp, final int elevationInFeet)
       {
-      return new NMEAEvent(timestamp, null, null, null, elevationInFeet);
+      return new GPSEvent(timestamp, null, null, null, elevationInFeet);
       }
 
-   private NMEAEvent(final Date timestamp, final String latitude, final String longitude, final Integer numSatellitesBeingTracked, final Integer elevationInFeet)
+   private GPSEvent(final Date timestamp, final String latitude, final String longitude, final Integer numSatellitesBeingTracked, final Integer elevationInFeet)
       {
       super(timestamp);
       this.latitude = latitude;
@@ -80,7 +80,7 @@ public final class NMEAEvent extends BaseStreamingSerialPortEvent
    private String toString(final String field1, final String field2, final String field3, final String field4, final String field5)
       {
       final StringBuilder sb = new StringBuilder();
-      sb.append("NMEAEvent:").append(isLocationEvent() ? "Location" : "Elevation");
+      sb.append("GPSEvent:").append(isLocationEvent() ? "Location" : "Elevation");
       sb.append("{");
       sb.append(field1).append(getTimestampMilliseconds());
       if (isLocationEvent())

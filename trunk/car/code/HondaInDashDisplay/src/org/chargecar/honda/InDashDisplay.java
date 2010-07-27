@@ -1,31 +1,36 @@
 package org.chargecar.honda;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.PropertyResourceBundle;
+import javax.swing.Box;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import edu.cmu.ri.createlab.serial.SerialPortException;
 import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
+import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.honda.bms.BMSEvent;
-import org.chargecar.honda.bms.BMSReader;
-import org.chargecar.honda.bms.FakeBMS;
-import org.chargecar.honda.gps.NMEAEvent;
-import org.chargecar.honda.gps.NMEAReader;
-import org.chargecar.honda.motorcontroller.MotorControllerEvent;
-import org.chargecar.honda.motorcontroller.MotorControllerReader;
-import org.chargecar.honda.sensorboard.SensorBoardEvent;
-import org.chargecar.honda.sensorboard.SensorBoardReader;
-import org.chargecar.serial.streaming.StreamingSerialPortEventListener;
-import org.chargecar.serial.streaming.StreamingSerialPortReader;
+import org.chargecar.honda.bms.BMSController;
+import org.chargecar.honda.bms.BMSModel;
+import org.chargecar.honda.bms.BMSView;
+import org.chargecar.honda.gps.GPSController;
+import org.chargecar.honda.gps.GPSModel;
+import org.chargecar.honda.gps.GPSView;
+import org.chargecar.honda.motorcontroller.MotorControllerController;
+import org.chargecar.honda.motorcontroller.MotorControllerModel;
+import org.chargecar.honda.motorcontroller.MotorControllerView;
+import org.chargecar.honda.sensorboard.SensorBoardController;
+import org.chargecar.honda.sensorboard.SensorBoardModel;
+import org.chargecar.honda.sensorboard.SensorBoardView;
+import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
+import org.jdesktop.layout.GroupLayout;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -39,33 +44,20 @@ public final class InDashDisplay
 
    public static void main(final String[] args)
       {
-      final SensorBoardReader sensorBoardReader;
-      final MotorControllerReader motorControllerReader;
-      final NMEAReader nmeaReader;
-      final BMSReader bmsReader;
+      final Map<String, String> deviceToSerialPortNameMap = new HashMap<String, String>(4);
 
-      // see whether we're using real or fake devices
-      if (Boolean.valueOf(System.getProperty("use-fake-devices", "false")))
+      for (final String arg : args)
          {
-         LOG.debug("InDashDisplay.main(): Using fake serial devices");
-         sensorBoardReader = null; //(SensorBoardReader)connectToStreamingSerialPortReader("Fake Sensor Board", new SensorBoardReader(new FakeSensorBoard()));
-         motorControllerReader = null;//(MotorControllerReader)connectToStreamingSerialPortReader("Fake Motor Controller", new MotorControllerReader(new FakeMotorController()));
-         nmeaReader = null;//(NMEAReader)connectToStreamingSerialPortReader("Fake GPS", new NMEAReader(new FakeGPS()));
-         bmsReader = (BMSReader)connectToStreamingSerialPortReader("Fake BMS", new BMSReader(new FakeBMS()));
-         }
-      else
-         {
-         LOG.debug("InDashDisplay.main(): Using real serial devices");
-         if (args.length < 4)
+         final String[] keyValue = arg.split("=");
+         if (keyValue.length == 2)
             {
-
-            System.err.println("Usage:  InDashDisplay <SENSOR_BOARD_SERIAL_PORT_NAME> <MOTOR_CONTROLLER_SERIAL_PORT_NAME> <GPS_SERIAL_PORT_NAME> <BMS_SERIAL_PORT_NAME>");
-            System.exit(1);
+            LOG.debug("Associating [" + keyValue[0] + "] with serial port [" + keyValue[1] + "]");
+            deviceToSerialPortNameMap.put(keyValue[0].toLowerCase(), keyValue[1]);
             }
-         sensorBoardReader = (SensorBoardReader)connectToStreamingSerialPortReader("Sensor Board", new SensorBoardReader(args[0]));
-         motorControllerReader = (MotorControllerReader)connectToStreamingSerialPortReader("Motor Controller", new MotorControllerReader(args[1]));
-         nmeaReader = (NMEAReader)connectToStreamingSerialPortReader("GPS", new NMEAReader(args[2]));
-         bmsReader = (BMSReader)connectToStreamingSerialPortReader("BMS", new BMSReader(args[3]));
+         else
+            {
+            LOG.info("Ignoring unexpected switch [" + arg + "]");
+            }
          }
 
       SwingUtilities.invokeLater(
@@ -73,46 +65,12 @@ public final class InDashDisplay
             {
             public void run()
                {
-               new InDashDisplay(sensorBoardReader, motorControllerReader, nmeaReader, bmsReader);
+               new InDashDisplay(deviceToSerialPortNameMap);
                }
             });
       }
 
-   private static StreamingSerialPortReader connectToStreamingSerialPortReader(final String name,
-                                                                               final StreamingSerialPortReader reader)
-      {
-      try
-         {
-         // TODO: do something better here
-         if (reader.connect())
-            {
-            return reader;
-            }
-         else
-            {
-            LOG.error("InDashDisplay.connectToStreamingSerialPortReader(): failed to connect to the " + name);
-            }
-         }
-      catch (SerialPortException e)
-         {
-         LOG.error("SerialPortException while connecting to the " + name, e);
-         }
-      catch (IOException e)
-         {
-         LOG.error("IOException while connecting to the " + name, e);
-         }
-      catch (Exception e)
-         {
-         LOG.error("Exception while connecting to the " + name, e);
-         }
-
-      return null;
-      }
-
-   private InDashDisplay(final SensorBoardReader sensorBoardReader,
-                         final MotorControllerReader motorControllerReader,
-                         final NMEAReader nmeaReader,
-                         final BMSReader bmsReader)
+   private InDashDisplay(final Map<String, String> deviceToSerialPortNameMap)
       {
       // create and configure the GUI
       final JPanel panel = new JPanel();
@@ -120,79 +78,127 @@ public final class InDashDisplay
       final JFrame jFrame = new JFrame(APPLICATION_NAME);
       jFrame.setContentPane(panel);
 
-      panel.add(new JLabel("Hello World!")); // TODO
+      // create the models
+      final BMSModel bmsModel = new BMSModel();
+      final GPSModel gpsModel = new GPSModel();
+      final MotorControllerModel motorControllerModel = new MotorControllerModel();
+      final SensorBoardModel sensorBoardModel = new SensorBoardModel();
 
-      if (sensorBoardReader != null)
-         {
-         sensorBoardReader.addEventListener(
-               new StreamingSerialPortEventListener<SensorBoardEvent>()
-               {
-               public void handleEvent(final SensorBoardEvent sensorBoardEvent)
-                  {
-                  if (LOG.isInfoEnabled())
-                     {
-                     LOG.info(sensorBoardEvent.toLoggingString());
-                     }
-                  }
-               });
-         }
-
-      if (motorControllerReader != null)
-         {
-         motorControllerReader.addEventListener(
-               new StreamingSerialPortEventListener<MotorControllerEvent>()
-               {
-               public void handleEvent(final MotorControllerEvent motorControllerEvent)
-                  {
-                  if (LOG.isInfoEnabled())
-                     {
-                     LOG.info(motorControllerEvent.toLoggingString());
-                     }
-                  }
-               });
-         }
-
-      if (nmeaReader != null)
-         {
-         nmeaReader.addEventListener(
-               new StreamingSerialPortEventListener<NMEAEvent>()
-               {
-               public void handleEvent(final NMEAEvent nmeaEvent)
-                  {
-                  if (LOG.isInfoEnabled())
-                     {
-                     LOG.info(nmeaEvent.toLoggingString());
-                     }
-                  }
-               });
-         }
-
-      if (bmsReader != null)
-         {
-         bmsReader.addEventListener(
-               new StreamingSerialPortEventListener<BMSEvent>()
-               {
-               public void handleEvent(final BMSEvent bmsReader)
-                  {
-                  if (LOG.isInfoEnabled())
-                     {
-                     // TODO: use toLoggingString()
-                     LOG.info(bmsReader);
-                     }
-                  }
-               });
-         }
+      // create the controllers
+      final BMSController bmsController = BMSController.create(deviceToSerialPortNameMap.get("bms"), bmsModel);
+      final GPSController gpsController = GPSController.create(deviceToSerialPortNameMap.get("gps"), gpsModel);
+      final MotorControllerController motorControllerController = MotorControllerController.create(deviceToSerialPortNameMap.get("motor-controller"), motorControllerModel);
+      final SensorBoardController sensorBoardController = SensorBoardController.create(deviceToSerialPortNameMap.get("sensor-board"), sensorBoardModel);
 
       final LifecycleManager lifecycleManager = new MyLifecycleManager(jFrame,
-                                                                       sensorBoardReader,
-                                                                       motorControllerReader,
-                                                                       nmeaReader,
-                                                                       bmsReader);
+                                                                       bmsController,
+                                                                       gpsController,
+                                                                       motorControllerController,
+                                                                       sensorBoardController);
+
+      final InDashDisplayController inDashDisplayController = new InDashDisplayController(lifecycleManager);
+
+      // create the views
+      final BMSView bmsView = new BMSView();
+      final GPSView gpsView = new GPSView();
+      final MotorControllerView motorControllerView = new MotorControllerView();
+      final SensorBoardView sensorBoardView = new SensorBoardView();
+      final InDashDisplayView inDashDisplayView = new InDashDisplayView(inDashDisplayController,
+                                                                        bmsModel,
+                                                                        gpsModel,
+                                                                        motorControllerModel,
+                                                                        sensorBoardModel,
+                                                                        bmsView,
+                                                                        motorControllerView,
+                                                                        sensorBoardView);
+
+      // add the various views as data event listeners to the models
+      bmsModel.addEventListener(bmsView);
+      gpsModel.addEventListener(gpsView);
+      motorControllerModel.addEventListener(motorControllerView);
+      sensorBoardModel.addEventListener(sensorBoardView);
+
+      // add the various views as connection state listeners to the models
+      bmsModel.addStreamingSerialPortDeviceConnectionStateListener(bmsView);
+      gpsModel.addStreamingSerialPortDeviceConnectionStateListener(gpsView);
+      motorControllerModel.addStreamingSerialPortDeviceConnectionStateListener(motorControllerView);
+      sensorBoardModel.addStreamingSerialPortDeviceConnectionStateListener(sensorBoardView);
+
+      // add the various views as reading state listeners to the models
+      bmsModel.addStreamingSerialPortDeviceReadingStateListener(bmsView);
+      gpsModel.addStreamingSerialPortDeviceReadingStateListener(gpsView);
+      motorControllerModel.addStreamingSerialPortDeviceReadingStateListener(motorControllerView);
+      sensorBoardModel.addStreamingSerialPortDeviceReadingStateListener(sensorBoardView);
+
+      // add a listener to each model which starts the reading upon connection establishment
+      bmsModel.addStreamingSerialPortDeviceConnectionStateListener(
+            new StreamingSerialPortDeviceConnectionStateListener()
+            {
+            public void handleConnectionStateChange(final boolean isConnected)
+               {
+               if (isConnected)
+                  {
+                  bmsController.startReading();
+                  }
+               }
+            });
+      gpsModel.addStreamingSerialPortDeviceConnectionStateListener(
+            new StreamingSerialPortDeviceConnectionStateListener()
+            {
+            public void handleConnectionStateChange(final boolean isConnected)
+               {
+               if (isConnected)
+                  {
+                  gpsController.startReading();
+                  }
+               }
+            });
+      motorControllerModel.addStreamingSerialPortDeviceConnectionStateListener(
+            new StreamingSerialPortDeviceConnectionStateListener()
+            {
+            public void handleConnectionStateChange(final boolean isConnected)
+               {
+               if (isConnected)
+                  {
+                  motorControllerController.startReading();
+                  }
+               }
+            });
+      sensorBoardModel.addStreamingSerialPortDeviceConnectionStateListener(
+            new StreamingSerialPortDeviceConnectionStateListener()
+            {
+            public void handleConnectionStateChange(final boolean isConnected)
+               {
+               if (isConnected)
+                  {
+                  sensorBoardController.startReading();
+                  }
+               }
+            });
+
+      // setup the layout
+      final GroupLayout layout = new GroupLayout(panel);
+      final Component leftGlue = Box.createGlue();
+      final Component rightGlue = Box.createGlue();
+      panel.setLayout(layout);
+      layout.setHorizontalGroup(
+            layout.createSequentialGroup()
+                  .add(leftGlue)
+                  .add(inDashDisplayView)
+                  .add(rightGlue)
+      );
+      layout.setVerticalGroup(
+            layout.createParallelGroup(GroupLayout.CENTER)
+                  .add(leftGlue)
+                  .add(inDashDisplayView)
+                  .add(rightGlue)
+      );
+      jFrame.pack();
 
       // set various properties for the JFrame
       jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
       jFrame.setBackground(Color.WHITE);
-      jFrame.setResizable(true);    // This *should* be false, but full-screen doesn't work on Linux unless it's true
+      jFrame.setResizable(true);
       jFrame.addWindowListener(
             new WindowAdapter()
             {
@@ -218,113 +224,59 @@ public final class InDashDisplay
       private final JFrame jFrame;
 
       private MyLifecycleManager(final JFrame jFrame,
-                                 final SensorBoardReader sensorBoardReader,
-                                 final MotorControllerReader motorControllerReader,
-                                 final NMEAReader nmeaReader,
-                                 final BMSReader bmsReader)
+                                 final BMSController bmsController,
+                                 final GPSController gpsController,
+                                 final MotorControllerController motorControllerController,
+                                 final SensorBoardController sensorBoardController)
          {
          this.jFrame = jFrame;
          startupRunnable =
                new Runnable()
                {
+               private void connect(final String deviceName, final StreamingSerialPortDeviceController controller)
+                  {
+                  if (controller == null)
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Controller for the " + deviceName + " given to the LifecycleManager constructor was null, so data won't be read.");
+                     }
+                  else
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Attempting to establish a connection to the " + deviceName + "...");
+                     controller.connect();
+                     }
+                  }
+
                public void run()
                   {
-                  // start scanning
-                  if (sensorBoardReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): SensorBoardReader given to the LifecycleManager constructor was null, so Sensor Board data won't be read.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the SensorBoardReader...");
-                     sensorBoardReader.startReading();
-                     }
-
-                  if (motorControllerReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): MotorControllerReader given to the LifecycleManager constructor was null, so Motor Controller data won't be read.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the MotorControllerReader...");
-                     motorControllerReader.startReading();
-                     }
-
-                  if (nmeaReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): NMEAReader given to the LifecycleManager constructor was null, so GPS data won't be read.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the NMEAReader...");
-                     nmeaReader.startReading();
-                     }
-
-                  if (bmsReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): BMSReader given to the LifecycleManager constructor was null, so BMS data won't be read.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Starting the BMSReader...");
-                     bmsReader.startReading();
-                     }
+                  connect("BMS", bmsController);
+                  connect("GPS", gpsController);
+                  connect("Motor Controller", motorControllerController);
+                  connect("Sensor Board", sensorBoardController);
                   }
                };
 
          shutdownRunnable =
                new Runnable()
                {
+               private void disconnect(final String deviceName, final StreamingSerialPortDeviceController controller)
+                  {
+                  if (controller == null)
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Controller for the " + deviceName + " given to the LifecycleManager constructor was null, so we won't try to shut it down.");
+                     }
+                  else
+                     {
+                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the " + deviceName + "...");
+                     controller.disconnect();
+                     }
+                  }
+
                public void run()
                   {
-                  // disconnect so we can exit gracefully
-                  if (sensorBoardReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): SensorBoardReader given to the LifecycleManager constructor was null, so we won't try to shut it down.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Stopping the SensorBoardReader...");
-                     sensorBoardReader.stopReading();
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the Sensor Board...");
-                     sensorBoardReader.disconnect();
-                     }
-
-                  if (motorControllerReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): MotorControllerReader given to the LifecycleManager constructor was null, so we won't try to shut it down.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Stopping the MotorControllerReader...");
-                     motorControllerReader.stopReading();
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the Motor Controller...");
-                     motorControllerReader.disconnect();
-                     }
-
-                  if (nmeaReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): NMEAReader given to the LifecycleManager constructor was null, so we won't try to shut it down.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Stopping the NMEAReader...");
-                     nmeaReader.stopReading();
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the GPS...");
-                     nmeaReader.disconnect();
-                     }
-
-                  if (bmsReader == null)
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): BMSReader given to the LifecycleManager constructor was null, so we won't try to shut it down.");
-                     }
-                  else
-                     {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Stopping the BMSReader...");
-                     bmsReader.stopReading();
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the BMS...");
-                     bmsReader.disconnect();
-                     }
+                  disconnect("BMS", bmsController);
+                  disconnect("GPS", gpsController);
+                  disconnect("Motor Controller", motorControllerController);
+                  disconnect("Sensor Board", sensorBoardController);
 
                   System.exit(0);
                   }

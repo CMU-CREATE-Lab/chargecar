@@ -1,13 +1,13 @@
 package org.chargecar.honda.gps;
 
-import org.chargecar.honda.FakeSerialDevice;
+import org.chargecar.serial.streaming.FakeStreamingSerialDevice;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class FakeGPS extends FakeSerialDevice
+class FakeGPS extends FakeStreamingSerialDevice
    {
-   public FakeGPS()
+   FakeGPS()
       {
       super(DATA);
       }
