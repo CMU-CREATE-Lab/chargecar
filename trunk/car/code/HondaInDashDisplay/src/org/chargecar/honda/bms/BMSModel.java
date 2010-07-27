@@ -23,8 +23,7 @@ public final class BMSModel extends StreamingSerialPortDeviceModel<BMSEvent, BMS
          {
          if (LOG.isInfoEnabled())
             {
-            // TODO: switch to toLoggingString()
-            LOG.info(data);
+            LOG.info(data.toLoggingString());
             }
 
          publishEventToListeners(data);

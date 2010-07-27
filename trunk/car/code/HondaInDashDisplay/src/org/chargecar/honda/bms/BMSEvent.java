@@ -577,7 +577,45 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    @Override
    public String toLoggingString()
       {
-      // TODO
-      return null;
+      final StringBuilder sb = new StringBuilder();
+      sb.append("BMSEvent");
+      sb.append('{');
+      sb.append(bmsFault.getCode()).append(TO_STRING_DELIMITER);
+      sb.append(isLLIMSet).append(TO_STRING_DELIMITER);
+      sb.append(isHLIMSet).append(TO_STRING_DELIMITER);
+
+      sb.append(minimumCellBoardTemp).append(TO_STRING_DELIMITER);
+      sb.append(maximumCellBoardTemp).append(TO_STRING_DELIMITER);
+      sb.append(averageCellBoardTemp).append(TO_STRING_DELIMITER);
+      sb.append(cellBoardNumWithLowestTemp).append(TO_STRING_DELIMITER);
+      sb.append(cellBoardNumWithHighestTemp).append(TO_STRING_DELIMITER);
+
+      sb.append(minimumCellVoltage).append(TO_STRING_DELIMITER);
+      sb.append(maximumCellVoltage).append(TO_STRING_DELIMITER);
+      sb.append(averageCellVoltage).append(TO_STRING_DELIMITER);
+      sb.append(cellNumWithLowestVoltage).append(TO_STRING_DELIMITER);
+      sb.append(cellNumWithHighestVoltage).append(TO_STRING_DELIMITER);
+
+      sb.append(packTotalVoltage).append(TO_STRING_DELIMITER);
+      sb.append(sourceCurrentAmps).append(TO_STRING_DELIMITER);
+      sb.append(loadCurrentAmps).append(TO_STRING_DELIMITER);
+      sb.append(depthOfDischarge).append(TO_STRING_DELIMITER);
+      sb.append(capacity).append(TO_STRING_DELIMITER);
+
+      sb.append(power).append(TO_STRING_DELIMITER);
+      sb.append(stateOfChargePercentage).append(TO_STRING_DELIMITER);
+      sb.append(stateOfHealthPercentage).append(TO_STRING_DELIMITER);
+      sb.append(totalEnergyInOfBatterySinceManufacture).append(TO_STRING_DELIMITER);
+      sb.append(totalEnergyOutOfBatterySinceManufacture).append(TO_STRING_DELIMITER);
+
+      sb.append(isOverTemperature).append(TO_STRING_DELIMITER);
+      sb.append(isUnderVoltage).append(TO_STRING_DELIMITER);
+      sb.append(isOverVoltage).append(TO_STRING_DELIMITER);
+      sb.append(isChargeOvercurrent).append(TO_STRING_DELIMITER);
+      sb.append(isDischargeOvercurrent).append(TO_STRING_DELIMITER);
+      sb.append(isCommunicationFaultWithBankOrCell).append(TO_STRING_DELIMITER);
+      sb.append(isInterlockTripped2);
+      sb.append('}');
+      return sb.toString();
       }
    }
