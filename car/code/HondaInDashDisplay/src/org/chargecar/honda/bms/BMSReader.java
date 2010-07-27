@@ -191,8 +191,8 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
 
       final ByteBuffer auxiliaryGroupByteBuffer = ByteBuffer.wrap(auxiliaryGroup);
 
-      // TODO: do something with this value
-      final byte auxDataState = auxiliaryGroupByteBuffer.get(0); // TODO: is this right?
+      // TODO: do something with this value (also verify whether it's supposed to be unsigned)
+      final byte auxDataState = auxiliaryGroupByteBuffer.get(0);
 
       final byte levelFaultFlags = auxiliaryGroupByteBuffer.get(1);
 
