@@ -37,6 +37,17 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
    private final Gauge<Boolean> isLLIMSetGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-llim-set"), "%s");
    private final Gauge<Boolean> isHLIMSetGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-hlim-set"), "%s");
 
+   private final Gauge<Double> sourceCurrentAmpsGauge = new Gauge<Double>(RESOURCES.getString("label.source-current-amps"), "%6.2f");
+   private final Gauge<Double> loadCurrentAmpsGauge = new Gauge<Double>(RESOURCES.getString("label.load-current-amps"), "%6.2f");
+   private final Gauge<Integer> depthOfDischargeGauge = new Gauge<Integer>(RESOURCES.getString("label.depth-of-discharge"), "%d");
+   private final Gauge<Integer> capacityGauge = new Gauge<Integer>(RESOURCES.getString("label.capacity"), "%d");
+
+   private final Gauge<Integer> powerGauge = new Gauge<Integer>(RESOURCES.getString("label.power"), "%d");
+   private final Gauge<Integer> stateOfChargeGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-charge"), "%d");
+   private final Gauge<Integer> stateOfHealthGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-health"), "%d");
+   private final Gauge<Integer> lifetimeEnergyInGauge = new Gauge<Integer>(RESOURCES.getString("label.lifetime-energy-in"), "%d");
+   private final Gauge<Integer> lifetimeEnergyOutGauge = new Gauge<Integer>(RESOURCES.getString("label.lifetime-energy-out"), "%d");
+
    public BMSView()
       {
       }
@@ -62,6 +73,17 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
 
          isLLIMSetGauge.setValue(eventData.isLLIMSet(), eventData.isLLIMSet() ? HondaConstants.RED : HondaConstants.GREEN);
          isHLIMSetGauge.setValue(eventData.isHLIMSet(), eventData.isHLIMSet() ? HondaConstants.RED : HondaConstants.GREEN);
+
+         sourceCurrentAmpsGauge.setValue(eventData.getSourceCurrentAmps());
+         loadCurrentAmpsGauge.setValue(eventData.getLoadCurrentAmps());
+         depthOfDischargeGauge.setValue(eventData.getDepthOfDischarge());
+         capacityGauge.setValue(eventData.getCapacity());
+
+         powerGauge.setValue(eventData.getPower());
+         stateOfChargeGauge.setValue(eventData.getStateOfChargePercentage());
+         stateOfHealthGauge.setValue(eventData.getStateOfHealthPercentage());
+         lifetimeEnergyInGauge.setValue(eventData.getTotalEnergyInOfBatterySinceManufacture());
+         lifetimeEnergyOutGauge.setValue(eventData.getTotalEnergyOutOfBatterySinceManufacture());
          }
       else
          {
@@ -82,6 +104,17 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
 
          isLLIMSetGauge.setValue(null);
          isHLIMSetGauge.setValue(null);
+
+         sourceCurrentAmpsGauge.setValue(null);
+         loadCurrentAmpsGauge.setValue(null);
+         depthOfDischargeGauge.setValue(null);
+         capacityGauge.setValue(null);
+
+         powerGauge.setValue(null);
+         stateOfChargeGauge.setValue(null);
+         stateOfHealthGauge.setValue(null);
+         lifetimeEnergyInGauge.setValue(null);
+         lifetimeEnergyOutGauge.setValue(null);
          }
       }
 
@@ -153,6 +186,51 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
    public Gauge<Boolean> getHLIMSetGauge()
       {
       return isHLIMSetGauge;
+      }
+
+   public Gauge<Double> getSourceCurrentAmpsGauge()
+      {
+      return sourceCurrentAmpsGauge;
+      }
+
+   public Gauge<Double> getLoadCurrentAmpsGauge()
+      {
+      return loadCurrentAmpsGauge;
+      }
+
+   public Gauge<Integer> getDepthOfDischargeGauge()
+      {
+      return depthOfDischargeGauge;
+      }
+
+   public Gauge<Integer> getCapacityGauge()
+      {
+      return capacityGauge;
+      }
+
+   public Gauge<Integer> getPowerGauge()
+      {
+      return powerGauge;
+      }
+
+   public Gauge<Integer> getStateOfChargeGauge()
+      {
+      return stateOfChargeGauge;
+      }
+
+   public Gauge<Integer> getStateOfHealthGauge()
+      {
+      return stateOfHealthGauge;
+      }
+
+   public Gauge<Integer> getLifetimeEnergyInGauge()
+      {
+      return lifetimeEnergyInGauge;
+      }
+
+   public Gauge<Integer> getLifetimeEnergyOutGauge()
+      {
+      return lifetimeEnergyOutGauge;
       }
 
    private final class FaultStatusPanel extends JPanel

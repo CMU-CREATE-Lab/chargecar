@@ -147,16 +147,44 @@ public final class InDashDisplayView extends JPanel
       row4.add(bmsView.getCellNumWithHighestVoltageGauge());
       row4.add(Box.createGlue());
 
-      final JPanel bottomRow = new JPanel();
-      bottomRow.setBackground(Color.WHITE);
-      bottomRow.setLayout(new BoxLayout(bottomRow, BoxLayout.X_AXIS));
-      bottomRow.add(Box.createGlue());
-      bottomRow.add(bmsView.getLLIMSetGauge());
-      bottomRow.add(Box.createGlue());
-      bottomRow.add(bmsView.getFaultStatusPanel());
-      bottomRow.add(Box.createGlue());
-      bottomRow.add(bmsView.getHLIMSetGauge());
-      bottomRow.add(Box.createGlue());
+      final JPanel row5 = new JPanel();
+      row5.setBackground(Color.WHITE);
+      row5.setLayout(new BoxLayout(row5, BoxLayout.X_AXIS));
+      row5.add(Box.createGlue());
+      row5.add(bmsView.getSourceCurrentAmpsGauge());
+      row5.add(Box.createGlue());
+      row5.add(bmsView.getLoadCurrentAmpsGauge());
+      row5.add(Box.createGlue());
+      row5.add(bmsView.getDepthOfDischargeGauge());
+      row5.add(Box.createGlue());
+      row5.add(bmsView.getCapacityGauge());
+      row5.add(Box.createGlue());
+
+      final JPanel row6 = new JPanel();
+      row6.setBackground(Color.WHITE);
+      row6.setLayout(new BoxLayout(row6, BoxLayout.X_AXIS));
+      row6.add(Box.createGlue());
+      row6.add(bmsView.getPowerGauge());
+      row6.add(Box.createGlue());
+      row6.add(bmsView.getStateOfChargeGauge());
+      row6.add(Box.createGlue());
+      row6.add(bmsView.getStateOfHealthGauge());
+      row6.add(Box.createGlue());
+      row6.add(bmsView.getLifetimeEnergyInGauge());
+      row6.add(Box.createGlue());
+      row6.add(bmsView.getLifetimeEnergyOutGauge());
+      row6.add(Box.createGlue());
+
+      final JPanel row7 = new JPanel();
+      row7.setBackground(Color.WHITE);
+      row7.setLayout(new BoxLayout(row7, BoxLayout.X_AXIS));
+      row7.add(Box.createGlue());
+      row7.add(bmsView.getLLIMSetGauge());
+      row7.add(Box.createGlue());
+      row7.add(bmsView.getFaultStatusPanel());
+      row7.add(Box.createGlue());
+      row7.add(bmsView.getHLIMSetGauge());
+      row7.add(Box.createGlue());
 
       // register self as a connection state listener for the various models so we can display connection status
       bmsModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(bmsConnectionState));
@@ -174,7 +202,11 @@ public final class InDashDisplayView extends JPanel
       this.add(Box.createGlue());
       this.add(row4);
       this.add(Box.createGlue());
-      this.add(bottomRow);
+      this.add(row5);
+      this.add(Box.createGlue());
+      this.add(row6);
+      this.add(Box.createGlue());
+      this.add(row7);
       this.add(Box.createGlue());
       }
 
