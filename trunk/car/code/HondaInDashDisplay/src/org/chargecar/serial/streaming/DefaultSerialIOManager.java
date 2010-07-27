@@ -151,15 +151,15 @@ public class DefaultSerialIOManager implements SerialIOManager
       // shut down the serial port
       try
          {
-         LOG.debug("StreamingSerialPortReader.disconnect(): Now attempting to close the serial port...");
+         LOG.debug("DefaultSerialIOManager.disconnect(): Now attempting to close the serial port...");
          port.close();
          port = null;
          ioHelper = null;
-         LOG.debug("StreamingSerialPortReader.disconnect(): Serial port closed successfully.");
+         LOG.debug("DefaultSerialIOManager.disconnect(): Serial port closed successfully.");
          }
       catch (Exception e)
          {
-         LOG.error("StreamingSerialPortReader.disconnect(): Exception while trying to close the serial port", e);
+         LOG.error("DefaultSerialIOManager.disconnect(): Exception while trying to close the serial port", e);
          }
       }
    }

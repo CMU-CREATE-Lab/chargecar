@@ -27,6 +27,8 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
    private ScheduledExecutorService executor;
    private ScheduledFuture<?> scheduledFuture;
    private final Set<StreamingSerialPortEventListener<E>> eventListeners = new HashSet<StreamingSerialPortEventListener<E>>();
+   private final byte[] dataSynchronizationLock = new byte[0];
+   private boolean isReading = false;
 
    public StreamingSerialPortReader(final String applicationName, final SerialIOConfiguration config)
       {
@@ -131,10 +133,21 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
    public final void startReading()
       {
-      final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy = createStreamingSerialPortSentenceReadingStrategy(serialIIOManager.getSerialPortIoHelper());
+      synchronized (dataSynchronizationLock)
+         {
+         if (isReading)
+            {
+            LOG.error("StreamingSerialPortReader.startReading(): already reading, so I'm ignoring this request to start reading.");
+            }
+         else
+            {
+            final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy = createStreamingSerialPortSentenceReadingStrategy(serialIIOManager.getSerialPortIoHelper());
 
-      LOG.debug("StreamingSerialPortReader.startReading(): Scheduling the SentenceReader for execution");
-      scheduledFuture = executor.schedule(new SentenceReader(sentenceReadingStrategy), 0, TimeUnit.MILLISECONDS);
+            LOG.debug("StreamingSerialPortReader.startReading(): Scheduling the SentenceReader for execution");
+            isReading = true;
+            scheduledFuture = executor.schedule(new SentenceReader(sentenceReadingStrategy), 0, TimeUnit.MILLISECONDS);
+            }
+         }
       }
 
    protected abstract StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper);
@@ -143,12 +156,23 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
    public final void stopReading()
       {
-      if (scheduledFuture != null && scheduledFuture.cancel(true))
+      synchronized (dataSynchronizationLock)
          {
-         scheduledFuture = null;
-         }
+         if (isReading)
+            {
+            if (scheduledFuture != null && scheduledFuture.cancel(true))
+               {
+               scheduledFuture = null;
+               }
+            isReading = false;
 
-      publishReadingStateChangeEvent(false);
+            publishReadingStateChangeEvent(false);
+            }
+         else
+            {
+            LOG.error("StreamingSerialPortReader.stopReading(): not reading, so I'm ignoring this request to stop reading.");
+            }
+         }
       }
 
    public final void disconnect()
@@ -202,16 +226,53 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
          {
          publishReadingStateChangeEvent(true);
 
-         // slurp up the first sentence, since it's likely a fragment
-         sentenceReadingStrategy.getNextSentence();
-
-         byte[] sentence;
-         while ((sentence = sentenceReadingStrategy.getNextSentence()) != null)
+         try
             {
-            processSentence(new Date(), sentence);
+            // slurp up the first sentence, since it's likely a fragment
+            sentenceReadingStrategy.getNextSentence();
+
+            while (true)
+               {
+               if (sentenceReadingStrategy.isDataAvailable())
+                  {
+                  final byte[] sentence = sentenceReadingStrategy.getNextSentence();
+                  processSentence(new Date(), sentence);
+                  synchronized (dataSynchronizationLock)
+                     {
+                     if (!isReading)
+                        {
+                        LOG.debug("StreamingSerialPortReader$SentenceReader.run(): reading has been cancelled, so I'm exiting.");
+                        return;
+                        }
+                     }
+                  }
+               else
+                  {
+                  try
+                     {
+                     Thread.sleep(5);
+                     }
+                  catch (InterruptedException e)
+                     {
+                     LOG.error("InterruptedException while sleeping", e);
+                     }
+                  }
+               }
+            }
+         catch (IOException e)
+            {
+            LOG.error("IOException while reading, so we'll now stop reading", e);
+            }
+         catch (Exception e)
+            {
+            LOG.error("Exception while reading, so we'll now stop reading", e);
             }
 
-         LOG.debug("StreamingSerialPortReader$SentenceReader.run(): getNextSentence() returned null, so I'm done reading");
+         synchronized (dataSynchronizationLock)
+            {
+            isReading = false;
+            }
+
          publishReadingStateChangeEvent(false);
          }
       }

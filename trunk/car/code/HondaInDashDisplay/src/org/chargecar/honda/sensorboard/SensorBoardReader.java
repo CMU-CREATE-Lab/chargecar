@@ -23,6 +23,8 @@ import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy
 final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent>
    {
    private static final Log LOG = LogFactory.getLog(SensorBoardReader.class);
+
+   private static final Character SENTENCE_DELIMITER = '\r';
    private static final String WORD_DELIMETER = ",";
    private static final int NUM_WORDS_PER_SENTENCE = 5;
    private static final String KEY_VALUE_DELIMITER = "=";
@@ -46,7 +48,7 @@ final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent
    @Override
    protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
       {
-      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper);
+      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper, SENTENCE_DELIMITER);
       }
 
    public void processSentence(final Date timestamp, final byte[] sentenceBytes)

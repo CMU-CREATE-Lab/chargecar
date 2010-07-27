@@ -78,6 +78,12 @@ public final class InDashDisplayView extends JPanel
       final JLabel motorControllerConnectionState = SwingUtils.createLabel(RESOURCES.getString("label.motor-controller"));
       final JLabel sensorBoardConnectionState = SwingUtils.createLabel(RESOURCES.getString("label.sensor-board"));
 
+      // set the initial color to red
+      bmsConnectionState.setForeground(HondaConstants.RED);
+      gpsConnectionState.setForeground(HondaConstants.RED);
+      motorControllerConnectionState.setForeground(HondaConstants.RED);
+      sensorBoardConnectionState.setForeground(HondaConstants.RED);
+
       // configure the connection state status labels
       bmsConnectionState.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK),
                                                                       BorderFactory.createEmptyBorder(3, 3, 3, 3)));

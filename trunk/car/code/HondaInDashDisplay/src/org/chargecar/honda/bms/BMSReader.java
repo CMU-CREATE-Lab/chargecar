@@ -1,5 +1,6 @@
 package org.chargecar.honda.bms;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
@@ -325,24 +326,41 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
          super(serialPortIoHelper);
          }
 
-      public byte[] getNextSentence()
+      public byte[] getNextSentence() throws IOException
          {
          final StringBuilder sb = new StringBuilder();
 
-         Byte b;
-         while ((b = readByte()) != null)
+         while (true)
             {
-            final char c = (char)b.byteValue();
-            if (SENTENCE_DELIMETER.equals(c))
+            // Reads the next byte if data is available.  If no data is available, then b will be null
+            final Byte b = readByte();
+
+            // if the byte is null, then no data is available, so just wait a bit
+            if (b == null)
                {
-               return sb.toString().getBytes();
+               try
+                  {
+                  Thread.sleep(5);
+                  }
+               catch (InterruptedException e)
+                  {
+                  LOG.error("InterruptedException while sleeping", e);
+                  }
+               continue;
                }
             else
                {
-               sb.append(c);
+               final char c = (char)b.byteValue();
+               if (SENTENCE_DELIMETER.equals(c))
+                  {
+                  return sb.toString().getBytes();
+                  }
+               else
+                  {
+                  sb.append(c);
+                  }
                }
             }
-         return null;
          }
       }
    }

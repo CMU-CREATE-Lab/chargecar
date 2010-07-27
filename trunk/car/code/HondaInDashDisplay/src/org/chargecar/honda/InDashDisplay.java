@@ -7,6 +7,8 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,6 +17,7 @@ import javax.swing.WindowConstants;
 import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
+import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.honda.bms.BMSController;
@@ -222,6 +225,7 @@ public final class InDashDisplay
       private final Runnable startupRunnable;
       private final Runnable shutdownRunnable;
       private final JFrame jFrame;
+      private final ExecutorService executor = Executors.newCachedThreadPool(new DaemonThreadFactory("MyLifecycleManager.executor"));
 
       private MyLifecycleManager(final JFrame jFrame,
                                  final BMSController bmsController,
@@ -241,8 +245,15 @@ public final class InDashDisplay
                      }
                   else
                      {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Attempting to establish a connection to the " + deviceName + "...");
-                     controller.connect();
+                     executor.submit(
+                           new Runnable()
+                           {
+                           public void run()
+                              {
+                              LOG.info("InDashDisplay$MyLifecycleManager.run(): Attempting to establish a connection to the " + deviceName + "...");
+                              controller.connect();
+                              }
+                           });
                      }
                   }
 
@@ -266,8 +277,15 @@ public final class InDashDisplay
                      }
                   else
                      {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the " + deviceName + "...");
-                     controller.disconnect();
+                     executor.submit(
+                           new Runnable()
+                           {
+                           public void run()
+                              {
+                              LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the " + deviceName + "...");
+                              controller.disconnect();
+                              }
+                           });
                      }
                   }
 
