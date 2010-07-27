@@ -12,6 +12,8 @@ import edu.cmu.ri.createlab.serial.config.FlowControl;
 import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortPlainTextSentenceReadingStrategy;
@@ -23,6 +25,9 @@ import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy
  */
 class NMEAReader extends StreamingSerialPortReader<GPSEvent>
    {
+   private static final Log LOG = LogFactory.getLog(NMEAReader.class);
+
+   private static final Character SENTENCE_DELIMITER = '\n';
    private static final String WORD_DELIMITER = ",";
    private static final String DEGREES_SYMBOL = "\u00b0";
    private static final String GPS_FIX_DATA_SENTENCE_PREFIX = "$GPGGA";
@@ -38,20 +43,27 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
                              {
                              public void process(final Date timestamp, final String sentence, final NMEAReader nmeaReader)
                                 {
-                                final Scanner s = new Scanner(sentence).useDelimiter(WORD_DELIMITER);
-                                s.next();  // ignore the time
-                                final String lat1 = s.next();  // latitude
-                                final String lat2 = s.next();  // latitude direction
-                                final String latitude = lat2 + " " + lat1.substring(0, 2) + DEGREES_SYMBOL + lat1.substring(2) + "'";
+                                try
+                                   {
+                                   final Scanner s = new Scanner(sentence).useDelimiter(WORD_DELIMITER);
+                                   s.next();  // ignore the time
+                                   final String lat1 = s.next();  // latitude
+                                   final String lat2 = s.next();  // latitude direction
+                                   final String latitude = lat2 + " " + lat1.substring(0, 2) + DEGREES_SYMBOL + lat1.substring(2) + "'";
 
-                                final String long1 = s.next();  // longitude
-                                final String long2 = s.next();  // longitude direction
-                                final String longitude = long2 + long1.substring(0, 3) + DEGREES_SYMBOL + long1.substring(3) + "'";
-                                s.next();  // ignore the fix quality
-                                final int numSatellites = s.nextInt();  // number of satellites being tracked
+                                   final String long1 = s.next();  // longitude
+                                   final String long2 = s.next();  // longitude direction
+                                   final String longitude = long2 + long1.substring(0, 3) + DEGREES_SYMBOL + long1.substring(3) + "'";
+                                   s.next();  // ignore the fix quality
+                                   final int numSatellites = s.nextInt();  // number of satellites being tracked
 
-                                // publish the event
-                                nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites));
+                                   // publish the event
+                                   nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites));
+                                   }
+                                catch (StringIndexOutOfBoundsException e)
+                                   {
+                                   LOG.error("StringIndexOutOfBoundsException while trying to parse the NMEA sentence.  Ignoring it.", e);
+                                   }
                                 }
                              });
 
@@ -90,7 +102,7 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
    @Override
    protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
       {
-      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper);
+      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper, SENTENCE_DELIMITER);
       }
 
    protected void processSentence(final Date timestamp, final byte[] sentenceBytes)
@@ -100,11 +112,14 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
          final String sentence = new String(sentenceBytes);
 
          final int firstDelimiter = sentence.indexOf(WORD_DELIMITER);
-         final String command = sentence.substring(0, firstDelimiter);
-         final NMEASentenceProcessor sentenceProcessor = SENTENCE_PROCESSORS.get(command);
-         if (sentenceProcessor != null)
+         if (firstDelimiter >= 0)
             {
-            sentenceProcessor.process(timestamp, sentence.substring(firstDelimiter + 1), this);
+            final String command = sentence.substring(0, firstDelimiter);
+            final NMEASentenceProcessor sentenceProcessor = SENTENCE_PROCESSORS.get(command);
+            if (sentenceProcessor != null)
+               {
+               sentenceProcessor.process(timestamp, sentence.substring(firstDelimiter + 1), this);
+               }
             }
          }
       }

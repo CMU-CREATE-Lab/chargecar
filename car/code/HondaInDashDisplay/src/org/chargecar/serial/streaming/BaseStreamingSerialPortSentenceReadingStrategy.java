@@ -24,28 +24,30 @@ public abstract class BaseStreamingSerialPortSentenceReadingStrategy implements 
       return serialPortIoHelper;
       }
 
-   protected final Byte readByte()
+   public final boolean isDataAvailable() throws IOException
       {
-      try
-         {
-         if (serialPortIoHelper.isDataAvailable())
-            {
-            final int b = serialPortIoHelper.read();
+      return serialPortIoHelper.isDataAvailable();
+      }
 
-            if (b >= 0)
-               {
-               return (byte)b;
-               }
-            else
-               {
-               // todo: handle this better
-               LOG.error("StreamingSerialPortReader$StreamingSerialPortSentenceParser.readByte(): End of stream reached while trying to read the data");
-               }
-            }
-         }
-      catch (IOException ignored)
+   /**
+    * Reads the next byte if data is available.  If no data is available, this method returns <code>null</code>.  Throws
+    * an {@link IOException} if the end of stream is reached while trying to read the data.
+    */
+   protected final Byte readByte() throws IOException
+      {
+      if (serialPortIoHelper.isDataAvailable())
          {
-         LOG.error("StreamingSerialPortReader$StreamingSerialPortSentenceParser.readByte(): IOException while trying to read a byte");
+         final int b = serialPortIoHelper.read();
+
+         if (b >= 0)
+            {
+            return (byte)b;
+            }
+         else
+            {
+            LOG.error("StreamingSerialPortReader$StreamingSerialPortSentenceParser.readByte(): End of stream reached while trying to read the data");
+            throw new IOException("End of stream reached while trying to read the data");
+            }
          }
 
       return null;
