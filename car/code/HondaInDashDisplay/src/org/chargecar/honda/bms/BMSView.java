@@ -48,6 +48,14 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
    private final Gauge<Integer> lifetimeEnergyInGauge = new Gauge<Integer>(RESOURCES.getString("label.lifetime-energy-in"), "%d");
    private final Gauge<Integer> lifetimeEnergyOutGauge = new Gauge<Integer>(RESOURCES.getString("label.lifetime-energy-out"), "%d");
 
+   private final Gauge<Boolean> isInterlockTrippedGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-interlock-tripped"), "%s");
+   private final Gauge<Boolean> isCommunicationFaultWithBankOrCellGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-communication-fault-with-bank-or-cell"), "%s");
+   private final Gauge<Boolean> isChargeOvercurrentGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-charge-overcurrent"), "%s");
+   private final Gauge<Boolean> isDischargeOvercurrentGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-discharge-overcurrent"), "%s");
+   private final Gauge<Boolean> isOverTemperatureGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-over-temperature"), "%s");
+   private final Gauge<Boolean> isUnderVoltageGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-under-voltage"), "%s");
+   private final Gauge<Boolean> isOverVoltageGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-over-voltage"), "%s");
+
    public BMSView()
       {
       }
@@ -84,6 +92,14 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
          stateOfHealthGauge.setValue(eventData.getStateOfHealthPercentage());
          lifetimeEnergyInGauge.setValue(eventData.getTotalEnergyInOfBatterySinceManufacture());
          lifetimeEnergyOutGauge.setValue(eventData.getTotalEnergyOutOfBatterySinceManufacture());
+
+         isInterlockTrippedGauge.setValue(eventData.isInterlockTripped2(), eventData.isInterlockTripped2() ? HondaConstants.RED : HondaConstants.GREEN);
+         isCommunicationFaultWithBankOrCellGauge.setValue(eventData.isCommunicationFaultWithBankOrCell(), eventData.isCommunicationFaultWithBankOrCell() ? HondaConstants.RED : HondaConstants.GREEN);
+         isChargeOvercurrentGauge.setValue(eventData.isChargeOvercurrent(), eventData.isChargeOvercurrent() ? HondaConstants.RED : HondaConstants.GREEN);
+         isDischargeOvercurrentGauge.setValue(eventData.isDischargeOvercurrent(), eventData.isDischargeOvercurrent() ? HondaConstants.RED : HondaConstants.GREEN);
+         isOverTemperatureGauge.setValue(eventData.isOverTemperature(), eventData.isOverTemperature() ? HondaConstants.RED : HondaConstants.GREEN);
+         isUnderVoltageGauge.setValue(eventData.isUnderVoltage(), eventData.isUnderVoltage() ? HondaConstants.RED : HondaConstants.GREEN);
+         isOverVoltageGauge.setValue(eventData.isOverVoltage(), eventData.isOverVoltage() ? HondaConstants.RED : HondaConstants.GREEN);
          }
       else
          {
@@ -115,6 +131,14 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
          stateOfHealthGauge.setValue(null);
          lifetimeEnergyInGauge.setValue(null);
          lifetimeEnergyOutGauge.setValue(null);
+
+         isInterlockTrippedGauge.setValue(null);
+         isCommunicationFaultWithBankOrCellGauge.setValue(null);
+         isChargeOvercurrentGauge.setValue(null);
+         isDischargeOvercurrentGauge.setValue(null);
+         isOverTemperatureGauge.setValue(null);
+         isUnderVoltageGauge.setValue(null);
+         isOverVoltageGauge.setValue(null);
          }
       }
 
@@ -231,6 +255,41 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
    public Gauge<Integer> getLifetimeEnergyOutGauge()
       {
       return lifetimeEnergyOutGauge;
+      }
+
+   public Gauge<Boolean> getInterlockTrippedGauge()
+      {
+      return isInterlockTrippedGauge;
+      }
+
+   public Gauge<Boolean> getCommunicationFaultWithBankOrCellGauge()
+      {
+      return isCommunicationFaultWithBankOrCellGauge;
+      }
+
+   public Gauge<Boolean> getChargeOvercurrentGauge()
+      {
+      return isChargeOvercurrentGauge;
+      }
+
+   public Gauge<Boolean> getDischargeOvercurrentGauge()
+      {
+      return isDischargeOvercurrentGauge;
+      }
+
+   public Gauge<Boolean> getOverTemperatureGauge()
+      {
+      return isOverTemperatureGauge;
+      }
+
+   public Gauge<Boolean> getUnderVoltageGauge()
+      {
+      return isUnderVoltageGauge;
+      }
+
+   public Gauge<Boolean> getOverVoltageGauge()
+      {
+      return isOverVoltageGauge;
       }
 
    private final class FaultStatusPanel extends JPanel
