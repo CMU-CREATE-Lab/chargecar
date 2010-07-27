@@ -137,11 +137,11 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
 
       final byte variousIOState = contentGroupByteBuffer.get(10);
 
-      final int relativeChargeCurrentLimitPercentage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(11)) / 255 * 100;
+      final double relativeChargeCurrentLimitPercentage = (double)ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(11)) / 255.0 * 100.0;
 
-      final int relativeDischargeCurrentLimitPercentage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(12)) / 255 * 100;
+      final double relativeDischargeCurrentLimitPercentage = (double)ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(12)) / 255.0 * 100.0;
 
-      final boolean areRelaysOn = contentGroupByteBuffer.get(13) != 0; // TODO: is this right?
+      final boolean areRelaysOn = contentGroupByteBuffer.get(13) != 0;
 
       final int stateOfChargePercentage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(14));
 
@@ -165,7 +165,7 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
       final double averageCellVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(22)) / 100.0 + 2.0;
 
       // reported value is in 10 mV units with a min of 2.0 V, so divide by 100 and add 2 to get V
-      final double maximumCellVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(23)) / 100.0d + 2.0d;
+      final double maximumCellVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(23)) / 100.0 + 2.0;
 
       final int cellNumWithHighestVoltage = ByteUtils.unsignedByteToInt(contentGroupByteBuffer.get(24));
 
@@ -194,8 +194,7 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
       // TODO: do something with this value
       final byte auxDataState = auxiliaryGroupByteBuffer.get(0); // TODO: is this right?
 
-      // TODO: do something with this value
-      final byte faultLevelFlags = auxiliaryGroupByteBuffer.get(1); // TODO: is this right?
+      final byte levelFaultFlags = auxiliaryGroupByteBuffer.get(1);
 
       // total energy in of the battery, since manufacture. Unsigned, overflows back to 0 [kWH]
       final int totalEnergyInOfBatterySinceManufacture = convertBytesToInt(auxiliaryGroupByteBuffer.get(2),
@@ -208,6 +207,7 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
                                                                             auxiliaryGroupByteBuffer.get(7));
 
       final int depthOfDischarge = ByteUtils.unsignedShortToInt(auxiliaryGroupByteBuffer.getShort(8));
+
       final int capacity = ByteUtils.unsignedShortToInt(auxiliaryGroupByteBuffer.getShort(10));
 
       final int stateOfHealthPercentage = ByteUtils.unsignedByteToInt(auxiliaryGroupByteBuffer.get(12));
@@ -291,7 +291,7 @@ class BMSReader extends StreamingSerialPortReader<BMSEvent>
                           numLoadsOn,
                           cellVoltageAboveWhichWeTurnOnItsLoad,
                           auxDataState,
-                          faultLevelFlags,
+                          levelFaultFlags,
                           totalEnergyInOfBatterySinceManufacture,
                           totalEnergyOutOfBatterySinceManufacture,
                           depthOfDischarge,

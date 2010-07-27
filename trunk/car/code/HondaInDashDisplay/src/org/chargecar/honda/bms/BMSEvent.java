@@ -22,8 +22,8 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final boolean isInterlockTripped;
    private final boolean isPowerFromLoad;
    private final boolean isPowerFromSource;
-   private final int relativeChargeCurrentLimitPercentage;     // Maximum regen and charging current accepted. FFh = 100%, 00h = 0%
-   private final int relativeDischargeCurrentLimitPercentage;  // Maximum discharging current accepted. FFh = 100%, 00h = 0%
+   private final double relativeChargeCurrentLimitPercentage;     // Maximum regen and charging current accepted. FFh = 100%, 00h = 0%
+   private final double relativeDischargeCurrentLimitPercentage;  // Maximum discharging current accepted. FFh = 100%, 00h = 0%
    private final boolean areRelaysOn;
    private final int stateOfChargePercentage;
    private final int numOfMissingBanks;
@@ -44,7 +44,14 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    private final int numLoadsOn;
    private final double cellVoltageAboveWhichWeTurnOnItsLoad;  // in V, 2.0V is min
    private final byte auxDataState;
-   private final byte faultLevelFlags;
+   private final boolean isDrivingOffWhilePluggedIn;
+   private final boolean isInterlockTripped2;
+   private final boolean isCommunicationFaultWithBankOrCell;
+   private final boolean isChargeOvercurrent;
+   private final boolean isDischargeOvercurrent;
+   private final boolean isOverTemperature;
+   private final boolean isUnderVoltage;
+   private final boolean isOverVoltage;
    private final int totalEnergyInOfBatterySinceManufacture;   // kWh
    private final int totalEnergyOutOfBatterySinceManufacture;  // kWh
    private final int depthOfDischarge;                         // Ah
@@ -69,8 +76,8 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
                    final double sourceCurrentAmps,
                    final double loadCurrentAmps,
                    final byte variousIOStateBits,
-                   final int relativeChargeCurrentLimitPercentage,
-                   final int relativeDischargeCurrentLimitPercentage,
+                   final double relativeChargeCurrentLimitPercentage,
+                   final double relativeDischargeCurrentLimitPercentage,
                    final boolean areRelaysOn,
                    final int stateOfChargePercentage,
                    final int numOfMissingBanks,
@@ -91,7 +98,7 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
                    final int numLoadsOn,
                    final double cellVoltageAboveWhichWeTurnOnItsLoad,
                    final byte auxDataState,
-                   final byte faultLevelFlags,
+                   final byte levelFaultFlags,
                    final int totalEnergyInOfBatterySinceManufacture,
                    final int totalEnergyOutOfBatterySinceManufacture,
                    final int depthOfDischarge,
@@ -146,7 +153,15 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       this.numLoadsOn = numLoadsOn;
       this.cellVoltageAboveWhichWeTurnOnItsLoad = cellVoltageAboveWhichWeTurnOnItsLoad;
       this.auxDataState = auxDataState;
-      this.faultLevelFlags = faultLevelFlags;
+      final BigInteger levelFault = BigInteger.valueOf(levelFaultFlags);
+      this.isDrivingOffWhilePluggedIn = levelFault.testBit(0);
+      this.isInterlockTripped2 = levelFault.testBit(1);
+      this.isCommunicationFaultWithBankOrCell = levelFault.testBit(2);
+      this.isChargeOvercurrent = levelFault.testBit(3);
+      this.isDischargeOvercurrent = levelFault.testBit(4);
+      this.isOverTemperature = levelFault.testBit(5);
+      this.isUnderVoltage = levelFault.testBit(6);
+      this.isOverVoltage = levelFault.testBit(7);
       this.totalEnergyInOfBatterySinceManufacture = totalEnergyInOfBatterySinceManufacture;
       this.totalEnergyOutOfBatterySinceManufacture = totalEnergyOutOfBatterySinceManufacture;
       this.depthOfDischarge = depthOfDischarge;
@@ -233,13 +248,13 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       }
 
    /** Returns the maximum regen and charging current accepted as a percentage. */
-   public int getRelativeChargeCurrentLimitPercentage()
+   public double getRelativeChargeCurrentLimitPercentage()
       {
       return relativeChargeCurrentLimitPercentage;
       }
 
    /** Returns the maximum discharging current accepted as a percentage. */
-   public int getRelativeDischargeCurrentLimitPercentage()
+   public double getRelativeDischargeCurrentLimitPercentage()
       {
       return relativeDischargeCurrentLimitPercentage;
       }
@@ -345,6 +360,46 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
    public double getCellVoltageAboveWhichWeTurnOnItsLoad()
       {
       return cellVoltageAboveWhichWeTurnOnItsLoad;
+      }
+
+   public boolean isDrivingOffWhilePluggedIn()
+      {
+      return isDrivingOffWhilePluggedIn;
+      }
+
+   public boolean isInterlockTripped2()
+      {
+      return isInterlockTripped2;
+      }
+
+   public boolean isCommunicationFaultWithBankOrCell()
+      {
+      return isCommunicationFaultWithBankOrCell;
+      }
+
+   public boolean isChargeOvercurrent()
+      {
+      return isChargeOvercurrent;
+      }
+
+   public boolean isDischargeOvercurrent()
+      {
+      return isDischargeOvercurrent;
+      }
+
+   public boolean isOverTemperature()
+      {
+      return isOverTemperature;
+      }
+
+   public boolean isUnderVoltage()
+      {
+      return isUnderVoltage;
+      }
+
+   public boolean isOverVoltage()
+      {
+      return isOverVoltage;
       }
 
    /** Returns the total energy in (kWh) of the battery since manufacture. */
@@ -461,7 +516,14 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       sb.append(", numLoadsOn=").append(numLoadsOn);
       sb.append(", cellVoltageAboveWhichWeTurnOnItsLoad=").append(cellVoltageAboveWhichWeTurnOnItsLoad);
       sb.append(", auxDataState=").append(auxDataState);
-      sb.append(", faultLevelFlags=").append(faultLevelFlags);
+      sb.append(", isDrivingOffWhilePluggedIn=").append(isDrivingOffWhilePluggedIn);
+      sb.append(", isInterlockTripped2=").append(isInterlockTripped2);
+      sb.append(", isCommunicationFaultWithBankOrCell=").append(isCommunicationFaultWithBankOrCell);
+      sb.append(", isChargeOvercurrent=").append(isChargeOvercurrent);
+      sb.append(", isDischargeOvercurrent=").append(isDischargeOvercurrent);
+      sb.append(", isOverTemperature=").append(isOverTemperature);
+      sb.append(", isUnderVoltage=").append(isUnderVoltage);
+      sb.append(", isOverVoltage=").append(isOverVoltage);
       sb.append(", totalEnergyInOfBatterySinceManufacture=").append(totalEnergyInOfBatterySinceManufacture);
       sb.append(", totalEnergyOutOfBatterySinceManufacture=").append(totalEnergyOutOfBatterySinceManufacture);
       sb.append(", depthOfDischarge=").append(depthOfDischarge);
