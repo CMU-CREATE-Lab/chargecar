@@ -25,6 +25,12 @@ final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent
    private static final String WORD_DELIMETER = ",";
    private static final int NUM_WORDS_PER_SENTENCE = 5;
    private static final String KEY_VALUE_DELIMITER = "=";
+   private static final double CELSIUS_CONVERSION_MULTIPLIER = 5.0 / 9.0;
+
+   private static double convertToCelsius(final Double motorTemperature)
+      {
+      return CELSIUS_CONVERSION_MULTIPLIER * (motorTemperature - 32.0);
+      }
 
    SensorBoardReader(final String serialPortName)
       {
@@ -63,8 +69,8 @@ final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent
                 regenValue != null)
                {
                publishDataEvent(new SensorBoardEvent(timestamp,
-                                                     motorTemperature,
-                                                     controllerTemperature,
+                                                     convertToCelsius(motorTemperature),
+                                                     convertToCelsius(controllerTemperature),
                                                      throttleValue,
                                                      regenValue));
                }
