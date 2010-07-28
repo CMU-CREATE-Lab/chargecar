@@ -1,8 +1,6 @@
 package org.chargecar.honda.motorcontroller;
 
-import java.io.IOException;
 import java.util.Date;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -12,11 +10,9 @@ import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chargecar.serial.streaming.BaseStreamingSerialPortSentenceReadingStrategy;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
-import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -42,13 +38,7 @@ class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEve
 
    MotorControllerReader(final SerialIOManager serialIOManager)
       {
-      super(serialIOManager);
-      }
-
-   @Override
-   protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
-      {
-      return new SentenceReadingStrategy(serialPortIoHelper);
+      super(serialIOManager, SENTENCE_DELIMETER);
       }
 
    protected void processSentence(final Date timestamp, final byte[] sentenceBytes)
@@ -104,51 +94,6 @@ class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEve
                if (LOG.isErrorEnabled())
                   {
                   LOG.error("MotorControllerReader.processSentence(): Unexpected sentence [" + sentence + "]");
-                  }
-               }
-            }
-         }
-      }
-
-   private class SentenceReadingStrategy extends BaseStreamingSerialPortSentenceReadingStrategy
-      {
-      private SentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
-         {
-         super(serialPortIoHelper);
-         }
-
-      public byte[] getNextSentence() throws IOException
-         {
-         final StringBuilder sb = new StringBuilder();
-
-         while (true)
-            {
-            // Reads the next byte if data is available.  If no data is available, then b will be null
-            final Byte b = readByte();
-
-            // if the byte is null, then no data is available, so just wait a bit
-            if (b == null)
-               {
-               try
-                  {
-                  Thread.sleep(5);
-                  }
-               catch (InterruptedException e)
-                  {
-                  LOG.error("InterruptedException while sleeping", e);
-                  }
-               continue;
-               }
-            else
-               {
-               final char c = (char)b.byteValue();
-               if (SENTENCE_DELIMETER.equals(c))
-                  {
-                  return sb.toString().getBytes();
-                  }
-               else
-                  {
-                  sb.append(c);
                   }
                }
             }

@@ -1,7 +1,6 @@
 package org.chargecar.honda.sensorboard;
 
 import java.util.Date;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -13,9 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
-import org.chargecar.serial.streaming.StreamingSerialPortPlainTextSentenceReadingStrategy;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
-import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -24,7 +21,7 @@ final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent
    {
    private static final Log LOG = LogFactory.getLog(SensorBoardReader.class);
 
-   private static final Character SENTENCE_DELIMITER = '\r';
+   private static final Character SENTENCE_DELIMETER = '\r';
    private static final String WORD_DELIMETER = ",";
    private static final int NUM_WORDS_PER_SENTENCE = 5;
    private static final String KEY_VALUE_DELIMITER = "=";
@@ -42,13 +39,7 @@ final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent
 
    SensorBoardReader(final SerialIOManager serialIOManager)
       {
-      super(serialIOManager);
-      }
-
-   @Override
-   protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
-      {
-      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper, SENTENCE_DELIMITER);
+      super(serialIOManager, SENTENCE_DELIMETER);
       }
 
    public void processSentence(final Date timestamp, final byte[] sentenceBytes)
