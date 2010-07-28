@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -16,9 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
-import org.chargecar.serial.streaming.StreamingSerialPortPlainTextSentenceReadingStrategy;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
-import org.chargecar.serial.streaming.StreamingSerialPortSentenceReadingStrategy;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -27,7 +24,7 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
    {
    private static final Log LOG = LogFactory.getLog(NMEAReader.class);
 
-   private static final Character SENTENCE_DELIMITER = '\n';
+   private static final Character SENTENCE_DELIMETER = '\n';
    private static final String WORD_DELIMITER = ",";
    private static final String DEGREES_SYMBOL = "\u00b0";
    private static final String GPS_FIX_DATA_SENTENCE_PREFIX = "$GPGGA";
@@ -96,13 +93,7 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
 
    NMEAReader(final SerialIOManager serialIOManager)
       {
-      super(serialIOManager);
-      }
-
-   @Override
-   protected StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper)
-      {
-      return new StreamingSerialPortPlainTextSentenceReadingStrategy(serialPortIoHelper, SENTENCE_DELIMITER);
+      super(serialIOManager, SENTENCE_DELIMETER);
       }
 
    protected void processSentence(final Date timestamp, final byte[] sentenceBytes)

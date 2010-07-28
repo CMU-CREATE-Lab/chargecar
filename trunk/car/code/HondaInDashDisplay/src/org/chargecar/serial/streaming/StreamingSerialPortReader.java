@@ -10,8 +10,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.serial.SerialPortException;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
-import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,20 +22,22 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
    private static final Log LOG = LogFactory.getLog(StreamingSerialPortReader.class);
 
    private final SerialIOManager serialIIOManager;
+   private final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy;
    private ScheduledExecutorService executor;
    private ScheduledFuture<?> scheduledFuture;
    private final Set<StreamingSerialPortEventListener<E>> eventListeners = new HashSet<StreamingSerialPortEventListener<E>>();
    private final byte[] dataSynchronizationLock = new byte[0];
    private boolean isReading = false;
 
-   public StreamingSerialPortReader(final String applicationName, final SerialIOConfiguration config)
+   public StreamingSerialPortReader(final SerialIOManager serialIIOManager, final Character sentenceDelimeter)
       {
-      this(new DefaultSerialIOManager(applicationName, config));
+      this(serialIIOManager, new DefaultStreamingSerialPortSentenceReadingStrategy(serialIIOManager.getSerialPortIoHelper(), sentenceDelimeter));
       }
 
-   public StreamingSerialPortReader(final SerialIOManager serialIIOManager)
+   public StreamingSerialPortReader(final SerialIOManager serialIIOManager, final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy)
       {
       this.serialIIOManager = serialIIOManager;
+      this.sentenceReadingStrategy = sentenceReadingStrategy;
       }
 
    public final void addStreamingSerialPortEventListener(final StreamingSerialPortEventListener<E> listener)
@@ -141,16 +141,12 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
             }
          else
             {
-            final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy = createStreamingSerialPortSentenceReadingStrategy(serialIIOManager.getSerialPortIoHelper());
-
             LOG.debug("StreamingSerialPortReader.startReading(): Scheduling the SentenceReader for execution");
             isReading = true;
-            scheduledFuture = executor.schedule(new SentenceReader(sentenceReadingStrategy), 0, TimeUnit.MILLISECONDS);
+            scheduledFuture = executor.schedule(new SentenceReader(), 0, TimeUnit.MILLISECONDS);
             }
          }
       }
-
-   protected abstract StreamingSerialPortSentenceReadingStrategy createStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper);
 
    protected abstract void processSentence(final Date timestamp, final byte[] sentence);
 
@@ -215,13 +211,6 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
    private final class SentenceReader implements Runnable
       {
-      private final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy;
-
-      private SentenceReader(final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy)
-         {
-         this.sentenceReadingStrategy = sentenceReadingStrategy;
-         }
-
       public void run()
          {
          publishReadingStateChangeEvent(true);
@@ -236,7 +225,14 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
                if (sentenceReadingStrategy.isDataAvailable())
                   {
                   final byte[] sentence = sentenceReadingStrategy.getNextSentence();
-                  processSentence(new Date(), sentence);
+                  try
+                     {
+                     processSentence(new Date(), sentence);
+                     }
+                  catch (Exception e)
+                     {
+                     LOG.error("Exception while processing sentence--logging, but otherwise ignoring", e);
+                     }
                   synchronized (dataSynchronizationLock)
                      {
                      if (!isReading)
