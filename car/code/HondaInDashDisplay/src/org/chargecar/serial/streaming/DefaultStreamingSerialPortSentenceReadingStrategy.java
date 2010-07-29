@@ -1,7 +1,6 @@
 package org.chargecar.serial.streaming;
 
 import java.io.IOException;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,18 +11,18 @@ public final class DefaultStreamingSerialPortSentenceReadingStrategy implements 
    {
    private static final Log LOG = LogFactory.getLog(DefaultStreamingSerialPortSentenceReadingStrategy.class);
 
-   private final SerialPortIOHelper serialPortIoHelper;
+   private final SerialIOManager serialIOManager;
    private final Character sentenceDelimiter;
 
-   public DefaultStreamingSerialPortSentenceReadingStrategy(final SerialPortIOHelper serialPortIoHelper, final Character sentenceDelimiter)
+   public DefaultStreamingSerialPortSentenceReadingStrategy(final SerialIOManager serialIOManager, final Character sentenceDelimiter)
       {
-      this.serialPortIoHelper = serialPortIoHelper;
+      this.serialIOManager = serialIOManager;
       this.sentenceDelimiter = sentenceDelimiter;
       }
 
    public boolean isDataAvailable() throws IOException
       {
-      return serialPortIoHelper.isDataAvailable();
+      return serialIOManager.getSerialPortIoHelper().isDataAvailable();
       }
 
    public byte[] getNextSentence() throws IOException
@@ -69,9 +68,9 @@ public final class DefaultStreamingSerialPortSentenceReadingStrategy implements 
     */
    private Byte readByte() throws IOException
       {
-      if (serialPortIoHelper.isDataAvailable())
+      if (serialIOManager.getSerialPortIoHelper().isDataAvailable())
          {
-         final int b = serialPortIoHelper.read();
+         final int b = serialIOManager.getSerialPortIoHelper().read();
 
          if (b >= 0)
             {
