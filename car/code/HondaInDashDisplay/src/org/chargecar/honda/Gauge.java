@@ -19,7 +19,7 @@ public final class Gauge<T> extends JPanel
       {
       this.stringFormat = stringFormat;
       final JLabel label = SwingUtils.createLabel(labelText, GUIConstants.FONT_NORMAL);
-      this.value = SwingUtils.createLabel("", GUIConstants.FONT_MEDIUM_LARGE);
+      this.value = SwingUtils.createLabel(HondaConstants.UNKNOWN_VALUE, GUIConstants.FONT_MEDIUM_LARGE);
       final GroupLayout layout = new GroupLayout(this);
       this.setLayout(layout);
       this.setBackground(Color.WHITE);

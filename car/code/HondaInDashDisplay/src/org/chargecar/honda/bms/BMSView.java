@@ -1,5 +1,6 @@
 package org.chargecar.honda.bms;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.util.PropertyResourceBundle;
 import javax.swing.Box;
@@ -294,13 +295,14 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSEvent>
 
    private final class FaultStatusPanel extends JPanel
       {
-      private final JLabel value = SwingUtils.createLabel("                                                   ",
+      private final JLabel value = SwingUtils.createLabel(HondaConstants.UNKNOWN_VALUE,
                                                           new Font(GUIConstants.FONT_NORMAL.getFontName(),
                                                                    Font.BOLD,
                                                                    GUIConstants.FONT_NORMAL.getSize()));
 
       private FaultStatusPanel()
          {
+         this.setBackground(Color.WHITE);
          this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
          this.add(Box.createGlue());
          this.add(SwingUtils.createLabel(RESOURCES.getString("label.bms-status") + ":"));
