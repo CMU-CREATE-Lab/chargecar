@@ -133,6 +133,7 @@ public final class InDashDisplayView extends JPanel
 
       final JPanel grid = new JPanel();
       final GroupLayout layout = new GroupLayout(grid);
+      grid.setBackground(Color.WHITE);
       grid.setLayout(layout);
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
