@@ -31,7 +31,7 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
 
    public StreamingSerialPortReader(final SerialIOManager serialIIOManager, final Character sentenceDelimeter)
       {
-      this(serialIIOManager, new DefaultStreamingSerialPortSentenceReadingStrategy(serialIIOManager.getSerialPortIoHelper(), sentenceDelimeter));
+      this(serialIIOManager, new DefaultStreamingSerialPortSentenceReadingStrategy(serialIIOManager, sentenceDelimeter));
       }
 
    public StreamingSerialPortReader(final SerialIOManager serialIIOManager, final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy)
