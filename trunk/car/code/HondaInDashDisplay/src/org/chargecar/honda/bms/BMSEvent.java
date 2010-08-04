@@ -2,6 +2,7 @@ package org.chargecar.honda.bms;
 
 import java.math.BigInteger;
 import java.util.Date;
+import edu.cmu.ri.createlab.util.ArrayUtils;
 import org.chargecar.serial.streaming.BaseStreamingSerialPortEvent;
 
 /**
@@ -614,7 +615,9 @@ public class BMSEvent extends BaseStreamingSerialPortEvent
       sb.append(isChargeOvercurrent).append(TO_STRING_DELIMITER);
       sb.append(isDischargeOvercurrent).append(TO_STRING_DELIMITER);
       sb.append(isCommunicationFaultWithBankOrCell).append(TO_STRING_DELIMITER);
-      sb.append(isInterlockTripped2);
+      sb.append(isInterlockTripped2).append(TO_STRING_DELIMITER);
+      sb.append(ArrayUtils.arrayToString(cellVoltages, TO_STRING_DELIMITER)).append(TO_STRING_DELIMITER);
+      sb.append(ArrayUtils.arrayToString(cellTemperatures, TO_STRING_DELIMITER));
       sb.append('}');
       return sb.toString();
       }
