@@ -12,10 +12,12 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.util.AbstractTimeConsumingAction;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.chargecar.honda.bms.BMSController;
 import org.chargecar.honda.bms.BMSModel;
 import org.chargecar.honda.bms.BMSView;
 import org.chargecar.honda.gps.GPSModel;
@@ -37,6 +39,7 @@ public final class InDashDisplayView extends JPanel
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(InDashDisplayView.class.getName());
 
    public InDashDisplayView(final InDashDisplayController inDashDisplayController,
+                            final BMSController bmsController,
                             final BMSModel bmsModel,
                             final GPSModel gpsModel,
                             final MotorControllerModel motorControllerModel,
@@ -49,6 +52,7 @@ public final class InDashDisplayView extends JPanel
       final AtomicInteger markValue = new AtomicInteger(0);
       final JButton quitButton = SwingUtils.createButton(RESOURCES.getString("label.quit"), true);
       final JButton markButton = SwingUtils.createButton(RESOURCES.getString("label.mark") + " " + markValue.get(), true);
+      final JButton resetBatteryEnergyButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
 
       this.setBackground(Color.WHITE);
 
@@ -67,8 +71,18 @@ public final class InDashDisplayView extends JPanel
             {
             public void actionPerformed(final ActionEvent e)
                {
-               LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " =============================================================");
+               LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " (" + System.currentTimeMillis() + ") =============================================================");
                markButton.setText(RESOURCES.getString("label.mark") + " " + markValue.get());
+               }
+            });
+
+      resetBatteryEnergyButton.addActionListener(
+            new ButtonTimeConsumingAction(this, resetBatteryEnergyButton)
+            {
+            protected Object executeTimeConsumingAction()
+               {
+               bmsController.resetBatteryEnergyEquation();
+               return null;
                }
             });
 
@@ -93,6 +107,9 @@ public final class InDashDisplayView extends JPanel
                                                                                   BorderFactory.createEmptyBorder(3, 3, 3, 3)));
       sensorBoardConnectionState.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK),
                                                                               BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+
+      final JLabel batteryEquationEquals = SwingUtils.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_MEDIUM_LARGE);
+      final JLabel batteryEquationPlus = SwingUtils.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_MEDIUM_LARGE);
 
       final JPanel row1 = new JPanel();
       row1.setBackground(Color.WHITE);
@@ -123,6 +140,7 @@ public final class InDashDisplayView extends JPanel
       final Component horizontalSpacer3 = SwingUtils.createRigidSpacer(30);
       final Component horizontalSpacer4 = SwingUtils.createRigidSpacer(30);
       final Component horizontalSpacer5 = SwingUtils.createRigidSpacer(30);
+      final Component deadSpace = SwingUtils.createRigidSpacer(30);
 
       final Component verticalSpacer1 = SwingUtils.createRigidSpacer(20);
       final Component verticalSpacer2 = SwingUtils.createRigidSpacer(20);
@@ -137,7 +155,11 @@ public final class InDashDisplayView extends JPanel
       grid.setLayout(layout);
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
-                  .add(bmsView.getOverTemperatureGauge())
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                        .add(deadSpace)
+                        .add(horizontalSpacer5)
+                        .add(bmsView.getOverTemperatureGauge())
+                  )
                   .add(verticalSpacer1)
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                         .add(sensorBoardView.getMotorTempGauge())
@@ -148,8 +170,7 @@ public final class InDashDisplayView extends JPanel
                         .add(horizontalSpacer3)
                         .add(bmsView.getPackTotalVoltageGauge())
                         .add(horizontalSpacer4)
-                        .add(bmsView.getPowerGauge())
-                        .add(horizontalSpacer5)
+                        .add(bmsView.getBatteryEnergyTotalGauge())
                         .add(bmsView.getUnderVoltageGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
@@ -159,8 +180,8 @@ public final class InDashDisplayView extends JPanel
                         .add(sensorBoardView.getMotorControllerTempGauge())
                         .add(bmsView.getMaximumCellTempGauge())
                         .add(bmsView.getMaximumCellVoltageGauge())
-                        .add(bmsView.getSourceCurrentAmpsGauge())
-                        .add(bmsView.getStateOfChargeGauge())
+                        .add(bmsView.getLoadCurrentAmpsGauge())
+                        .add(batteryEquationEquals)
                         .add(bmsView.getOverVoltageGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
@@ -170,8 +191,8 @@ public final class InDashDisplayView extends JPanel
                         .add(motorControllerView.getRpmGauge())
                         .add(bmsView.getAverageCellTempGauge())
                         .add(bmsView.getAverageCellVoltageGauge())
-                        .add(bmsView.getLoadCurrentAmpsGauge())
-                        .add(bmsView.getStateOfHealthGauge())
+                        .add(bmsView.getDepthOfDischargeGauge())
+                        .add(bmsView.getBatteryEnergyUsedGauge())
                         .add(bmsView.getChargeOvercurrentGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
@@ -181,8 +202,8 @@ public final class InDashDisplayView extends JPanel
                         .add(bmsView.getLLIMSetGauge())
                         .add(bmsView.getCellNumWithLowestTempGauge())
                         .add(bmsView.getCellNumWithLowestVoltageGauge())
-                        .add(bmsView.getDepthOfDischargeGauge())
-                        .add(bmsView.getLifetimeEnergyInGauge())
+                        .add(bmsView.getStateOfChargeGauge())
+                        .add(batteryEquationPlus)
                         .add(bmsView.getDischargeOvercurrentGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
@@ -192,12 +213,15 @@ public final class InDashDisplayView extends JPanel
                         .add(bmsView.getHLIMSetGauge())
                         .add(bmsView.getCellNumWithHighestTempGauge())
                         .add(bmsView.getCellNumWithHighestVoltageGauge())
-                        .add(bmsView.getCapacityGauge())
-                        .add(bmsView.getLifetimeEnergyOutGauge())
+                        .add(bmsView.getStateOfHealthGauge())
+                        .add(bmsView.getBatteryEnergyRegenGauge())
                         .add(bmsView.getCommunicationFaultWithBankOrCellGauge())
                   )
                   .add(verticalSpacer6)
+                  .add(layout.createParallelGroup(GroupLayout.CENTER)
+                  .add(resetBatteryEnergyButton)
                   .add(bmsView.getInterlockTrippedGauge())
+            )
       );
       layout.setVerticalGroup(
             layout.createSequentialGroup()
@@ -239,20 +263,22 @@ public final class InDashDisplayView extends JPanel
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
                         .add(bmsView.getPackTotalVoltageGauge())
-                        .add(bmsView.getSourceCurrentAmpsGauge())
                         .add(bmsView.getLoadCurrentAmpsGauge())
                         .add(bmsView.getDepthOfDischargeGauge())
-                        .add(bmsView.getCapacityGauge())
+                        .add(bmsView.getStateOfChargeGauge())
+                        .add(bmsView.getStateOfHealthGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
                         .add(horizontalSpacer4)
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(bmsView.getPowerGauge())
-                        .add(bmsView.getStateOfChargeGauge())
-                        .add(bmsView.getStateOfHealthGauge())
-                        .add(bmsView.getLifetimeEnergyInGauge())
-                        .add(bmsView.getLifetimeEnergyOutGauge())
+                        .add(deadSpace)
+                        .add(bmsView.getBatteryEnergyTotalGauge())
+                        .add(batteryEquationEquals)
+                        .add(bmsView.getBatteryEnergyUsedGauge())
+                        .add(batteryEquationPlus)
+                        .add(bmsView.getBatteryEnergyRegenGauge())
+                        .add(resetBatteryEnergyButton)
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
                         .add(horizontalSpacer5)
