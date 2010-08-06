@@ -107,6 +107,7 @@ public final class InDashDisplay
       final MotorControllerView motorControllerView = new MotorControllerView();
       final SensorBoardView sensorBoardView = new SensorBoardView();
       final InDashDisplayView inDashDisplayView = new InDashDisplayView(inDashDisplayController,
+                                                                        bmsController,
                                                                         bmsModel,
                                                                         gpsModel,
                                                                         motorControllerModel,

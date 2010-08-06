@@ -11,7 +11,7 @@ import org.chargecar.honda.StreamingSerialPortDeviceController;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class BMSController extends StreamingSerialPortDeviceController<BMSEvent, BMSEvent>
+public final class BMSController extends StreamingSerialPortDeviceController<BMSEvent, BMSAndEnergy>
    {
    private static final Log LOG = LogFactory.getLog(BMSController.class);
 
@@ -46,5 +46,10 @@ public final class BMSController extends StreamingSerialPortDeviceController<BMS
       {
       super(deviceName, reader, model);
       this.model = model;
+      }
+
+   public void resetBatteryEnergyEquation()
+      {
+      model.resetBatteryEnergyEquation();
       }
    }
