@@ -27,12 +27,14 @@ public class TripBuilder {
     
     private static void interpolatePoints(List<Calendar> times,
 	    List<Double> lats, List<Double> lons, List<Double> eles) {
-	// make sure there is a point every 2 seconds,
+	// make sure there is a point every 1 seconds,
 	// as this is all gps based without car scantool
+	final int maxPeriodMS = 1000;
+	double maxPeriodS = maxPeriodMS/1000.0;
 	for (int i = 1; i < times.size(); i++) {
 	    long newTime = times.get(i).getTimeInMillis();
 	    long oldTime = times.get(i - 1).getTimeInMillis();
-	    if (newTime - oldTime > 2000) {
+	    if (newTime - oldTime > 2*maxPeriodMS) {
 		double latps = (lats.get(i) - lats.get(i - 1))
 			/ (newTime - oldTime);
 		double lonps = (lons.get(i) - lons.get(i - 1))
@@ -40,11 +42,12 @@ public class TripBuilder {
 		double eleps = (eles.get(i) - eles.get(i - 1))
 			/ (newTime - oldTime);
 		Calendar interpTime = Calendar.getInstance();
-		interpTime.setTimeInMillis(oldTime + 2000);
+		interpTime.setTimeInMillis(oldTime + maxPeriodMS);
 		times.add(i, interpTime);
-		lats.add(i, lats.get(i - 1) + 2 * latps);
-		lons.add(i, lons.get(i - 1) + 2 * lonps);
-		eles.add(i, eles.get(i - 1) + 2 * eleps);
+		
+		lats.add(i, lats.get(i - 1) + maxPeriodS * latps);
+		lons.add(i, lons.get(i - 1) + maxPeriodS * lonps);
+		eles.add(i, eles.get(i - 1) + maxPeriodS * eleps);
 	    }
 	}
     }

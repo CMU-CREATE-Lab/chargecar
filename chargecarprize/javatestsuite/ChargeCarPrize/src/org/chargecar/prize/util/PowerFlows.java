@@ -21,9 +21,9 @@ public class PowerFlows {
     }
     
     public void adjust(double powerDemand) {
-	if (powerDemand < 0.0) {
+	//if (powerDemand < 0.0) {
 	    this.batteryToMotor = powerDemand - this.capacitorToMotor;
-	}
+	//}
     }
     
     public double getBatteryToMotor() {

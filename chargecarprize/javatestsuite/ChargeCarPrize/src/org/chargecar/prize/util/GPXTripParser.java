@@ -69,11 +69,18 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	for (int i = 0; i < trips.size();) {
 	    double sumPlanarDist = 0.0;
 	    double sumPowerDemand = 0.0;
+	    double maxPower = 0.0;
+	    double pow;
 	    for (PointFeatures p : trips.get(i)) {
 		sumPlanarDist += p.getPlanarDist();
-		sumPowerDemand += Math.pow(p.getPowerDemand(), 2);
+		pow = p.getPowerDemand();
+		sumPowerDemand += Math.pow(pow, 2);
+		pow = Math.abs(p.getPowerDemand());
+		if(pow > maxPower){
+		    maxPower = pow;
+		}
 	    }
-	    if (sumPlanarDist < 500.0 || sumPowerDemand > 1E13) {
+	    if (sumPlanarDist < 500.0 || sumPowerDemand > 1E13 || maxPower > 70000) {
 		trips.remove(i);
 	    } else {
 		i++;

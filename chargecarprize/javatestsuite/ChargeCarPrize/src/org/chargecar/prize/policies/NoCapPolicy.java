@@ -3,6 +3,7 @@ package org.chargecar.prize.policies;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlows;
+import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 
 /**
@@ -35,4 +36,5 @@ public class NoCapPolicy implements Policy {
     public String getName() {
 	return "No Capacitor Policy";
     }
+
 }
