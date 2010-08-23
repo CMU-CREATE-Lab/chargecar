@@ -27,14 +27,14 @@ public class TripBuilder {
     
     private static void interpolatePoints(List<Calendar> times,
 	    List<Double> lats, List<Double> lons, List<Double> eles) {
-	// make sure there is a point every 1 seconds,
+	// make sure there is a point no gaps of two seconds,
 	// as this is all gps based without car scantool
 	final int maxPeriodMS = 1000;
 	double maxPeriodS = maxPeriodMS/1000.0;
 	for (int i = 1; i < times.size(); i++) {
 	    long newTime = times.get(i).getTimeInMillis();
 	    long oldTime = times.get(i - 1).getTimeInMillis();
-	    if (newTime - oldTime > 2*maxPeriodMS) {
+	    if (newTime - oldTime >= 2*maxPeriodMS) {
 		double latps = (lats.get(i) - lats.get(i - 1))
 			/ (newTime - oldTime);
 		double lonps = (lons.get(i) - lons.get(i - 1))
