@@ -66,7 +66,7 @@ public final class InDashDisplayView extends JPanel
                }
             });
 
-      markButton.addActionListener(
+      final ActionListener markButtonActionListener =
             new ActionListener()
             {
             public void actionPerformed(final ActionEvent e)
@@ -74,7 +74,9 @@ public final class InDashDisplayView extends JPanel
                LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " (" + System.currentTimeMillis() + ") =============================================================");
                markButton.setText(RESOURCES.getString("label.mark") + " " + markValue.get());
                }
-            });
+            };
+
+      markButton.addActionListener(markButtonActionListener);
 
       resetBatteryEnergyButton.addActionListener(
             new ButtonTimeConsumingAction(this, resetBatteryEnergyButton)
@@ -82,6 +84,7 @@ public final class InDashDisplayView extends JPanel
             protected Object executeTimeConsumingAction()
                {
                bmsController.resetBatteryEnergyEquation();
+               markButtonActionListener.actionPerformed(null);  // log a mark here as well
                return null;
                }
             });
