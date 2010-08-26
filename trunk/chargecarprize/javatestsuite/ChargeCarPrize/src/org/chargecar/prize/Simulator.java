@@ -36,7 +36,9 @@ import org.chargecar.prize.visualization.Visualizer;
 public class Simulator {
     static Visualizer visualizer = new ConsoleWriter();
     static int carMass = 1200;
-    
+    static double systemVoltage = 48;
+    static double batteryWhr = 50000;
+    static double capWhr = 50;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -105,8 +107,8 @@ public class Simulator {
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new SimpleBattery(50000, 50000);
-	BatteryModel tripCap = new SimpleCapacitor(50, 0);
+	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr, systemVoltage);
+	BatteryModel tripCap = new SimpleCapacitor(capWhr, 50, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
     }
@@ -118,9 +120,9 @@ public class Simulator {
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
 	    pf.adjust(point.getPowerDemand());
-	    battery.drawCurrent(pf.getBatteryToCapacitor()
+	    battery.drawPower(pf.getBatteryToCapacitor()
 		    + pf.getBatteryToMotor(), point);
-	    cap.drawCurrent(pf.getCapacitorToMotor()
+	    cap.drawPower(pf.getCapacitorToMotor()
 		    - pf.getBatteryToCapacitor(), point);
 	}
 	policy.endTrip();
