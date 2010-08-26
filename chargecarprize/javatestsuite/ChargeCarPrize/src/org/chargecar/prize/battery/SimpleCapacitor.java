@@ -12,18 +12,19 @@ import org.chargecar.prize.util.PowerFlowException;
  */
 public class SimpleCapacitor extends BatteryModel {
     
-    public SimpleCapacitor(double maxCharge, double charge) {
+    public SimpleCapacitor(double maxCharge, double charge, double voltage) {
 	this.maxCharge = maxCharge;
 	this.charge = charge;
 	this.temperature = 0.0;
 	this.current = 0.0;
 	this.efficiency = 1.0;
+	this.voltage = voltage;
     }
     
     @Override
-    public void drawCurrent(double current, PointFeatures point)
+    public void drawPower(double current, PointFeatures point)
 	    throws PowerFlowException {
-	super.drawCurrent(current, point);
+	super.drawPower(current, point);
 	
 	if (this.charge < -1E-6) {
 	    throw new PowerFlowException("Capacitor overdrawn: " + this.charge);
@@ -35,7 +36,7 @@ public class SimpleCapacitor extends BatteryModel {
     
     @Override
     public BatteryModel createClone() {
-	SimpleCapacitor clone = new SimpleCapacitor(this.maxCharge, this.charge);
+	final SimpleCapacitor clone = new SimpleCapacitor(this.maxCharge, this.charge, this.voltage);
 	clone.charge = this.charge;
 	clone.current = this.current;
 	clone.efficiency = this.efficiency;
@@ -57,5 +58,10 @@ public class SimpleCapacitor extends BatteryModel {
     @Override
     public double calculateTemperature(double current, int periodMS) {
 	return 0.0;
+    }
+
+    @Override
+    public double calculateVoltage(double current, int periodMS) {
+	return this.voltage;
     }
 }

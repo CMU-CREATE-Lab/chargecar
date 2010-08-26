@@ -30,24 +30,24 @@ public class TripBuilder {
 	// make sure there is a point no gaps of two seconds,
 	// as this is all gps based without car scantool
 	final int maxPeriodMS = 1000;
-	double maxPeriodS = maxPeriodMS/1000.0;
+	
 	for (int i = 1; i < times.size(); i++) {
 	    long newTime = times.get(i).getTimeInMillis();
 	    long oldTime = times.get(i - 1).getTimeInMillis();
 	    if (newTime - oldTime >= 2*maxPeriodMS) {
-		double latps = (lats.get(i) - lats.get(i - 1))
+		double latpms = (lats.get(i) - lats.get(i - 1))
 			/ (newTime - oldTime);
-		double lonps = (lons.get(i) - lons.get(i - 1))
+		double lonpms = (lons.get(i) - lons.get(i - 1))
 			/ (newTime - oldTime);
-		double eleps = (eles.get(i) - eles.get(i - 1))
+		double elepms = (eles.get(i) - eles.get(i - 1))
 			/ (newTime - oldTime);
 		Calendar interpTime = Calendar.getInstance();
 		interpTime.setTimeInMillis(oldTime + maxPeriodMS);
 		times.add(i, interpTime);
 		
-		lats.add(i, lats.get(i - 1) + maxPeriodS * latps);
-		lons.add(i, lons.get(i - 1) + maxPeriodS * lonps);
-		eles.add(i, eles.get(i - 1) + maxPeriodS * eleps);
+		lats.add(i, lats.get(i - 1) + maxPeriodMS * latpms);
+		lons.add(i, lons.get(i - 1) + maxPeriodMS * lonpms);
+		eles.add(i, eles.get(i - 1) + maxPeriodMS * elepms);
 	    }
 	}
     }
