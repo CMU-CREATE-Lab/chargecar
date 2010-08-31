@@ -97,7 +97,7 @@ public class SimulatorOmnipotent {
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
 	BatteryModel tripBattery = new SimpleBattery(50000, 50000, 48);
-	BatteryModel tripCap = new SimpleCapacitor(100, 0, 48);
+	BatteryModel tripCap = new SimpleCapacitor(50, 0, 48);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
     }
