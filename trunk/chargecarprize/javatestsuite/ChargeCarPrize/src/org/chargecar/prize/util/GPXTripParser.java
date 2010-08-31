@@ -22,7 +22,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
     private List<Double> rawLats;
     private List<Double> rawLons;
     private List<Double> rawEles;
-    private int carMassKg;
+    private Vehicle vehicle;
     private List<List<PointFeatures>> trips;
     private Stack<String> elementNames;
     private StringBuilder contentBuffer;
@@ -47,10 +47,12 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	rawEles = new ArrayList<Double>();
     }
     
-    public List<List<PointFeatures>> read(File gpxFile, int carMassKg)
+    public List<List<PointFeatures>> read(File gpxFile, Vehicle vehicle)
 	    throws IOException {
 	clear();
-	this.carMassKg = carMassKg;
+	double accLimit = 9.81;
+	double minTripDist = 500;
+	this.vehicle = vehicle;
 	FileInputStream in = new FileInputStream(gpxFile);
 	InputSource source = new InputSource(in);
 	XMLReader parser;
@@ -68,19 +70,16 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	
 	for (int i = 0; i < trips.size();) {
 	    double sumPlanarDist = 0.0;
-	    double sumPowerDemand = 0.0;
-	    double maxPower = 0.0;
-	    double pow;
+	    double maxAccel = 0.0;
+	    double acc;
 	    for (PointFeatures p : trips.get(i)) {
 		sumPlanarDist += p.getPlanarDist();
-		pow = p.getPowerDemand();
-		sumPowerDemand += Math.pow(pow, 2);
-		pow = Math.abs(p.getPowerDemand());
-		if(pow > maxPower){
-		    maxPower = pow;
+		acc = Math.abs(p.getAcceleration());
+		if(acc > maxAccel){
+		    maxAccel = acc;
 		}
 	    }
-	    if (sumPlanarDist < 500.0 || sumPowerDemand > 1E13 || maxPower > 70000) {
+	    if (sumPlanarDist < minTripDist || maxAccel > accLimit) {
 		trips.remove(i);
 	    } else {
 		i++;
@@ -114,7 +113,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		// if enough time has passed between points (360 seconds)
 		// consider them disjoint trips
 		trips.add(TripBuilder.calculateTrip(times, lats, lons, eles,
-			carMassKg));
+			vehicle));
 		times.clear();
 		lats.clear();
 		lons.clear();
@@ -130,7 +129,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	if (times.size() > 60) {
 	    // get last trip
 	    trips.add(TripBuilder.calculateTrip(times, lats, lons, eles,
-		    carMassKg));
+		    vehicle));
 	}
 	
 	clearRawData();

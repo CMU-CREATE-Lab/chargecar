@@ -15,12 +15,12 @@ import java.util.List;
 public class TripBuilder {
     public static List<PointFeatures> calculateTrip(List<Calendar> times,
 	    List<Double> lats, List<Double> lons, List<Double> eles,
-	    int carMassKg) {
+	    Vehicle vehicle) {
 	removeTunnels(times, lats, lons, eles);
 	interpolatePoints(times, lats, lons, eles);
 	List<PointFeatures> tripPoints = new ArrayList<PointFeatures>(times
 		.size());
-	runPowerModel(tripPoints, times, lats, lons, eles, carMassKg);
+	runPowerModel(tripPoints, times, lats, lons, eles, vehicle);
 	return tripPoints;
 	
     }
@@ -54,7 +54,7 @@ public class TripBuilder {
     
     private static void runPowerModel(List<PointFeatures> tripPoints,
 	    List<Calendar> times, List<Double> lats, List<Double> lons,
-	    List<Double> eles, double carMassKg) {
+	    List<Double> eles, Vehicle vehicle) {
 	
 	List<Double> planarDistances = new ArrayList<Double>();
 	List<Double> adjustedDistances = new ArrayList<Double>();
@@ -92,14 +92,11 @@ public class TripBuilder {
 	speeds.set(0, speeds.get(1));
 	accelerations.set(1, 0.0);
 	
-	final double carArea = 1.988;// honda civic 2001 si fronta area in
-				     // metres sq
-	final double carDragCoeff = 0.31;// honda civic 2006 sedan
-	final double mu = 0.015; // #rolling resistance coef
+	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
 	final double offset = -0.35;
 	final double ineff = 1 / 0.85;
-	final double rollingRes = mu * carMassKg * aGravity;
+	final double rollingRes = vehicle.getRollingResCoeff() * carMassKg * aGravity;
 	final double outsideTemp = ((60 + 459.67) * 5 / 9);// 60F to kelvin
 	
 	for (int i = 0; i < accelerations.size(); i++) {
@@ -107,7 +104,7 @@ public class TripBuilder {
 		    (1 - ((0.0065 * eles.get(i)) / 288.15)),
 		    ((aGravity * 0.0289) / (8.314 * 0.0065)));
 	    double rho = (pressure * 0.0289) / (8.314 * outsideTemp);
-	    double airResCoeff = 0.5 * rho * carArea * carDragCoeff;
+	    double airResCoeff = 0.5 * rho * vehicle.getCarCrossArea() * vehicle.getCarDragCoeff();
 	    double mgsintheta = 0;
 	    
 	    if (i > 0) {

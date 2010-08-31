@@ -37,7 +37,6 @@ public class ConsoleWriter implements Visualizer {
 	
 	double i2BaseSum = currentSquaredSums.get(0);
 	double baseChargeSpentSum = chargeSpentSums.get(0);
-	
 	System.out.println("Baseline, " + results.get(0).getPolicyName()
 		+ ", i^2: " + d.format(i2BaseSum));
 	System.out.println("Baseline, " + results.get(0).getPolicyName()
