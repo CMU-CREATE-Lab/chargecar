@@ -15,15 +15,15 @@ import java.util.Calendar;
  */
 public class TripFeatures {
     private String driver;
-    private double carMass;
+    private Vehicle vehicle;
     private Calendar startTime;
     private double startLat;
     private double startLon;
     
-    public TripFeatures(String driver, double carMass, PointFeatures startPoint) {
+    public TripFeatures(String driver, Vehicle vehicle, PointFeatures startPoint) {
 	super();
 	this.driver = driver;
-	this.carMass = carMass;
+	this.vehicle = vehicle;
 	this.startTime = (Calendar) startPoint.getTime().clone();
 	this.startLat = startPoint.getLatitude();
 	this.startLon = startPoint.getLongitude();
@@ -33,8 +33,8 @@ public class TripFeatures {
 	return driver;
     }
     
-    public double getCarMass() {
-	return carMass;
+    public Vehicle getVehicle() {
+	return vehicle;
     }
     
     public Calendar getStartTime() {

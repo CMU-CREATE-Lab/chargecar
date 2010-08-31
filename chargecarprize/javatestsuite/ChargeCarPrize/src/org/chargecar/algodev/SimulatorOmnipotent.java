@@ -19,6 +19,7 @@ import org.chargecar.prize.util.PowerFlows;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
+import org.chargecar.prize.util.Vehicle;
 import org.chargecar.prize.visualization.ConsoleWriter;
 import org.chargecar.prize.visualization.Visualizer;
 
@@ -35,7 +36,7 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorOmnipotent {
     static Visualizer visualizer = new ConsoleWriter();
-    static int carMass = 1200;
+    static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     
     /**
      * @param args
@@ -122,9 +123,9 @@ public class SimulatorOmnipotent {
     private static List<Trip> parseTrips(File gpxFile) throws IOException {
 	List<Trip> trips = new ArrayList<Trip>();
 	GPXTripParser gpxparser = new GPXTripParser();
-	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, carMass)) {
+	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, civic)) {
 	    String driverName = gpxFile.getParentFile().getName();
-	    TripFeatures tf = new TripFeatures(driverName, carMass, tripPoints
+	    TripFeatures tf = new TripFeatures(driverName, civic, tripPoints
 		    .get(0));
 	    trips.add(new Trip(tf, tripPoints));
 	    gpxparser.clear();
