@@ -20,9 +20,11 @@ public class ConsoleWriter implements Visualizer {
     DecimalFormat p = new DecimalFormat("0.000%");
     
     public void visualizeSummary(List<SimulationResults> results) {
+	int tripsTested = 0;
 	List<Double> currentSquaredSums = new ArrayList<Double>();
 	List<Double> chargeSpentSums = new ArrayList<Double>();
 	for (SimulationResults r : results) {
+	    tripsTested += r.getTripStrings().size();
 	    double currentSquaredSum = 0.0;
 	    for (Double d : r.getBatteryCurrentSquaredIntegrals()) {
 		currentSquaredSum += d;
@@ -37,6 +39,7 @@ public class ConsoleWriter implements Visualizer {
 	
 	double i2BaseSum = currentSquaredSums.get(0);
 	double baseChargeSpentSum = chargeSpentSums.get(0);
+	System.out.println("Trips tested: "+tripsTested);
 	System.out.println("Baseline, " + results.get(0).getPolicyName()
 		+ ", i^2: " + d.format(i2BaseSum));
 	System.out.println("Baseline, " + results.get(0).getPolicyName()
