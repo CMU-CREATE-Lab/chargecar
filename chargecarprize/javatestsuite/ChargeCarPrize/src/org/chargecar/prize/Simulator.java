@@ -108,7 +108,7 @@ public class Simulator {
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
 	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr, systemVoltage);
-	BatteryModel tripCap = new SimpleCapacitor(capWhr, 50, systemVoltage);
+	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
     }
