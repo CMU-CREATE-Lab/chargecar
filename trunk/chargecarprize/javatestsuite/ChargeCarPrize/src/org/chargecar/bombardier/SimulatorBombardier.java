@@ -36,10 +36,10 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorBombardier {
     static Visualizer visualizer = new ConsoleWriter();
-    static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
+    static Vehicle civic = new Vehicle(6000, 8.5470796, 0.6, 0.01);
     static double systemVoltage = 48;
     static double batteryWhr = 50000;
-    static double capWhr = 50;
+    static double capWhr = 1000;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
