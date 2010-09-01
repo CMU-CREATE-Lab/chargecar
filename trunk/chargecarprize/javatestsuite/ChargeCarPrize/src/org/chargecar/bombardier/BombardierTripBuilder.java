@@ -76,9 +76,9 @@ public class BombardierTripBuilder {
 	
 	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
-	final double offset = -3.5;
+	final double offset = -3.5*7*1.054;
 	final double ineff = 1 / 1;
-	final double regenEff = 0.55;
+	final double regenEff = 0.6;
 	
 	final double outsideTemp = ((60 + 459.67) * 5 / 9);// 60F to kelvin
 	
@@ -133,7 +133,7 @@ public class BombardierTripBuilder {
 	}
 	
 	for (int i = 1; i < times.size(); i++) {
-	    out.write(times.get(i-1).getTimeInMillis()+","+xpos.get(i-1)+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/-100.0+"\n");
+	    out.write(times.get(i-1).getTimeInMillis()+","+xpos.get(i-1)+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/-738.0+"\n");
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(xpos.get(i - 1), ypos.get(i - 1),
 		    eles.get(i - 1), planarDistances.get(i), accelerations
@@ -189,7 +189,7 @@ public class BombardierTripBuilder {
 	accelerations.set(1, 0.0);
 	
 	final double carMassKg = vehicle.getMass();
-	final double offset = -3.5;
+	final double offset = -3.5*7*1.054;
 	final double ineff = 1;
 	final double regenEff = 0.55;
 	
@@ -216,7 +216,7 @@ public class BombardierTripBuilder {
 	}
 	
 	for (int i = 1; i < times.size(); i++) {
-	    out.write(times.get(i-1).getTimeInMillis()+","+xpos.get(i-1)+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/-100.0+"\n");
+	    out.write(times.get(i-1).getTimeInMillis()+","+xpos.get(i-1)+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/-738.0+"\n");
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(xpos.get(i - 1), ypos.get(i - 1),
 		    eles.get(i - 1), planarDistances.get(i), accelerations

@@ -36,8 +36,8 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorBombardier {
     static Visualizer visualizer = new ConsoleWriter();
-    static Vehicle civic = new Vehicle(6000, 8.5470796, 0.6, 0.01);
-    static double systemVoltage = 48;
+    static Vehicle civic = new Vehicle(28933, 8.5470796, 0.6, 0.01);
+    static double systemVoltage = 738;
     static double batteryWhr = 50000;
     static double capWhr = 1000;
     /**
@@ -122,7 +122,7 @@ public class SimulatorBombardier {
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
 	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr, systemVoltage);
-	BatteryModel tripCap = new SimpleCapacitor(capWhr, 50, systemVoltage);
+	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
     }
