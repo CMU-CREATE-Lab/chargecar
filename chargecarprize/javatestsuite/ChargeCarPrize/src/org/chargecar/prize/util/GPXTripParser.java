@@ -48,7 +48,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
     }
     
     public List<List<PointFeatures>> read(File gpxFile, Vehicle vehicle)
-	    throws IOException {
+    throws IOException {
 	clear();
 	double accLimit = 9.81;
 	double minTripDist = 500;
@@ -108,7 +108,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	
 	for (int i = 1; i < rawTimes.size(); i++) {
 	    long msDiff = rawTimes.get(i).getTimeInMillis()
-		    - rawTimes.get(i - 1).getTimeInMillis();
+	    - rawTimes.get(i - 1).getTimeInMillis();
 	    if (msDiff > 360000) {
 		// if enough time has passed between points (360 seconds)
 		// consider them disjoint trips
@@ -178,7 +178,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
      * text node encountered
      */
     public void characters(char[] ch, int start, int length)
-	    throws SAXException {
+    throws SAXException {
 	contentBuffer.append(String.copyValueOf(ch, start, length));
     }
     
@@ -186,7 +186,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
      * the DefaultHandler::endElement() function fires for each end tag
      */
     public void endElement(String uri, String localName, String qName)
-	    throws SAXException {
+    throws SAXException {
 	String currentElement = elementNames.pop();
 	
 	if (points > 0 && currentElement != null) {
