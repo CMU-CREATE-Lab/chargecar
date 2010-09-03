@@ -17,7 +17,8 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class KnnTableTrainer implements Policy {
     ArrayList<KnnPoint> table;
-    String currentDriver = "";
+    String currentDriver;
+    File currentKnnTableFile;
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
@@ -62,16 +63,18 @@ public class KnnTableTrainer implements Policy {
     
     private void updateDriverTable(List<Double> bcFlows, Trip trip){
 	String driver = trip.getFeatures().getDriver();
-	File knnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/work/ccpbak/knn/"+driver+".knn");
 	
-	if(driver.compareTo(currentDriver) != 0){
+	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		FileInputStream fis = new FileInputStream(knnTableFile);
+		if(currentDriver != null) writeTable();
+		System.out.println("New driver: "+driver);
+		currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/work/ccpbak/knn/"+driver+".knn");
+		currentDriver = driver;
+		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		table = (ArrayList<KnnPoint>)ois.readObject();
 	    } catch (Exception e) {
 		table = new ArrayList<KnnPoint>();
-		e.printStackTrace();
 	    }
 	}
 	
@@ -80,14 +83,23 @@ public class KnnTableTrainer implements Policy {
 	    table.add(new KnnPoint(pf, bcFlows.get(i)));
 	    i++;
 	}
+    }
+    
+    public void writeTable(){
+	System.out.println("Writing table for "+currentDriver);
 	FileOutputStream fos;
 	try {
-	    fos = new FileOutputStream(knnTableFile);
+	    fos = new FileOutputStream(currentKnnTableFile);
 	    ObjectOutputStream oos = new ObjectOutputStream(fos);
 	    oos.writeObject(table);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+    }
+    
+    public void finishTraining()
+    {
+	writeTable();
     }
     
     private String name = "Table Trainer";

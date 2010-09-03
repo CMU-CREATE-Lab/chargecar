@@ -1,5 +1,6 @@
 package org.chargecar.prize.util;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Calendar;
  * 
  * @author Alex Styler
  */
-public class PointFeatures {
+public class PointFeatures implements Serializable {
     final private double latitude;
     final private double longitude;
     final private double elevation;

@@ -53,6 +53,8 @@ public class SimulatorTrainer {
 		policy.parseTrip(t);
 	    }
 	}	
+	policy.finishTraining();
+	System.out.println("Complete.");
     }    
     
     private static List<Trip> parseTrips(File gpxFile) throws IOException {
