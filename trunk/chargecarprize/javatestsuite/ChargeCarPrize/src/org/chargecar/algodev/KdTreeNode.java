@@ -4,12 +4,8 @@ public class KdTreeNode {
     private final KnnPoint value;
     private final KdTreeNode leftSubtree;
     private final KdTreeNode rightSubtree;
-    private KdTreeNode parent;
-    private final boolean splitType;
+    private final int splitType;
     
-    public void setParent(KdTreeNode parent){
-	this.parent=parent;
-    }
     public KnnPoint getValue() {
         return value;
     }
@@ -22,24 +18,16 @@ public class KdTreeNode {
         return rightSubtree;
     }
 
-    public KdTreeNode getParent() {
-        return parent;
-    }
-    
-    public boolean getSplitType(){
+    public int getSplitType(){
 	return splitType;
     }
     
     public double getSplitValue(){
-	if(splitType)
-	    return value.getFeatures().getLatitude();
-	else 
-	    return value.getFeatures().getLongitude();
-	    
+	return KdTree.getValue(value, splitType);	    
     }
     
     public KdTreeNode(KnnPoint value, KdTreeNode leftSubtree,
-	    KdTreeNode rightSubtree, boolean splitType) {
+	    KdTreeNode rightSubtree, int splitType) {
 	this.value = value;
 	this.leftSubtree = leftSubtree;
 	this.rightSubtree = rightSubtree;

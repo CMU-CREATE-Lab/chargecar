@@ -5,15 +5,15 @@ import java.io.Serializable;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KnnPoint implements Serializable{
-    private final PointFeatures features;
+    private final ExtendedPointFeatures features;
     private final double truth;
     
-    public KnnPoint(PointFeatures features, double truth){
+    public KnnPoint(ExtendedPointFeatures features, double truth){
 	this.features = features;
 	this.truth = truth;
     }
     
-    public PointFeatures getFeatures(){
+    public ExtendedPointFeatures getFeatures(){
 	return features;
     }
     

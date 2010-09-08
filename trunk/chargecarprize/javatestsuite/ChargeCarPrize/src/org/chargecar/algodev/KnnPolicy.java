@@ -37,6 +37,7 @@ public class KnnPolicy implements Policy {
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		knnTable = (ArrayList<KnnPoint>)ois.readObject();
+		System.out.println("Table loaded.");
 	    } catch (Exception e) {
 		knnTable = new ArrayList<KnnPoint>();
 		e.printStackTrace();
