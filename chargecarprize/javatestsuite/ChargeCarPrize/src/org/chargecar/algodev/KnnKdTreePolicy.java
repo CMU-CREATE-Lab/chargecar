@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
@@ -15,7 +16,10 @@ import org.chargecar.prize.util.PowerFlows;
 import org.chargecar.prize.util.TripBuilder;
 import org.chargecar.prize.util.TripFeatures;
 
-public class KnnPolicy implements Policy {
+public class KnnKdTreePolicy implements Policy {
+    
+    
+    KdTree kdTree;
     List<KnnPoint> knnTable;
     String currentDriver;
     private BatteryModel modelCap;
@@ -37,12 +41,15 @@ public class KnnPolicy implements Policy {
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		knnTable = (ArrayList<KnnPoint>)ois.readObject();
+		System.out.println("Table loaded.  Building tree... ");
+		kdTree = new KdTree(knnTable);
+		System.out.println("Tree loaded");
 	    } catch (Exception e) {
 		knnTable = new ArrayList<KnnPoint>();
 		e.printStackTrace();
 	    }
 	}
-	 	
+	
     }
     
     @Override
@@ -72,47 +79,28 @@ public class KnnPolicy implements Policy {
 	    capToMotorWatts = wattsDemanded;
 	    batteryToMotorWatts = 0;
 	    batteryToCapWatts = oredictedFlow;
-	   
+	    
 	}
 	batteryToCapWatts = 0 < batteryToCapWatts ? 0 : batteryToCapWatts;
 	
 	if (capToMotorWatts - batteryToCapWatts > maxCapCurrent) {
-		batteryToCapWatts = capToMotorWatts - maxCapCurrent;
-	    } else if(capToMotorWatts - batteryToCapWatts < minCapCurrent){
-		batteryToCapWatts = capToMotorWatts - minCapCurrent;
-	    }
-
+	    batteryToCapWatts = capToMotorWatts - maxCapCurrent;
+	} else if(capToMotorWatts - batteryToCapWatts < minCapCurrent){
+	    batteryToCapWatts = capToMotorWatts - minCapCurrent;
+	}
+	
 	try {
 	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
 	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, pf);
 	} catch (PowerFlowException e) {
 	}
-
+	
 	return new PowerFlows(batteryToMotorWatts, capToMotorWatts,
 		batteryToCapWatts);
     }
     
     public double getFlow(PointFeatures pf){
-	double minDist = Double.POSITIVE_INFINITY;
-	double flow = 0;
-	for(KnnPoint kp : knnTable){
-	    double dist = computeDistance(pf,kp);
-	    if(dist < minDist){
-		minDist = dist;
-		flow = kp.getGroundTruth();
-	    }
-	}
-	return flow;
-	
-    }
-    
-    public static double computeDistance(PointFeatures pf, KnnPoint kp){
-	
-	double latDiff = pf.getLatitude()-kp.getFeatures().getLatitude();
-	double lonDiff = pf.getLongitude()-kp.getFeatures().getLongitude();
-	
-	return latDiff*latDiff+lonDiff*lonDiff;
-	//TripBuilder.Haversine(pf.getLatitude(), pf.getLongitude(), kp.getFeatures().getLatitude(), kp.getFeatures().getLongitude());
+	return kdTree.getBestEstimate(pf);
     }
     
     @Override
