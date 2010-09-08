@@ -16,7 +16,6 @@ public class KdTree {
     
     private KdTreeNode buildTree(List<KnnPoint> points, boolean splitType){
 	KdTreeNode node;
-	System.out.print('*');
 	if(points.size() == 1){	    
 	    KnnPoint point = points.get(0);
 	    node = new KdTreeNode(point, null, null, splitType);	    
