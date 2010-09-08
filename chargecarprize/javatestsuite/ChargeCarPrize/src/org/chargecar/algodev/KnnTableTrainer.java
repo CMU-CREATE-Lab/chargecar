@@ -19,6 +19,7 @@ public class KnnTableTrainer implements Policy {
     ArrayList<KnnPoint> table;
     String currentDriver;
     File currentKnnTableFile;
+    final int histLength = 5;
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
@@ -77,10 +78,25 @@ public class KnnTableTrainer implements Policy {
 		table = new ArrayList<KnnPoint>();
 	    }
 	}
-	
+	List<Double> speedHist = new ArrayList<Double>();;
+	List<Double> accelHist = new ArrayList<Double>();;
+	double speedVar;
+	double accelVar;
+	int histIndex = 0;
+	histIndex = 0;
+	for(int i = 0;i<histLength;i++){
+	    speedHist.add(0.0);
+	    accelHist.add(0.0);
+	}
 	int i = 0;
-	for(PointFeatures pf : trip.getPoints()){	    
-	    table.add(new KnnPoint(pf, bcFlows.get(i)));
+	for(PointFeatures pf : trip.getPoints()){	
+	    histIndex = i % histLength;
+	    speedHist.set(histIndex, pf.getSpeed());
+	    accelHist.set(histIndex, pf.getAcceleration());
+	    speedVar = calculateVariance(speedHist);
+	    accelVar = calculateVariance(accelHist);
+	    histIndex = (histIndex +1)%histLength;
+	    table.add(new KnnPoint(new ExtendedPointFeatures(pf, speedVar, accelVar), bcFlows.get(i)));
 	    i++;
 	}
     }
@@ -126,6 +142,23 @@ public class KnnTableTrainer implements Policy {
     @Override
     public void loadState() {
 	// TODO Auto-generated method stub	
+    }
+    
+    private double calculateVariance(List<Double> list){
+	double sum = 0.0;
+	for(int i = 0;i<histLength;i++)
+	    sum += list.get(i);
+	
+	double mean = sum / histLength;
+	
+	sum = 0.0;
+	
+	for(int i = 0;i<histLength;i++){
+	    double diff = (list.get(i) - mean); 
+	    sum += diff*diff;
+	}
+	
+	return sum/(histLength-1);	
     }
     
 }

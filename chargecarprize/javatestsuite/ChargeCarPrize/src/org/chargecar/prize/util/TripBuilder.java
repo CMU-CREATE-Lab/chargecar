@@ -144,11 +144,11 @@ public class TripBuilder {
 	    }
 	    
 	    pwr = ((pwr / -1000.0) + offset);
-	    
-	    if (speed > 12.0) {
-		pwr = ((pwr - (0.056 * (speed * speed))) + (0.68 * speed));
-	    }
-	    
+//	    
+//	    if (speed > 12.0) {
+//		pwr = ((pwr - (0.056 * (speed * speed))) + (0.68 * speed));
+//	    }
+//	    
 	    powerDemands.add(pwr * 1000.0);// convert back to watts
 	    
 	}

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.battery.LeadAcidBattery;
 import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
@@ -96,8 +97,8 @@ public class SimulatorOmnipotent {
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new SimpleBattery(50000, 50000, 48);
-	BatteryModel tripCap = new SimpleCapacitor(50, 0, 48);
+	BatteryModel tripBattery = new LeadAcidBattery(50000, 50000, 48);
+	BatteryModel tripCap = new SimpleCapacitor(1e10, 0, 48);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
     }
