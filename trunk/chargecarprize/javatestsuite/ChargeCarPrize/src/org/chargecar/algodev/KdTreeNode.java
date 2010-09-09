@@ -22,10 +22,6 @@ public class KdTreeNode {
 	return splitType;
     }
     
-    public double getSplitValue(){
-	return KdTree.getValue(value, splitType);	    
-    }
-    
     public KdTreeNode(KnnPoint value, KdTreeNode leftSubtree,
 	    KdTreeNode rightSubtree, int splitType) {
 	this.value = value;
