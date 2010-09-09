@@ -27,8 +27,6 @@ public class KdTree {
 	}
 	else{	    
 	    int pivot = select(points, 0, points.size()-1, (int)((points.size()+1)/2), splitType);
-	    //int pivot = select2(points, 0, points.size()-1, 0.35, true);
-	    //int pivot = select3(points, 0, points.size()-1,true);
 	    KdTreeNode leftSubtree = buildTree(points.subList(0, pivot), splitType+1);
 	    KdTreeNode rightSubtree = buildTree(points.subList(pivot+1, points.size()), splitType+1);
 	    node = new KdTreeNode(points.get(pivot), leftSubtree, rightSubtree, splitType);
