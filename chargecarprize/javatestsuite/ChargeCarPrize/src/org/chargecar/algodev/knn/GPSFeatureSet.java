@@ -3,7 +3,6 @@ package org.chargecar.algodev.knn;
 import java.util.List;
 
 import org.chargecar.algodev.ExtendedPointFeatures;
-import org.chargecar.algodev.KnnPoint;
 import org.chargecar.prize.util.TripBuilder;
 
 public class GPSFeatureSet extends KdTreeFeatureSet {

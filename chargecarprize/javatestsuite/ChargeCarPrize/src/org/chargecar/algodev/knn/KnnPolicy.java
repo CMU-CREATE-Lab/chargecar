@@ -1,4 +1,4 @@
-package org.chargecar.algodev;
+package org.chargecar.algodev.knn;
 
 import java.io.File;
 import java.io.FileInputStream;

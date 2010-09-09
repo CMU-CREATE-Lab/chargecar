@@ -1,4 +1,4 @@
-package org.chargecar.algodev;
+package org.chargecar.algodev.knn;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.chargecar.algodev.ExtendedPointFeatures;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;

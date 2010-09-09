@@ -3,7 +3,6 @@ package org.chargecar.algodev.knn;
 import java.util.List;
 
 import org.chargecar.algodev.ExtendedPointFeatures;
-import org.chargecar.algodev.KnnPoint;
 
 public class FullFeatureSet extends KdTreeFeatureSet {    
     private final int featureCount = 5;
