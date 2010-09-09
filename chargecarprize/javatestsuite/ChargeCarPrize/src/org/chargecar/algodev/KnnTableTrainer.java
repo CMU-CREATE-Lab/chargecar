@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
@@ -19,7 +20,7 @@ public class KnnTableTrainer implements Policy {
     ArrayList<KnnPoint> table;
     String currentDriver;
     File currentKnnTableFile;
-    final int histLength = 5;
+    final int histLength = 20;
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
@@ -78,21 +79,24 @@ public class KnnTableTrainer implements Policy {
 		table = new ArrayList<KnnPoint>();
 	    }
 	}
-	List<Double> speedHist = new ArrayList<Double>();;
-	List<Double> accelHist = new ArrayList<Double>();;
+	List<Double> speedHist = new ArrayList<Double>();
+	List<Double> accelHist = new ArrayList<Double>();
 	double speedVar;
 	double accelVar;
 	int histIndex = 0;
 	histIndex = 0;
-	for(int i = 0;i<histLength;i++){
-	    speedHist.add(0.0);
-	    accelHist.add(0.0);
-	}
 	int i = 0;
 	for(PointFeatures pf : trip.getPoints()){	
 	    histIndex = i % histLength;
-	    speedHist.set(histIndex, pf.getSpeed());
-	    accelHist.set(histIndex, pf.getAcceleration());
+	    if(speedHist.size() > histIndex){
+		speedHist.set(histIndex, pf.getSpeed());
+		accelHist.set(histIndex, pf.getAcceleration());
+	    }
+	    else
+	    {
+		speedHist.add(pf.getSpeed());
+		accelHist.add(pf.getAcceleration());
+	    }
 	    speedVar = calculateVariance(speedHist);
 	    accelVar = calculateVariance(accelHist);
 	    histIndex = (histIndex +1)%histLength;
@@ -103,6 +107,8 @@ public class KnnTableTrainer implements Policy {
     
     public void writeTable(){
 	System.out.println("Writing table for "+currentDriver);
+	scaleFeatures();
+	
 	FileOutputStream fos;
 	try {
 	    fos = new FileOutputStream(currentKnnTableFile);
@@ -111,6 +117,69 @@ public class KnnTableTrainer implements Policy {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
+    }
+    
+    private void scaleFeatures(){
+	double accMean = 0;
+	double speedMean = 0;
+	double powerMean = 0;
+	double speedVarMean = 0;
+	double accVarMean = 0;
+	double accSD = 0;
+	double speedSD = 0;
+	double powerSD = 0;
+	double speedVarSD = 0;
+	double accVarSD = 0;
+	
+	for(KnnPoint kp : table){
+	    accMean += kp.getFeatures().getAcceleration();
+	    speedMean += kp.getFeatures().getSpeed();
+	    powerMean += kp.getFeatures().getPowerDemand();
+	    speedVarMean += kp.getFeatures().getSpeedHistVar();
+	    accVarMean += kp.getFeatures().getAccelHistVar();
+	}
+	accMean /= table.size();
+	speedMean /= table.size();
+	powerMean /= table.size();
+	speedVarMean /= table.size();
+	accVarMean /= table.size();
+	
+	for(KnnPoint kp : table){
+	    accSD += Math.pow(kp.getFeatures().getAcceleration() - accMean, 2.0);
+	    speedSD += Math.pow(kp.getFeatures().getSpeed() - speedMean, 2.0);
+	    powerSD += Math.pow(kp.getFeatures().getPowerDemand(), 2.0);
+	    speedVarSD += Math.pow(kp.getFeatures().getSpeedHistVar(), 2.0);
+	    accVarSD += Math.pow(kp.getFeatures().getAccelHistVar(), 2.0);
+	}
+	
+	accSD /= (table.size() - 1);
+	speedSD /= (table.size() - 1);
+	powerSD /= (table.size() - 1);
+	speedVarSD /= (table.size() - 1);
+	accVarSD /= (table.size() - 1);
+	ExtendedPointFeatures means = new ExtendedPointFeatures(0,0,0,0,accMean,speedMean,powerMean,speedVarMean, accVarMean, 0, null);
+	ExtendedPointFeatures sdevs = new ExtendedPointFeatures(0,0,0,0,accSD,speedSD,powerSD,speedVarSD,accVarSD, 0, null);
+	
+	for(int i = 0;i<table.size();i++){
+	    KnnPoint rawPoint = table.get(i);
+	    ExtendedPointFeatures rawFeatures = rawPoint.getFeatures();
+	    ExtendedPointFeatures scaledFeatures = new ExtendedPointFeatures(
+		    rawFeatures.getLatitude(),rawFeatures.getLongitude(),
+		    rawFeatures.getElevation(),rawFeatures.getPlanarDist(),
+		    scale(rawFeatures.getAcceleration(),accMean,accSD),
+		    scale(rawFeatures.getSpeed(),speedMean, speedSD),
+		    scale(rawFeatures.getPowerDemand(),powerMean,powerSD),
+		    scale(rawFeatures.getSpeedHistVar(),speedVarMean, speedVarSD),
+		    scale(rawFeatures.getAccelHistVar(),accVarMean, accVarSD),
+		    rawFeatures.getPeriodMS(),	rawFeatures.getTime());
+	    table.set(i, new KnnPoint(scaledFeatures, rawPoint.getGroundTruth()));
+	}
+	table.add(0, new KnnPoint(means, 0));
+	table.add(1, new KnnPoint(sdevs, 0));
+    }
+    
+    private double scale(double feature, double mean, double sdev){
+	return (feature-mean)/sdev;
     }
     
     public void finishTraining()
@@ -129,10 +198,7 @@ public class KnnTableTrainer implements Policy {
     }
     
     @Override
-    public void endTrip() {
-	// TODO Auto-generated method stub
-	
-    }
+    public void endTrip() {}
     
     @Override
     public String getName() {
@@ -140,25 +206,23 @@ public class KnnTableTrainer implements Policy {
     }
     
     @Override
-    public void loadState() {
-	// TODO Auto-generated method stub	
-    }
+    public void loadState() {}
     
     private double calculateVariance(List<Double> list){
-	double sum = 0.0;
-	for(int i = 0;i<histLength;i++)
-	    sum += list.get(i);
-	
-	double mean = sum / histLength;
-	
-	sum = 0.0;
-	
-	for(int i = 0;i<histLength;i++){
-	    double diff = (list.get(i) - mean); 
-	    sum += diff*diff;
-	}
-	
-	return sum/(histLength-1);	
-    }
+	 double sum = 0.0;
+	 for(int i = 0;i<list.size();i++)
+	     sum += list.get(i);
+	 
+	 double mean = sum / list.size();
+	 
+	 sum = 0.0;
+	 
+	 for(int i = 0;i<list.size();i++){
+	     double diff = (list.get(i) - mean); 
+	     sum += diff*diff;
+	 }
+	 
+	 return sum/(list.size()-1);	
+   }
     
 }
