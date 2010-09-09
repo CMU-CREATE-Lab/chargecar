@@ -1,4 +1,4 @@
-package org.chargecar.algodev;
+package org.chargecar.algodev.knn;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.chargecar.algodev.knn.FullFeatureSet;
-import org.chargecar.algodev.knn.GPSFeatureSet;
+import org.chargecar.algodev.ExtendedPointFeatures;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
