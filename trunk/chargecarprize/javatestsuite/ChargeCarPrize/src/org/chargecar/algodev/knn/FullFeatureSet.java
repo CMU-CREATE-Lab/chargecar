@@ -16,8 +16,8 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	{
 	case 0: return point.getSpeed();
 	case 1: return point.getAcceleration();
-	case 2: //return point.getAccelHistVar();
-	case 3: //return point.getSpeedHistVar();
+	case 2: return point.getAccelHistVar();
+	case 3: return point.getSpeedHistVar();
 	case 4: return point.getPowerDemand();
 	
 	default: return 0.0;
@@ -38,7 +38,6 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	double estimate = 0;
 	for(int i=0;i<neighbors.size();i++){
 	    double dist = distance(epf, neighbors.get(i).getFeatures());
-	    //dist=dist*dist;
 	    if(dist==0.0) return neighbors.get(i).getGroundTruth();
 	    estimate += neighbors.get(i).getGroundTruth() * 1.0/dist;
 	    distSum += 1.0/dist;

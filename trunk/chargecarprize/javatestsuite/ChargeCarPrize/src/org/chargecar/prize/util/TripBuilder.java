@@ -58,7 +58,7 @@ public class TripBuilder {
     private static void runPowerModel(List<PointFeatures> tripPoints,
 	    List<Calendar> times, List<Double> lats, List<Double> lons,
 	    List<Double> eles, Vehicle vehicle) {
-	
+	List<Double> bearings = new ArrayList<Double>();
 	List<Double> planarDistances = new ArrayList<Double>();
 	List<Double> adjustedDistances = new ArrayList<Double>();
 	List<Double> speeds = new ArrayList<Double>();
@@ -79,6 +79,8 @@ public class TripBuilder {
 	    double eleDiff = eles.get(i) - eles.get(i - 1);
 	    double tempDist = Haversine(lats.get(i - 1), lons.get(i - 1), lats
 		    .get(i), lons.get(i));
+	    bearings.add(getBearing(lats.get(i - 1), lons.get(i - 1), lats
+		    .get(i), lons.get(i)));
 	    planarDistances.add(tempDist);
 	    tempDist = Math.sqrt((tempDist * tempDist) + (eleDiff * eleDiff));
 	    adjustedDistances.add(tempDist);
@@ -92,6 +94,7 @@ public class TripBuilder {
 	    accelerations.add(1000.0 * (speeds.get(i) - speeds.get(i - 1))
 		    / msDiff);
 	}
+	bearings.add(bearings.get(bearings.size()-1));
 	speeds.set(0, speeds.get(1));
 	accelerations.set(1, 0.0);
 	
@@ -157,12 +160,12 @@ public class TripBuilder {
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(
 		    i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(lats.get(i - 1), lons.get(i - 1),
-		    eles.get(i - 1), planarDistances.get(i), accelerations
+		    eles.get(i - 1), bearings.get(i - 1),planarDistances.get(i), accelerations
 		    .get(i), speeds.get(i), powerDemands.get(i),
 		    periodMS, times.get(i - 1)));
 	}
 	PointFeatures endPoint = new PointFeatures(lats.get(lats.size() - 1),
-		lons.get(lons.size() - 1), eles.get(eles.size() - 1), 0.0, 0.0,
+		lons.get(lons.size() - 1), eles.get(eles.size() - 1), bearings.get(bearings.size() - 1), 0.0, 0.0,
 		0.0, 0.0, 1000, times.get(times.size() - 1));
 	tripPoints.add(endPoint);
 	
@@ -209,6 +212,14 @@ public class TripBuilder {
 	double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	double d = R * c;
 	return d;
+    }
+    
+    public static double getBearing(double lat1, double lon1, double lat2,
+	    double lon2) {
+	double y = Math.sin(lat2-lat1) * Math.cos(lat2);
+	double x = Math.cos(lat1)*Math.sin(lat2) -
+	        Math.sin(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1);
+	return (Math.toDegrees(Math.atan2(y, x))+360)%360;
     }
     
 }

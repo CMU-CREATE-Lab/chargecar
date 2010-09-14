@@ -158,15 +158,16 @@ public class KnnTableTrainer implements Policy {
 	powerSD /= (table.size() - 1);
 	speedVarSD /= (table.size() - 1);
 	accVarSD /= (table.size() - 1);
-	ExtendedPointFeatures means = new ExtendedPointFeatures(0,0,0,0,accMean,speedMean,powerMean,speedVarMean, accVarMean, 0, null);
-	ExtendedPointFeatures sdevs = new ExtendedPointFeatures(0,0,0,0,accSD,speedSD,powerSD,speedVarSD,accVarSD, 0, null);
+	ExtendedPointFeatures means = new ExtendedPointFeatures(0,0,0,0,0,accMean,speedMean,powerMean,speedVarMean, accVarMean, 0, null);
+	ExtendedPointFeatures sdevs = new ExtendedPointFeatures(0,0,0,0,0,accSD,speedSD,powerSD,speedVarSD,accVarSD, 0, null);
 	
 	for(int i = 0;i<table.size();i++){
 	    KnnPoint rawPoint = table.get(i);
 	    ExtendedPointFeatures rawFeatures = rawPoint.getFeatures();
 	    ExtendedPointFeatures scaledFeatures = new ExtendedPointFeatures(
 		    rawFeatures.getLatitude(),rawFeatures.getLongitude(),
-		    rawFeatures.getElevation(),rawFeatures.getPlanarDist(),
+		    rawFeatures.getElevation(),rawFeatures.getBearing(),
+		    rawFeatures.getPlanarDist(),
 		    scale(rawFeatures.getAcceleration(),accMean,accSD),
 		    scale(rawFeatures.getSpeed(),speedMean, speedSD),
 		    scale(rawFeatures.getPowerDemand(),powerMean,powerSD),
@@ -223,7 +224,7 @@ public class KnnTableTrainer implements Policy {
 	     sum += diff*diff;
 	 }
 	 
-	 return sum/(list.size()-1);	
+	 return sum/(list.size());	
    }
     
 }
