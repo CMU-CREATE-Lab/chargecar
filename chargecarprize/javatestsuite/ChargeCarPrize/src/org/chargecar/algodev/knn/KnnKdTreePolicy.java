@@ -20,7 +20,7 @@ import org.chargecar.prize.util.TripFeatures;
 public class KnnKdTreePolicy implements Policy {
     
     private KdTree gpsKdTree;
-    private KdTree featKdTree;
+    //private KdTree featKdTree;
     private ExtendedPointFeatures means;
     private ExtendedPointFeatures sdevs;
     
@@ -58,7 +58,7 @@ public class KnnKdTreePolicy implements Policy {
 		knnTable.remove(1);
 		knnTable.remove(0);
 		gpsKdTree = new KdTree(knnTable, new GPSFeatureSet());
-		featKdTree = new KdTree(knnTable, new FullFeatureSet());
+		//featKdTree = new KdTree(knnTable, new FullFeatureSet());
 		System.out.println("Trees built.");
 	    } catch (Exception e) {		
 		e.printStackTrace();
@@ -69,7 +69,7 @@ public class KnnKdTreePolicy implements Policy {
     
     @Override
     public PowerFlows calculatePowerFlows(PointFeatures pf) {
-	if(speedHist.size() > histIndex){
+	/*if(speedHist.size() > histIndex){
 	    speedHist.set(histIndex, pf.getSpeed());
 	    accelHist.set(histIndex, pf.getAcceleration());
 	}
@@ -82,6 +82,8 @@ public class KnnKdTreePolicy implements Policy {
 	double accelVar = calculateVariance(accelHist);
 	histIndex = (histIndex +1)%histLength;
 	double predictedFlow = getFlow(new ExtendedPointFeatures(pf,speedVar,accelVar));
+	*/
+	double predictedFlow = getFlow(new ExtendedPointFeatures(pf,0,0));
 	
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
@@ -141,19 +143,19 @@ public class KnnKdTreePolicy implements Policy {
 	    sum += diff*diff;
 	}
 	
-	return sum/(list.size()-1);	
+	return sum/(list.size());	
     }
     
     public double getFlow(ExtendedPointFeatures epf){
-	epf = scaleFeatures(epf);
-	//return featKdTree.getBestEstimate(epf, 20);
-	return gpsKdTree.getBestEstimate(epf, 5);
+	//epf = scaleFeatures(epf);
+	//return featKdTree.getBestEstimate(epf, 5);
+	return gpsKdTree.getBestEstimate(epf, 10);
     }
     
     private ExtendedPointFeatures scaleFeatures(ExtendedPointFeatures epf){
 	return new ExtendedPointFeatures(
 		epf.getLatitude(),epf.getLongitude(),
-		epf.getElevation(),epf.getPlanarDist(),
+		epf.getElevation(),epf.getBearing(),epf.getPlanarDist(),
 		scale(epf.getAcceleration(),means.getAcceleration(),sdevs.getAcceleration()),
 		scale(epf.getSpeed(),means.getSpeed(), sdevs.getSpeed()),
 		scale(epf.getPowerDemand(),means.getPowerDemand(),sdevs.getPowerDemand()),

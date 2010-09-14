@@ -11,6 +11,7 @@ public class KdTree {
     private final KdTreeNode root;
     private final Random randomGenerator = new Random();
     private final KdTreeFeatureSet featureSet;
+    private double bestDist = Double.MAX_VALUE;
     
     public KdTree(List<KnnPoint> points, KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
@@ -37,23 +38,33 @@ public class KdTree {
     public double getBestEstimate(ExtendedPointFeatures point, int k){
 	List<KnnPoint> neighbors = new ArrayList<KnnPoint>();
 	for(int i=0;i<k;i++){
+	    bestDist = Double.MAX_VALUE;
 	    neighbors.add(searchTree(root, point, null, neighbors));
 	}
 	return featureSet.estimate(point, neighbors);
     }
     
+   
     private KnnPoint searchTree(KdTreeNode node, ExtendedPointFeatures point, KnnPoint best, List<KnnPoint> exclusions){	 
-	if(node == null) return best;
-	else if(best == null || distance(node.getValue().getFeatures(),point) < distance(best.getFeatures(),point))
-	    if(exclusions.contains(node.getValue())==false) best = node.getValue();
-	double pointAxisValue = getValue(point, node.getSplitType());
 	
-	KdTreeNode branch = pointAxisValue < getValue(node.getValue(), node.getSplitType()) ? node.getLeftSubtree() : node.getRightSubtree();
+	if(node == null) return best;
+	else if(exclusions.contains(node.getValue())==false){
+	    double dist = distance(node.getValue().getFeatures(),point);
+	    if(best == null || dist < bestDist){
+		best = node.getValue();
+		bestDist = dist;
+	    }
+	}
+	    
+	double pointAxisValue = getValue(point, node.getSplitType());
+	double nodeAxisValue = getValue(node.getValue(), node.getSplitType());
+	boolean leftBranch = pointAxisValue < nodeAxisValue;
+	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();
 	best = searchTree(branch, point, best, exclusions);
 	
-	double axialdist = getValue(node.getValue(), node.getSplitType()) - pointAxisValue;
-	if(best == null || axialdist * axialdist <= distance(best.getFeatures(),point)){
-	    branch =  pointAxisValue < getValue(node.getValue(), node.getSplitType()) ?  node.getRightSubtree() : node.getLeftSubtree();
+	double axialdist = nodeAxisValue - pointAxisValue;
+	if(best == null || axialdist * axialdist <= bestDist){
+	    branch = leftBranch ?  node.getRightSubtree() : node.getLeftSubtree();
 	    best = searchTree(branch, point, best, exclusions);
 	}
 	

@@ -136,12 +136,12 @@ public class BombardierTripBuilder {
 	    out.write(times.get(i-1).getTimeInMillis()+","+xpos.get(i-1)+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/-738.0+"\n");
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(xpos.get(i - 1), ypos.get(i - 1),
-		    eles.get(i - 1), planarDistances.get(i), accelerations
+		    eles.get(i - 1), 0.0, planarDistances.get(i), accelerations
 		    .get(i), speeds.get(i), powerDemands.get(i),
 		    periodMS, times.get(i - 1)));
 	}
 	PointFeatures endPoint = new PointFeatures(xpos.get(xpos.size() - 1),
-		ypos.get(ypos.size() - 1), eles.get(eles.size() - 1), 0.0, 0.0,
+		ypos.get(ypos.size() - 1), eles.get(eles.size() - 1), 0.0,0.0, 0.0,
 		0.0, 0.0, 1000, times.get(times.size() - 1));
 	tripPoints.add(endPoint);
 	out.close();
@@ -219,12 +219,12 @@ public class BombardierTripBuilder {
 	    out.write(times.get(i-1).getTimeInMillis()+","+xpos.get(i-1)+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/-738.0+"\n");
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(xpos.get(i - 1), ypos.get(i - 1),
-		    eles.get(i - 1), planarDistances.get(i), accelerations
+		    eles.get(i - 1), 0.0, planarDistances.get(i), accelerations
 		    .get(i), speeds.get(i), powerDemands.get(i),
 		    periodMS, times.get(i - 1)));
 	}
 	PointFeatures endPoint = new PointFeatures(xpos.get(xpos.size() - 1),
-		ypos.get(ypos.size() - 1), eles.get(eles.size() - 1), 0.0, 0.0,
+		ypos.get(ypos.size() - 1), eles.get(eles.size() - 1), 0.0, 0.0, 0.0,
 		0.0, 0.0, 1000, times.get(times.size() - 1));
 	tripPoints.add(endPoint);
 	out.close();

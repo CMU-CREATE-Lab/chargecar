@@ -23,6 +23,17 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
     }
     @Override
     public double estimate(ExtendedPointFeatures epf, List<KnnPoint> neighbors) {
+	
+	double distSum = 0;
+	double estimate = 0;
+	for(int i=0;i<neighbors.size();i++){
+	    double dist = distance(epf, neighbors.get(i).getFeatures());
+	    double bear = normalize(epf.getBearing() - neighbors.get(i).getFeatures().getBearing());
+	    dist = dist + bear*bear;
+	    if(dist==0.0) return neighbors.get(i).getGroundTruth();
+	    estimate += neighbors.get(i).getGroundTruth() * 1.0/dist;
+	    distSum += 1.0/dist;
+	}
 	return ffs.estimate(epf, neighbors);
     }
     
@@ -34,6 +45,17 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
 	}
 	return dist;
     }
+    
+    private double normalize(double bear){
+	while(bear > 180){
+	    bear -= 360;
+	}
+	while(bear <= -180){
+	    bear =+ 360;
+	}
+	return bear;
+    }
+    
     
     private double getHaversineDist(ExtendedPointFeatures epf, KnnPoint kp){
 	return TripBuilder.Haversine(epf.getLatitude(), epf.getLongitude(), kp.getFeatures().getLatitude(), kp.getFeatures().getLongitude());

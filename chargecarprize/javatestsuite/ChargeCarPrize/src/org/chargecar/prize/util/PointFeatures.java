@@ -15,6 +15,7 @@ public class PointFeatures implements Serializable {
     final private double latitude;
     final private double longitude;
     final private double elevation;
+    final private double bearing;
     final private double acceleration;
     final private double speed;
     final private double powerDemand;
@@ -22,12 +23,13 @@ public class PointFeatures implements Serializable {
     final private int periodMS;
     final private Calendar time;
     
-    public PointFeatures(double latitude, double longitude, double elevation,
+    public PointFeatures(double latitude, double longitude, double elevation, double bearing,
 	    double planarDist, double acceleration, double speed,
 	    double powerDemand, int periodMS, Calendar time) {
 	this.latitude = latitude;
 	this.longitude = longitude;
 	this.elevation = elevation;
+	this.bearing = bearing;
 	this.acceleration = acceleration;
 	this.speed = speed;
 	this.powerDemand = powerDemand;
@@ -37,8 +39,8 @@ public class PointFeatures implements Serializable {
     }
     
     public PointFeatures clone() {
-	return new PointFeatures(this.latitude, this.longitude, this.elevation,
-		this.planarDist, this.acceleration, this.speed,
+	return new PointFeatures(this.latitude, this.longitude, this.elevation, 
+		this.bearing, this.planarDist, this.acceleration, this.speed,
 		this.powerDemand, this.periodMS, (Calendar) this.time.clone());
     }
     
@@ -52,6 +54,10 @@ public class PointFeatures implements Serializable {
     
     public double getElevation() {
 	return this.elevation;
+    }
+    
+    public double getBearing(){
+	return this.bearing;
     }
     
     public double getPlanarDist() {
