@@ -34,9 +34,9 @@ public final class GPXPrivatizer
     * @see #DEFAULT_PRIVATIZATION_RADIUS_IN_METERS
     */
    public Element privatize(final Element gpx) throws IOException, JDOMException
-      {
-      return privatize(gpx, DEFAULT_PRIVATIZATION_RADIUS_IN_METERS, DEFAULT_PRIVATIZATION_RADIUS_IN_METERS);
-      }
+   {
+   return privatize(gpx, DEFAULT_PRIVATIZATION_RADIUS_IN_METERS, DEFAULT_PRIVATIZATION_RADIUS_IN_METERS);
+   }
 
    /**
     * Privatizes the given GPX by removing the default length from both the beginning and the end of the GPX.  The new
@@ -45,9 +45,9 @@ public final class GPXPrivatizer
     * @see #DEFAULT_PRIVATIZATION_RADIUS_IN_METERS
     */
    public Element privatize(final Element gpx, final GPSCoordinate location) throws IOException, JDOMException
-      {
-      return privatize(gpx, location, DEFAULT_PRIVATIZATION_RADIUS_IN_METERS);
-      }
+   {
+   return privatize(gpx, location, DEFAULT_PRIVATIZATION_RADIUS_IN_METERS);
+   }
 
    /**
     * Privatizes the given GPX by removing the given lengths from the beginning and the end of the GPX.  The new GPX is
@@ -57,23 +57,23 @@ public final class GPXPrivatizer
     * <code>numMetersToRemoveFromEnd</code> is negative.
     */
    public Element privatize(final Element gpx, final double numMetersToRemoveFromBeginning, final double numMetersToRemoveFromEnd) throws IOException, JDOMException
+   {
+   if (Double.compare(numMetersToRemoveFromBeginning, 0) < 0 || Double.compare(numMetersToRemoveFromEnd, 0) < 0)
       {
-      if (Double.compare(numMetersToRemoveFromBeginning, 0) < 0 || Double.compare(numMetersToRemoveFromEnd, 0) < 0)
-         {
-         throw new IllegalArgumentException("Number of meters to remove must be non-negative");
-         }
-      else
-         {
-         final GPXReader gpxReader = new GPXReader(gpx);
-         final BeginningAndEndPrivatizerGPXEventHandlerAdapter gpxEventHandler = new BeginningAndEndPrivatizerGPXEventHandlerAdapter(numMetersToRemoveFromBeginning, numMetersToRemoveFromEnd);
-         gpxReader.addGPXEventHandler(gpxEventHandler);
-
-         // read, then get the new GPX
-         gpxReader.read();
-
-         return gpxEventHandler.getElement();
-         }
+      throw new IllegalArgumentException("Number of meters to remove must be non-negative");
       }
+   else
+      {
+      final GPXReader gpxReader = new GPXReader(gpx);
+      final BeginningAndEndPrivatizerGPXEventHandlerAdapter gpxEventHandler = new BeginningAndEndPrivatizerGPXEventHandlerAdapter(numMetersToRemoveFromBeginning, numMetersToRemoveFromEnd);
+      gpxReader.addGPXEventHandler(gpxEventHandler);
+
+      // read, then get the new GPX
+      gpxReader.read();
+
+      return gpxEventHandler.getElement();
+      }
+   }
 
    /**
     * Privatizes the given GPX by removing the given lengths from the beginning and the end of the GPX.  The new GPX is
@@ -84,27 +84,27 @@ public final class GPXPrivatizer
     * negative.
     */
    public Element privatize(final Element gpx, final GPSCoordinate location, final double privatizationRadiusInMeters) throws IOException, JDOMException
+   {
+   if (Double.compare(privatizationRadiusInMeters, 0) < 0)
       {
-      if (Double.compare(privatizationRadiusInMeters, 0) < 0)
-         {
-         throw new IllegalArgumentException("Privatization radius in meters must be non-negative");
-         }
-      else if (location == null || location.isNull())
-         {
-         throw new IllegalArgumentException("The GPSCoordinate and its latitude and longitude must not be null");
-         }
-      else
-         {
-         final GPXReader gpxReader = new GPXReader(gpx);
-         final LocationPrivatizerGPXEventHandlerAdapter gpxEventHandler = new LocationPrivatizerGPXEventHandlerAdapter(location, privatizationRadiusInMeters);
-         gpxReader.addGPXEventHandler(gpxEventHandler);
-
-         // read, then get the new GPX
-         gpxReader.read();
-
-         return gpxEventHandler.getElement();
-         }
+      throw new IllegalArgumentException("Privatization radius in meters must be non-negative");
       }
+   else if (location == null || location.isNull())
+      {
+      throw new IllegalArgumentException("The GPSCoordinate and its latitude and longitude must not be null");
+      }
+   else
+      {
+      final GPXReader gpxReader = new GPXReader(gpx);
+      final LocationPrivatizerGPXEventHandlerAdapter gpxEventHandler = new LocationPrivatizerGPXEventHandlerAdapter(location, privatizationRadiusInMeters);
+      gpxReader.addGPXEventHandler(gpxEventHandler);
+
+      // read, then get the new GPX
+      gpxReader.read();
+
+      return gpxEventHandler.getElement();
+      }
+   }
 
    private GPXPrivatizer()
       {

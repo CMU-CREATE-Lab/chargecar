@@ -11,8 +11,7 @@ import edu.cmu.ri.createlab.serial.config.FlowControl;
 import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
@@ -22,7 +21,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
  */
 class NMEAReader extends StreamingSerialPortReader<GPSEvent>
    {
-   private static final Log LOG = LogFactory.getLog(NMEAReader.class);
+   private static final Logger LOG = Logger.getLogger(NMEAReader.class);
 
    private static final Character SENTENCE_DELIMETER = '\n';
    private static final String WORD_DELIMITER = ",";

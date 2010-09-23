@@ -3,8 +3,7 @@ package org.chargecar;
 import java.io.File;
 import edu.cmu.ri.createlab.util.StringUtils;
 import edu.cmu.ri.createlab.xml.XmlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.gpx.GPSCoordinate;
 import org.chargecar.gpx.GPXElevationLookupTool;
 import org.chargecar.gpx.GPXPrivatizer;
@@ -41,7 +40,7 @@ import org.jdom.Element;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class GPXTool
    {
-   private static final Log LOG = LogFactory.getLog(GPXTool.class);
+   private static final Logger LOG = Logger.getLogger(GPXTool.class);
 
    private static final String COMMAND_LINE_SWITCH_NO_VALIDATE = "--no-validate";
    private static final String COMMAND_LINE_SWITCH_PRIVATIZE = "--privatize";
@@ -79,43 +78,43 @@ public final class GPXTool
                willPrivatize = true;
                }
             else if (arg.startsWith(COMMAND_LINE_SWITCH_PRIVATIZE_LOCATION))
+               {
+               final String[] keyVal = arg.split("=");
+               if (keyVal.length > 1 && keyVal[1].length() > 0)
                   {
-                  final String[] keyVal = arg.split("=");
-                  if (keyVal.length > 1 && keyVal[1].length() > 0)
+                  final String[] latLong = keyVal[1].split(",");
+                  if (latLong.length >= 2)
                      {
-                     final String[] latLong = keyVal[1].split(",");
-                     if (latLong.length >= 2)
-                        {
-                        // create the GPSCoordinate
-                        privateLocationGpsCoordinate = new GPSCoordinate(latLong[1], latLong[0]);
+                     // create the GPSCoordinate
+                     privateLocationGpsCoordinate = new GPSCoordinate(latLong[1], latLong[0]);
 
-                        // make sure neither lat or long is null
-                        if (privateLocationGpsCoordinate.isNull())
-                           {
-                           privateLocationGpsCoordinate = null;
-                           }
-                        }
-
-                     // see whether the user specified a privatization radius
-                     if (latLong.length >= 3)
+                     // make sure neither lat or long is null
+                     if (privateLocationGpsCoordinate.isNull())
                         {
-                        final Double radius = StringUtils.convertStringToDouble(latLong[2]);
-                        if (radius != null && Double.compare(radius, 0) > 0)
-                           {
-                           locationPrivatizationRadius = radius;
-                           }
+                        privateLocationGpsCoordinate = null;
                         }
                      }
-                  willPrivatizeLocation = privateLocationGpsCoordinate != null;
+
+                  // see whether the user specified a privatization radius
+                  if (latLong.length >= 3)
+                     {
+                     final Double radius = StringUtils.convertStringToDouble(latLong[2]);
+                     if (radius != null && Double.compare(radius, 0) > 0)
+                        {
+                        locationPrivatizationRadius = radius;
+                        }
+                     }
                   }
-               else if (COMMAND_LINE_SWITCH_LOOKUP_ELEVATIONS_LOCALLY.equals(arg))
-                     {
-                     willDoLocalElevationLookup = true;
-                     }
-                  else if (COMMAND_LINE_SWITCH_LOOKUP_ELEVATIONS_ONLINE.equals(arg))
-                        {
-                        willDoOnlineElevationLookup = true;
-                        }
+               willPrivatizeLocation = privateLocationGpsCoordinate != null;
+               }
+            else if (COMMAND_LINE_SWITCH_LOOKUP_ELEVATIONS_LOCALLY.equals(arg))
+               {
+               willDoLocalElevationLookup = true;
+               }
+            else if (COMMAND_LINE_SWITCH_LOOKUP_ELEVATIONS_ONLINE.equals(arg))
+               {
+               willDoOnlineElevationLookup = true;
+               }
             }
          }
 

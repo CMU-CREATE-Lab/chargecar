@@ -8,7 +8,6 @@
       <!-- other classes within this project -->
 
       <!-- third-party jars -->
-      <pathelement path="${commons-logging.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
       <pathelement path="${create-lab-commons-util.jar}"/>
@@ -25,7 +24,6 @@
       <pathelement path="${sensor-board-reader.build.dir}"/>
 
       <!-- third-party jars -->
-      <pathelement path="${commons-logging.jar}"/>
       <pathelement path="${create-lab-commons-collections.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
@@ -50,7 +48,6 @@
 
    <path id="sensor-board-reader-classpath">
       <!-- third-party jars -->
-      <pathelement path="${commons-logging.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${log4j.jar}"/>
@@ -257,7 +254,6 @@
 
          <!-- copy required jar files and native lib -->
          <copy todir="${@{component.name}.dist.dir}" flatten="true">
-            <fileset file="${commons-logging.jar}"/>
             <fileset file="${log4j.jar}"/>
             <fileset file="${log4j-extras.jar}"/>
             <fileset file="${rxtx.jar}"/>

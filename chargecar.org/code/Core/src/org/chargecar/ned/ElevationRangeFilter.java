@@ -1,7 +1,6 @@
 package org.chargecar.ned;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -9,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class ElevationRangeFilter implements ElevationDataFilter
    {
-   private static final Log LOG = LogFactory.getLog(ElevationRangeFilter.class);
+   private static final Logger LOG = Logger.getLogger(ElevationRangeFilter.class);
 
    private static final double FEET_PER_METER = 3.2808399;
 

@@ -11,8 +11,7 @@ import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.component.DatasetPlotter;
 import edu.cmu.ri.createlab.userinterface.util.SpringLayoutUtilities;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.gps.GPSEventListener;
 
 /**
@@ -20,7 +19,7 @@ import org.chargecar.gps.GPSEventListener;
  */
 public class GPSDisplay implements GPSEventListener
    {
-   private static final Log LOG = LogFactory.getLog(GPSDisplay.class);
+   private static final Logger LOG = Logger.getLogger(GPSDisplay.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(GPSDisplay.class.getName());
 

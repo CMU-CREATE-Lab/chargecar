@@ -2,8 +2,8 @@ package org.chargecar;
 
 import java.io.File;
 import edu.cmu.ri.createlab.xml.XmlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.gpx.GPXElevationLookupTool;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -21,7 +21,7 @@ import org.jdom.Element;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class GPXElevationConverter
    {
-   private static final Log LOG = LogFactory.getLog(GPXElevationConverter.class);
+   private static final Logger LOG = Logger.getLogger(GPXElevationConverter.class);
    private static final String USGS_COMMAND_LINE_SWITCH = "--usgs";
 
    public static void main(final String[] args)
@@ -64,7 +64,7 @@ public final class GPXElevationConverter
          }
       catch (Exception e)
          {
-         if (LOG.isErrorEnabled())
+         if (LOG.isEnabledFor(Level.ERROR))
             {
             LOG.error("Exception caught while processing GPX [" + gpxFile.getAbsolutePath() + "]", e);
             }

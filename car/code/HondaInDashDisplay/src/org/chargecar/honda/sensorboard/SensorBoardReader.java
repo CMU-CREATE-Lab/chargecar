@@ -8,8 +8,8 @@ import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
@@ -19,7 +19,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
  */
 final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent>
    {
-   private static final Log LOG = LogFactory.getLog(SensorBoardReader.class);
+   private static final Logger LOG = Logger.getLogger(SensorBoardReader.class);
 
    private static final Character SENTENCE_DELIMETER = '\r';
    private static final String WORD_DELIMETER = ",";
@@ -77,7 +77,7 @@ final class SensorBoardReader extends StreamingSerialPortReader<SensorBoardEvent
             }
          else
             {
-            if (LOG.isErrorEnabled())
+            if (LOG.isEnabledFor(Level.ERROR))
                {
                LOG.error("SensorBoardReader.processSentence(): unexpected number of words in sentence--found [" + words.length + "] but expected at least [" + NUM_WORDS_PER_SENTENCE + "]");
                }

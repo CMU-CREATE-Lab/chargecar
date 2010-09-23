@@ -5,8 +5,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class ElevationMapRenderingFilter implements ElevationDataFilter
    {
-   private static final Log LOG = LogFactory.getLog(ElevationMapRenderingFilter.class);
+   private static final Logger LOG = Logger.getLogger(ElevationMapRenderingFilter.class);
 
    private static final int MAX_GREY_VALUE = 255;
    private static final int[] COLORS = new int[MAX_GREY_VALUE + 1];
@@ -69,7 +69,7 @@ public final class ElevationMapRenderingFilter implements ElevationDataFilter
          }
       catch (IOException e)
          {
-         if (LOG.isErrorEnabled())
+         if (LOG.isEnabledFor(Level.ERROR))
             {
             LOG.error("Failed to write image to output file [" + outputFile + "]: " + e);
             }

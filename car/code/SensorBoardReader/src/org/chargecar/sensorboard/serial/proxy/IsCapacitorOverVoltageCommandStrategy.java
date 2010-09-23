@@ -1,14 +1,13 @@
 package org.chargecar.sensorboard.serial.proxy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 final class IsCapacitorOverVoltageCommandStrategy extends ChargeCarSerialDeviceReturnValueCommandStrategy<Boolean>
    {
-   private static final Log LOG = LogFactory.getLog(IsCapacitorOverVoltageCommandStrategy.class);
+   private static final Logger LOG = Logger.getLogger(IsCapacitorOverVoltageCommandStrategy.class);
 
    /** The command character used to request the speed. */
    private static final String COMMAND_PREFIX = "O";

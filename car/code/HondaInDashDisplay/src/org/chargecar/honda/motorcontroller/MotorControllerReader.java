@@ -8,8 +8,8 @@ import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
@@ -19,7 +19,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
  */
 class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEvent>
    {
-   private static final Log LOG = LogFactory.getLog(MotorControllerReader.class);
+   private static final Logger LOG = Logger.getLogger(MotorControllerReader.class);
    private static final Character SENTENCE_DELIMETER = '\f';
    private static final String SENTENCE_PREFIX = ":SRPM";
    private static final String SENTENCE_PREFIX_REGEX = ".:SRPM";
@@ -58,7 +58,7 @@ class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEve
             final String errorCodeStr = sentence.substring(errorPos + ERROR_PREFIX.length());
             final Integer errorCode = StringUtils.convertStringToInteger(errorCodeStr.trim());
 
-            if (LOG.isErrorEnabled())
+            if (LOG.isEnabledFor(Level.ERROR))
                {
                if (errorCode == null)
                   {
@@ -91,7 +91,7 @@ class MotorControllerReader extends StreamingSerialPortReader<MotorControllerEve
                }
             else
                {
-               if (LOG.isErrorEnabled())
+               if (LOG.isEnabledFor(Level.ERROR))
                   {
                   LOG.error("MotorControllerReader.processSentence(): Unexpected sentence [" + sentence + "]");
                   }

@@ -18,8 +18,7 @@ import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.util.AbstractTimeConsumingAction;
 import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.userinterface.filechooser.FileChooser;
 import org.chargecar.userinterface.filechooser.FileChooserEventListener;
 import org.chargecar.userinterface.filechooser.StandardFileChooser;
@@ -31,7 +30,7 @@ import org.jdesktop.layout.GroupLayout;
 @SuppressWarnings({"CloneableClassWithoutClone"})
 final class MotionXGPSRawFileConverterGUI extends JPanel
    {
-   private static final Log LOG = LogFactory.getLog(MotionXGPSRawFileConverterGUI.class);
+   private static final Logger LOG = Logger.getLogger(MotionXGPSRawFileConverterGUI.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(MotionXGPSRawFileConverterGUI.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
@@ -155,29 +154,29 @@ final class MotionXGPSRawFileConverterGUI extends JPanel
       layout.setHorizontalGroup(
             layout.createParallelGroup()
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
-                        .add(titlePaddingLeft)
-                        .add(titleLabel)
-                        .add(titlePaddingRight)
+                             .add(titlePaddingLeft)
+                             .add(titleLabel)
+                             .add(titlePaddingRight)
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
-                        .add(titlePadding)
-                        .add(instructionsLabel)
-                        .add(instructionsPadding)
-                        .add(sourceLabel)
-                        .add(sourceFileChooser.getComponent())
-                        .add(convertButtonPadding)
+                             .add(titlePadding)
+                             .add(instructionsLabel)
+                             .add(instructionsPadding)
+                             .add(sourceLabel)
+                             .add(sourceFileChooser.getComponent())
+                             .add(convertButtonPadding)
                   )
                   .add(layout.createParallelGroup(GroupLayout.TRAILING)
-                  .add(convertButtonPaddingLeft)
-                  .add(convertButton)
-            )
+                             .add(convertButtonPaddingLeft)
+                             .add(convertButton)
+                  )
       );
       layout.setVerticalGroup(
             layout.createSequentialGroup()
                   .add(layout.createParallelGroup()
-                        .add(titlePaddingLeft)
-                        .add(titleLabel)
-                        .add(titlePaddingRight)
+                             .add(titlePaddingLeft)
+                             .add(titleLabel)
+                             .add(titlePaddingRight)
                   )
                   .add(titlePadding)
                   .add(instructionsLabel)
@@ -187,9 +186,9 @@ final class MotionXGPSRawFileConverterGUI extends JPanel
                   )
                   .add(convertButtonPadding)
                   .add(layout.createParallelGroup()
-                  .add(convertButtonPaddingLeft)
-                  .add(convertButton)
-            )
+                             .add(convertButtonPaddingLeft)
+                             .add(convertButton)
+                  )
       );
 
       this.add(panel);

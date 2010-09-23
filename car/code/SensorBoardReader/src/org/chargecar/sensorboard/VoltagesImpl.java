@@ -17,14 +17,14 @@ public final class VoltagesImpl extends SensorBoardDataImpl implements Voltages
     * Copy constructor
     */
    public VoltagesImpl(final Voltages voltages)
+   {
+   for (int i = 0; i < batteryVoltages.length; i++)
       {
-      for (int i = 0; i < batteryVoltages.length; i++)
-         {
-         batteryVoltages[i] = voltages.getBatteryVoltage(i);
-         }
-      capacitorVoltage = voltages.getCapacitorVoltage();
-      accessoryVoltage = voltages.getAccessoryVoltage();
+      batteryVoltages[i] = voltages.getBatteryVoltage(i);
       }
+   capacitorVoltage = voltages.getCapacitorVoltage();
+   accessoryVoltage = voltages.getAccessoryVoltage();
+   }
 
    public VoltagesImpl(final String[] rawValues)
       {

@@ -41,16 +41,16 @@ final class Gauge<T> extends JPanel
     * thread.
     */
    void setValue(final T s)
+   {
+   if (s != null)
       {
-      if (s != null)
-         {
-         value.setForeground(Color.BLACK);
-         value.setText(String.format(stringFormat, s));
-         }
-      else
-         {
-         value.setForeground(Color.RED);
-         value.setText(UNKNOWN_VALUE);
-         }
+      value.setForeground(Color.BLACK);
+      value.setText(String.format(stringFormat, s));
       }
+   else
+      {
+      value.setForeground(Color.RED);
+      value.setText(UNKNOWN_VALUE);
+      }
+   }
    }

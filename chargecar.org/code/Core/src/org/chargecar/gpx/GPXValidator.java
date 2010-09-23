@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import edu.cmu.ri.createlab.xml.XmlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -37,7 +37,7 @@ public final class GPXValidator
       String getErrorMessage();
       }
 
-   private static final Log LOG = LogFactory.getLog(GPXValidator.class);
+   private static final Logger LOG = Logger.getLogger(GPXValidator.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(GPXValidator.class.getName());
    private static final File XSD_DIRECTORY;
@@ -128,7 +128,7 @@ public final class GPXValidator
                }
             catch (Exception e)
                {
-               if (LOG.isErrorEnabled())
+               if (LOG.isEnabledFor(Level.ERROR))
                   {
                   LOG.error("Exception while examining file [" + xsdFile + "]...ignoring.", e);
                   }

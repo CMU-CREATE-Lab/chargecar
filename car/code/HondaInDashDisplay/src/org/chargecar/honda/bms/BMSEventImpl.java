@@ -198,15 +198,15 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns a signed value in amps, positive when discharging. */
    public double getSourceCurrentAmps()
-      {
-      return sourceCurrentAmps;
-      }
+   {
+   return sourceCurrentAmps;
+   }
 
    /** Returns a signed value in amps, positive when discharging. */
    public double getLoadCurrentAmps()
-      {
-      return loadCurrentAmps;
-      }
+   {
+   return loadCurrentAmps;
+   }
 
    public boolean isFanOn()
       {
@@ -250,15 +250,15 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the maximum regen and charging current accepted as a percentage. */
    public double getRelativeChargeCurrentLimitPercentage()
-      {
-      return relativeChargeCurrentLimitPercentage;
-      }
+   {
+   return relativeChargeCurrentLimitPercentage;
+   }
 
    /** Returns the maximum discharging current accepted as a percentage. */
    public double getRelativeDischargeCurrentLimitPercentage()
-      {
-      return relativeDischargeCurrentLimitPercentage;
-      }
+   {
+   return relativeDischargeCurrentLimitPercentage;
+   }
 
    public boolean isAreRelaysOn()
       {
@@ -292,27 +292,27 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the total voltage of the pack, within the range [0, 6.55] kV. */
    public double getPackTotalVoltage()
-      {
-      return packTotalVoltage;
-      }
+   {
+   return packTotalVoltage;
+   }
 
    /** Returns the minimum cell voltage, with the lowest possible value being 2.0 volts. */
    public double getMinimumCellVoltage()
-      {
-      return minimumCellVoltage;
-      }
+   {
+   return minimumCellVoltage;
+   }
 
    /** Returns the maximum cell voltage, with the lowest possible value being 2.0 volts. */
    public double getMaximumCellVoltage()
-      {
-      return maximumCellVoltage;
-      }
+   {
+   return maximumCellVoltage;
+   }
 
    /** Returns the average cell voltage, with the lowest possible value being 2.0 volts. */
    public double getAverageCellVoltage()
-      {
-      return averageCellVoltage;
-      }
+   {
+   return averageCellVoltage;
+   }
 
    public int getCellNumWithLowestVoltage()
       {
@@ -326,21 +326,21 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the minimum cell temperature in degrees Celsius. */
    public int getMinimumCellBoardTemp()
-      {
-      return minimumCellBoardTemp;
-      }
+   {
+   return minimumCellBoardTemp;
+   }
 
    /** Returns the maximum cell temperature in degrees Celsius. */
    public int getMaximumCellBoardTemp()
-      {
-      return maximumCellBoardTemp;
-      }
+   {
+   return maximumCellBoardTemp;
+   }
 
    /** Returns the average cell temperature in degrees Celsius. */
    public int getAverageCellBoardTemp()
-      {
-      return averageCellBoardTemp;
-      }
+   {
+   return averageCellBoardTemp;
+   }
 
    public int getCellBoardNumWithLowestTemp()
       {
@@ -359,9 +359,9 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the voltage, with the lowest possible value being 2.0 volts. */
    public double getCellVoltageAboveWhichWeTurnOnItsLoad()
-      {
-      return cellVoltageAboveWhichWeTurnOnItsLoad;
-      }
+   {
+   return cellVoltageAboveWhichWeTurnOnItsLoad;
+   }
 
    public boolean isDrivingOffWhilePluggedIn()
       {
@@ -405,27 +405,27 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the total energy in (kWh) of the battery since manufacture. */
    public int getTotalEnergyInOfBatterySinceManufacture()
-      {
-      return totalEnergyInOfBatterySinceManufacture;
-      }
+   {
+   return totalEnergyInOfBatterySinceManufacture;
+   }
 
    /** Returns the total energy out (kWh) of the battery since manufacture. */
    public int getTotalEnergyOutOfBatterySinceManufacture()
-      {
-      return totalEnergyOutOfBatterySinceManufacture;
-      }
+   {
+   return totalEnergyOutOfBatterySinceManufacture;
+   }
 
    /** Returns the depth of discharge in Ah. */
    public int getDepthOfDischarge()
-      {
-      return depthOfDischarge;
-      }
+   {
+   return depthOfDischarge;
+   }
 
    /** Returns the capacity in Ah. */
    public int getCapacity()
-      {
-      return capacity;
-      }
+   {
+   return capacity;
+   }
 
    public int getStateOfHealthPercentage()
       {
@@ -434,27 +434,27 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the total resistance of the pack in u Ohms. */
    public int getPackTotalResistance()
-      {
-      return packTotalResistance;
-      }
+   {
+   return packTotalResistance;
+   }
 
    /** Returns the minimum cell resistance u Ohms. */
    public int getMinimumCellResistance()
-      {
-      return minimumCellResistance;
-      }
+   {
+   return minimumCellResistance;
+   }
 
    /** Returns the maximum cell resistance u Ohms. */
    public int getMaximumCellResistance()
-      {
-      return maximumCellResistance;
-      }
+   {
+   return maximumCellResistance;
+   }
 
    /** Returns the average cell resistance u Ohms. */
    public int getAverageCellResistance()
-      {
-      return averageCellResistance;
-      }
+   {
+   return averageCellResistance;
+   }
 
    public int getCellNumWithMinimumResistance()
       {
@@ -473,9 +473,9 @@ final class BMSEventImpl extends BaseStreamingSerialPortEvent implements BMSEven
 
    /** Returns the power in W. */
    public int getPower()
-      {
-      return power;
-      }
+   {
+   return power;
+   }
 
    @Override
    public String toString()

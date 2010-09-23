@@ -2,8 +2,8 @@ package org.chargecar;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.file.FileFinder;
 import org.chargecar.ned.gridfloat.GridFloatDataFile;
 import org.chargecar.ned.gridfloat.GridFloatIndex;
@@ -17,7 +17,7 @@ import org.chargecar.ned.gridfloat.GridFloatIndex;
  */
 public final class GridFloatIndexer
    {
-   private static final Log LOG = LogFactory.getLog(GridFloatIndexer.class);
+   private static final Logger LOG = Logger.getLogger(GridFloatIndexer.class);
 
    public static void main(final String[] args)
       {
@@ -67,7 +67,7 @@ public final class GridFloatIndexer
                }
             else
                {
-               if (LOG.isErrorEnabled())
+               if (LOG.isEnabledFor(Level.ERROR))
                   {
                   LOG.error("Failed to insert into index: " + gridFloatDataFile.getDataFile().getName());
                   }
@@ -75,7 +75,7 @@ public final class GridFloatIndexer
             }
          catch (IOException e)
             {
-            if (LOG.isErrorEnabled())
+            if (LOG.isEnabledFor(Level.ERROR))
                {
                LOG.error("IOException while trying to process header file [" + file + "]", e);
                }

@@ -1,15 +1,14 @@
 package org.chargecar.serial.streaming;
 
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public final class DefaultStreamingSerialPortSentenceReadingStrategy implements StreamingSerialPortSentenceReadingStrategy
    {
-   private static final Log LOG = LogFactory.getLog(DefaultStreamingSerialPortSentenceReadingStrategy.class);
+   private static final Logger LOG = Logger.getLogger(DefaultStreamingSerialPortSentenceReadingStrategy.class);
 
    private final SerialIOManager serialIOManager;
    private final Character sentenceDelimiter;
@@ -67,22 +66,22 @@ public final class DefaultStreamingSerialPortSentenceReadingStrategy implements 
     * an {@link IOException} if the end of stream is reached while trying to read the data.
     */
    private Byte readByte() throws IOException
+   {
+   if (serialIOManager.getSerialPortIoHelper().isDataAvailable())
       {
-      if (serialIOManager.getSerialPortIoHelper().isDataAvailable())
+      final int b = serialIOManager.getSerialPortIoHelper().read();
+
+      if (b >= 0)
          {
-         final int b = serialIOManager.getSerialPortIoHelper().read();
-
-         if (b >= 0)
-            {
-            return (byte)b;
-            }
-         else
-            {
-            LOG.error("DefaultStreamingSerialPortSentenceReadingStrategy.readByte(): End of stream reached while trying to read the data");
-            throw new IOException("End of stream reached while trying to read the data");
-            }
+         return (byte)b;
          }
-
-      return null;
+      else
+         {
+         LOG.error("DefaultStreamingSerialPortSentenceReadingStrategy.readByte(): End of stream reached while trying to read the data");
+         throw new IOException("End of stream reached while trying to read the data");
+         }
       }
+
+   return null;
+   }
    }

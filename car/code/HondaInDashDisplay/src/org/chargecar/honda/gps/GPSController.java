@@ -1,7 +1,6 @@
 package org.chargecar.honda.gps;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 
 /**
@@ -13,7 +12,7 @@ import org.chargecar.honda.StreamingSerialPortDeviceController;
  */
 public final class GPSController extends StreamingSerialPortDeviceController<GPSEvent, GPSEvent>
    {
-   private static final Log LOG = LogFactory.getLog(GPSController.class);
+   private static final Logger LOG = Logger.getLogger(GPSController.class);
 
    private final GPSModel model;
 

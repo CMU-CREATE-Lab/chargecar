@@ -2,8 +2,7 @@ package org.chargecar.ned.gridfloat;
 
 import java.io.FileNotFoundException;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.ned.ElevationDataset;
 import org.chargecar.ned.ElevationDatasetException;
 
@@ -16,7 +15,7 @@ import org.chargecar.ned.ElevationDatasetException;
  */
 public final class GridFloatDataset implements ElevationDataset
    {
-   private static final Log LOG = LogFactory.getLog(GridFloatDataset.class);
+   private static final Logger LOG = Logger.getLogger(GridFloatDataset.class);
 
    private final List<GridFloatDataFile> dataFiles;
 

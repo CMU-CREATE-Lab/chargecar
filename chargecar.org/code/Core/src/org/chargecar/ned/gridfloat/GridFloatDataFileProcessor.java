@@ -5,8 +5,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.ned.ElevationDataFilter;
 import org.chargecar.ned.ElevationDatasetException;
 
@@ -15,7 +15,7 @@ import org.chargecar.ned.ElevationDatasetException;
  */
 public final class GridFloatDataFileProcessor
    {
-   private static final Log LOG = LogFactory.getLog(GridFloatDataFileProcessor.class);
+   private static final Logger LOG = Logger.getLogger(GridFloatDataFileProcessor.class);
 
    private final GridFloatDataFile gridFloatDataFile;
 
@@ -62,7 +62,7 @@ public final class GridFloatDataFileProcessor
          }
       else
          {
-         if (LOG.isErrorEnabled())
+         if (LOG.isEnabledFor(Level.ERROR))
             {
             LOG.error("File [" + file + "] does not exist.");
             }

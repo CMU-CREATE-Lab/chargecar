@@ -1,7 +1,6 @@
 package org.chargecar.honda.motorcontroller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceModel;
 
 /**
@@ -13,7 +12,7 @@ import org.chargecar.honda.StreamingSerialPortDeviceModel;
  */
 public class MotorControllerModel extends StreamingSerialPortDeviceModel<MotorControllerEvent, MotorControllerEvent>
    {
-   private static final Log LOG = LogFactory.getLog(MotorControllerModel.class);
+   private static final Logger LOG = Logger.getLogger(MotorControllerModel.class);
 
    private final byte[] dataSynchronizationLock = new byte[0];
 

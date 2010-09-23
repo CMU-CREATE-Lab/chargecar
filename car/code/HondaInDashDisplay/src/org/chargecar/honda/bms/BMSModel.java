@@ -1,7 +1,6 @@
 package org.chargecar.honda.bms;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceModel;
 
 /**
@@ -13,7 +12,7 @@ import org.chargecar.honda.StreamingSerialPortDeviceModel;
  */
 public final class BMSModel extends StreamingSerialPortDeviceModel<BMSEvent, BMSAndEnergy>
    {
-   private static final Log LOG = LogFactory.getLog(BMSModel.class);
+   private static final Logger LOG = Logger.getLogger(BMSModel.class);
    public static final double HOURS_PER_MILLISECOND = 1 / 3600000.0;
    private static final double MILLIS_TO_KILOHOURS_MULTIPLIER = HOURS_PER_MILLISECOND / 1000;
 

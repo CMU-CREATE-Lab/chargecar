@@ -9,8 +9,7 @@ import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.ByteUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.HondaConstants;
 import org.chargecar.serial.streaming.DefaultSerialIOManager;
 import org.chargecar.serial.streaming.SerialIOManager;
@@ -21,7 +20,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
  */
 class BMSReader extends StreamingSerialPortReader<BMSEvent>
    {
-   private static final Log LOG = LogFactory.getLog(BMSReader.class);
+   private static final Logger LOG = Logger.getLogger(BMSReader.class);
    private static final Character SENTENCE_DELIMETER = 0x1B;      // ESC
    private static final Character SENTENCE_START_CHAR_1 = 0x5B;   // [
    private static final Character SENTENCE_START_CHAR_2 = 0x48;   // H

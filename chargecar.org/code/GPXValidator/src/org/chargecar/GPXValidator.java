@@ -1,8 +1,7 @@
 package org.chargecar;
 
 import java.io.File;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -16,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class GPXValidator
    {
-   private static final Log LOG = LogFactory.getLog(org.chargecar.GPXValidator.class);
+   private static final Logger LOG = Logger.getLogger(org.chargecar.GPXValidator.class);
 
    public static void main(final String[] args)
       {

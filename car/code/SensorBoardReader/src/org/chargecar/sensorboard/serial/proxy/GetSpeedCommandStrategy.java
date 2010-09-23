@@ -1,7 +1,6 @@
 package org.chargecar.sensorboard.serial.proxy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.sensorboard.SensorBoardDataImpl;
 import org.chargecar.sensorboard.Speed;
 
@@ -10,7 +9,7 @@ import org.chargecar.sensorboard.Speed;
  */
 final class GetSpeedCommandStrategy extends ChargeCarSerialDeviceReturnValueCommandStrategy<Speed>
    {
-   private static final Log LOG = LogFactory.getLog(GetSpeedCommandStrategy.class);
+   private static final Logger LOG = Logger.getLogger(GetSpeedCommandStrategy.class);
 
    /** The command character used to request the speed. */
    private static final String COMMAND_PREFIX = "S";

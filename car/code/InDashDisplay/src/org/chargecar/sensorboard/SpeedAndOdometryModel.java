@@ -5,8 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 import edu.cmu.ri.createlab.util.mvc.Model;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -17,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class SpeedAndOdometryModel extends Model<Speed, SpeedAndOdometry>
    {
-   private static final Log LOG = LogFactory.getLog(SpeedAndOdometryModel.class);
+   private static final Logger LOG = Logger.getLogger(SpeedAndOdometryModel.class);
 
    private static final File ODOMETER_DATA_STORE_FILE = new File("Odometer.txt");
    private static final String ODOMETER_PROPERTY_KEY = "odometer";

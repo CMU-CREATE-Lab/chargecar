@@ -18,21 +18,21 @@ public final class TrackPoint extends GPSCoordinate
     * <code>null</code> values.
     */
    public TrackPoint(final String longitude, final String latitude, final String timestamp, final String elevation)
-      {
-      super(longitude, latitude);
-      this.timestamp = "".equals(timestamp) ? null : timestamp;
-      this.elevation = StringUtils.convertStringToDouble(elevation);
-      }
+   {
+   super(longitude, latitude);
+   this.timestamp = "".equals(timestamp) ? null : timestamp;
+   this.elevation = StringUtils.convertStringToDouble(elevation);
+   }
 
    /**
     * Copy constructor, but with a different elevation.
     */
    public TrackPoint(final TrackPoint trackPoint, final Double elevation)
-      {
-      super(trackPoint.getLongitude(), trackPoint.getLatitude());
-      this.timestamp = trackPoint.timestamp;
-      this.elevation = elevation;
-      }
+   {
+   super(trackPoint.getLongitude(), trackPoint.getLatitude());
+   this.timestamp = trackPoint.timestamp;
+   this.elevation = elevation;
+   }
 
    public String getTimestamp()
       {
