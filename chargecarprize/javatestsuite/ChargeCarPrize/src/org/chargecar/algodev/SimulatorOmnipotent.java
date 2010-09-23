@@ -21,6 +21,7 @@ import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 import org.chargecar.prize.util.Vehicle;
+import org.chargecar.prize.visualization.CSVWriter;
 import org.chargecar.prize.visualization.ConsoleWriter;
 import org.chargecar.prize.visualization.Visualizer;
 
@@ -36,9 +37,11 @@ import org.chargecar.prize.visualization.Visualizer;
  * 
  */
 public class SimulatorOmnipotent {
-    static Visualizer visualizer = new ConsoleWriter();
+    static Visualizer visualizer = new CSVWriter("C:/outominf.csv");
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    
+    static double systemVoltage = 48;
+    static double batteryWhr = 50000;
+    static double capWhr = 1e10;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -97,8 +100,8 @@ public class SimulatorOmnipotent {
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new LeadAcidBattery(50000, 50000, 48);
-	BatteryModel tripCap = new SimpleCapacitor(1e10, 0, 48);
+	BatteryModel tripBattery = new LeadAcidBattery(batteryWhr, batteryWhr, systemVoltage);
+	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
     }

@@ -149,7 +149,7 @@ public class KnnKdTreePolicy implements Policy {
     public double getFlow(ExtendedPointFeatures epf){
 	//epf = scaleFeatures(epf);
 	//return featKdTree.getBestEstimate(epf, 5);
-	return gpsKdTree.getBestEstimate(epf, 10);
+	return gpsKdTree.getBestEstimate(epf, 20);
     }
     
     private ExtendedPointFeatures scaleFeatures(ExtendedPointFeatures epf){
