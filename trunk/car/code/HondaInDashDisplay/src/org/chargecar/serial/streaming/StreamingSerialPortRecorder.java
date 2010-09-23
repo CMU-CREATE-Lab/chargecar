@@ -20,8 +20,7 @@ import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
 import edu.cmu.ri.createlab.serial.config.StopBits;
 import edu.cmu.ri.createlab.util.commandline.BaseCommandLineApplication;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -29,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class StreamingSerialPortRecorder extends BaseCommandLineApplication
    {
-   private static final Log LOG = LogFactory.getLog(StreamingSerialPortRecorder.class);
+   private static final Logger LOG = Logger.getLogger(StreamingSerialPortRecorder.class);
 
    public static void main(final String[] args)
       {

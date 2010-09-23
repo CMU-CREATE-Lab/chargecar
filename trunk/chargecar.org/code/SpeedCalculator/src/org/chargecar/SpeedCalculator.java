@@ -1,8 +1,8 @@
 package org.chargecar;
 
 import java.io.File;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.gpx.DistanceCalculator;
 import org.chargecar.gpx.GPXEventHandlerAdapter;
 import org.chargecar.gpx.GPXReader;
@@ -20,7 +20,7 @@ import org.chargecar.gpx.UTCHelper;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class SpeedCalculator
    {
-   private static final Log LOG = LogFactory.getLog(SpeedCalculator.class);
+   private static final Logger LOG = Logger.getLogger(SpeedCalculator.class);
 
    public static void main(final String[] args)
       {
@@ -58,7 +58,7 @@ public final class SpeedCalculator
          }
       catch (Exception e)
          {
-         if (LOG.isErrorEnabled())
+         if (LOG.isEnabledFor(Level.ERROR))
             {
             LOG.error("Exception caught while processing GPX [" + gpxFile.getAbsolutePath() + "]", e);
             }

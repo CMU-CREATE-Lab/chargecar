@@ -4,15 +4,14 @@ import java.io.UnsupportedEncodingException;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceCommandStrategy;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends CreateLabSerialDeviceReturnValueCommandStrategy
    {
-   private static final Log LOG = LogFactory.getLog(ChargeCarSerialDeviceReturnValueCommandStrategy.class);
+   private static final Logger LOG = Logger.getLogger(ChargeCarSerialDeviceReturnValueCommandStrategy.class);
 
    private static final String RESPONSE_VALUE_FIELD_DELIMITER = ",";
 
@@ -26,9 +25,9 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
     * @see CreateLabSerialDeviceCommandStrategy#DEFAULT_MAX_NUMBER_OF_RETRIES
     */
    protected ChargeCarSerialDeviceReturnValueCommandStrategy()
-      {
-      super();
-      }
+   {
+   super();
+   }
 
    /**
     * Creates a <code>ChargeCarSerialDeviceReturnValueCommandStrategy</code> using the given values for read timeout,
@@ -40,9 +39,9 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
     * @see CreateLabSerialDeviceCommandStrategy#DEFAULT_MAX_NUMBER_OF_RETRIES
     */
    protected ChargeCarSerialDeviceReturnValueCommandStrategy(final int readTimeoutMillis, final int slurpTimeoutMillis, final int maxNumberOfRetries)
-      {
-      super(readTimeoutMillis, slurpTimeoutMillis, maxNumberOfRetries);
-      }
+   {
+   super(readTimeoutMillis, slurpTimeoutMillis, maxNumberOfRetries);
+   }
 
    public final E convertResponse(final SerialPortCommandResponse response)
       {

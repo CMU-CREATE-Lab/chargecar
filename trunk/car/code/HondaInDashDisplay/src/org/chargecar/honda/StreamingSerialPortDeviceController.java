@@ -7,8 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.serial.SerialPortException;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.serial.streaming.StreamingSerialPortEventListener;
 import org.chargecar.serial.streaming.StreamingSerialPortReader;
 
@@ -21,7 +20,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortReader;
  */
 public abstract class StreamingSerialPortDeviceController<T, U>
    {
-   private static final Log LOG = LogFactory.getLog(StreamingSerialPortDeviceController.class);
+   private static final Logger LOG = Logger.getLogger(StreamingSerialPortDeviceController.class);
 
    protected static boolean shouldUseFakeDevice()
       {

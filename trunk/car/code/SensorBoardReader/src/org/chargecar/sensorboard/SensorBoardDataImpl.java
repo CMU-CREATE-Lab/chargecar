@@ -1,14 +1,13 @@
 package org.chargecar.sensorboard;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public abstract class SensorBoardDataImpl implements SensorBoardData
    {
-   private static final Log LOG = LogFactory.getLog(SensorBoardDataImpl.class);
+   private static final Logger LOG = Logger.getLogger(SensorBoardDataImpl.class);
 
    private final long timestamp = System.currentTimeMillis();
 

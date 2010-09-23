@@ -11,15 +11,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.serial.SerialPortException;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public abstract class StreamingSerialPortReader<E> implements StreamingSerialPortEventPublisher<E>
    {
-   private static final Log LOG = LogFactory.getLog(StreamingSerialPortReader.class);
+   private static final Logger LOG = Logger.getLogger(StreamingSerialPortReader.class);
 
    private final SerialIOManager serialIIOManager;
    private final StreamingSerialPortSentenceReadingStrategy sentenceReadingStrategy;

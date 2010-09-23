@@ -9,8 +9,7 @@ import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectionSta
 import edu.cmu.ri.createlab.serial.device.connectivity.SerialDeviceConnectivityManager;
 import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.sensorboard.Currents;
 import org.chargecar.sensorboard.Efficiency;
 import org.chargecar.sensorboard.EfficiencyModel;
@@ -41,7 +40,7 @@ import org.chargecar.sensorboard.serial.proxy.SensorBoardProxy;
  */
 final class InDashDisplayController
    {
-   private static final Log LOG = LogFactory.getLog(InDashDisplayController.class);
+   private static final Logger LOG = Logger.getLogger(InDashDisplayController.class);
 
    private final LifecycleManager lifecycleManager;
    private final SerialDeviceConnectivityManager serialDeviceConnectivityManager;

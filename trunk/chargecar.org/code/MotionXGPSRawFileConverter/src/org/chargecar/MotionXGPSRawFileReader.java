@@ -11,8 +11,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import edu.cmu.ri.createlab.util.StringUtils;
 import edu.cmu.ri.createlab.xml.XmlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.gpx.GPXEventHandler;
 import org.chargecar.gpx.TrackPoint;
 import org.chargecar.gpx.UTCHelper;
@@ -25,7 +24,7 @@ import org.joda.time.DateTime;
  */
 final class MotionXGPSRawFileReader
    {
-   private static final Log LOG = LogFactory.getLog(MotionXGPSRawFileReader.class);
+   private static final Logger LOG = Logger.getLogger(MotionXGPSRawFileReader.class);
 
    private final File file;
    private final List<GPXEventHandler> eventHandlers = new ArrayList<GPXEventHandler>();

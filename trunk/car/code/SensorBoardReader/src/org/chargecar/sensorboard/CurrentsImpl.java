@@ -1,15 +1,14 @@
 package org.chargecar.sensorboard;
 
 import java.util.Arrays;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
    {
-   private static final Log LOG = LogFactory.getLog(CurrentsImpl.class);
+   private static final Logger LOG = Logger.getLogger(CurrentsImpl.class);
 
    private static final double STANDARD_CURRENT_CONVERSION_FACTOR = -1.44;
    private static final int MOTOR_CURRENT_CONVERSION_FACTOR = 5;
@@ -23,15 +22,15 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
     * Copy constructor
     */
    public CurrentsImpl(final Currents currents)
+   {
+   batteryCurrent = currents.getBatteryCurrent();
+   capacitorCurrent = currents.getCapacitorCurrent();
+   accessoryCurrent = currents.getAccessoryCurrent();
+   for (int i = 0; i < motorCurrents.length; i++)
       {
-      batteryCurrent = currents.getBatteryCurrent();
-      capacitorCurrent = currents.getCapacitorCurrent();
-      accessoryCurrent = currents.getAccessoryCurrent();
-      for (int i = 0; i < motorCurrents.length; i++)
-         {
-         motorCurrents[i] = currents.getMotorCurrent(i);
-         }
+      motorCurrents[i] = currents.getMotorCurrent(i);
       }
+   }
 
    public CurrentsImpl(final String[] rawValues)
       {

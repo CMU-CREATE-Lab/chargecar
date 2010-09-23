@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import edu.cmu.ri.createlab.xml.XmlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -19,7 +18,7 @@ import org.jdom.JDOMException;
  */
 public final class USGSWebServiceElevationDataset implements ElevationDataset
    {
-   private static final Log LOG = LogFactory.getLog(USGSWebServiceElevationDataset.class);
+   private static final Logger LOG = Logger.getLogger(USGSWebServiceElevationDataset.class);
 
    private static final USGSWebServiceElevationDataset INSTANCE = new USGSWebServiceElevationDataset();
 

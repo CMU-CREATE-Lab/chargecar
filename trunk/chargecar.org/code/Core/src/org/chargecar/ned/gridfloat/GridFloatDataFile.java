@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.chargecar.ned.ElevationDataFile;
 
 /**
@@ -25,7 +25,7 @@ import org.chargecar.ned.ElevationDataFile;
  */
 public final class GridFloatDataFile implements ElevationDataFile
    {
-   private static final Log LOG = LogFactory.getLog(GridFloatDataFile.class);
+   private static final Logger LOG = Logger.getLogger(GridFloatDataFile.class);
 
    public static final int BYTES_PER_FLOAT = Float.SIZE / 8;
 
@@ -150,77 +150,77 @@ public final class GridFloatDataFile implements ElevationDataFile
     * file (*.flt or no extension) or a header file (*.hdr).
     */
    public static GridFloatDataFile create(final File file) throws IOException
+   {
+   final File headerFile;
+   if (DATA_FILE_FILTER.accept(file))
       {
-      final File headerFile;
-      if (DATA_FILE_FILTER.accept(file))
-         {
-         headerFile = getHeaderFileFromDataFile(file);
-         }
-      else
-         {
-         headerFile = file;
-         }
+      headerFile = getHeaderFileFromDataFile(file);
+      }
+   else
+      {
+      headerFile = file;
+      }
 
-      if (HEADER_FILE_FILTER.accept(headerFile))
+   if (HEADER_FILE_FILTER.accept(headerFile))
+      {
+      try
          {
-         try
+         final List lines = FileUtils.readLines(headerFile);
+         final Pattern whitespacePattern = Pattern.compile("\\s+");
+         final Map<String, String> propertyMap = new HashMap<String, String>(lines.size());
+         for (final Object line : lines)
             {
-            final List lines = FileUtils.readLines(headerFile);
-            final Pattern whitespacePattern = Pattern.compile("\\s+");
-            final Map<String, String> propertyMap = new HashMap<String, String>(lines.size());
-            for (final Object line : lines)
+            final String[] keyAndValue = whitespacePattern.split((String)line, 2);
+            if (keyAndValue != null && keyAndValue.length == 2 && PROPERTY_KEYS.contains(keyAndValue[0]))
                {
-               final String[] keyAndValue = whitespacePattern.split((String)line, 2);
-               if (keyAndValue != null && keyAndValue.length == 2 && PROPERTY_KEYS.contains(keyAndValue[0]))
-                  {
-                  propertyMap.put(keyAndValue[0], keyAndValue[1]);
-                  }
+               propertyMap.put(keyAndValue[0], keyAndValue[1]);
                }
-
-            if (propertyMap.size() == PROPERTY_KEYS.size())
-               {
-               try
-                  {
-                  final String byteOrder = propertyMap.get(PROPERTY_BYTE_ORDER);
-                  if (!VALID_BYTE_ORDER_VALUES.contains(byteOrder))
-                     {
-                     throw new Exception("Invalid byte order value [" + byteOrder + "]");
-                     }
-
-                  return new GridFloatDataFile(headerFile,
-                                               Double.parseDouble(propertyMap.get(PROPERTY_LOWER_LEFT_CORNER_LONGITUDE)),
-                                               Double.parseDouble(propertyMap.get(PROPERTY_LOWER_LEFT_CORNER_LATITUDE)),
-                                               Double.parseDouble(propertyMap.get(PROPERTY_CELL_SIZE)),
-                                               Double.parseDouble(propertyMap.get(PROPERTY_NO_DATA_VALUE)),
-                                               Integer.parseInt(propertyMap.get(PROPERTY_NUM_COLUMNS)),
-                                               Integer.parseInt(propertyMap.get(PROPERTY_NUM_ROWS)),
-                                               byteOrder.equals(PROPERTY_VALUE_BIG_ENDIAN));
-                  }
-               catch (Exception e)
-                  {
-                  LOG.error("Exception while trying to construct GridFloatDataFile instance, returning null.", e);
-                  }
-               }
-            else
-               {
-               LOG.error("Incomplete GridFloatDataFile specification (missing parameters), returning null.");
-               }
-            return null;
             }
-         catch (IOException e)
+
+         if (propertyMap.size() == PROPERTY_KEYS.size())
             {
-            if (LOG.isErrorEnabled())
+            try
                {
-               LOG.error("IOException while trying to read the header file [" + headerFile + "]", e);
+               final String byteOrder = propertyMap.get(PROPERTY_BYTE_ORDER);
+               if (!VALID_BYTE_ORDER_VALUES.contains(byteOrder))
+                  {
+                  throw new Exception("Invalid byte order value [" + byteOrder + "]");
+                  }
+
+               return new GridFloatDataFile(headerFile,
+                                            Double.parseDouble(propertyMap.get(PROPERTY_LOWER_LEFT_CORNER_LONGITUDE)),
+                                            Double.parseDouble(propertyMap.get(PROPERTY_LOWER_LEFT_CORNER_LATITUDE)),
+                                            Double.parseDouble(propertyMap.get(PROPERTY_CELL_SIZE)),
+                                            Double.parseDouble(propertyMap.get(PROPERTY_NO_DATA_VALUE)),
+                                            Integer.parseInt(propertyMap.get(PROPERTY_NUM_COLUMNS)),
+                                            Integer.parseInt(propertyMap.get(PROPERTY_NUM_ROWS)),
+                                            byteOrder.equals(PROPERTY_VALUE_BIG_ENDIAN));
                }
-            throw e;
+            catch (Exception e)
+               {
+               LOG.error("Exception while trying to construct GridFloatDataFile instance, returning null.", e);
+               }
             }
+         else
+            {
+            LOG.error("Incomplete GridFloatDataFile specification (missing parameters), returning null.");
+            }
+         return null;
          }
-      else
+      catch (IOException e)
          {
-         throw new IOException("The file [" + headerFile + "] does not appear to be a GridFloatDataFile.");
+         if (LOG.isEnabledFor(Level.ERROR))
+            {
+            LOG.error("IOException while trying to read the header file [" + headerFile + "]", e);
+            }
+         throw e;
          }
       }
+   else
+      {
+      throw new IOException("The file [" + headerFile + "] does not appear to be a GridFloatDataFile.");
+      }
+   }
 
    public static double convertGridFloatToElevation(final byte[] floatBytes, final boolean isBigEndian)
       {
@@ -443,7 +443,7 @@ public final class GridFloatDataFile implements ElevationDataFile
             }
          else
             {
-            if (LOG.isErrorEnabled())
+            if (LOG.isEnabledFor(Level.ERROR))
                {
                LOG.error("Invalid number of bytes read: actual = [" + bytesRead + "], expected [" + BYTES_PER_FLOAT + "]");
                }
@@ -451,7 +451,7 @@ public final class GridFloatDataFile implements ElevationDataFile
          }
       catch (IOException e)
          {
-         if (LOG.isErrorEnabled())
+         if (LOG.isEnabledFor(Level.ERROR))
             {
             LOG.error("IOException while seeking to or reading from position [" + seekPosition + "][" + floatIndex + "] for col [" + col + "] and row [" + row + "]", e);
             }

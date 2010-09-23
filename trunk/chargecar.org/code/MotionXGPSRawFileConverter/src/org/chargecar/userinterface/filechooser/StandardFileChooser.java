@@ -19,8 +19,7 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.jdesktop.layout.GroupLayout;
 
 /**
@@ -28,7 +27,7 @@ import org.jdesktop.layout.GroupLayout;
  */
 public final class StandardFileChooser implements FileChooser
    {
-   private static final Log LOG = LogFactory.getLog(StandardFileChooser.class);
+   private static final Logger LOG = Logger.getLogger(StandardFileChooser.class);
 
    public static void main(final String[] args)
       {
@@ -232,51 +231,51 @@ public final class StandardFileChooser implements FileChooser
 
    /** Retrieves the value from the specified text field as a {@link File}; returns <code>null</code> if the file does not exist. */
    private File getTextFieldValueAsFile(final JTextField textField)
+   {
+   final String filePath = getTextFieldValueAsString(textField);
+   if (filePath != null)
       {
-      final String filePath = getTextFieldValueAsString(textField);
-      if (filePath != null)
+      final File file = new File(filePath);
+      if (file.exists())
          {
-         final File file = new File(filePath);
-         if (file.exists())
-            {
-            return file;
-            }
+         return file;
          }
-      return null;
       }
+   return null;
+   }
 
    /** Retrieves the value from the specified text field as a {@link String}. */
    @SuppressWarnings({"UnusedCatchParameter"})
    private String getTextFieldValueAsString(final JTextField textField)
+   {
+   final String text;
+   if (SwingUtilities.isEventDispatchThread())
       {
-      final String text;
-      if (SwingUtilities.isEventDispatchThread())
-         {
-         text = textField.getText();
-         }
-      else
-         {
-         final String[] textFieldValue = new String[1];
-         try
-            {
-            SwingUtilities.invokeAndWait(
-                  new Runnable()
-                  {
-                  public void run()
-                     {
-                     textFieldValue[0] = textField.getText();
-                     }
-                  });
-            }
-         catch (Exception e)
-            {
-            LOG.error("Exception while getting the value from text field.  Returning null instead.");
-            textFieldValue[0] = null;
-            }
-
-         text = textFieldValue[0];
-         }
-
-      return (text != null) ? text.trim() : null;
+      text = textField.getText();
       }
+   else
+      {
+      final String[] textFieldValue = new String[1];
+      try
+         {
+         SwingUtilities.invokeAndWait(
+               new Runnable()
+               {
+               public void run()
+                  {
+                  textFieldValue[0] = textField.getText();
+                  }
+               });
+         }
+      catch (Exception e)
+         {
+         LOG.error("Exception while getting the value from text field.  Returning null instead.");
+         textFieldValue[0] = null;
+         }
+
+      text = textFieldValue[0];
+      }
+
+   return (text != null) ? text.trim() : null;
+   }
    }

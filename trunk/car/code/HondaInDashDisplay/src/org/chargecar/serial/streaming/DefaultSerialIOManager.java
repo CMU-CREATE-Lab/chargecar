@@ -14,15 +14,14 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public class DefaultSerialIOManager implements SerialIOManager
    {
-   private static final Log LOG = LogFactory.getLog(DefaultSerialIOManager.class);
+   private static final Logger LOG = Logger.getLogger(DefaultSerialIOManager.class);
 
    private static final int OPEN_PORT_TIMEOUT_MILLIS = 1000;
    private static final int RECEIVE_TIMEOUT_MILLIS = 1000;

@@ -8,8 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import edu.cmu.ri.createlab.xml.XmlHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.gpx.GPXEventHandlerAdapter;
 import org.chargecar.gpx.GPXFile;
 import org.chargecar.gpx.TrackPoint;
@@ -26,7 +25,7 @@ import org.jdom.JDOMException;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class MotionXGPSRawFileConverter
    {
-   private static final Log LOG = LogFactory.getLog(MotionXGPSRawFileConverter.class);
+   private static final Logger LOG = Logger.getLogger(MotionXGPSRawFileConverter.class);
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(MotionXGPSRawFileConverter.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
 

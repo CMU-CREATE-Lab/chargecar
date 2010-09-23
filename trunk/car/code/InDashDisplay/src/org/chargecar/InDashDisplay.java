@@ -23,8 +23,7 @@ import edu.cmu.ri.createlab.userinterface.component.Spinner;
 import edu.cmu.ri.createlab.userinterface.util.DialogHelper;
 import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.gps.GPSEventListener;
 import org.chargecar.gps.nmea.NMEAReader;
 import org.chargecar.sensorboard.EfficiencyController;
@@ -47,7 +46,7 @@ import org.jdesktop.layout.GroupLayout;
  */
 public class InDashDisplay
    {
-   private static final Log LOG = LogFactory.getLog(InDashDisplay.class);
+   private static final Logger LOG = Logger.getLogger(InDashDisplay.class);
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(InDashDisplay.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
 

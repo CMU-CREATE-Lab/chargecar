@@ -2,8 +2,7 @@ package org.chargecar;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.ned.ElevationDatasetException;
 import org.chargecar.ned.ElevationMapRenderingFilter;
 import org.chargecar.ned.ElevationRangeFilter;
@@ -16,7 +15,7 @@ import org.chargecar.ned.gridfloat.GridFloatDataFileProcessor;
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public final class ElevationMapGenerator
    {
-   private static final Log LOG = LogFactory.getLog(ElevationMapGenerator.class);
+   private static final Logger LOG = Logger.getLogger(ElevationMapGenerator.class);
 
    public static void main(final String[] args) throws IOException, ElevationDatasetException
       {

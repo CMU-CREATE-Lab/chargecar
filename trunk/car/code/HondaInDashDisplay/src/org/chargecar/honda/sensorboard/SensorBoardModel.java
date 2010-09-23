@@ -1,7 +1,6 @@
 package org.chargecar.honda.sensorboard;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceModel;
 
 /**
@@ -13,7 +12,7 @@ import org.chargecar.honda.StreamingSerialPortDeviceModel;
  */
 public class SensorBoardModel extends StreamingSerialPortDeviceModel<SensorBoardEvent, SensorBoardEvent>
    {
-   private static final Log LOG = LogFactory.getLog(SensorBoardModel.class);
+   private static final Logger LOG = Logger.getLogger(SensorBoardModel.class);
 
    private final byte[] dataSynchronizationLock = new byte[0];
 

@@ -1,14 +1,13 @@
 package org.chargecar.gpx;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public class MinMaxLatLongCalculator extends GPXEventHandlerAdapter
    {
-   private static final Log LOG = LogFactory.getLog(MinMaxLatLongCalculator.class);
+   private static final Logger LOG = Logger.getLogger(MinMaxLatLongCalculator.class);
 
    private double minLongitude = Double.POSITIVE_INFINITY;
    private double maxLongitude = Double.NEGATIVE_INFINITY;

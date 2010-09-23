@@ -1,8 +1,7 @@
 package org.chargecar.gpx;
 
 import java.util.Date;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -13,7 +12,7 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class UTCHelper
    {
-   private static final Log LOG = LogFactory.getLog(UTCHelper.class);
+   private static final Logger LOG = Logger.getLogger(UTCHelper.class);
 
    public static final DateTimeFormatter ISO_DATE_TIME_FORMATTER = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.UTC);
    public static final DateTimeFormatter ISO_DATE_TIME_FORMATTER_FRACTIONAL_SECONDS = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);

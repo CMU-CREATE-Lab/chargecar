@@ -49,11 +49,11 @@ final class MinMaxGauge<T> extends JPanel
     * thread.
     */
    void setValues(final T value, final T min, final T max)
-      {
-      setValue(value, valueLabel);
-      setValue(min, minValueLabel);
-      setValue(max, maxValueLabel);
-      }
+   {
+   setValue(value, valueLabel);
+   setValue(min, minValueLabel);
+   setValue(max, maxValueLabel);
+   }
 
    private void setValue(final T value, final JLabel label)
       {

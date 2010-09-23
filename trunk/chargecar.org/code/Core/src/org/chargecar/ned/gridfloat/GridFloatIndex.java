@@ -10,15 +10,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PropertyResourceBundle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public final class GridFloatIndex
    {
-   private static final Log LOG = LogFactory.getLog(GridFloatIndex.class);
+   private static final Logger LOG = Logger.getLogger(GridFloatIndex.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(GridFloatIndex.class.getName());
    private static final String DATABASE_CONNECTION_URL = RESOURCES.getString("database.connection.url");
@@ -34,7 +34,7 @@ public final class GridFloatIndex
          }
       catch (ClassNotFoundException e)
          {
-         if (LOG.isErrorEnabled())
+         if (LOG.isEnabledFor(Level.ERROR))
             {
             LOG.error("ClassNotFoundException while trying to load database driver [" + JDBC_DRIVER + "]", e);
             }
@@ -88,7 +88,7 @@ public final class GridFloatIndex
             }
          else
             {
-            if (LOG.isErrorEnabled())
+            if (LOG.isEnabledFor(Level.ERROR))
                {
                LOG.error("Insert of GridFloatDataFile failed [" + gridFloatDataFile + "]");
                }
@@ -160,7 +160,7 @@ public final class GridFloatIndex
                }
             catch (IOException e)
                {
-               if (LOG.isErrorEnabled())
+               if (LOG.isEnabledFor(Level.ERROR))
                   {
                   LOG.error("IOException while trying to create GridFloatDataFile for header file [" + headerFilePath + "]", e);
                   }

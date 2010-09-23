@@ -1,7 +1,6 @@
 package org.chargecar.honda.bms;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 
 /**
@@ -13,7 +12,7 @@ import org.chargecar.honda.StreamingSerialPortDeviceController;
  */
 public final class BMSController extends StreamingSerialPortDeviceController<BMSEvent, BMSAndEnergy>
    {
-   private static final Log LOG = LogFactory.getLog(BMSController.class);
+   private static final Logger LOG = Logger.getLogger(BMSController.class);
 
    private final BMSModel model;
 
