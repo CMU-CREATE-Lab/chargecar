@@ -257,10 +257,10 @@
             <fileset file="${log4j.jar}"/>
             <fileset file="${log4j-extras.jar}"/>
             <fileset file="${rxtx.jar}"/>
-            <fileset file="${rxtx-macos.native}"/>
+            <fileset file="${rxtx-macos.native1}"/>
+            <fileset file="${rxtx-macos.native2}"/>
             <fileset file="${rxtx-linux.native}"/>
-            <fileset file="${rxtx-windows.native1}"/>
-            <fileset file="${rxtx-windows.native2}"/>
+            <fileset file="${rxtx-windows.native}"/>
             <additional-files-to-copy/>
          </copy>
 
