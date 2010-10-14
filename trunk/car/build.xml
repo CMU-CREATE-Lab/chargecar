@@ -260,7 +260,8 @@
             <fileset file="${rxtx-macos.native1}"/>
             <fileset file="${rxtx-macos.native2}"/>
             <fileset file="${rxtx-linux.native}"/>
-            <fileset file="${rxtx-windows.native}"/>
+            <fileset file="${rxtx-windows.native1}"/>
+            <fileset file="${rxtx-windows.native2}"/>
             <additional-files-to-copy/>
          </copy>
 
