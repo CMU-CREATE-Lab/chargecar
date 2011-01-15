@@ -231,51 +231,51 @@ public final class StandardFileChooser implements FileChooser
 
    /** Retrieves the value from the specified text field as a {@link File}; returns <code>null</code> if the file does not exist. */
    private File getTextFieldValueAsFile(final JTextField textField)
-   {
-   final String filePath = getTextFieldValueAsString(textField);
-   if (filePath != null)
       {
-      final File file = new File(filePath);
-      if (file.exists())
+      final String filePath = getTextFieldValueAsString(textField);
+      if (filePath != null)
          {
-         return file;
+         final File file = new File(filePath);
+         if (file.exists())
+            {
+            return file;
+            }
          }
+      return null;
       }
-   return null;
-   }
 
    /** Retrieves the value from the specified text field as a {@link String}. */
    @SuppressWarnings({"UnusedCatchParameter"})
    private String getTextFieldValueAsString(final JTextField textField)
-   {
-   final String text;
-   if (SwingUtilities.isEventDispatchThread())
       {
-      text = textField.getText();
-      }
-   else
-      {
-      final String[] textFieldValue = new String[1];
-      try
+      final String text;
+      if (SwingUtilities.isEventDispatchThread())
          {
-         SwingUtilities.invokeAndWait(
-               new Runnable()
-               {
-               public void run()
+         text = textField.getText();
+         }
+      else
+         {
+         final String[] textFieldValue = new String[1];
+         try
+            {
+            SwingUtilities.invokeAndWait(
+                  new Runnable()
                   {
-                  textFieldValue[0] = textField.getText();
-                  }
-               });
-         }
-      catch (Exception e)
-         {
-         LOG.error("Exception while getting the value from text field.  Returning null instead.");
-         textFieldValue[0] = null;
+                  public void run()
+                     {
+                     textFieldValue[0] = textField.getText();
+                     }
+                  });
+            }
+         catch (Exception e)
+            {
+            LOG.error("Exception while getting the value from text field.  Returning null instead.");
+            textFieldValue[0] = null;
+            }
+
+         text = textFieldValue[0];
          }
 
-      text = textFieldValue[0];
+      return (text != null) ? text.trim() : null;
       }
-
-   return (text != null) ? text.trim() : null;
-   }
    }

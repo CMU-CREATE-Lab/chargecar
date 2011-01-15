@@ -34,56 +34,56 @@ public final class GPXElevationLookupTool
     * elevation in the GPX is used.
     */
    public Element convertElevationsUsingLocalData(final File gpx) throws IOException, JDOMException, ElevationDatasetException
-   {
-   return convertElevationsUsingLocalData(new GPXReader(gpx));
-   }
+      {
+      return convertElevationsUsingLocalData(new GPXReader(gpx));
+      }
 
    /**
     * Returns a new GPX contain elevations obtained from local data.  If an elevation cannot be obtained, the original
     * elevation in the GPX is used.
     */
    public Element convertElevationsUsingLocalData(final Element gpx) throws IOException, JDOMException, ElevationDatasetException
-   {
-   return convertElevationsUsingLocalData(new GPXReader(gpx));
-   }
+      {
+      return convertElevationsUsingLocalData(new GPXReader(gpx));
+      }
 
    /**
     * Returns a new GPX contain elevations obtained from online data.  Request are throttled to occur at 50 ms
     * intervals.  If an elevation cannot be obtained, the original elevation in the GPX is used.
     */
    public Element convertElevationsUsingOnlineData(final File gpx) throws IOException, JDOMException, ElevationDatasetException
-   {
-   return convertElevationsUsingOnlineData(new GPXReader(gpx));
-   }
+      {
+      return convertElevationsUsingOnlineData(new GPXReader(gpx));
+      }
 
    /**
     * Returns a new GPX contain elevations obtained from online data.  Request are throttled to occur at 50 ms
     * intervals.  If an elevation cannot be obtained, the original elevation in the GPX is used.
     */
    public Element convertElevationsUsingOnlineData(final Element gpx) throws IOException, JDOMException, ElevationDatasetException
-   {
-   return convertElevationsUsingOnlineData(new GPXReader(gpx));
-   }
+      {
+      return convertElevationsUsingOnlineData(new GPXReader(gpx));
+      }
 
    /**
     * Returns a new GPX contain elevations obtained from local data.  If an elevation cannot be obtained, the original
     * elevation in the GPX is used.
     */
    private Element convertElevationsUsingLocalData(final GPXReader gpxReader) throws IOException, JDOMException, ElevationDatasetException
-   {
-   // add the event handler which computes the lat/long ranges
-   final MinMaxLatLongCalculator minMaxLatLongCalculator = new MinMaxLatLongCalculator();
-   gpxReader.addGPXEventHandler(minMaxLatLongCalculator);
+      {
+      // add the event handler which computes the lat/long ranges
+      final MinMaxLatLongCalculator minMaxLatLongCalculator = new MinMaxLatLongCalculator();
+      gpxReader.addGPXEventHandler(minMaxLatLongCalculator);
 
-   // read the GPX so we can get the lat/long ranges
-   gpxReader.read();
+      // read the GPX so we can get the lat/long ranges
+      gpxReader.read();
 
-   final ElevationDataset elevationDataset = new GridFloatDataset(minMaxLatLongCalculator.getMinLongitude(),
-                                                                  minMaxLatLongCalculator.getMaxLongitude(),
-                                                                  minMaxLatLongCalculator.getMinLatitude(),
-                                                                  minMaxLatLongCalculator.getMaxLatitude());
-   return convertElevations(gpxReader, elevationDataset);
-   }
+      final ElevationDataset elevationDataset = new GridFloatDataset(minMaxLatLongCalculator.getMinLongitude(),
+                                                                     minMaxLatLongCalculator.getMaxLongitude(),
+                                                                     minMaxLatLongCalculator.getMinLatitude(),
+                                                                     minMaxLatLongCalculator.getMaxLatitude());
+      return convertElevations(gpxReader, elevationDataset);
+      }
 
    private Element convertElevationsUsingOnlineData(final GPXReader gpxReader) throws IOException, JDOMException, ElevationDatasetException
       {

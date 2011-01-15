@@ -60,23 +60,23 @@ public abstract class StreamingSerialPortDeviceModel<T, U> extends Model<T, U> i
     * performed in a separate thread so that control can quickly be returned to the caller.
     */
    public final synchronized void setConnectionState(final boolean isConnected)
-   {
-   this.isConnected = isConnected;
-   if (!connectionStateListeners.isEmpty())
       {
-      executorService.execute(
-            new Runnable()
-            {
-            public void run()
+      this.isConnected = isConnected;
+      if (!connectionStateListeners.isEmpty())
+         {
+         executorService.execute(
+               new Runnable()
                {
-               for (final StreamingSerialPortDeviceConnectionStateListener listener : connectionStateListeners)
+               public void run()
                   {
-                  listener.handleConnectionStateChange(isConnected);
+                  for (final StreamingSerialPortDeviceConnectionStateListener listener : connectionStateListeners)
+                     {
+                     listener.handleConnectionStateChange(isConnected);
+                     }
                   }
-               }
-            });
+               });
+         }
       }
-   }
 
    public final synchronized boolean isConnected()
       {
@@ -88,24 +88,24 @@ public abstract class StreamingSerialPortDeviceModel<T, U> extends Model<T, U> i
     * performed in a separate thread so that control can quickly be returned to the caller.
     */
    public final synchronized void setReadingState(final boolean isReading)
-   {
-   this.isReading = isReading;
-
-   if (!readingStateListeners.isEmpty())
       {
-      executorService.execute(
-            new Runnable()
-            {
-            public void run()
+      this.isReading = isReading;
+
+      if (!readingStateListeners.isEmpty())
+         {
+         executorService.execute(
+               new Runnable()
                {
-               for (final StreamingSerialPortDeviceReadingStateListener listener : readingStateListeners)
+               public void run()
                   {
-                  listener.handleReadingStateChange(isReading);
+                  for (final StreamingSerialPortDeviceReadingStateListener listener : readingStateListeners)
+                     {
+                     listener.handleReadingStateChange(isReading);
+                     }
                   }
-               }
-            });
+               });
+         }
       }
-   }
 
    public final synchronized boolean isReading()
       {

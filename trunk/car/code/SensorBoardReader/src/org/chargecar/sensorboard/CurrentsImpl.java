@@ -22,15 +22,15 @@ public final class CurrentsImpl extends SensorBoardDataImpl implements Currents
     * Copy constructor
     */
    public CurrentsImpl(final Currents currents)
-   {
-   batteryCurrent = currents.getBatteryCurrent();
-   capacitorCurrent = currents.getCapacitorCurrent();
-   accessoryCurrent = currents.getAccessoryCurrent();
-   for (int i = 0; i < motorCurrents.length; i++)
       {
-      motorCurrents[i] = currents.getMotorCurrent(i);
+      batteryCurrent = currents.getBatteryCurrent();
+      capacitorCurrent = currents.getCapacitorCurrent();
+      accessoryCurrent = currents.getAccessoryCurrent();
+      for (int i = 0; i < motorCurrents.length; i++)
+         {
+         motorCurrents[i] = currents.getMotorCurrent(i);
+         }
       }
-   }
 
    public CurrentsImpl(final String[] rawValues)
       {

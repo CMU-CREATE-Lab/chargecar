@@ -15,17 +15,17 @@ public class GPSCoordinate
     * <code>null</code> values.
     */
    public GPSCoordinate(final String longitude, final String latitude)
-   {
-   this.longitude = StringUtils.convertStringToDouble(longitude);
-   this.latitude = StringUtils.convertStringToDouble(latitude);
-   }
+      {
+      this.longitude = StringUtils.convertStringToDouble(longitude);
+      this.latitude = StringUtils.convertStringToDouble(latitude);
+      }
 
    /** Creates a GPSCoordinate representing the given values. */
    public GPSCoordinate(final Double longitude, final Double latitude)
-   {
-   this.longitude = longitude;
-   this.latitude = latitude;
-   }
+      {
+      this.longitude = longitude;
+      this.latitude = latitude;
+      }
 
    public Double getLongitude()
       {
@@ -42,9 +42,9 @@ public class GPSCoordinate
     * otherwise.
     */
    public boolean isNull()
-   {
-   return latitude == null || longitude == null;
-   }
+      {
+      return latitude == null || longitude == null;
+      }
 
    @Override
    public boolean equals(final Object o)

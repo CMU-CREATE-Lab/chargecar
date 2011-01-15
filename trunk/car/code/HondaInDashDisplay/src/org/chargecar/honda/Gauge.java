@@ -39,25 +39,25 @@ public final class Gauge<T> extends JPanel
     * thread.
     */
    public void setValue(final T s)
-   {
-   setValue(s, Color.BLACK);
-   }
+      {
+      setValue(s, Color.BLACK);
+      }
 
    /**
     * Sets the gauge's value using the string format given to the constructor.  Assumes it is being called in the GUI
     * thread.
     */
    public void setValue(final T s, final Color defaultColor)
-   {
-   if (s != null)
       {
-      value.setForeground(defaultColor);
-      value.setText(String.format(stringFormat, s));
+      if (s != null)
+         {
+         value.setForeground(defaultColor);
+         value.setText(String.format(stringFormat, s));
+         }
+      else
+         {
+         value.setForeground(HondaConstants.RED);
+         value.setText(HondaConstants.UNKNOWN_VALUE);
+         }
       }
-   else
-      {
-      value.setForeground(HondaConstants.RED);
-      value.setText(HondaConstants.UNKNOWN_VALUE);
-      }
-   }
    }

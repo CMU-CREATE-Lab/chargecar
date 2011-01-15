@@ -35,9 +35,9 @@ public abstract class StreamingSerialPortDeviceView<T> extends View<T> implement
     * Method for handling the reading state change, guaranteed to run in the GUI thread.  Does nothing by default.
     */
    protected void handleConnectionStateChangeInGUIThread(final boolean isConnected)
-   {
-   // do nothing
-   }
+      {
+      // do nothing
+      }
 
    public final void handleReadingStateChange(final boolean isReading)
       {
@@ -62,7 +62,7 @@ public abstract class StreamingSerialPortDeviceView<T> extends View<T> implement
     * Method for handling the reading state change, guaranteed to run in the GUI thread.  Does nothing by default.
     */
    protected void handleReadingStateChangeInGUIThread(final boolean isReading)
-   {
-   // do nothing
-   }
+      {
+      // do nothing
+      }
    }

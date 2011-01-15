@@ -45,68 +45,68 @@ public class SensorBoardProxy implements SerialDeviceProxy
     * @throws IllegalArgumentException if the <code>serialPortName</code> is <code>null</code>
     */
    public static SensorBoardProxy create(final String serialPortName)
-   {
-   // a little error checking...
-   if (serialPortName == null)
       {
-      throw new IllegalArgumentException("The serial port name may not be null");
-      }
-
-   // create the serial port configuration
-   final SerialIOConfiguration config = new SerialIOConfiguration(serialPortName,
-                                                                  BaudRate.BAUD_57600,
-                                                                  CharacterSize.EIGHT,
-                                                                  Parity.NONE,
-                                                                  StopBits.ONE,
-                                                                  FlowControl.NONE);
-
-   try
-      {
-      // create the serial port command queue
-      final SerialPortCommandExecutionQueue commandQueue = SerialPortCommandExecutionQueue.create(APPLICATION_NAME, config);
-
-      // see whether its creation was successful
-      if (commandQueue == null)
+      // a little error checking...
+      if (serialPortName == null)
          {
-         if (LOG.isEnabledFor(Level.ERROR))
-            {
-            LOG.error("Failed to open serial port '" + serialPortName + "'");
-            }
+         throw new IllegalArgumentException("The serial port name may not be null");
          }
-      else
+
+      // create the serial port configuration
+      final SerialIOConfiguration config = new SerialIOConfiguration(serialPortName,
+                                                                     BaudRate.BAUD_57600,
+                                                                     CharacterSize.EIGHT,
+                                                                     Parity.NONE,
+                                                                     StopBits.ONE,
+                                                                     FlowControl.NONE);
+
+      try
          {
-         if (LOG.isDebugEnabled())
+         // create the serial port command queue
+         final SerialPortCommandExecutionQueue commandQueue = SerialPortCommandExecutionQueue.create(APPLICATION_NAME, config);
+
+         // see whether its creation was successful
+         if (commandQueue == null)
             {
-            LOG.debug("Serial port '" + serialPortName + "' opened.");
-            }
-
-         // now try to do the handshake with the sensor board to establish communication
-         final boolean wasHandshakeSuccessful = commandQueue.executeAndReturnStatus(new HandshakeCommandStrategy());
-
-         // see if the handshake was a success
-         if (wasHandshakeSuccessful)
-            {
-            LOG.info("SensorBoard handshake successful!");
-
-            // now create and return the proxy
-            return new SensorBoardProxy(commandQueue);
+            if (LOG.isEnabledFor(Level.ERROR))
+               {
+               LOG.error("Failed to open serial port '" + serialPortName + "'");
+               }
             }
          else
             {
-            LOG.error("Failed to handshake with sensor board");
+            if (LOG.isDebugEnabled())
+               {
+               LOG.debug("Serial port '" + serialPortName + "' opened.");
+               }
+
+            // now try to do the handshake with the sensor board to establish communication
+            final boolean wasHandshakeSuccessful = commandQueue.executeAndReturnStatus(new HandshakeCommandStrategy());
+
+            // see if the handshake was a success
+            if (wasHandshakeSuccessful)
+               {
+               LOG.info("SensorBoard handshake successful!");
+
+               // now create and return the proxy
+               return new SensorBoardProxy(commandQueue);
+               }
+            else
+               {
+               LOG.error("Failed to handshake with sensor board");
+               }
+
+            // the handshake failed, so shutdown the command queue to release the serial port
+            commandQueue.shutdown();
             }
-
-         // the handshake failed, so shutdown the command queue to release the serial port
-         commandQueue.shutdown();
          }
-      }
-   catch (Exception e)
-      {
-      LOG.error("Exception while trying to create the SensorBoardProxy", e);
-      }
+      catch (Exception e)
+         {
+         LOG.error("Exception while trying to create the SensorBoardProxy", e);
+         }
 
-   return null;
-   }
+      return null;
+      }
 
    private final SerialPortCommandExecutionQueue commandQueue;
    private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
@@ -151,11 +151,11 @@ public class SensorBoardProxy implements SerialDeviceProxy
     * Returns the speed; returns <code>null</code> if an error occurred while trying to read the value.
     */
    public Speed getSpeed()
-   {
-   final SerialPortCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
+      {
+      final SerialPortCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
 
-   return getSpeedCommandStrategy.convertResponse(response);
-   }
+      return getSpeedCommandStrategy.convertResponse(response);
+      }
 
    public Temperatures getTemperatures()
       {
