@@ -25,9 +25,9 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
     * @see CreateLabSerialDeviceCommandStrategy#DEFAULT_MAX_NUMBER_OF_RETRIES
     */
    protected ChargeCarSerialDeviceReturnValueCommandStrategy()
-   {
-   super();
-   }
+      {
+      super();
+      }
 
    /**
     * Creates a <code>ChargeCarSerialDeviceReturnValueCommandStrategy</code> using the given values for read timeout,
@@ -39,9 +39,9 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
     * @see CreateLabSerialDeviceCommandStrategy#DEFAULT_MAX_NUMBER_OF_RETRIES
     */
    protected ChargeCarSerialDeviceReturnValueCommandStrategy(final int readTimeoutMillis, final int slurpTimeoutMillis, final int maxNumberOfRetries)
-   {
-   super(readTimeoutMillis, slurpTimeoutMillis, maxNumberOfRetries);
-   }
+      {
+      super(readTimeoutMillis, slurpTimeoutMillis, maxNumberOfRetries);
+      }
 
    public final E convertResponse(final SerialPortCommandResponse response)
       {

@@ -66,22 +66,22 @@ public final class DefaultStreamingSerialPortSentenceReadingStrategy implements 
     * an {@link IOException} if the end of stream is reached while trying to read the data.
     */
    private Byte readByte() throws IOException
-   {
-   if (serialIOManager.getSerialPortIoHelper().isDataAvailable())
       {
-      final int b = serialIOManager.getSerialPortIoHelper().read();
+      if (serialIOManager.getSerialPortIoHelper().isDataAvailable())
+         {
+         final int b = serialIOManager.getSerialPortIoHelper().read();
 
-      if (b >= 0)
-         {
-         return (byte)b;
+         if (b >= 0)
+            {
+            return (byte)b;
+            }
+         else
+            {
+            LOG.error("DefaultStreamingSerialPortSentenceReadingStrategy.readByte(): End of stream reached while trying to read the data");
+            throw new IOException("End of stream reached while trying to read the data");
+            }
          }
-      else
-         {
-         LOG.error("DefaultStreamingSerialPortSentenceReadingStrategy.readByte(): End of stream reached while trying to read the data");
-         throw new IOException("End of stream reached while trying to read the data");
-         }
+
+      return null;
       }
-
-   return null;
-   }
    }
