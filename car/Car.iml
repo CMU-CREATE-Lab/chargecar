@@ -7,11 +7,17 @@
       <sourceFolder url="file://$MODULE_DIR$/code/InDashDisplay/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/code/InDashDisplay/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/code/HondaInDashDisplay/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/LCDDisplay/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/code/LCDDisplayCore/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/code/HondaInDashDisplay/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/HondaInDashDisplay/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/build-test" />
       <excludeFolder url="file://$MODULE_DIR$/code/InDashDisplay/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/code/LCDDisplay/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/LCDDisplay/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/code/LCDDisplayCore/build" />
+      <excludeFolder url="file://$MODULE_DIR$/code/LCDDisplayCore/dist" />
       <excludeFolder url="file://$MODULE_DIR$/code/SensorBoardReader/build" />
       <excludeFolder url="file://$MODULE_DIR$/code/SensorBoardReader/dist" />
     </content>
@@ -59,6 +65,28 @@
         <SOURCES>
           <root url="jar://$MODULE_DIR$/lib/create-lab-commons-util/create-lab-commons-util-src.jar!/" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="CREATE Lab Commons XML">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-xml/create-lab-commons-xml.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-xml/create-lab-commons-xml-src.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="JDOM">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jdom/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://www.jdom.org/docs/apidocs" />
+        </JAVADOC>
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">

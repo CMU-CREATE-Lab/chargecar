@@ -19,6 +19,29 @@
       <pathelement path="${swing-layout.jar}"/>
    </path>
 
+   <path id="lcd-display-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${lcd-display-core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${log4j-extras.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
+   </path>
+
+   <path id="lcd-display-core-classpath">
+      <!-- other classes within this project -->
+
+      <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${log4j-extras.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
+   </path>
+
    <path id="in-dash-display-classpath">
       <!-- other classes within this project -->
       <pathelement path="${sensor-board-reader.build.dir}"/>
@@ -89,12 +112,24 @@
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
    <target name="clean" depends="clean-honda-in-dash-display,
+                                 clean-lcd-display,
+                                 clean-lcd-display-core,
                                  clean-in-dash-display,
                                  clean-sensor-board-reader" description="clean up everything"/>
 
    <target name="clean-honda-in-dash-display" description="clean up honda-in-dash-display">
       <delete dir="${honda-in-dash-display.build.dir}"/>
       <delete dir="${honda-in-dash-display.dist.dir}"/>
+   </target>
+
+   <target name="clean-lcd-display" description="clean up lcd-display">
+      <delete dir="${lcd-display.build.dir}"/>
+      <delete dir="${lcd-display.dist.dir}"/>
+   </target>
+
+   <target name="clean-lcd-display-core" description="clean up lcd-display-core">
+      <delete dir="${lcd-display-core.build.dir}"/>
+      <delete dir="${lcd-display-core.dist.dir}"/>
    </target>
 
    <target name="clean-in-dash-display" description="clean up in-dash-display">
@@ -108,7 +143,11 @@
       <delete dir="${sensor-board-reader.dist.dir}"/>
    </target>
 
-   <target name="build" depends="build-honda-in-dash-display, build-sensor-board-reader, build-in-dash-display" description="builds the source code" unless="build-is-complete">
+   <target name="build" depends="build-honda-in-dash-display,
+                                 build-lcd-display-core,
+                                 build-lcd-display,
+                                 build-sensor-board-reader,
+                                 build-in-dash-display" description="builds the source code" unless="build-is-complete">
       <property name="build-is-complete" value="true"/>
    </target>
 
@@ -118,6 +157,22 @@
                                        classpath-ref="honda-in-dash-display-classpath"/>
 
       <property name="build-honda-in-dash-display-is-complete" value="true"/>
+   </target>
+
+   <target name="build-lcd-display" depends="build-lcd-display-core" description="compiles the java source for lcd-display" unless="build-lcd-display-is-complete">
+      <compile-code-and-copy-resources src.dir="${lcd-display.src.dir}"
+                                       build.dir="${lcd-display.build.dir}"
+                                       classpath-ref="lcd-display-classpath"/>
+
+      <property name="build-lcd-display-is-complete" value="true"/>
+   </target>
+
+   <target name="build-lcd-display-core" description="compiles the java source for lcd-display-core" unless="build-lcd-display-core-is-complete">
+      <compile-code-and-copy-resources src.dir="${lcd-display-core.src.dir}"
+                                       build.dir="${lcd-display-core.build.dir}"
+                                       classpath-ref="lcd-display-core-classpath"/>
+
+      <property name="build-lcd-display-core-is-complete" value="true"/>
    </target>
 
    <target name="build-in-dash-display" depends="build-sensor-board-reader" description="compiles the java source for in-dash-display" unless="build-in-dash-display-is-complete">
@@ -150,7 +205,11 @@
       <property name="build-sensor-board-reader-is-complete" value="true"/>
    </target>
 
-   <target name="dist" depends="dist-honda-in-dash-display, dist-sensor-board-reader, dist-in-dash-display" description="builds the project" unless="dist-is-complete">
+   <target name="dist" depends="dist-honda-in-dash-display,
+                                dist-lcd-display-core,
+                                dist-lcd-display,
+                                dist-sensor-board-reader,
+                                dist-in-dash-display" description="builds the project" unless="dist-is-complete">
       <property name="dist-is-complete" value="true"/>
    </target>
 
@@ -170,6 +229,34 @@
       </create-dist>
 
       <property name="dist-honda-in-dash-display-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-lcd-display-core" depends="build-lcd-display-core" description="builds the lcd-display-core" unless="dist-lcd-display-core-is-complete">
+      <create-dist component.name="lcd-display-core">
+         <additional-files-to-copy>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${jdom.jar}"/>
+            <fileset file="${swing-layout.jar}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-lcd-display-core-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-lcd-display" depends="dist-lcd-display-core, build-lcd-display" description="builds the lcd-display" unless="dist-lcd-display-is-complete">
+      <create-dist component.name="lcd-display">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.lcddisplay.demo.LCDDemo"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${lcd-display-core.dist.dir}/${lcd-display-core.jar.filename}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${jdom.jar}"/>
+            <fileset file="${swing-layout.jar}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-lcd-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-in-dash-display" depends="dist-sensor-board-reader, build-in-dash-display" description="builds the in-dash-display" unless="dist-in-dash-display-is-complete">
