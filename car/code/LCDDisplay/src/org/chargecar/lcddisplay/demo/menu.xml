@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE menu PUBLIC "-//CREATE Lab//Menu//EN" "http://www.createlab.ri.cmu.edu/dtd/terk/menu/menu.dtd">
-<!--
-0123456789012345
-   Welcome to      ChargeCar!
--->
+
 <menu welcome-text="   Welcome to      ChargeCar!">
    <item text="Audio">
       <item text="Set Volume">
@@ -15,10 +12,11 @@
          <item text="">
             <implementation-class name="org.chargecar.lcddisplay.demo.menu.action.ToggleAudioAlertsMenuItemAction">
                <property key="action.prompt">Enable Alerts?</property>
-               <property key="choice.option1">Yes</property>
+               <property key="action.cancel">Cancelled!</property>
+               <property key="choice.option1">Yes     </property>
                <property key="choice.option2">No</property>
-               <property key="action.option1">Audio alerts enabled.</property>
-               <property key="action.option2">Audio alerts disabled.</property>
+               <property key="action.option1">Audio alerts    enabled.</property>
+               <property key="action.option2">Audio alerts    disabled.</property>
             </implementation-class>
          </item>
       </item>
@@ -28,7 +26,8 @@
          <item text="">
             <implementation-class name="org.chargecar.lcddisplay.demo.menu.action.ResetAllMenuItemAction">
                <property key="action.prompt">Reset All?</property>
-               <property key="choice.option1">OK</property>
+               <property key="action.cancel">Cancelled!</property>
+               <property key="choice.option1">OK  </property>
                <property key="choice.option2">Cancel</property>
                <property key="action.option1">Reset to factorydefaults</property>
                <property key="action.option2">Cancelled!</property>
