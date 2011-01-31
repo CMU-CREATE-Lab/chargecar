@@ -24,10 +24,10 @@ public class OmnipotentPolicy implements Policy {
 	int timesum = 0;
 	for(PointFeatures pf : points){
 	    sum += pf.getPowerDemand();
-	    timesum += pf.getPeriodMS()/1000;
+	    timesum += pf.getPeriodMS();
 	    cumulativeSum.add(sum);
 	    timeStamps.add(timesum);
-	    rates.add(sum/timesum);
+	    rates.add(1000*sum/timesum);
 	}
 	int startInd = 0;
 	while(startInd < rates.size()){
@@ -47,7 +47,7 @@ public class OmnipotentPolicy implements Policy {
 	    for(int i = endInd+1;i<rates.size();i++){
 		cumulativeSum.set(i, cumulativeSum.get(i)-sumsub);
 		timeStamps.set(i, timeStamps.get(i)-timesub);
-		rates.set(i,cumulativeSum.get(i)/timeStamps.get(i));
+		rates.set(i,1000*cumulativeSum.get(i)/timeStamps.get(i));
 	    }
 	    startInd = endInd +1;
 	}

@@ -7,8 +7,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.chargecar.algodev.OmnipotentPolicy;
 import org.chargecar.prize.battery.BatteryModel;
-import org.chargecar.prize.battery.SimpleBattery;
+import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
 import org.chargecar.prize.policies.Policy;
@@ -38,7 +39,7 @@ public class SimulatorBosch {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 96;
     static double batteryWhr = 50000;
-    static double capWhr = 1000;
+    static double capWhr = 1e10;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -60,6 +61,7 @@ public class SimulatorBosch {
 	List<File> csvFiles = getCSVFiles(folder);
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
+	policies.add(new OmnipotentPolicy());
 	
 	// load policies specified on the command-line, if any
 	if (args.length > 1) {
@@ -120,7 +122,7 @@ public class SimulatorBosch {
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr, systemVoltage);
+	BatteryModel tripBattery = new LiFePo4(batteryWhr, batteryWhr, systemVoltage);
 	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
@@ -130,6 +132,9 @@ public class SimulatorBosch {
 	    BatteryModel battery, BatteryModel cap) throws PowerFlowException {
 	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
 		.createClone());
+	if(policy.getName().equals("Omnipotent Policy")){
+	   ((OmnipotentPolicy)policy).parseTrip(trip);
+	}
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
 	    pf.adjust(point.getPowerDemand());
