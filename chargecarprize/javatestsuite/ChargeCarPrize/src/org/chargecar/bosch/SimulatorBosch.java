@@ -39,7 +39,7 @@ public class SimulatorBosch {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 96;
     static double batteryWhr = 50000;
-    static double capWhr = 1e10;
+    static double capWhr = 80;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -132,7 +132,7 @@ public class SimulatorBosch {
 	    BatteryModel battery, BatteryModel cap) throws PowerFlowException {
 	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
 		.createClone());
-	if(policy.getName().equals("Omnipotent Policy")){
+	if(policy.getName().equals("Omniscient Policy")){
 	   ((OmniscientPolicy)policy).parseTrip(trip);
 	}
 	for (PointFeatures point : trip.getPoints()) {

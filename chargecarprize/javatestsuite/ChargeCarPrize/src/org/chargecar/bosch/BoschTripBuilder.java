@@ -102,7 +102,7 @@ public class BoschTripBuilder {
 	    powerDemands.add(pwr * 1000.0);// convert back to watts
 	    
 	}
-	System.out.println("Times: "+times.size()+" Powers: "+powerDemands.size()+" Speeds: "+speeds.size()+" Accelerations: "+accelerations.size());
+	//System.out.println("Times: "+times.size()+" Powers: "+powerDemands.size()+" Speeds: "+speeds.size()+" Accelerations: "+accelerations.size());
 	for (int i = 1; i < times.size(); i++) {
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(0, 0, 0, 0.0, 0, accelerations.get(i), speeds.get(i), powerDemands.get(i), periodMS, times.get(i - 1)));
