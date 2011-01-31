@@ -18,10 +18,10 @@ import org.chargecar.prize.util.TripFeatures;
  * @author Alex Styler
  */
 
-public class SpeedPolicy implements Policy {
+public class SpeedPolicy2 implements Policy {
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
-    private String name = "Speed Trickle Policy";
+    private String name = "Speed Trickle Policy 2";
     
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 	    BatteryModel capacitorClone) {
@@ -34,10 +34,10 @@ public class SpeedPolicy implements Policy {
 	int periodMS = pf.getPeriodMS();
 	double speed = pf.getSpeed();
 	// leave more room in cap for regen braking from higher speeds
-	double targetCharge = modelCap.getMaxCharge() - 2.27*speed;
+	double targetCharge = modelCap.getMaxCharge() - 1.7*speed;
 	double minCapCurrent = modelCap.getMinPower(periodMS);
 	double maxCapCurrent = modelCap.getMaxPower(periodMS);
-	double defaultTrickleRate = -4500.0;
+	double defaultTrickleRate = -8000.0;
 	double capToMotorWatts = 0.0;
 	double batteryToCapWatts = 0.0;
 	double batteryToMotorWatts = 0.0;
