@@ -11,7 +11,7 @@ import org.chargecar.prize.util.PowerFlows;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 
-public class OmnipotentPolicy implements Policy {
+public class OmniscientPolicy implements Policy {
     List<Double> optimalBCFlow;
     int currentIndex;
     public void parseTrip(Trip t){
@@ -56,7 +56,7 @@ public class OmnipotentPolicy implements Policy {
     }
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
-    private String name = "Omnipotent Policy";
+    private String name = "Omniscient Policy";
     
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 	    BatteryModel capacitorClone) {

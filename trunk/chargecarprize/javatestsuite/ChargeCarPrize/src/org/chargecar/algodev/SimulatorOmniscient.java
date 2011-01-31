@@ -36,7 +36,7 @@ import org.chargecar.prize.visualization.Visualizer;
  * @author Alex Styler
  * 
  */
-public class SimulatorOmnipotent {
+public class SimulatorOmniscient {
     static Visualizer visualizer = new ConsoleWriter();
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 96;
@@ -64,7 +64,7 @@ public class SimulatorOmnipotent {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new OmnipotentPolicy());
+	policies.add(new OmniscientPolicy());
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -110,8 +110,8 @@ public class SimulatorOmnipotent {
 	    BatteryModel battery, BatteryModel cap) throws PowerFlowException {
 	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
 		.createClone());
-	if(policy.getName().equals("Omnipotent Policy")){
-	    ((OmnipotentPolicy)policy).parseTrip(trip);
+	if(policy.getName().equals("Omniscient Policy")){
+	    ((OmniscientPolicy)policy).parseTrip(trip);
 	}
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
