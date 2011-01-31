@@ -12,7 +12,6 @@ import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
 import org.chargecar.prize.policies.Policy;
-import org.chargecar.prize.util.GPXTripParser;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
 import org.chargecar.prize.util.PowerFlows;
@@ -36,8 +35,8 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorBosch {
     static Visualizer visualizer = new ConsoleWriter();
-    static Vehicle civic = new Vehicle(28933, 8.5470796, 0.6, 0.01);
-    static double systemVoltage = 738;
+    static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
+    static double systemVoltage = 96;
     static double batteryWhr = 50000;
     static double capWhr = 1000;
     /**
@@ -145,7 +144,7 @@ public class SimulatorBosch {
     private static List<Trip> parseTrips(File csvFile) throws IOException {
 	List<Trip> trips = new ArrayList<Trip>();
 	List<PointFeatures> tripPoints = CSVTripParser.parseTrips(csvFile, civic);
-	String driverName = "Bombardier";
+	String driverName = "Bosch ACC";
 	TripFeatures tf = new TripFeatures(driverName, civic, tripPoints.get(0));
 	trips.add(new Trip(tf, tripPoints));
 	return trips;
