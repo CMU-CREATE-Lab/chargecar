@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.OmnipotentPolicy;
+import org.chargecar.algodev.OmniscientPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -61,7 +61,7 @@ public class SimulatorBosch {
 	List<File> csvFiles = getCSVFiles(folder);
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new OmnipotentPolicy());
+	policies.add(new OmniscientPolicy());
 	
 	// load policies specified on the command-line, if any
 	if (args.length > 1) {
@@ -133,7 +133,7 @@ public class SimulatorBosch {
 	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
 		.createClone());
 	if(policy.getName().equals("Omnipotent Policy")){
-	   ((OmnipotentPolicy)policy).parseTrip(trip);
+	   ((OmniscientPolicy)policy).parseTrip(trip);
 	}
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
