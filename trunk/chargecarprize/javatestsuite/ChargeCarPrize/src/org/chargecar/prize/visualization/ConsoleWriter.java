@@ -24,7 +24,7 @@ public class ConsoleWriter implements Visualizer {
 	List<Double> currentSquaredSums = new ArrayList<Double>();
 	List<Double> chargeSpentSums = new ArrayList<Double>();
 	for (SimulationResults r : results) {
-	    tripsTested += r.getTripStrings().size();
+	    tripsTested = r.getTripStrings().size();
 	    double currentSquaredSum = 0.0;
 	    for (Double d : r.getBatteryCurrentSquaredIntegrals()) {
 		currentSquaredSum += d;

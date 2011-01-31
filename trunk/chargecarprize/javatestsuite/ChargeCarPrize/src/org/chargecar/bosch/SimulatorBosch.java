@@ -87,17 +87,17 @@ public class SimulatorBosch {
 	    results.add(new SimulationResults(p.getName()));
 	}
 	for (File tripFile : csvFiles) {
-	    List<Trip> tripsToTest = parseTrips(tripFile);
-	    for (Trip t : tripsToTest) {
+	    Trip tripToTest = parseTrip(tripFile);
+	    
 		for (int i = 0; i < policies.size(); i++) {
 		    try {
-			simulateTrip(policies.get(i), t, results.get(i));
+			simulateTrip(policies.get(i), tripToTest, results.get(i));
 			System.out.print('.');
 		    } catch (PowerFlowException e) {
 			e.printStackTrace();
 		    }
 		}
-	    }
+	    
 	}
 	System.out.println();
 	return results;
@@ -141,13 +141,11 @@ public class SimulatorBosch {
 	policy.endTrip();
     }
     
-    private static List<Trip> parseTrips(File csvFile) throws IOException {
-	List<Trip> trips = new ArrayList<Trip>();
+    private static Trip parseTrip(File csvFile) throws IOException {
 	List<PointFeatures> tripPoints = CSVTripParser.parseTrips(csvFile, civic);
 	String driverName = "Bosch ACC";
 	TripFeatures tf = new TripFeatures(driverName, civic, tripPoints.get(0));
-	trips.add(new Trip(tf, tripPoints));
-	return trips;
+	return new Trip(tf, tripPoints);
     }
     
     private static Policy instantiatePolicy(String policyClassName) {
