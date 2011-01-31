@@ -14,24 +14,19 @@ import org.chargecar.prize.util.Vehicle;
 public class CSVTripParser {
     static List<PointFeatures> parseTrips(File file, Vehicle vehicle) throws IOException{
 	List<Calendar> times = new ArrayList<Calendar>();
-	List<Double> xposs = new ArrayList<Double>();
-	List<Double> yposs = new ArrayList<Double>();
-	List<Double> eles = new ArrayList<Double>();
+	List<Double> vels = new ArrayList<Double>();
 	
 	BufferedReader bufRdr = new BufferedReader(new FileReader(file));	
 	String line = null;
 	while((line = bufRdr.readLine()) != null){
 		String[] vals = line.split(",");
 		double time_s = Double.parseDouble(vals[0]);
-		double xpos_m = Double.parseDouble(vals[1]);
-		double ele_m = Double.parseDouble(vals[2]);
+		double vel_ms = Double.parseDouble(vals[1]);
 		
-		xposs.add(xpos_m);
-		yposs.add(0.0);
-		eles.add(ele_m);
+		vels.add(vel_ms);
 		times.add(doubleSTimeToCalendar(time_s));
 	}	
-	return BoschTripBuilder.calculateTrip(times, xposs, yposs, eles, vehicle);
+	return BoschTripBuilder.calculateTrip(times, vels, vehicle);
     }
     
     private static Calendar doubleSTimeToCalendar(double sTime) {
