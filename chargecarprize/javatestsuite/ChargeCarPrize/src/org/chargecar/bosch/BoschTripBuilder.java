@@ -34,9 +34,6 @@ public class BoschTripBuilder {
     
     private static void runPowerModel(List<PointFeatures> tripPoints,
 	    List<Calendar> times, List<Double> vels, Vehicle vehicle) throws IOException {
-	FileWriter fstream = new FileWriter("C:/out.csv");
-	BufferedWriter out = new BufferedWriter(fstream);
-	
 	List<Double> speeds = new ArrayList<Double>();
 	List<Double> accelerations = new ArrayList<Double>();
 	List<Double> powerDemands = new ArrayList<Double>();
@@ -105,15 +102,13 @@ public class BoschTripBuilder {
 	    powerDemands.add(pwr * 1000.0);// convert back to watts
 	    
 	}
-	
+	System.out.println("Times: "+times.size()+" Powers: "+powerDemands.size()+" Speeds: "+speeds.size()+" Accelerations: "+accelerations.size());
 	for (int i = 1; i < times.size(); i++) {
-	    out.write(times.get(i-1).getTimeInMillis()+","+speeds.get(i)+","+accelerations.get(i)+","+powerDemands.get(i)/96+"\n");
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(i - 1).getTimeInMillis());
 	    tripPoints.add(new PointFeatures(0, 0, 0, 0.0, 0, accelerations.get(i), speeds.get(i), powerDemands.get(i), periodMS, times.get(i - 1)));
 	}
 	PointFeatures endPoint = new PointFeatures(0.0, 0.0, 0.0, 0.0,0.0, 0.0, 0.0, 0.0, 1000, times.get(times.size() - 1));
 	tripPoints.add(endPoint);
-	out.close();
 	
     }   
 }
