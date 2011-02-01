@@ -35,8 +35,8 @@ import org.chargecar.prize.visualization.Visualizer;
  * 
  */
 public class SimulatorBosch {
-    static Visualizer visualizer = new ConsoleWriter();
-    static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
+    static Visualizer visualizer = new BoschConsoleWriter();
+    static Vehicle boschSedan = new Vehicle(1.0*1250, 2.2, 0.31, 0.012);
     static double systemVoltage = 96;
     static double batteryWhr = 50000;
     static double capWhr = 80;
@@ -59,6 +59,9 @@ public class SimulatorBosch {
 	String csvFolder = args[0];
 	File folder = new File(csvFolder);
 	List<File> csvFiles = getCSVFiles(folder);
+	for(File f: csvFiles){
+	    System.out.println(f.getName());
+	}
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 	policies.add(new OmniscientPolicy());
@@ -147,9 +150,9 @@ public class SimulatorBosch {
     }
     
     private static Trip parseTrip(File csvFile) throws IOException {
-	List<PointFeatures> tripPoints = CSVTripParser.parseTrips(csvFile, civic);
+	List<PointFeatures> tripPoints = CSVTripParser.parseTrips(csvFile, boschSedan);
 	String driverName = "Bosch ACC";
-	TripFeatures tf = new TripFeatures(driverName, civic, tripPoints.get(0));
+	TripFeatures tf = new TripFeatures(driverName, boschSedan, tripPoints.get(0));
 	return new Trip(tf, tripPoints);
     }
     
