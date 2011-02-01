@@ -57,7 +57,7 @@ public class BoschTripBuilder {
 	
 	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
-	final double offset = -0.35;
+	final double offset = -.2;
 	final double ineff = 1 / 0.85;
 	final double regenEff = 0.35;
 	final double def_elevation = 0;//sealevel assumption 
