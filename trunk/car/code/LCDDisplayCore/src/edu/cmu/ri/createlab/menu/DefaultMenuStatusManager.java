@@ -99,4 +99,19 @@ public final class DefaultMenuStatusManager implements MenuStatusManager
             }
          }
       }
+
+       @Override
+       public void handleAccessoryOneEvent() {
+           //To change body of implemented methods use File | Settings | File Templates.
+       }
+
+       @Override
+       public void handleAccessoryTwoEvent() {
+           //To change body of implemented methods use File | Settings | File Templates.
+       }
+
+       @Override
+       public void handleAccessoryThreeEvent() {
+           //To change body of implemented methods use File | Settings | File Templates.
+       }
    }

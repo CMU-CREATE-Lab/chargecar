@@ -1,17 +1,13 @@
-package edu.cmu.ri.createlab.menu;
+package edu.cmu.ri.createlab;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public interface MenuStatusManager
+public interface ButtonPanelEventListener
    {
-   MenuItem getActiveMenuItem();
+   void handleOKEvent();
 
-   void setActiveMenuItem(final MenuItem menuItem);
-
-   void handleStartEvent();
-
-   void handleStopEvent();
+   void handleCancelEvent();
 
    void handleUpEvent();
 
