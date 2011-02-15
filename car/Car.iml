@@ -23,6 +23,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="CREATE Lab Commons Device" level="project" />
     <orderEntry type="module-library">
       <library name="CREATE Lab Commons Collections">
         <CLASSES>

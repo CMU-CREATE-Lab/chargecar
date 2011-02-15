@@ -22,12 +22,17 @@
    <path id="lcd-display-classpath">
       <!-- other classes within this project -->
       <pathelement path="${lcd-display-core.build.dir}"/>
+      <pathelement path="${honda-in-dash-display.build.dir}"/>
 
       <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-device.jar}"/>
+      <pathelement path="${create-lab-commons-serial.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${log4j-extras.jar}"/>
+      <pathelement path="${rxtx.jar}"/>
       <pathelement path="${swing-layout.jar}"/>
    </path>
 
@@ -35,10 +40,14 @@
       <!-- other classes within this project -->
 
       <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-device.jar}"/>
+      <pathelement path="${create-lab-commons-serial.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
       <pathelement path="${create-lab-commons-xml.jar}"/>
       <pathelement path="${jdom.jar}"/>
       <pathelement path="${log4j.jar}"/>
       <pathelement path="${log4j-extras.jar}"/>
+      <pathelement path="${rxtx.jar}"/>
       <pathelement path="${swing-layout.jar}"/>
    </path>
 
@@ -103,6 +112,7 @@
       <include name="**/?*.lib"/>
       <include name="**/?*.ice"/>
       <include name="**/?*.pem"/>
+      <include name="**/?*.bin"/>
    </patternset>
 
    <tstamp>
@@ -234,8 +244,17 @@
    <target name="dist-lcd-display-core" depends="build-lcd-display-core" description="builds the lcd-display-core" unless="dist-lcd-display-core-is-complete">
       <create-dist component.name="lcd-display-core">
          <additional-files-to-copy>
+            <fileset file="${create-lab-commons-device.jar}"/>
+            <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${jdom.jar}"/>
+            <fileset file="${rxtx.jar}"/>
+            <fileset file="${rxtx-linux.native}"/>
+            <fileset file="${rxtx-macos.native1}"/>
+            <fileset file="${rxtx-macos.native2}"/>
+            <fileset file="${rxtx-windows.native1}"/>
+            <fileset file="${rxtx-windows.native2}"/>
             <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
       </create-dist>
@@ -250,8 +269,18 @@
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${lcd-display-core.dist.dir}/${lcd-display-core.jar.filename}"/>
+            <fileset file="${honda-in-dash-display.dist.dir}/${honda-in-dash-display.jar.filename}"/>
+            <fileset file="${create-lab-commons-device.jar}"/>
+            <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${create-lab-commons-xml.jar}"/>
             <fileset file="${jdom.jar}"/>
+            <fileset file="${rxtx.jar}"/>
+            <fileset file="${rxtx-linux.native}"/>
+            <fileset file="${rxtx-macos.native1}"/>
+            <fileset file="${rxtx-macos.native2}"/>
+            <fileset file="${rxtx-windows.native1}"/>
+            <fileset file="${rxtx-windows.native2}"/>
             <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
       </create-dist>
