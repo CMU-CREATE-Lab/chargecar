@@ -57,14 +57,14 @@ public class DefaultSerialIOManager implements SerialIOManager
       {
       if (LOG.isDebugEnabled())
          {
-         LOG.debug("StreamingSerialPortReader.connect(" + config.getPortDeviceName() + "): Calling SerialPortEnumerator.getSerialPortIdentifer(" + config.getPortDeviceName() + ")");
+         LOG.debug("StreamingSerialPortReader.connect(" + config.getPortDeviceName() + "): Calling SerialPortEnumerator.getSerialPortIdentifier(" + config.getPortDeviceName() + ")");
          }
 
-      final CommPortIdentifier portIdentifier = SerialPortEnumerator.getSerialPortIdentifer(config.getPortDeviceName());
+      final CommPortIdentifier portIdentifier = SerialPortEnumerator.getSerialPortIdentifier(config.getPortDeviceName());
 
       if (LOG.isDebugEnabled())
          {
-         LOG.debug("StreamingSerialPortReader.connect(" + config.getPortDeviceName() + "): Done calling SerialPortEnumerator.getSerialPortIdentifer(" + config.getPortDeviceName() + "), portIdentifier = " + portIdentifier);
+         LOG.debug("StreamingSerialPortReader.connect(" + config.getPortDeviceName() + "): Done calling SerialPortEnumerator.getSerialPortIdentifier(" + config.getPortDeviceName() + "), portIdentifier = " + portIdentifier);
          }
 
       if (portIdentifier != null)
