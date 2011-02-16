@@ -88,9 +88,9 @@ public final class NMEAReader
                                                                      StopBits.ONE,
                                                                      FlowControl.NONE);
 
-      LOG.debug("NMEAReader.connect(" + serialPortName + "): Calling SerialPortEnumerator.getSerialPortIdentifer(" + config.getPortDeviceName() + ")");
-      final CommPortIdentifier portIdentifier = SerialPortEnumerator.getSerialPortIdentifer(config.getPortDeviceName());
-      LOG.debug("NMEAReader.connect(" + serialPortName + "): Done calling SerialPortEnumerator.getSerialPortIdentifer(" + config.getPortDeviceName() + "), portIdentifier = " + portIdentifier);
+      LOG.debug("NMEAReader.connect(" + serialPortName + "): Calling SerialPortEnumerator.getSerialPortIdentifier(" + config.getPortDeviceName() + ")");
+      final CommPortIdentifier portIdentifier = SerialPortEnumerator.getSerialPortIdentifier(config.getPortDeviceName());
+      LOG.debug("NMEAReader.connect(" + serialPortName + "): Done calling SerialPortEnumerator.getSerialPortIdentifier(" + config.getPortDeviceName() + "), portIdentifier = " + portIdentifier);
 
       if (portIdentifier != null)
          {
