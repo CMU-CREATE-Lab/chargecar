@@ -1,10 +1,12 @@
 package edu.cmu.ri.createlab.display.character.menu;
 
-import java.util.Map;
+import edu.cmu.ri.createlab.LCDConstants;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -21,6 +23,7 @@ import org.apache.log4j.Logger;
  * </p>
  *
  * @author Chris Bartley (bartley@cmu.edu)
+ * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public abstract class TwoOptionMenuItemAction extends CharacterDisplayMenuItemAction
    {
@@ -41,6 +44,8 @@ public abstract class TwoOptionMenuItemAction extends CharacterDisplayMenuItemAc
    private static final String PROPERTY_ACTION_CHOSE_CANCEL = "action.cancel";
 
    private boolean userChoseOption1 = false;
+   private String promptText = null;
+   private int choiceRow = 1;
 
    public TwoOptionMenuItemAction(final MenuItem menuItem,
                                   final MenuStatusManager menuStatusManager,
@@ -60,8 +65,13 @@ public abstract class TwoOptionMenuItemAction extends CharacterDisplayMenuItemAc
    public final void activate()
       {
       userChoseOption1 = shouldOption1BeSelectedUponActivation();
-      getCharacterDisplay().setLine(0, getPromptText());
-      getCharacterDisplay().setLine(1, generateOptionChoiceLine());
+      //this old code assumes only one line of text for the prompt...
+      //getCharacterDisplay().setLine(0, getPromptText());
+      //getCharacterDisplay().setLine(1, generateOptionChoiceLine());
+      promptText = getPromptText();
+      choiceRow = (int) Math.ceil((double)promptText.length() / (double)LCDConstants.NUM_COLS);
+      getCharacterDisplay().setText(promptText);
+      if (choiceRow < LCDConstants.NUM_ROWS) getCharacterDisplay().setLine(choiceRow, generateOptionChoiceLine());
       }
 
    public final void start()
@@ -95,7 +105,9 @@ public abstract class TwoOptionMenuItemAction extends CharacterDisplayMenuItemAc
    public final void leftEvent()
       {
       userChoseOption1 = !userChoseOption1;
-      getCharacterDisplay().setLine(1, generateOptionChoiceLine());
+      //this old code assumes the choices will always be on the second line...
+      //getCharacterDisplay().setLine(1, generateOptionChoiceLine());
+      if (choiceRow < LCDConstants.NUM_ROWS) getCharacterDisplay().setLine(choiceRow, generateOptionChoiceLine());
       }
 
    public final void upEvent()

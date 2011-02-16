@@ -1,14 +1,10 @@
 package edu.cmu.ri.createlab.display.character.lcd;
 
-import java.awt.Color;
-import java.awt.Font;
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import org.jdesktop.layout.GroupLayout;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)

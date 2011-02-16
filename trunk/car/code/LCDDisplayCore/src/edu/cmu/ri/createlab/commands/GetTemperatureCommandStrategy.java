@@ -3,7 +3,6 @@ package edu.cmu.ri.createlab.commands;
 import edu.cmu.ri.createlab.LCDProxy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
 import edu.cmu.ri.createlab.util.ByteUtils;
-import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,7 +14,6 @@ public final class GetTemperatureCommandStrategy extends ReturnValueCommandStrat
    {
    /** The command character used to request the temperature */
    private static final byte COMMAND_PREFIX = 'T';
-   private static final Logger LOG = Logger.getLogger(LCDProxy.class);
 
    private final byte[] command;
 
@@ -49,8 +47,8 @@ public final class GetTemperatureCommandStrategy extends ReturnValueCommandStrat
 
          if (responseData != null && responseData.length == SIZE_IN_BYTES_OF_EXPECTED_RESPONSE)
             {
-                double temperatureInKelvin = (577.37*Math.pow(bb.getShort(), -0.104));
-                return temperatureInKelvin;
+                //temperature in Kelvin
+                return (577.37*Math.pow(bb.getShort(), -0.104));
             }
          }
 

@@ -140,20 +140,20 @@ public class SensorBoard {
     }
 
     private final class GPSView extends StreamingSerialPortDeviceView<GPSEvent> {
-        protected void handleEventInGUIThread(GPSEvent eventData) {
-            SensorBoard.this.gpsEvent = eventData;
+        protected void handleEventInGUIThread(final GPSEvent gpsData) {
+            SensorBoard.this.gpsEvent = gpsData;
         }
     }
 
     private final class MotorControllerView extends StreamingSerialPortDeviceView<MotorControllerEvent> {
-        protected void handleEventInGUIThread(MotorControllerEvent eventData) {
-            SensorBoard.this.motorControllerEvent = eventData;
+        protected void handleEventInGUIThread(final MotorControllerEvent motorControllerData) {
+            SensorBoard.this.motorControllerEvent = motorControllerData;
         }
     }
 
     private final class SensorBoardView extends StreamingSerialPortDeviceView<SensorBoardEvent> {
-        protected void handleEventInGUIThread(SensorBoardEvent eventData) {
-            SensorBoard.this.sensorBoardEvent = eventData;
+        protected void handleEventInGUIThread(final SensorBoardEvent sensorBoardData) {
+            SensorBoard.this.sensorBoardEvent = sensorBoardData;
         }
     }
 

@@ -2,16 +2,6 @@
 <project version="4">
   <component name="AntConfiguration">
     <defaultAnt bundledAnt="true" />
-    <buildFile url="file://$PROJECT_DIR$/../../CREATELabCommons/trunk/java/build.xml">
-      <additionalClassPath>
-        <entry dir="file://$PROJECT_DIR$/../../CREATELabCommons/trunk/lib/java/svnant/lib" />
-      </additionalClassPath>
-      <antReference projectDefault="true" />
-      <customJdkName value="" />
-      <maximumHeapSize value="128" />
-      <maximumStackSize value="2" />
-      <properties />
-    </buildFile>
   </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
@@ -88,6 +78,7 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="IdProvider" IDEtalkID="9E1B40F98A9A1FD18EC25626105FC952" />
   <component name="InspectionProjectProfileManager">
     <profiles>
       <profile version="1.0" is_locked="false">
@@ -486,7 +477,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/car/Car.iml" filepath="$PROJECT_DIR$/car/Car.iml" />
       <module fileurl="file://$PROJECT_DIR$/chargecar.org/ChargeCar.org.iml" filepath="$PROJECT_DIR$/chargecar.org/ChargeCar.org.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ChargeCarPrize/ChargeCarPrize.iml" filepath="$PROJECT_DIR$/ChargeCarPrize/ChargeCarPrize.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chargecarprize/ChargeCarPrize.iml" filepath="$PROJECT_DIR$/chargecarprize/ChargeCarPrize.iml" />
       <module fileurl="file://$PROJECT_DIR$/iphone/iPhone.iml" filepath="$PROJECT_DIR$/iphone/iPhone.iml" />
     </modules>
   </component>
@@ -496,7 +487,6 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="JDK_1_6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/../IDEA_build_output" />
   </component>
-  <component name="SpellCheckerSettings" BundledDictionaries="0" Folders="0" Dictionaries="0" />
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
@@ -533,6 +523,18 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="svn" />
+  </component>
+  <component name="WebServicesPlugin" addRequiredLibraries="true" />
+  <component name="libraryTable">
+    <library name="CREATE Lab Commons Device">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/car/lib/create-lab-commons-device" />
+        <root url="file://$PROJECT_DIR$/car/lib/create-lab-commons-device" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+      <jarDirectory url="file://$PROJECT_DIR$/car/lib/create-lab-commons-device" recursive="false" />
+    </library>
   </component>
 </project>
 

@@ -1,6 +1,7 @@
 package org.chargecar.lcddisplay.lcd.menu.action;
 
 import edu.cmu.ri.createlab.LCD;
+import edu.cmu.ri.createlab.LCDConstants;
 import edu.cmu.ri.createlab.LCDProxy;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenuItemAction;
@@ -31,7 +32,7 @@ public final class RPMMenuItemAction extends CharacterDisplayMenuItemAction {
     final LCD lcd = LCDProxy.getInstance();
 
     public void activate() {
-        lcd.setText(0, 0, String.format("%1$-" + 20 + "s", "RPM: "));
+        //TODO should check for lcd being null
         getCharacterDisplay().setLine(0, "RPM: ");
         try {
             scheduledFuture = executor.scheduleWithFixedDelay(new Runnable() {
@@ -39,12 +40,13 @@ public final class RPMMenuItemAction extends CharacterDisplayMenuItemAction {
                 public void run() {
                     if (lcd == null) {
                         getCharacterDisplay().setLine(0, "No connection to LCD.");
+                        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
                         return;
                     }
-                    double rpm = Math.round(lcd.getRPM() * 100.0) / 100.0;
+                    final double rpm = Math.round(lcd.getRPM() * 100.0) / 100.0;
                     LOG.debug("RPMMenuItemAction.activate(): updating rpm");
-                    lcd.setText(0, 6, String.format("%1$-" + 14 + "s", rpm));
-                    getCharacterDisplay().setCharacter(0, 6, String.valueOf(rpm));
+                    getCharacterDisplay().setCharacter(0, 5, String.valueOf(rpm));
+                    getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
                 }
             }, 0, 200, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
