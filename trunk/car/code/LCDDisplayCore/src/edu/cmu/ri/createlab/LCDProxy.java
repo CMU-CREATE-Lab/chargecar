@@ -1,18 +1,38 @@
 package edu.cmu.ri.createlab;
 
-
-import edu.cmu.ri.createlab.commands.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import edu.cmu.ri.createlab.commands.DisconnectCommandStrategy;
+import edu.cmu.ri.createlab.commands.DisplayCommandStrategy;
+import edu.cmu.ri.createlab.commands.GetErrorCodesCommandStrategy;
+import edu.cmu.ri.createlab.commands.GetRPMCommandStrategy;
+import edu.cmu.ri.createlab.commands.GetTemperatureCommandStrategy;
+import edu.cmu.ri.createlab.commands.HandshakeCommandStrategy;
+import edu.cmu.ri.createlab.commands.InputCommandStrategy;
+import edu.cmu.ri.createlab.commands.OutputCommandStrategy;
+import edu.cmu.ri.createlab.commands.ResetDisplayCommandStrategy;
+import edu.cmu.ri.createlab.commands.ReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.device.CreateLabDevicePingFailureEventListener;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceNoReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandExecutionQueue;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
-import edu.cmu.ri.createlab.serial.config.*;
+import edu.cmu.ri.createlab.serial.config.BaudRate;
+import edu.cmu.ri.createlab.serial.config.CharacterSize;
+import edu.cmu.ri.createlab.serial.config.FlowControl;
+import edu.cmu.ri.createlab.serial.config.Parity;
+import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
+import edu.cmu.ri.createlab.serial.config.StopBits;
+import edu.cmu.ri.createlab.util.BoundedSequenceNumber;
+import edu.cmu.ri.createlab.util.SequenceNumber;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
-import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -23,13 +43,15 @@ public final class LCDProxy implements LCD {
     public static final String APPLICATION_NAME = "LCDProxy";
     private static final int DELAY_IN_SECONDS_BETWEEN_PEER_PINGS = 5;
     private static final int DELAY_IN_MILLISECONDS_BETWEEN_PEER_PINGS = 50;
-    public static final BoundedIntegerSequenceNumber SEQUENCE_NUMBER = new BoundedIntegerSequenceNumber(0, 255);
+    public static final SequenceNumber SEQUENCE_NUMBER = new BoundedSequenceNumber(0, 255);
 
     private static class LazyHolder {
         private static final LCDCreator INSTANCE = new LCDCreator();
+
+        private LazyHolder() { }
     }
 
-    public static final LCD getInstance() {
+    public static LCD getInstance() {
         return LazyHolder.INSTANCE.getLCD();
     }
 

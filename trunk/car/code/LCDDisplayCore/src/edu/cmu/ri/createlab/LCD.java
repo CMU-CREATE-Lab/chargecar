@@ -7,7 +7,6 @@ import edu.cmu.ri.createlab.device.CreateLabDeviceProxy;
  */
 public interface LCD extends CreateLabDeviceProxy
    {
-
     /**
     * Displays characters on a single line of the display
     *
@@ -292,7 +291,7 @@ public interface LCD extends CreateLabDeviceProxy
     */
    boolean resetDisplay();
 
-       void addButtonPanelEventListener(ButtonPanelEventListener listener);
+   void addButtonPanelEventListener(ButtonPanelEventListener listener);
 
-       void removeButtonPanelEventListener(ButtonPanelEventListener listener);
+   void removeButtonPanelEventListener(ButtonPanelEventListener listener);
    }
