@@ -3,7 +3,7 @@ package org.chargecar.lcddisplay.lcd;
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
-public interface LCDButtonPanelEventListener
+interface LCDButtonPanelEventListener
    {
    void handleSelectEvent();
 

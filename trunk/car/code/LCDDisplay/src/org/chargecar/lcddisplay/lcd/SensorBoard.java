@@ -1,5 +1,9 @@
 package org.chargecar.lcddisplay.lcd;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.log4j.Logger;
@@ -19,11 +23,6 @@ import org.chargecar.honda.sensorboard.SensorBoardEvent;
 import org.chargecar.honda.sensorboard.SensorBoardModel;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -34,9 +33,11 @@ public class SensorBoard {
 
     private static class LazyHolder {
         private static final SensorBoard INSTANCE = new SensorBoard();
+
+        private LazyHolder() { }
     }
 
-    public static final SensorBoard getInstance() {
+    public static SensorBoard getInstance() {
         return LazyHolder.INSTANCE;
     }
 
