@@ -19,12 +19,12 @@ private final byte[] command;
 
    public DisplayCommandStrategy(final int row, final int column, final String displayString)
       {
-      byte[] displayStringByteArray = displayString.getBytes(ASCII_CHARSET);
-      byte[] tmp = new byte[]{COMMAND_PREFIX,
+      final byte[] displayStringByteArray = displayString.getBytes(ASCII_CHARSET);
+      final byte[] tmp = new byte[]{COMMAND_PREFIX,
                               ByteUtils.intToUnsignedByte(row),
                               ByteUtils.intToUnsignedByte(column),
                               ByteUtils.intToUnsignedByte(displayString.length())};
-      ByteBuffer bb = ByteBuffer.allocate(displayStringByteArray.length + tmp.length + 1);
+      final ByteBuffer bb = ByteBuffer.allocate(displayStringByteArray.length + tmp.length + 1);
       bb.put(tmp);
       bb.put(displayStringByteArray);
       bb.put(ByteUtils.intToUnsignedByte(LCDProxy.SEQUENCE_NUMBER.next()));

@@ -1,6 +1,7 @@
 package org.chargecar.lcddisplay.lcd.menu.action;
 
 import edu.cmu.ri.createlab.LCD;
+import edu.cmu.ri.createlab.LCDConstants;
 import edu.cmu.ri.createlab.LCDProxy;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenuItemAction;
@@ -33,33 +34,32 @@ public final class GPSMenuItemAction extends CharacterDisplayMenuItemAction {
     final SensorBoard sensorboard = SensorBoard.getInstance();
 
     public void activate() {
-        //LOG.debug("GPSMenuItemAction.activate():" + SensorBoard.getInstance().getBmsAndEnergy().getBmsState().toLoggingString());
         LOG.debug("GPSMenuItemAction.activate(): first entering activate.");
         try {
             scheduledFuture = executor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
 
-                    if (sensorboard.getGpsEvent() == null) {
-                        LOG.debug("GPSMenuItemAction.run(): sensorboard is null");
+                    if (sensorboard == null || sensorboard.getGpsEvent() == null) {
+                        LOG.debug("GPSMenuItemAction.run(): gps is null");
                         getCharacterDisplay().setLine(0, "No connection to GPS.");
+                        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
                         return;
                     }else if (lcd == null) {
                         LOG.debug("GPSMenuItemAction.run(): lcd is null");
                         getCharacterDisplay().setLine(0, "No connection to LCD.");
+                        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
                         return;
                     }
-                    String lat = sensorboard.getGpsEvent().getLatitude();
-                    String lng = sensorboard.getGpsEvent().getLongitude();
-                    Integer elevation = sensorboard.getGpsEvent().getElevationInFeet();
+                    final String lat = sensorboard.getGpsEvent().getLatitude();
+                    final String lng = sensorboard.getGpsEvent().getLongitude();
+                    final Integer elevation = sensorboard.getGpsEvent().getElevationInFeet();
 
                     LOG.debug("GPSMenuItemAction.activate(): updating GPS data");
-                    lcd.setText(0, 0, String.format("%1$-" + 20 + "s", "Latitude: " + lat));
-                    lcd.setText(1, 0, String.format("%1$-" + 20 + "s", "Longitude: " + lng));
-                    lcd.setText(2, 0, String.format("%1$-" + 20 + "s", "Elevation: " + elevation));
                     getCharacterDisplay().setLine(0, "Latitude: " + lat);
                     getCharacterDisplay().setLine(1, "Longitude: " + lng);
                     getCharacterDisplay().setLine(2, "Elevation: " + elevation);
+                    getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
                 }
             }, 0, 200, TimeUnit.MILLISECONDS);
         } catch (Exception e) {

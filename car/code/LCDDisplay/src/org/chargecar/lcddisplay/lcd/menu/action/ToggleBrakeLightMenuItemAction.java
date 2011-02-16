@@ -1,6 +1,7 @@
 package org.chargecar.lcddisplay.lcd.menu.action;
 
 import edu.cmu.ri.createlab.LCD;
+import edu.cmu.ri.createlab.LCDConstants;
 import edu.cmu.ri.createlab.LCDProxy;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.TwoOptionMenuItemAction;
@@ -42,10 +43,9 @@ public final class ToggleBrakeLightMenuItemAction extends TwoOptionMenuItemActio
     }
 
     private void setAirConditioningEnabled(final boolean actionState) {
-        if (lcd == null) {
-            getCharacterDisplay().setLine(0, "No connection to LCD.");
-            return;
-        }
+        if (lcd == null) return;
+        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
+
         this.isBrakeLightEnabled = actionState;
 
         if (actionState)

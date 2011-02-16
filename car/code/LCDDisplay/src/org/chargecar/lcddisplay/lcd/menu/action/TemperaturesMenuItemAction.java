@@ -1,6 +1,7 @@
 package org.chargecar.lcddisplay.lcd.menu.action;
 
 import edu.cmu.ri.createlab.LCD;
+import edu.cmu.ri.createlab.LCDConstants;
 import edu.cmu.ri.createlab.LCDProxy;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenuItemAction;
@@ -31,10 +32,6 @@ public final class TemperaturesMenuItemAction extends CharacterDisplayMenuItemAc
     final LCD lcd = LCDProxy.getInstance();
 
     public void activate() {
-        lcd.setText(0,0,String.format("%1$-" + 20 + "s", "Motor"));
-        lcd.setText(1,0,String.format("%1$-" + 20 + "s", "Temperature: "));
-        lcd.setText(2,0,String.format("%1$-" + 20 + "s", "Controller"));
-        lcd.setText(3,0,String.format("%1$-" + 20 + "s", "Temperature: "));
         getCharacterDisplay().setLine(0, "Motor");
         getCharacterDisplay().setLine(1, "Temperature: ");
         getCharacterDisplay().setLine(2, "Controller");
@@ -45,14 +42,13 @@ public final class TemperaturesMenuItemAction extends CharacterDisplayMenuItemAc
                 public void run() {
                     if (lcd == null) {
                         getCharacterDisplay().setLine(0, "No connection to LCD.");
+                        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
                         return;
                     }
-                    double motorTemp = Math.round(lcd.getMotorTemperatureInKelvin()*100.0) / 100.0;
-                    double controllerTemp = Math.round(lcd.getControllerTemperatureInKelvin()*100.0) / 100.0;
+                    final double motorTemp = Math.round(lcd.getMotorTemperatureInKelvin()*100.0) / 100.0;
+                    final double controllerTemp = Math.round(lcd.getControllerTemperatureInKelvin()*100.0) / 100.0;
 
                     LOG.debug("TemperaturesMenuItemAction.activate(): updating temperatures");
-                    lcd.setText(1,13,String.format("%1$-" + 7 + "s", motorTemp));
-                    lcd.setText(3,13,String.format("%1$-" + 7 + "s", controllerTemp));
                     getCharacterDisplay().setCharacter(1, 13, String.valueOf(motorTemp));
                     getCharacterDisplay().setCharacter(3, 13, String.valueOf(controllerTemp));
                 }

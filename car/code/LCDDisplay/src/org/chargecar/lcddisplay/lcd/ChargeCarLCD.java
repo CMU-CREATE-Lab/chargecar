@@ -3,7 +3,6 @@ package org.chargecar.lcddisplay.lcd;
 import edu.cmu.ri.createlab.ButtonPanelEventListener;
 import edu.cmu.ri.createlab.LCD;
 import edu.cmu.ri.createlab.LCDProxy;
-import edu.cmu.ri.createlab.display.character.lcd.SwingLCDPanel;
 import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenu;
 import edu.cmu.ri.createlab.menu.DefaultMenuStatusManager;
 import edu.cmu.ri.createlab.menu.Menu;
@@ -19,9 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
+ * @author Paul Dille (pdille@andrew.cmu.edu)
  */
-public final class CarLCDDemo extends JPanel {
-    private static final Logger LOG = Logger.getLogger(CarLCDDemo.class);
+public final class ChargeCarLCD extends JPanel {
+    private static final Logger LOG = Logger.getLogger(ChargeCarLCD.class);
 
     public static void main(final String[] args) {
         for (final String arg : args) {
@@ -41,7 +41,7 @@ public final class CarLCDDemo extends JPanel {
                         final JFrame jFrame = new JFrame("LCD");
 
                         // add the root panel to the JFrame
-                        jFrame.add(new CarLCDDemo());
+                        jFrame.add(new ChargeCarLCD());
 
                         // set various properties for the JFrame
                         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -54,12 +54,11 @@ public final class CarLCDDemo extends JPanel {
                 });
     }
 
-    private CarLCDDemo() {
+    private ChargeCarLCD() {
         // create the LCD panel and button panel
-        final SwingLCDPanel lcdPanel = new SwingLCDPanel(4, 20);
+        //final SwingLCDPanel lcdPanel = new SwingLCDPanel(4, 20);
+        final LCDPanel lcdPanel = new LCDPanel(4,20);
         final ButtonPanel buttonPanel = new ButtonPanel();
-        //create actual LCD button panel
-        final LCDButtonPanel lcdButtonPanel = new LCDButtonPanel();
 
         // create the menu status manager
         final MenuStatusManager menuStatusManager = new DefaultMenuStatusManager();
@@ -67,21 +66,21 @@ public final class CarLCDDemo extends JPanel {
         // register the listener for button panel events
         buttonPanel.addButtonPanelEventListener(new MyButtonPanelEventListener(menuStatusManager));
 
-        LOG.debug("CarLCDDemo(): ################### about to call SensorBoard.getInstance()...");
+        LOG.debug("ChargeCarLCD(): ################### about to call SensorBoard.getInstance()...");
         final SensorBoard sensorBoard = SensorBoard.getInstance();
 
-        LOG.debug("CarLCDDemo(): ################### about to call LCDProxy.getInstance()...");
+        LOG.debug("ChargeCarLCD(): ################### about to call LCDProxy.getInstance()...");
         final LCD lcd = LCDProxy.getInstance();
 
         lcd.addButtonPanelEventListener(new MyButtonPanelEventListener(menuStatusManager));
-        LOG.debug("CarLCDDemo(): ################### about to build the menu...");
+        LOG.debug("ChargeCarLCD(): ################### about to build the menu...");
 
         // build the menu
         final Menu menu = CharacterDisplayMenu.create("/org/chargecar/lcddisplay/lcd/menu.xml", menuStatusManager, lcdPanel);
 
         // layout the GUI components and set the default text on the LCD
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(lcdPanel.getComponent());
+        //this.add(lcdPanel.getComponent());
         this.add(buttonPanel.getComponent());
         lcdPanel.setText(menu.getWelcomeText());
 

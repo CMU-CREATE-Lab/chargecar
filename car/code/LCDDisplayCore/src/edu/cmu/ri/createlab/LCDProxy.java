@@ -131,26 +131,22 @@ public final class LCDProxy implements LCD {
     }
 
     @Override
-    public void addButtonPanelEventListener(final ButtonPanelEventListener listener)
-      {
-      if (listener != null)
-         {
-         buttonPanelEventListeners.add(listener);
-         }
-      }
+    public void addButtonPanelEventListener(final ButtonPanelEventListener listener) {
+        if (listener != null) {
+            buttonPanelEventListeners.add(listener);
+        }
+    }
 
-   @Override
-   public void removeButtonPanelEventListener(final ButtonPanelEventListener listener)
-      {
-      if (listener != null)
-         {
-         buttonPanelEventListeners.remove(listener);
-         }
-      }
+    @Override
+    public void removeButtonPanelEventListener(final ButtonPanelEventListener listener) {
+        if (listener != null) {
+            buttonPanelEventListeners.remove(listener);
+        }
+    }
 //chargecar begin
 
 
-    public boolean setText(int row, int column, String displayString) {
+    public boolean setText(final int row, final int column, final String displayString) {
         return noReturnValueCommandExecutor.executeAndReturnStatus(new DisplayCommandStrategy(row, column, displayString));
     }
 
@@ -162,11 +158,11 @@ public final class LCDProxy implements LCD {
         return new ReturnValueCommandExecutor<Double>(new GetTemperatureCommandStrategy(LCDConstants.MOTOR_TEMPERATURE)).execute();
     }
 
-    public Double getTemperatureInCelsius(double temperatureInKelvin) {
+    public Double getTemperatureInCelsius(final double temperatureInKelvin) {
         return temperatureInKelvin - LCDConstants.KELVIN_FREEZING_POINT;
     }
 
-    public Double getTemperatureInFahrenheit(double temperatureInKelvin) {
+    public Double getTemperatureInFahrenheit(final double temperatureInKelvin) {
         return (LCDConstants.CELSIUS_TO_FAHRENHEIT_CONSTANT * getTemperatureInCelsius(temperatureInKelvin)) + LCDConstants.CELSIUS_FREEZING_POINT;
     }
 
@@ -174,7 +170,7 @@ public final class LCDProxy implements LCD {
         return new ReturnValueCommandExecutor<int[]>(new InputCommandStrategy()).execute();
     }
 
-    public boolean isCarRunning(int[] inputs) {
+    public boolean isCarRunning(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.CAR_RUNNING_MASK) == LCDConstants.CAR_RUNNING_MASK;     // apply mask to get the car running state
@@ -182,7 +178,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean isCarCharging(int[] inputs) {
+    public boolean isCarCharging(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.CAR_CHARGING_MASK) == LCDConstants.CAR_CHARGING_MASK;     // apply mask to get the car charging state
@@ -190,7 +186,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasUpButtonPressed(int[] inputs) {
+    public boolean wasUpButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.UP_BUTTON_MASK) == LCDConstants.UP_BUTTON_MASK;     // apply mask to get the up button state
@@ -198,7 +194,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasDownButtonPressed(int[] inputs) {
+    public boolean wasDownButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.DOWN_BUTTON_MASK) == LCDConstants.DOWN_BUTTON_MASK;     // apply mask to get down button state
@@ -206,7 +202,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasLeftButtonPressed(int[] inputs) {
+    public boolean wasLeftButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.LEFT_BUTTON_MASK) == LCDConstants.LEFT_BUTTON_MASK;     // apply mask to get left button state
@@ -214,7 +210,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasRightButtonPressed(int[] inputs) {
+    public boolean wasRightButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.RIGHT_BUTTON_MASK) == LCDConstants.RIGHT_BUTTON_MASK;     // apply mask to get right button state
@@ -222,7 +218,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasSelectButtonPressed(int[] inputs) {
+    public boolean wasSelectButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.SELECT_BUTTON_MASK) == LCDConstants.SELECT_BUTTON_MASK;     // apply mask to get select button state
@@ -230,7 +226,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasCancelButtonPressed(int[] inputs) {
+    public boolean wasCancelButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.INPUT_BUTTON_INDEX];
             return (buttonInputs & LCDConstants.CANCEL_BUTTON_MASK) == LCDConstants.CANCEL_BUTTON_MASK;     // apply mask to get cancel button state
@@ -238,7 +234,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasAccessoryOneButtonPressed(int[] inputs) {
+    public boolean wasAccessoryOneButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.CAR_STATUS_INDEX];
             return (buttonInputs & LCDConstants.ACCESSORY_BUTTON_ONE_MASK) == LCDConstants.ACCESSORY_BUTTON_ONE_MASK;     // apply mask to get accessory one button state
@@ -246,7 +242,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasAccessoryTwoButtonPressed(int[] inputs) {
+    public boolean wasAccessoryTwoButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.CAR_STATUS_INDEX];
             return (buttonInputs & LCDConstants.ACCESSORY_BUTTON_TWO_MASK) == LCDConstants.ACCESSORY_BUTTON_TWO_MASK;     // apply mask to get accessory two button state
@@ -254,7 +250,7 @@ public final class LCDProxy implements LCD {
         return false;
     }
 
-    public boolean wasAccessoryThreeButtonPressed(int[] inputs) {
+    public boolean wasAccessoryThreeButtonPressed(final int[] inputs) {
         if (inputs != null) {
             final int buttonInputs = inputs[LCDConstants.CAR_STATUS_INDEX];
             return (buttonInputs & LCDConstants.ACCESSORY_BUTTON_THREE_MASK) == LCDConstants.ACCESSORY_BUTTON_THREE_MASK;     // apply mask to get accessory three button state
@@ -465,31 +461,19 @@ public final class LCDProxy implements LCD {
             }
         };
 
-        private final Map<Integer, Runnable> buttonMap = new HashMap<Integer, Runnable>();
-
-        private LCDButtonPoller() {
-            buttonMap.put(0, new Runnable() {
-                @Override
-                public void run() {
-                    for (final ButtonPanelEventListener listener : buttonPanelEventListeners) {
-                        listener.handleOKEvent();
-                    }
-                }
-            });
-        }
-
         public void run() {
             try {
                 final int[] rawValues = getInputs();
-                int numRawValues = rawValues.length;
-                int[] tmpRawValues = new int[numRawValues];
-                boolean isSame = true;
-
                 final boolean pingSuccessful = (rawValues != null);
 
                 if (!pingSuccessful) {
                     handlePingFailure();
+                    return;
                 }
+
+                final int numRawValues = rawValues.length;
+                final int[] tmpRawValues = new int[numRawValues];
+                boolean isSame = true;
 
                 //check previous input call with current input call
                 //if they are the same, just return
@@ -509,49 +493,32 @@ public final class LCDProxy implements LCD {
                 if (isSame) return;
 
 
-                if (wasUpButtonPressed(rawValues))
-                {
-                    LOG.debug("wasUpButtonPressed");
+                if (wasUpButtonPressed(rawValues)) {
+                    LOG.trace("wasUpButtonPressed");
                     executeEventHandler(handleUpEventRunnable);
-                }
-                else if (wasDownButtonPressed(rawValues))
-                {
-                    LOG.debug("wasDownButtonPressed");
+                } else if (wasDownButtonPressed(rawValues)) {
+                    LOG.trace("wasDownButtonPressed");
                     executeEventHandler(handleDownEventRunnable);
-                }
-                else if (wasLeftButtonPressed(rawValues))
-                {
-                    LOG.debug("wasLeftButtonPressed");
+                } else if (wasLeftButtonPressed(rawValues)) {
+                    LOG.trace("wasLeftButtonPressed");
                     executeEventHandler(handleLeftEventRunnable);
-                }
-                else if (wasRightButtonPressed(rawValues))
-                {
-                    LOG.debug("wasRightButtonPressed");
+                } else if (wasRightButtonPressed(rawValues)) {
+                    LOG.trace("wasRightButtonPressed");
                     executeEventHandler(handleRightEventRunnable);
-                }
-                else if (wasSelectButtonPressed(rawValues))
-                {
-                    LOG.debug("wasSelectButtonPressed");
+                } else if (wasSelectButtonPressed(rawValues)) {
+                    LOG.trace("wasSelectButtonPressed");
                     executeEventHandler(handleOKEventRunnable);
-                }
-                else if (wasCancelButtonPressed(rawValues))
-                {
-                    LOG.debug("wasCancelButtonPressed");
+                } else if (wasCancelButtonPressed(rawValues)) {
+                    LOG.trace("wasCancelButtonPressed");
                     executeEventHandler(handleCancelEventRunnable);
-                }
-                else if (wasAccessoryOneButtonPressed(rawValues))
-                {
-                    LOG.debug("wasAccessoryOneButtonPressed");
+                } else if (wasAccessoryOneButtonPressed(rawValues)) {
+                    LOG.trace("wasAccessoryOneButtonPressed");
                     executeEventHandler(handleAccessoryOneEventRunnable);
-                }
-                else if (wasAccessoryTwoButtonPressed(rawValues))
-                {
-                    LOG.debug("wasAccessoryTwoButtonPressed");
+                } else if (wasAccessoryTwoButtonPressed(rawValues)) {
+                    LOG.trace("wasAccessoryTwoButtonPressed");
                     executeEventHandler(handleAccessoryTwoEventRunnable);
-                }
-                else if (wasAccessoryThreeButtonPressed(rawValues))
-                {
-                    LOG.debug("wasAccessoryThreeButtonPressed");
+                } else if (wasAccessoryThreeButtonPressed(rawValues)) {
+                    LOG.trace("wasAccessoryThreeButtonPressed");
                     executeEventHandler(handleAccessoryThreeEventRunnable);
                 }
 
@@ -560,7 +527,7 @@ public final class LCDProxy implements LCD {
             }
         }
 
-        private void executeEventHandler(Runnable runnable) {
+        private void executeEventHandler(final Runnable runnable) {
             try {
                 executor.execute(runnable);
             } catch (Exception e) {
@@ -596,7 +563,6 @@ public final class LCDProxy implements LCD {
             handlePingFailure();
         }
 
-
     }
 
     private class LCDPinger implements Runnable {
@@ -604,9 +570,6 @@ public final class LCDProxy implements LCD {
             try {
                 // for pings, we simply get the RPMMenuItemAction
                 final boolean pingSuccessful = (getRPM() != null);
-
-                //run button poller
-                //lcdButtonPoller.run();
 
                 // if the ping failed, then we know we have a problem so disconnect (which
                 // probably won't work) and then notify the listeners

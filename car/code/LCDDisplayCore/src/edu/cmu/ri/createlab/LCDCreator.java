@@ -18,8 +18,7 @@ final class LCDCreator {
     private LCD lcd = null;
 
     LCDCreator() {
-        System.out.println("Connecting to LCD...this may take a few seconds...");
-
+        LOG.debug("LCDCreator.handleConnectionStateChange(): Connecting to LCD...this may take a few seconds...");
         connectivityManager.addConnectionEventListener(
                 new CreateLabDeviceConnectionEventListener() {
                     public void handleConnectionStateChange(final CreateLabDeviceConnectionState oldState, final CreateLabDeviceConnectionState newState, final String portName) {

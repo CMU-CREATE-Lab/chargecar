@@ -576,7 +576,7 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication
       if (text != null && text.length() > 0)
          {
              //wrap text
-             for (int charIndex = 0, row = 0; charIndex < Math.min(text.length(), LCDConstants.NUM_ROWS*LCDConstants.NUM_COLS); charIndex = charIndex + LCDConstants.NUM_COLS, row++)
+             for (int charIndex = 0, row = 0; charIndex < Math.min(text.length(), LCDConstants.NUM_ROWS*LCDConstants.NUM_COLS); charIndex += LCDConstants.NUM_COLS, row++)
              {
                  setLine(row,text.substring(charIndex));
              }
@@ -633,7 +633,7 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication
          {
          public void run()
             {
-            String text = "HHHHHA";
+            final String text = "HHHHHA";
             setLine(2,text);
             }
          };
@@ -771,8 +771,6 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication
             }
          }
       }
-
-
 
    protected final LCDProxy connectToLCD(final String serialPortName, final CreateLabDevicePingFailureEventListener pingFailureEventListener)
       {
