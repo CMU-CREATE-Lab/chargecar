@@ -6,10 +6,11 @@ import edu.cmu.ri.createlab.display.character.menu.RepeatingActionCharacterDispl
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
+import org.chargecar.honda.bms.BMSAndEnergy;
+import org.chargecar.lcddisplay.BMSManager;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
-import org.chargecar.lcddisplay.SensorBoard;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -29,8 +30,10 @@ public final class VoltagesMenuItemAction extends RepeatingActionCharacterDispla
    protected void performAction()
       {
       final LCD lcd = LCDProxy.getInstance();
-      final SensorBoard sensorboard = SensorBoard.getInstance();
-      if (sensorboard == null || sensorboard.getBmsAndEnergy() == null)
+      final BMSManager manager = BMSManager.getInstance();
+      final BMSAndEnergy data = (manager == null) ? null : manager.getData();
+      
+      if (manager == null || data == null)
          {
          LOG.debug("VoltagesMenuItemAction.run(): bms is null");
          getCharacterDisplay().setLine(0, "No connection to BMS.");
@@ -43,9 +46,9 @@ public final class VoltagesMenuItemAction extends RepeatingActionCharacterDispla
          getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
          return;
          }
-      final double minVoltage = Math.round(sensorboard.getBmsAndEnergy().getBmsState().getMinimumCellVoltage() * 100.0) / 100.0;
-      final double maxVoltage = Math.round(sensorboard.getBmsAndEnergy().getBmsState().getMaximumCellVoltage() * 100.0) / 100.0;
-      final double averageVoltage = Math.round(sensorboard.getBmsAndEnergy().getBmsState().getAverageCellVoltage() * 100.0) / 100.0;
+      final double minVoltage = Math.round(data.getBmsState().getMinimumCellVoltage() * 100.0) / 100.0;
+      final double maxVoltage = Math.round(data.getBmsState().getMaximumCellVoltage() * 100.0) / 100.0;
+      final double averageVoltage = Math.round(data.getBmsState().getAverageCellVoltage() * 100.0) / 100.0;
 
       LOG.debug("VoltagesMenuItemAction.activate(): updating voltages");
       getCharacterDisplay().setLine(0, "Min Voltage: " + minVoltage);

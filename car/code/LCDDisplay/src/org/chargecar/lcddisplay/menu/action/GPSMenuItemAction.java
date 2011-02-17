@@ -6,10 +6,11 @@ import edu.cmu.ri.createlab.display.character.menu.RepeatingActionCharacterDispl
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
+import org.chargecar.honda.gps.GPSEvent;
+import org.chargecar.lcddisplay.GPSManager;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
-import org.chargecar.lcddisplay.SensorBoard;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -29,8 +30,10 @@ public final class GPSMenuItemAction extends RepeatingActionCharacterDisplayMenu
    protected void performAction()
       {
       final LCD lcd = LCDProxy.getInstance();
-      final SensorBoard sensorboard = SensorBoard.getInstance();
-      if (sensorboard == null || sensorboard.getGpsEvent() == null)
+      final GPSManager manager = GPSManager.getInstance();
+      final GPSEvent data = (manager == null) ? null : manager.getData();
+      
+      if (manager == null || data == null)
          {
          LOG.debug("GPSMenuItemAction.run(): gps is null");
          getCharacterDisplay().setLine(0, "No connection to GPS.");
@@ -44,9 +47,9 @@ public final class GPSMenuItemAction extends RepeatingActionCharacterDisplayMenu
          getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
          return;
          }
-      final String lat = sensorboard.getGpsEvent().getLatitude();
-      final String lng = sensorboard.getGpsEvent().getLongitude();
-      final Integer elevation = sensorboard.getGpsEvent().getElevationInFeet();
+      final String lat = data.getLatitude();
+      final String lng = data.getLongitude();
+      final Integer elevation = data.getElevationInFeet();
 
       LOG.debug("GPSMenuItemAction.activate(): updating GPS data");
       getCharacterDisplay().setLine(0, "Latitude: " + lat);
