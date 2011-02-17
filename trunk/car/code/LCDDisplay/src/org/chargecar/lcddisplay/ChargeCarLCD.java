@@ -23,12 +23,12 @@ import org.apache.log4j.Logger;
 public final class ChargeCarLCD extends JPanel {
     private static final Logger LOG = Logger.getLogger(ChargeCarLCD.class);
 
-    public static void main(final String[] args) {
+public static void main(final String[] args) {
         for (final String arg : args) {
             final String[] keyValue = arg.split("=");
             if (keyValue.length == 2) {
                 LOG.debug("Associating [" + keyValue[0] + "] with serial port [" + keyValue[1] + "]");
-                System.setProperty(SensorBoard.SERIAL_PORT_SYSTEM_PROPERTY_KEY_PREFIX + keyValue[0].toLowerCase(), keyValue[1]);
+                System.setProperty(LCDConstants.SERIAL_PORT_SYSTEM_PROPERTY_KEY_PREFIX + keyValue[0].toLowerCase(), keyValue[1]);
             } else {
                 LOG.info("Ignoring unexpected switch [" + arg + "]");
             }
@@ -66,8 +66,12 @@ public final class ChargeCarLCD extends JPanel {
         // register the listener for button panel events
         buttonPanel.addButtonPanelEventListener(new MyButtonPanelEventListener(menuStatusManager));
 
-        LOG.debug("ChargeCarLCD(): ################### about to call SensorBoard.getInstance()...");
-        SensorBoard.getInstance();  // calling getInstance() here kicks off the various connection establishment threads
+        LOG.debug("ChargeCarLCD(): ################### about to connect to the BMS, GPS, MotorController, and SensorBoard...");
+        // call .getInstance() on the various managers to kick off connection establishment to them
+        BMSManager.getInstance();
+        GPSManager.getInstance();
+        MotorControllerManager.getInstance();
+        SensorBoardManager.getInstance();
 
         LOG.debug("ChargeCarLCD(): ################### about to call LCDProxy.getInstance()...");
         final LCD lcd = LCDProxy.getInstance();

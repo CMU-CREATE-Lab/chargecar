@@ -56,6 +56,9 @@ public final class LCDConstants
    public static final int NUM_COLS = 20;
    public static final String BLANK_LINE = "                    "; //20 spaces
 
+   /** Prefix for system property used to store the name of the serial port for a particular subsystem. */
+   public static final String SERIAL_PORT_SYSTEM_PROPERTY_KEY_PREFIX = LCDConstants.class.getName() + ".serial_port.";
+
    private LCDConstants()
       {
       // private to prevent instantiation
