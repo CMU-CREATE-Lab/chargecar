@@ -1,6 +1,5 @@
 package org.chargecar.honda.motorcontroller;
 
-import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 
 /**
@@ -12,8 +11,6 @@ import org.chargecar.honda.StreamingSerialPortDeviceController;
  */
 public final class MotorControllerController extends StreamingSerialPortDeviceController<MotorControllerEvent, MotorControllerEvent>
    {
-   private static final Logger LOG = Logger.getLogger(MotorControllerController.class);
-
    private final MotorControllerModel model;
 
    public static MotorControllerController create(final String serialPortName, final MotorControllerModel model)

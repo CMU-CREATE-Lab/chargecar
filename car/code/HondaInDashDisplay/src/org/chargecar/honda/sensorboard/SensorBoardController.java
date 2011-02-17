@@ -1,6 +1,5 @@
 package org.chargecar.honda.sensorboard;
 
-import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 
 /**
@@ -12,8 +11,6 @@ import org.chargecar.honda.StreamingSerialPortDeviceController;
  */
 public final class SensorBoardController extends StreamingSerialPortDeviceController<SensorBoardEvent, SensorBoardEvent>
    {
-   private static final Logger LOG = Logger.getLogger(SensorBoardController.class);
-
    private final SensorBoardModel model;
 
    public static SensorBoardController create(final String serialPortName, final SensorBoardModel model)
