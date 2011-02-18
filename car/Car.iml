@@ -36,6 +36,17 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="CREATE Lab Commons Menu">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-menu/create-lab-commons-menu.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/lib/create-lab-commons-menu/create-lab-commons-menu-src.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="CREATE Lab Commons Serial">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/lib/create-lab-commons-serial/create-lab-commons-serial.jar!/" />
