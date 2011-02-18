@@ -1,5 +1,6 @@
 package org.chargecar.lcddisplay.menu.action;
 
+import java.util.Map;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.TwoOptionMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
@@ -9,14 +10,11 @@ import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
 
-import java.util.Map;
-
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public final class ToggleBatteryHeatingMenuItemAction extends TwoOptionMenuItemAction {
     private static final Logger LOG = Logger.getLogger(ToggleBatteryHeatingMenuItemAction.class);
-    private final LCD lcd = LCDProxy.getInstance();
     private boolean isBatteryHeatingEnabled = false;
 
     public ToggleBatteryHeatingMenuItemAction(final MenuItem menuItem,
@@ -45,6 +43,7 @@ public final class ToggleBatteryHeatingMenuItemAction extends TwoOptionMenuItemA
     }
 
     private void setBatteryHeatingEnabled(final boolean actionState) {
+        final LCD lcd = LCDProxy.getInstance();
         if (lcd == null) {
             LOG.error("ToggleBatteryHeatingMenuItemAction.setBatteryHeatingEnabled(): lcd is null");
             return;
