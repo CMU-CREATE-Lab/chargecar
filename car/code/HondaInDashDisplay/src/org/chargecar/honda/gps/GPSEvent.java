@@ -8,24 +8,28 @@ import org.chargecar.serial.streaming.BaseStreamingSerialPortEvent;
  */
 public final class GPSEvent extends BaseStreamingSerialPortEvent
    {
+   private static final double FEET_PER_METER = 3.2808399;
+
    private final String latitude;
    private final String longitude;
    private final Integer numSatellitesBeingTracked;
-   private final Integer elevationInFeet;
+   private final long elevationInFeet;
+   private final boolean isLocationEvent;
 
-   public static GPSEvent createLocationEvent(final Date timestamp, final String latitude, final String longitude, final int numSatellitesBeingTracked)
+   public static GPSEvent createLocationEvent(final Date timestamp, final String latitude, final String longitude, final int numSatellitesBeingTracked, final float elevationInMeters)
       {
-      return new GPSEvent(timestamp, latitude, longitude, numSatellitesBeingTracked, null);
+      return new GPSEvent(true, timestamp, latitude, longitude, numSatellitesBeingTracked, Math.round(elevationInMeters * FEET_PER_METER));
       }
 
    public static GPSEvent createElevationEvent(final Date timestamp, final int elevationInFeet)
       {
-      return new GPSEvent(timestamp, null, null, null, elevationInFeet);
+      return new GPSEvent(false, timestamp, null, null, null, elevationInFeet);
       }
 
-   private GPSEvent(final Date timestamp, final String latitude, final String longitude, final Integer numSatellitesBeingTracked, final Integer elevationInFeet)
+   private GPSEvent(final boolean isLocationEvent, final Date timestamp, final String latitude, final String longitude, final Integer numSatellitesBeingTracked, final long elevationInFeet)
       {
       super(timestamp);
+      this.isLocationEvent = isLocationEvent;
       this.latitude = latitude;
       this.longitude = longitude;
       this.numSatellitesBeingTracked = numSatellitesBeingTracked;
@@ -47,19 +51,9 @@ public final class GPSEvent extends BaseStreamingSerialPortEvent
       return numSatellitesBeingTracked;
       }
 
-   public Integer getElevationInFeet()
+   public long getElevationInFeet()
       {
       return elevationInFeet;
-      }
-
-   public boolean isLocationEvent()
-      {
-      return elevationInFeet == null;
-      }
-
-   public boolean isElevationEvent()
-      {
-      return elevationInFeet != null;
       }
 
    @Override
@@ -80,19 +74,16 @@ public final class GPSEvent extends BaseStreamingSerialPortEvent
    private String toString(final String field1, final String field2, final String field3, final String field4, final String field5)
       {
       final StringBuilder sb = new StringBuilder();
-      sb.append("GPSEvent:").append(isLocationEvent() ? "Location" : "Elevation");
+      sb.append("GPSEvent:").append(isLocationEvent ? "Location" : "Elevation");
       sb.append("{");
       sb.append(field1).append(getTimestampMilliseconds());
-      if (isLocationEvent())
+      if (isLocationEvent)
          {
          sb.append(field2).append(latitude);
          sb.append(field3).append(longitude);
          sb.append(field4).append(numSatellitesBeingTracked);
          }
-      else
-         {
-         sb.append(field5).append(elevationInFeet);
-         }
+      sb.append(field5).append(elevationInFeet);
       sb.append('}');
       return sb.toString();
       }
