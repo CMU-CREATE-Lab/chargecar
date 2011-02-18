@@ -1,18 +1,21 @@
 package org.chargecar.lcddisplay.menu.action;
 
-import java.util.Map;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.TwoOptionMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
+import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
+
+import java.util.Map;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public final class ToggleCabinHeatMenuItemAction extends TwoOptionMenuItemAction {
+    private static final Logger LOG = Logger.getLogger(ToggleCabinHeatMenuItemAction.class);
     private final LCD lcd = LCDProxy.getInstance();
     private boolean isCabinHeatEnabled = false;
 
@@ -34,17 +37,20 @@ public final class ToggleCabinHeatMenuItemAction extends TwoOptionMenuItemAction
     }
 
     protected void executeOption1Action() {
-        setAirConditioningEnabled(true);
+        setCabinHeatEnabled(true);
     }
 
     protected void executeOption2Action() {
-        setAirConditioningEnabled(false);
+        setCabinHeatEnabled(false);
     }
 
-    private void setAirConditioningEnabled(final boolean actionState) {
-        if (lcd == null) return;
-        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
-        
+    private void setCabinHeatEnabled(final boolean actionState) {
+        if (lcd == null) {
+            LOG.error("ToggleCabinHeatMenuItemAction.setCabinHeatEnabled(): lcd is null");
+            return;
+        }
+        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+
         this.isCabinHeatEnabled = actionState;
 
         if (actionState)

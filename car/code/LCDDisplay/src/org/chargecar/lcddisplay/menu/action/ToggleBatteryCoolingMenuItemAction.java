@@ -1,18 +1,21 @@
 package org.chargecar.lcddisplay.menu.action;
 
-import java.util.Map;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.TwoOptionMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
+import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
+
+import java.util.Map;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public final class ToggleBatteryCoolingMenuItemAction extends TwoOptionMenuItemAction {
+    private static final Logger LOG = Logger.getLogger(ToggleBatteryCoolingMenuItemAction.class);
     private final LCD lcd = LCDProxy.getInstance();
     private boolean isBatteryCoolingEnabled = false;
 
@@ -34,16 +37,19 @@ public final class ToggleBatteryCoolingMenuItemAction extends TwoOptionMenuItemA
     }
 
     protected void executeOption1Action() {
-        setAirConditioningEnabled(true);
+        setBatteryCoolingEnabled(true);
     }
 
     protected void executeOption2Action() {
-        setAirConditioningEnabled(false);
+        setBatteryCoolingEnabled(false);
     }
 
-    private void setAirConditioningEnabled(final boolean actionState) {
-        if (lcd == null) return;
-        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
+    private void setBatteryCoolingEnabled(final boolean actionState) {
+        if (lcd == null) {
+            LOG.error("ToggleBatteryCoolingMenuItemAction.setAirConditioningEnabled(): lcd is null");
+            return;
+        }
+        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
 
         this.isBatteryCoolingEnabled = actionState;
 

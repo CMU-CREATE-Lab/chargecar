@@ -1,13 +1,14 @@
 package org.chargecar.lcddisplay;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenu;
 import edu.cmu.ri.createlab.menu.DefaultMenuStatusManager;
 import edu.cmu.ri.createlab.menu.Menu;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -53,6 +54,10 @@ public final class ChargeCarLCD
 
       LOG.debug("ChargeCarLCD(): about to call LCDProxy.getInstance()...");
       final LCD lcd = LCDProxy.getInstance();
+
+      //always turn on the display back light
+      lcd.turnOnDisplayBackLight();
+
       lcd.addButtonPanelEventListener(new MyButtonPanelEventListener(menuStatusManager));
 
       // build the menu
