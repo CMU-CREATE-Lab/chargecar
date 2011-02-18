@@ -1,18 +1,21 @@
 package org.chargecar.lcddisplay.menu.action;
 
-import java.util.Map;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.TwoOptionMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
+import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
+
+import java.util.Map;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public final class TogglePowerSteeringMenuItemAction extends TwoOptionMenuItemAction {
+    private static final Logger LOG = Logger.getLogger(TogglePowerSteeringMenuItemAction.class);
     private final LCD lcd = LCDProxy.getInstance();
     private boolean isPowerSteeringEnabled = false;
 
@@ -34,17 +37,20 @@ public final class TogglePowerSteeringMenuItemAction extends TwoOptionMenuItemAc
     }
 
     protected void executeOption1Action() {
-        setAirConditioningEnabled(true);
+        setPowerSteeringEnabled(true);
     }
 
     protected void executeOption2Action() {
-        setAirConditioningEnabled(false);
+        setPowerSteeringEnabled(false);
     }
 
-    private void setAirConditioningEnabled(final boolean actionState) {
-        if (lcd == null) return;
-        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS-1,0," ");
-        
+    private void setPowerSteeringEnabled(final boolean actionState) {
+        if (lcd == null) {
+            LOG.error("TogglePowerSteeringMenuItemAction.setPowerSteeringEnabled(): lcd is null");
+            return;
+        }
+        getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+
         this.isPowerSteeringEnabled = actionState;
 
         if (actionState)
