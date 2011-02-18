@@ -104,6 +104,13 @@
       <format property="build.timestamp" pattern="yyyy-MM-dd hh:mm:ss a z"/>
    </tstamp>
 
+   <!-- load the svnant task -->
+   <taskdef resource="org/tigris/subversion/svnant/svnantlib.xml">
+      <classpath>
+         <fileset dir="${svnant.dir}" includes="**/*.jar"/>
+      </classpath>
+   </taskdef>
+
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
    <target name="clean" depends="clean-honda-in-dash-display,
@@ -148,10 +155,24 @@
    </target>
 
    <target name="build-lcd-display" depends="build-honda-in-dash-display" description="compiles the java source for lcd-display" unless="build-lcd-display-is-complete">
+      <!-- get the svn revision -->
+      <svn>
+         <status path="${lcd-display.src.dir}" revisionProperty="lcd-display.svn.revision"/>
+      </svn>
+      <echo level="info">SVN Revision: ${lcd-display.svn.revision}</echo>
+
       <compile-code-and-copy-resources src.dir="${lcd-display.src.dir}"
                                        build.dir="${lcd-display.build.dir}"
-                                       classpath-ref="lcd-display-classpath"/>
+                                       classpath-ref="lcd-display-classpath">
+         <resources-filterset>
+            <filterset>
+               <filter token="svn.revision" value="${lcd-display.svn.revision}"/>
+               <filter token="build.timestamp" value="${build.timestamp}"/>
+            </filterset>
+         </resources-filterset>
+      </compile-code-and-copy-resources>
 
+      <!-- -->
       <property name="build-lcd-display-is-complete" value="true"/>
    </target>
 
