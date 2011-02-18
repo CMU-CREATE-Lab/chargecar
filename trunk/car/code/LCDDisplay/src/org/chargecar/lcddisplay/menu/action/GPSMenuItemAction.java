@@ -41,7 +41,7 @@ public final class GPSMenuItemAction extends RepeatingActionCharacterDisplayMenu
         }
         final String lat = data.getLatitude();
         final String lng = data.getLongitude();
-        final long elevation = data.getElevationInFeet();
+        final Long elevation = data.getElevationInFeet();
 
         LOG.trace("GPSMenuItemAction.performAction(): updating GPS data");
         getCharacterDisplay().setLine(0, "Latitude: " + lat);

@@ -28,6 +28,7 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
    private static final String DEGREES_SYMBOL = "\u00b0";
    private static final String GPS_FIX_DATA_SENTENCE_PREFIX = "$GPGGA";
    private static final String GARMIN_ALTITUDE_SENTENCE_PREFIX = "$PGRMZ";
+   private static final double FEET_PER_METER = 3.2808399;
 
    private static final Map<String, NMEASentenceProcessor> SENTENCE_PROCESSORS;
 
@@ -45,22 +46,38 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
                                    s.next();  // ignore the time
                                    final String lat1 = s.next();  // latitude
                                    final String lat2 = s.next();  // latitude direction
-                                   final String latitude = lat2 + " " + lat1.substring(0, 2) + DEGREES_SYMBOL + lat1.substring(2) + "'";
+                                   final String latitude = (lat1.length() == 0 || lat2.length() == 0) ? null : lat2 + " " + lat1.substring(0, 2) + DEGREES_SYMBOL + lat1.substring(2) + "'";
 
                                    final String long1 = s.next();  // longitude
                                    final String long2 = s.next();  // longitude direction
-                                   final String longitude = long2 + long1.substring(0, 3) + DEGREES_SYMBOL + long1.substring(3) + "'";
+                                   final String longitude = (long1.length() == 0 || long2.length() == 0) ? null :  long2 + long1.substring(0, 3) + DEGREES_SYMBOL + long1.substring(3) + "'";
+                                   
                                    s.next();  // ignore the fix quality
                                    final int numSatellites = s.nextInt();  // number of satellites being tracked
                                    s.next();  // ignore horizontal dilution of position
-                                   final float elevationInMeters = s.nextFloat();   // elevation in meters
+                                   final String elevationInMetersStr = s.next();   // elevation in meters
+                                   Long elevationInFeet;
+                                   try
+                                      {
+                                      final float elevationInMeters = Float.parseFloat(elevationInMetersStr);
+                                      elevationInFeet = Math.round(elevationInMeters * FEET_PER_METER);
+                                      }
+                                   catch (NumberFormatException ignored)
+                                      {
+                                      LOG.error("NumberFormatException while trying to convert the elevation in meters [" + elevationInMetersStr + "] to a float");
+                                      elevationInFeet = null;
+                                      }
 
                                    // publish the event
-                                   nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites, elevationInMeters));
+                                   nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites, elevationInFeet));
                                    }
-                                catch (StringIndexOutOfBoundsException e)
+                                catch (StringIndexOutOfBoundsException ignored)
                                    {
-                                   LOG.error("StringIndexOutOfBoundsException while trying to parse the NMEA sentence.  Ignoring it.", e);
+                                   LOG.error("StringIndexOutOfBoundsException while trying to parse the NMEA sentence.  Ignoring it [" + sentence + "]");
+                                   }
+                                catch (Exception e)
+                                   {
+                                   LOG.error("Exception while trying to parse the NMEA sentence.  Ignoring it [" + sentence + "]", e);
                                    }
                                 }
                              });
