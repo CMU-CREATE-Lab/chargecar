@@ -1,14 +1,13 @@
 package org.chargecar.lcddisplay;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenu;
 import edu.cmu.ri.createlab.menu.DefaultMenuStatusManager;
 import edu.cmu.ri.createlab.menu.Menu;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -45,12 +44,10 @@ public final class ChargeCarLCD
       // create the menu status manager
       final MenuStatusManager menuStatusManager = new DefaultMenuStatusManager();
 
-      LOG.debug("ChargeCarLCD(): about to connect to the BMS, GPS, MotorController, and SensorBoard...");
+      LOG.debug("ChargeCarLCD(): about to connect to the BMS and GPS...");
       // call .getInstance() on the various managers to kick off connection establishment to them
       BMSManager.getInstance();
       GPSManager.getInstance();
-      MotorControllerManager.getInstance();
-      SensorBoardManager.getInstance();
 
       LOG.debug("ChargeCarLCD(): about to call LCDProxy.getInstance()...");
       final LCD lcd = LCDProxy.getInstance();
