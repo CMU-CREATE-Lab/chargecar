@@ -8,25 +8,23 @@ import org.chargecar.serial.streaming.BaseStreamingSerialPortEvent;
  */
 public final class GPSEvent extends BaseStreamingSerialPortEvent
    {
-   private static final double FEET_PER_METER = 3.2808399;
-
    private final String latitude;
    private final String longitude;
    private final Integer numSatellitesBeingTracked;
-   private final long elevationInFeet;
+   private final Long elevationInFeet;
    private final boolean isLocationEvent;
 
-   public static GPSEvent createLocationEvent(final Date timestamp, final String latitude, final String longitude, final int numSatellitesBeingTracked, final float elevationInMeters)
+   public static GPSEvent createLocationEvent(final Date timestamp, final String latitude, final String longitude, final int numSatellitesBeingTracked, final Long elevationInFeet)
       {
-      return new GPSEvent(true, timestamp, latitude, longitude, numSatellitesBeingTracked, Math.round(elevationInMeters * FEET_PER_METER));
+      return new GPSEvent(true, timestamp, latitude, longitude, numSatellitesBeingTracked, elevationInFeet);
       }
 
    public static GPSEvent createElevationEvent(final Date timestamp, final int elevationInFeet)
       {
-      return new GPSEvent(false, timestamp, null, null, null, elevationInFeet);
+      return new GPSEvent(false, timestamp, null, null, null, (long)elevationInFeet);
       }
 
-   private GPSEvent(final boolean isLocationEvent, final Date timestamp, final String latitude, final String longitude, final Integer numSatellitesBeingTracked, final long elevationInFeet)
+   private GPSEvent(final boolean isLocationEvent, final Date timestamp, final String latitude, final String longitude, final Integer numSatellitesBeingTracked, final Long elevationInFeet)
       {
       super(timestamp);
       this.isLocationEvent = isLocationEvent;
@@ -51,7 +49,7 @@ public final class GPSEvent extends BaseStreamingSerialPortEvent
       return numSatellitesBeingTracked;
       }
 
-   public long getElevationInFeet()
+   public Long getElevationInFeet()
       {
       return elevationInFeet;
       }
