@@ -52,9 +52,11 @@ class NMEAReader extends StreamingSerialPortReader<GPSEvent>
                                    final String longitude = long2 + long1.substring(0, 3) + DEGREES_SYMBOL + long1.substring(3) + "'";
                                    s.next();  // ignore the fix quality
                                    final int numSatellites = s.nextInt();  // number of satellites being tracked
+                                   s.next();  // ignore horizontal dilution of position
+                                   final float elevationInMeters = s.nextFloat();   // elevation in meters
 
                                    // publish the event
-                                   nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites));
+                                   nmeaReader.publishDataEvent(GPSEvent.createLocationEvent(timestamp, latitude, longitude, numSatellites, elevationInMeters));
                                    }
                                 catch (StringIndexOutOfBoundsException e)
                                    {

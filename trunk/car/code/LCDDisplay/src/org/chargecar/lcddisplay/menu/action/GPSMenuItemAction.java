@@ -1,5 +1,6 @@
 package org.chargecar.lcddisplay.menu.action;
 
+import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.RepeatingActionCharacterDisplayMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
@@ -10,8 +11,6 @@ import org.chargecar.lcddisplay.GPSManager;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -42,7 +41,7 @@ public final class GPSMenuItemAction extends RepeatingActionCharacterDisplayMenu
         }
         final String lat = data.getLatitude();
         final String lng = data.getLongitude();
-        final Integer elevation = data.getElevationInFeet();
+        final long elevation = data.getElevationInFeet();
 
         LOG.trace("GPSMenuItemAction.performAction(): updating GPS data");
         getCharacterDisplay().setLine(0, "Latitude: " + lat);
