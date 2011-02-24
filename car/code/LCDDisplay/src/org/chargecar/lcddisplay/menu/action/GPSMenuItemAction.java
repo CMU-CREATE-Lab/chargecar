@@ -1,6 +1,5 @@
 package org.chargecar.lcddisplay.menu.action;
 
-import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.RepeatingActionCharacterDisplayMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
@@ -11,6 +10,8 @@ import org.chargecar.lcddisplay.GPSManager;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -31,7 +32,7 @@ public final class GPSMenuItemAction extends RepeatingActionCharacterDisplayMenu
         final GPSEvent data = (manager == null) ? null : manager.getData();
 
         if (manager == null || data == null) {
-            LOG.debug("GPSMenuItemAction.performAction(): gps is null");
+            LOG.error("GPSMenuItemAction.performAction(): gps is null");
             getCharacterDisplay().setLine(0, "No connection to GPS.");
             getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
             return;

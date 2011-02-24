@@ -32,19 +32,19 @@ public final class VoltagesMenuItemAction extends RepeatingActionCharacterDispla
         final BMSAndEnergy data = (manager == null) ? null : manager.getData();
 
         if (manager == null || data == null) {
-            LOG.error("VoltagesMenuItemAction.run(): bms is null");
+            LOG.error("VoltagesMenuItemAction.performAction(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
             getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
             return;
         } else if (lcd == null) {
-            LOG.error("VoltagesMenuItemAction.run(): lcd is null");
+            LOG.error("VoltagesMenuItemAction.performAction(): lcd is null");
             return;
         }
         final double minVoltage = Math.round(data.getBmsState().getMinimumCellVoltage() * 100.0) / 100.0;
         final double maxVoltage = Math.round(data.getBmsState().getMaximumCellVoltage() * 100.0) / 100.0;
         final double averageVoltage = Math.round(data.getBmsState().getAverageCellVoltage() * 100.0) / 100.0;
 
-        LOG.trace("VoltagesMenuItemAction.activate(): updating voltages");
+        LOG.trace("VoltagesMenuItemAction.performAction(): updating voltages");
         getCharacterDisplay().setLine(0, "Min Voltage: " + minVoltage);
         getCharacterDisplay().setLine(1, "Max Voltage: " + maxVoltage);
         getCharacterDisplay().setLine(2, "Average Voltage: " + averageVoltage);
