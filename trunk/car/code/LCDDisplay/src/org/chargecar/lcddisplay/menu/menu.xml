@@ -125,4 +125,9 @@
             <implementation-class name="org.chargecar.lcddisplay.menu.action.ControllerErrorCodesMenuItemAction"/>
         </item>
     </item>
+    <item text="Version Info">
+        <item text="">
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.VersionInfoMenuItemAction"/>
+        </item>
+    </item>
 </menu>

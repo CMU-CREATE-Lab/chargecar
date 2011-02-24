@@ -28,7 +28,9 @@ public final class ControllerErrorCodesMenuItemAction extends CharacterDisplayMe
             LOG.error("ControllerErrorCodesMenuItemAction.activate(): lcd is null");
             return;
         }
-        getCharacterDisplay().setLine(0, "Error Code: " + lcd.getMotorControllerErrorCodes());
+        
+        final int errorCode = lcd.getMotorControllerErrorCodes();
+        getCharacterDisplay().setLine(0, "Error Code: " + errorCode);
         getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
         getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
     }
