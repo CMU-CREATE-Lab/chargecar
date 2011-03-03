@@ -19,6 +19,20 @@
       </layout>
    </appender>
 
+   <appender name="RollingFileAppender_DataOnly" class="org.apache.log4j.rolling.RollingFileAppender">
+      <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+         <param name="FileNamePattern" value="Data_%d{yyyyMMdd}.log"/>
+      </rollingPolicy>
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%d [%t] %-5p: %c: %m%n"/>
+      </layout>
+   </appender>
+
+   <logger name="DataLog" additivity="false">
+      <appender-ref ref="RollingFileAppender_DataOnly"/>
+   </logger>
+
    <root>
       <priority value="debug"/>
       <appender-ref ref="ConsoleAppender"/>
