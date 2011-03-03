@@ -11,12 +11,12 @@
         <item text="Display Backlight">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleDisplayBackLightMenuItemAction">
-                    <property key="action.prompt">Toggle Display Backlight?</property>
+                    <property key="action.prompt">Toggle Display      Backlight?</property>
                     <property key="action.cancel">Cancelled!</property>
                     <property key="choice.option1">Enable</property>
                     <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Display backlight enabled.</property>
-                    <property key="action.option2">Display backlight disabled.</property>
+                    <property key="action.option1">Display backlight   enabled.</property>
+                    <property key="action.option2">Display backlight   disabled.</property>
                 </implementation-class>
             </item>
         </item>
@@ -47,25 +47,34 @@
         <item text="Battery Cooling">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleBatteryCoolingMenuItemAction">
-                    <property key="action.prompt">Toggle Battery Cooling?</property>
+                    <property key="action.prompt">Toggle Battery      Cooling?</property>
                     <property key="action.cancel">Cancelled!</property>
                     <property key="choice.option1">Enable</property>
                     <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Battery cooling enabled.</property>
-                    <property key="action.option2">Battery cooling disabled.</property>
+                    <property key="action.option1">Battery cooling     enabled.</property>
+                    <property key="action.option2">Battery cooling     disabled.</property>
                 </implementation-class>
             </item>
         </item>
         <item text="Battery Heating">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleBatteryHeatingMenuItemAction">
-                    <property key="action.prompt">Toggle Battery Heating?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Battery heating enabled.</property>
-                    <property key="action.option2">Battery heating disabled.</property>
-                </implementation-class>
+            <item text="Toggle Battery    Heating">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.ToggleBatteryHeatingMenuItemAction">
+                        <property key="action.prompt">Toggle Battery      Heating?</property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable</property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1">Battery heating     enabled.</property>
+                        <property key="action.option2">Battery heating     disabled.</property>
+                    </implementation-class>
+                </item>
+            </item>
+            <item text="Set Battery HeaterCutoff Temperature">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.SetBatteryHeaterCutoffTempMenuItemAction"/>
+                </item>
             </item>
         </item>
         <item text="Brake Light">
@@ -83,12 +92,12 @@
         <item text="Power Steering">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.TogglePowerSteeringMenuItemAction">
-                    <property key="action.prompt">Toggle Power Steering?</property>
+                    <property key="action.prompt">Toggle Power        Steering?</property>
                     <property key="action.cancel">Cancelled!</property>
                     <property key="choice.option1">Enable</property>
                     <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Power steering enabled.</property>
-                    <property key="action.option2">Power steering disabled.</property>
+                    <property key="action.option1">Power steering      enabled.</property>
+                    <property key="action.option2">Power steering      disabled.</property>
                 </implementation-class>
             </item>
         </item>
@@ -116,8 +125,22 @@
         </item>
     </item>
     <item text="Temperatures">
-        <item text="">
-            <implementation-class name="org.chargecar.lcddisplay.menu.action.TemperaturesMenuItemAction"/>
+        <item text="Motor Temp">
+            <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.MotorTemperatureMenuItemAction"/>
+
+            </item>
+        </item>
+        <item text="Motor Controller  Temp">
+            <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.MotorControllerTemperatureMenuItemAction"/>
+
+            </item>
+        </item>
+        <item text="Battery Temps">
+            <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.BatteryTemperaturesMenuItemAction"/>
+            </item>
         </item>
     </item>
     <item text="Controller Error  Codes">

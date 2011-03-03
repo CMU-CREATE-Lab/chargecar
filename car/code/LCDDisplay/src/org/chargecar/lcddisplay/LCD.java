@@ -291,6 +291,10 @@ public interface LCD extends CreateLabDeviceProxy
     */
    boolean resetDisplay();
 
+
+   int getBatteryHeaterCutoffTemp();
+   void setBatteryHeaterCutoffTemp(int newBatteryHeaterTurnOnValue);
+       
    void addButtonPanelEventListener(ButtonPanelEventListener listener);
 
    void removeButtonPanelEventListener(ButtonPanelEventListener listener);
