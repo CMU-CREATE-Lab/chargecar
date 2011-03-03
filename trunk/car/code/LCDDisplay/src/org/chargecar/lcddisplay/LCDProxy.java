@@ -1,38 +1,24 @@
 package org.chargecar.lcddisplay;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.device.CreateLabDevicePingFailureEventListener;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceNoReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandExecutionQueue;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
-import edu.cmu.ri.createlab.serial.config.BaudRate;
-import edu.cmu.ri.createlab.serial.config.CharacterSize;
-import edu.cmu.ri.createlab.serial.config.FlowControl;
-import edu.cmu.ri.createlab.serial.config.Parity;
-import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
-import edu.cmu.ri.createlab.serial.config.StopBits;
+import edu.cmu.ri.createlab.serial.config.*;
 import edu.cmu.ri.createlab.util.sequence.BoundedSequenceNumber;
 import edu.cmu.ri.createlab.util.sequence.SequenceNumber;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.chargecar.lcddisplay.commands.DisconnectCommandStrategy;
-import org.chargecar.lcddisplay.commands.DisplayCommandStrategy;
-import org.chargecar.lcddisplay.commands.GetErrorCodesCommandStrategy;
-import org.chargecar.lcddisplay.commands.GetRPMCommandStrategy;
-import org.chargecar.lcddisplay.commands.GetTemperatureCommandStrategy;
-import org.chargecar.lcddisplay.commands.HandshakeCommandStrategy;
-import org.chargecar.lcddisplay.commands.InputCommandStrategy;
-import org.chargecar.lcddisplay.commands.OutputCommandStrategy;
-import org.chargecar.lcddisplay.commands.ResetDisplayCommandStrategy;
-import org.chargecar.lcddisplay.commands.ReturnValueCommandStrategy;
+import org.chargecar.honda.bms.BMSAndEnergy;
+import org.chargecar.lcddisplay.commands.*;
+import org.chargecar.lcddisplay.lcd.LCDEvent;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.*;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -41,15 +27,22 @@ import org.chargecar.lcddisplay.commands.ReturnValueCommandStrategy;
 public final class LCDProxy implements LCD {
     private static final Logger LOG = Logger.getLogger(LCDProxy.class);
 
+    private LCDEvent lcdEvent = null;
+
     private static final String APPLICATION_NAME = "LCDProxy";
     private static final int DELAY_IN_SECONDS_BETWEEN_PEER_PINGS = 5;
     private static final int DELAY_IN_MILLISECONDS_BETWEEN_PEER_PINGS = 50;
+    private static final int DELAY_IN_SECONDS_BETWEEN_BATTERY_HEATER_CHECK = 30;
+    private static final int DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL = 1;
     public static final SequenceNumber SEQUENCE_NUMBER = new BoundedSequenceNumber(0, 255);
+    private int batteryHeaterTurnOnValue = 10; //in celsius
+    private boolean heaterOn = false;
 
     private static class LazyHolder {
         private static final LCDCreator INSTANCE = new LCDCreator();
 
-        private LazyHolder() { }
+        private LazyHolder() {
+        }
     }
 
     public static LCD getInstance() {
@@ -122,6 +115,8 @@ public final class LCDProxy implements LCD {
     private final LCDPinger lcdPinger = new LCDPinger();
     private final ScheduledExecutorService peerPingScheduler = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("LCDProxy.peerPingScheduler"));
     private final ScheduledFuture<?> peerPingScheduledFuture;
+    private final ScheduledFuture<?> batteryHeaterScheduledFuture;
+    private final ScheduledFuture<?> lcdEventScheduledFuture;
     private final Collection<CreateLabDevicePingFailureEventListener> createLabDevicePingFailureEventListeners = new HashSet<CreateLabDevicePingFailureEventListener>();
     private final Set<ButtonPanelEventListener> buttonPanelEventListeners = new HashSet<ButtonPanelEventListener>();
 
@@ -134,6 +129,18 @@ public final class LCDProxy implements LCD {
                 DELAY_IN_MILLISECONDS_BETWEEN_PEER_PINGS, // delay before first ping
                 DELAY_IN_MILLISECONDS_BETWEEN_PEER_PINGS, // delay between pings
                 TimeUnit.MILLISECONDS);
+
+
+        batteryHeaterScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDBatteryHeaterPoller(),
+                1, // delay before first ping
+                DELAY_IN_SECONDS_BETWEEN_BATTERY_HEATER_CHECK, // delay between pings
+                TimeUnit.SECONDS);
+
+
+        lcdEventScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDEventPoller(),
+                1, // delay before first ping
+                DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL, // delay between pings
+                TimeUnit.SECONDS);
     }
 
     public String getPortName() {
@@ -371,6 +378,15 @@ public final class LCDProxy implements LCD {
     public boolean resetDisplay() {
         return noReturnValueCommandExecutor.executeAndReturnStatus(new ResetDisplayCommandStrategy());
     }
+
+    public int getBatteryHeaterCutoffTemp() {
+        return batteryHeaterTurnOnValue;
+    }
+
+    public void setBatteryHeaterCutoffTemp(int newBatteryHeaterTurnOnValue) {
+        batteryHeaterTurnOnValue = newBatteryHeaterTurnOnValue;
+    }
+
 //chargecar end
 
     public void disconnect() {
@@ -412,6 +428,65 @@ public final class LCDProxy implements LCD {
             LOG.debug("LCDProxy.disconnect(): done shutting down the SerialPortCommandExecutionQueue");
         } catch (Exception e) {
             LOG.error("LCDProxy.disconnect(): Exception while trying to shut down the SerialPortCommandExecutionQueue", e);
+        }
+    }
+
+    private class LCDEventPoller implements Runnable {
+        public void run() {
+            final LCD lcd = LCDProxy.getInstance();
+
+            if (lcd == null) {
+                LOG.error("LCDBatteryHeaterPoller.run(): lcd is null");
+                return;
+            }
+
+            final int[] rawValues = getInputs();
+            final boolean isRunning = lcd.isCarRunning(rawValues);
+            final boolean isCharging = lcd.isCarCharging(rawValues);
+            final double motorControllerTemperature = lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin());
+            final double motorTemperature = lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin());
+            final int motorControllerErrorCodes = lcd.getMotorControllerErrorCodes();
+            final int rpm = lcd.getRPM();
+
+            lcdEvent = new LCDEvent(new Date(), isRunning, isCharging, motorControllerTemperature, motorTemperature, motorControllerErrorCodes, rpm);
+            if (LOG.isInfoEnabled())
+                LOG.info(lcdEvent.toLoggingString());
+        }
+    }
+
+    private class LCDBatteryHeaterPoller implements Runnable {
+        public void run() {
+            final LCD lcd = LCDProxy.getInstance();
+            final BMSManager manager = BMSManager.getInstance();
+            final BMSAndEnergy data = (manager == null) ? null : manager.getData();
+
+            if (manager == null || data == null) {
+                LOG.error("LCDBatteryHeaterPoller.run(): bms is null");
+                return;
+            } else if (lcd == null) {
+                LOG.error("LCDBatteryHeaterPoller.run(): lcd is null");
+                return;
+            }
+
+            final double minBoardTempInCelsius = data.getBmsState().getMinimumCellBoardTemp();
+            //final double minBoardTempInFahrenheit = (minBoardTempInCelsius * (1.8) + 32);
+            final int[] rawValues = getInputs();
+            if (lcd.isCarCharging(rawValues) && minBoardTempInCelsius < getBatteryHeaterCutoffTemp()) {
+                LOG.info("getMinimumCellBoardTemp below cutoff " + "(" + getBatteryHeaterCutoffTemp() + ")" + ", turning battery heater on.");
+                if (heaterOn) {
+                    heaterOn = false;
+                    lcd.turnOffBatteryHeating();
+                    LOG.info("cycling the heater off");
+                } else {
+                    heaterOn = true;
+                    lcd.turnOnBatteryHeating();
+                    LOG.info("cycling the heater on");
+                }
+                //lcd.turnOnBatteryHeating();
+            } else {
+                LOG.info("getMinimumCellBoardTemp above cutoff " + "(" + getBatteryHeaterCutoffTemp() + ")" + ", turning battery heater off.");
+                lcd.turnOffBatteryHeating();
+            }
         }
     }
 
