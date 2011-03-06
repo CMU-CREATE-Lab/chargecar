@@ -26,6 +26,7 @@ import java.util.concurrent.*;
  */
 public final class LCDProxy implements LCD {
     private static final Logger LOG = Logger.getLogger(LCDProxy.class);
+    private static final Logger DATA_LOG = Logger.getLogger("DataLog");
 
     private LCDEvent lcdEvent = null;
 
@@ -449,8 +450,8 @@ public final class LCDProxy implements LCD {
             final int rpm = lcd.getRPM();
 
             lcdEvent = new LCDEvent(new Date(), isRunning, isCharging, motorControllerTemperature, motorTemperature, motorControllerErrorCodes, rpm);
-            if (LOG.isInfoEnabled())
-                LOG.info(lcdEvent.toLoggingString());
+            if (DATA_LOG.isInfoEnabled())
+                DATA_LOG.info(lcdEvent.toLoggingString());
         }
     }
 
@@ -482,10 +483,12 @@ public final class LCDProxy implements LCD {
                     lcd.turnOnBatteryHeating();
                     LOG.info("cycling the heater on");
                 }
-                //lcd.turnOnBatteryHeating();
             } else {
-                LOG.info("getMinimumCellBoardTemp above cutoff " + "(" + getBatteryHeaterCutoffTemp() + ")" + ", turning battery heater off.");
-                lcd.turnOffBatteryHeating();
+                if (heaterOn) {
+                    heaterOn = false;
+                    LOG.info("getMinimumCellBoardTemp above cutoff " + "(" + getBatteryHeaterCutoffTemp() + ")" + ", turning battery heater off.");
+                    lcd.turnOffBatteryHeating();
+                }
             }
         }
     }
