@@ -10,24 +10,20 @@ import org.chargecar.honda.StreamingSerialPortDeviceModel;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class GPSModel extends StreamingSerialPortDeviceModel<GPSEvent, GPSEvent>
-   {
-   private static final Logger LOG = Logger.getLogger(GPSModel.class);
+public final class GPSModel extends StreamingSerialPortDeviceModel<GPSEvent, GPSEvent> {
+    private static final Logger DATA_LOG = Logger.getLogger("DataLog");
 
-   private final byte[] dataSynchronizationLock = new byte[0];
+    private final byte[] dataSynchronizationLock = new byte[0];
 
-   public GPSEvent update(final GPSEvent data)
-      {
-      synchronized (dataSynchronizationLock)
-         {
-         if (LOG.isInfoEnabled())
-            {
-            LOG.info(data.toLoggingString());
+    public GPSEvent update(final GPSEvent data) {
+        synchronized (dataSynchronizationLock) {
+            if (DATA_LOG.isInfoEnabled()) {
+                DATA_LOG.info(data.toLoggingString());
             }
 
-         publishEventToListeners(data);
+            publishEventToListeners(data);
 
-         return data;
-         }
-      }
-   }
+            return data;
+        }
+    }
+}

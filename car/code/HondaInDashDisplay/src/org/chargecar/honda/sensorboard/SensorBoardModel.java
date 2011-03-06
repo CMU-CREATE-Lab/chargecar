@@ -10,24 +10,21 @@ import org.chargecar.honda.StreamingSerialPortDeviceModel;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public class SensorBoardModel extends StreamingSerialPortDeviceModel<SensorBoardEvent, SensorBoardEvent>
-   {
-   private static final Logger LOG = Logger.getLogger(SensorBoardModel.class);
+public class SensorBoardModel extends StreamingSerialPortDeviceModel<SensorBoardEvent, SensorBoardEvent> {
+    private static final Logger DATA_LOG = Logger.getLogger("DataLog");
 
-   private final byte[] dataSynchronizationLock = new byte[0];
 
-   public SensorBoardEvent update(final SensorBoardEvent data)
-      {
-      synchronized (dataSynchronizationLock)
-         {
-         if (LOG.isInfoEnabled())
-            {
-            LOG.info(data.toLoggingString());
+    private final byte[] dataSynchronizationLock = new byte[0];
+
+    public SensorBoardEvent update(final SensorBoardEvent data) {
+        synchronized (dataSynchronizationLock) {
+            if (DATA_LOG.isInfoEnabled()) {
+                DATA_LOG.info(data.toLoggingString());
             }
 
-         publishEventToListeners(data);
+            publishEventToListeners(data);
 
-         return data;
-         }
-      }
-   }
+            return data;
+        }
+    }
+}

@@ -16,7 +16,7 @@ import java.util.Map;
 public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDisplayMenuItemAction {
     private static final Logger LOG = Logger.getLogger(SetBatteryHeaterCutoffTempMenuItemAction.class);
 
-    private static final String DEFAULT_LABEL_ACTION_PERFORMED = "Battery hearter turn on value set to ";
+    private static final String DEFAULT_LABEL_ACTION_PERFORMED = "Battery hearter turnon value set to: ";
     private static final String DEFAULT_LABEL_ACTION_CANCELLED = "Cancelled!";
 
     private static final String PROPERTY_ACTION_PERFORMED = "action.performed";
@@ -78,7 +78,7 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
         //TODO alter at a  later point. Makes sense to have bounds checking, but the one right now is only useful with the initial layout
         if (newTemp < 10)
             newTemp = 10;
-        
+
         getCharacterDisplay().setCharacter(1, 15, String.valueOf(newTemp));
         //getCharacterDisplay().setText("Battery Heater Turn On Temp: " + newTemp + " F");
         //getCharacterDisplay().setLine(2,"(use up/down buttons)");
