@@ -14,7 +14,7 @@ import org.chargecar.lcddisplay.LCDProxy;
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public final class VersionInfoMenuItemAction extends CharacterDisplayMenuItemAction {
-    private static final Logger LOG = Logger.getLogger(ControllerErrorCodesMenuItemAction.class);
+    private static final Logger LOG = Logger.getLogger(ErrorCodesMenuItemAction.class);
 
     public VersionInfoMenuItemAction(final MenuItem menuItem,
                                      final MenuStatusManager menuStatusManager,
@@ -33,7 +33,8 @@ public final class VersionInfoMenuItemAction extends CharacterDisplayMenuItemAct
         if (versionDetails != null) {
             getCharacterDisplay().setLine(0, "ChargeCar Display");
             getCharacterDisplay().setLine(1, "Version: " + versionDetails.getMajorMinorRevision());
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
         }
     }
 }

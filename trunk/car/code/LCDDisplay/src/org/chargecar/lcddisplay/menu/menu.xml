@@ -2,155 +2,80 @@
 <!DOCTYPE menu PUBLIC "-//CREATE Lab//Menu//EN" "http://www.createlab.ri.cmu.edu/dtd/terk/menu/menu.dtd">
 
 <menu welcome-text="     Welcome to          ChargeCar!">
-    <item text="General Info">
+    <item text="[*] Driving Mode  [ ] Charging Mode [ ] Drive History [ ] Options">
         <item text="">
-            <implementation-class name="org.chargecar.lcddisplay.menu.action.GeneralInformationMenuItemAction"/>
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.DrivingModeMenuItemAction"/>
         </item>
     </item>
-    <item text="Toggle            Accessories">
-        <item text="Display Backlight">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleDisplayBackLightMenuItemAction">
-                    <property key="action.prompt">Toggle Display      Backlight?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Display backlight   enabled.</property>
-                    <property key="action.option2">Display backlight   disabled.</property>
-                </implementation-class>
-            </item>
+    <item text="[ ] Driving Mode  [*] Charging Mode [ ] Drive History [ ] Options">
+        <item text="">
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.ChargingModeMenuItemAction"/>
         </item>
-        <item text="Air Conditioning">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleAirConditioningMenuItemAction">
-                    <property key="action.prompt">Toggle AC?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">AC enabled.</property>
-                    <property key="action.option2">AC disabled.</property>
-                </implementation-class>
-            </item>
+    </item>
+    <item text="[ ] Driving Mode  [ ] Charging Mode [*] Drive History [ ] Options">
+        <item text="">
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.DriveHistoryMenuItemAction"/>
         </item>
-        <item text="Cabin Heat">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleCabinHeatMenuItemAction">
-                    <property key="action.prompt">Toggle Cabin Heat?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Cabin heat enabled.</property>
-                    <property key="action.option2">Cabin heat disabled.</property>
-                </implementation-class>
-            </item>
-        </item>
-        <item text="Battery Cooling">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleBatteryCoolingMenuItemAction">
-                    <property key="action.prompt">Toggle Battery      Cooling?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Battery cooling     enabled.</property>
-                    <property key="action.option2">Battery cooling     disabled.</property>
-                </implementation-class>
-            </item>
-        </item>
-        <item text="Battery Heating">
-            <item text="Toggle Battery    Heating">
+    </item>
+    <item text="[ ] Driving Mode  [ ] Charging Mode [ ] Drive History [*] Options">
+        <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Version Info">
+            <item text="[*] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating">
                 <item text="">
                     <implementation-class
-                            name="org.chargecar.lcddisplay.menu.action.ToggleBatteryHeatingMenuItemAction">
-                        <property key="action.prompt">Toggle Battery      Heating?</property>
+                            name="org.chargecar.lcddisplay.menu.action.ToggleDisplayBackLightMenuItemAction">
+                        <property key="action.prompt">Enable LCD          Backlight?</property>
                         <property key="action.cancel">Cancelled!</property>
-                        <property key="choice.option1">Enable</property>
+                        <property key="choice.option1">Enable </property>
                         <property key="choice.option2">Disable</property>
-                        <property key="action.option1">Battery heating     enabled.</property>
-                        <property key="action.option2">Battery heating     disabled.</property>
+                        <property key="action.option1">LCD backlight       enabled.</property>
+                        <property key="action.option2">LCD backlight       disabled.</property>
                     </implementation-class>
                 </item>
             </item>
-            <item text="Set Battery HeaterCutoff Temperature">
+            <item text="[ ] LCD Backlight [*] Batt Cooling  [ ] Batt Heating">
                 <item text="">
                     <implementation-class
-                            name="org.chargecar.lcddisplay.menu.action.SetBatteryHeaterCutoffTempMenuItemAction"/>
+                            name="org.chargecar.lcddisplay.menu.action.ToggleBatteryCoolingMenuItemAction">
+                        <property key="action.prompt">Enable Battery      Cooling?</property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1">Battery cooling     enabled.</property>
+                        <property key="action.option2">Battery cooling     disabled.</property>
+                    </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] LCD Backlight [ ] Batt Cooling  [*] Batt Heating">
+                <item text="[*] Toggle Batt       Heating       [ ] Set Batt          Heater Cutoff">
+                    <item text="">
+                        <implementation-class
+                                name="org.chargecar.lcddisplay.menu.action.ToggleBatteryHeatingMenuItemAction">
+                            <property key="action.prompt">Enable Battery      Heating?</property>
+                            <property key="action.cancel">Cancelled!</property>
+                            <property key="choice.option1">Enable </property>
+                            <property key="choice.option2">Disable</property>
+                            <property key="action.option1">Battery heating     enabled.</property>
+                            <property key="action.option2">Battery heating     disabled.</property>
+                        </implementation-class>
+                    </item>
+                </item>
+                <item text="[ ] Toggle Batt       Heating       [*] Set Batt          Heater Cutoff">
+                    <item text="">
+                        <implementation-class
+                                name="org.chargecar.lcddisplay.menu.action.SetBatteryHeaterCutoffTempMenuItemAction"/>
+                    </item>
                 </item>
             </item>
         </item>
-        <item text="Brake Light">
+         <item text="[ ] Toggle Acc.   [*] Error Codes   [ ] Version Info">
             <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.ToggleBrakeLightMenuItemAction">
-                    <property key="action.prompt">Toggle Brake Light?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Brake light enabled.</property>
-                    <property key="action.option2">Brake light disabled.</property>
-                </implementation-class>
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.ErrorCodesMenuItemAction"/>
             </item>
         </item>
-        <item text="Power Steering">
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [*] Version Info">
             <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.TogglePowerSteeringMenuItemAction">
-                    <property key="action.prompt">Toggle Power        Steering?</property>
-                    <property key="action.cancel">Cancelled!</property>
-                    <property key="choice.option1">Enable</property>
-                    <property key="choice.option2">Disable</property>
-                    <property key="action.option1">Power steering      enabled.</property>
-                    <property key="action.option2">Power steering      disabled.</property>
-                </implementation-class>
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.VersionInfoMenuItemAction"/>
             </item>
-        </item>
-    </item>
-    <item text="Sensor Info">
-        <item text="Voltages">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.VoltagesMenuItemAction"/>
-            </item>
-        </item>
-        <item text="Currents">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.CurrentsMenuItemAction"/>
-            </item>
-        </item>
-    </item>
-    <item text="GPS Info">
-        <item text="">
-            <implementation-class name="org.chargecar.lcddisplay.menu.action.GPSMenuItemAction"/>
-        </item>
-    </item>
-    <item text="RPM">
-        <item text="">
-            <implementation-class name="org.chargecar.lcddisplay.menu.action.RPMMenuItemAction"/>
-        </item>
-    </item>
-    <item text="Temperatures">
-        <item text="Motor Temp">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.MotorTemperatureMenuItemAction"/>
-
-            </item>
-        </item>
-        <item text="Motor Controller  Temp">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.MotorControllerTemperatureMenuItemAction"/>
-
-            </item>
-        </item>
-        <item text="Battery Temps">
-            <item text="">
-                <implementation-class name="org.chargecar.lcddisplay.menu.action.BatteryTemperaturesMenuItemAction"/>
-            </item>
-        </item>
-    </item>
-    <item text="Controller Error  Codes">
-        <item text="">
-            <implementation-class name="org.chargecar.lcddisplay.menu.action.ControllerErrorCodesMenuItemAction"/>
-        </item>
-    </item>
-    <item text="Version Info">
-        <item text="">
-            <implementation-class name="org.chargecar.lcddisplay.menu.action.VersionInfoMenuItemAction"/>
         </item>
     </item>
 </menu>
