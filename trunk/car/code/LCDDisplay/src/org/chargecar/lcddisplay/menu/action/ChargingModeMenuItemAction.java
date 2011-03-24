@@ -62,7 +62,7 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
             double currentEfficiency = ((bmsData.getEnergyEquation().getKilowattHours() * lcd.getTripDistance()) * 100.0) / 100.0;
             currentEfficiency = Math.round(currentEfficiency * 100.0) / 100.0;
             LOG.trace("ChargingModeMenuItemAction.performAction(): updating kwhMeter");
-            getCharacterDisplay().setLine(0, "^| Charge " + GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage() + "%", LCDConstants.NUM_COLS - 10));
+            getCharacterDisplay().setLine(0, "^| Charge " + GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage()/2 + "%", LCDConstants.NUM_COLS - 10));
             getCharacterDisplay().setLine(1, " | " + "Src Curnt " + GeneralHelper.padLeft(String.valueOf(Math.round(bmsData.getBmsState().getSourceCurrentAmps() * 100.0) / 100.0), LCDConstants.NUM_COLS - 13));
             getCharacterDisplay().setLine(2, " | Charging Time " + GeneralHelper.padLeft(String.valueOf(Math.round(((lcd.getChargingTime() * LCDConstants.SECONDS_TO_HOURS) * 100.0) / 100.0)), LCDConstants.NUM_COLS - 17));
             getCharacterDisplay().setLine(3, "v|               hrs");
