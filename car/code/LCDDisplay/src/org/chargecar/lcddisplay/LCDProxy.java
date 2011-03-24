@@ -11,13 +11,15 @@ import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.chargecar.honda.bms.BMSAndEnergy;
+import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.lcddisplay.commands.*;
+import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.lcd.LCDEvent;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -29,15 +31,26 @@ public final class LCDProxy implements LCD {
     private static final Logger DATA_LOG = Logger.getLogger("DataLog");
 
     private LCDEvent lcdEvent = null;
+    private final byte[] dataSynchronizationLock = new byte[0];
 
     private static final String APPLICATION_NAME = "LCDProxy";
     private static final int DELAY_IN_SECONDS_BETWEEN_PEER_PINGS = 5;
     private static final int DELAY_IN_MILLISECONDS_BETWEEN_PEER_PINGS = 50;
     private static final int DELAY_IN_SECONDS_BETWEEN_BATTERY_HEATER_CHECK = 30;
     private static final int DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL = 1;
+    private static final int DELAY_IN_MILISECONDS_BETWEEN_BRAKELIGHT_POLL = 100;
+    private static final int DELAY_IN_SECONDS_BETWEEN_BACKUPONE_POLL = 10;
+    private static final int DELAY_IN_SECONDS_BETWEEN_BACKUPTWO_POLL = 60;
+
     public static final SequenceNumber SEQUENCE_NUMBER = new BoundedSequenceNumber(0, 255);
-    private int batteryHeaterTurnOnValue = 10; //in celsius
     private boolean heaterOn = false;
+    private boolean brakeLightOn = false;
+    private Properties savedProperties = null;
+    private String savePropertiesFileName = LCDConstants.DEFAULT_PROPERTIES_FILE;
+    private double tripDistance = 0.0;
+    private double chargingTime = 0.0;
+    private double drivingTime = 0.0;
+    List<Double> previousLatLng = null;
 
     private static class LazyHolder {
         private static final LCDCreator INSTANCE = new LCDCreator();
@@ -118,6 +131,9 @@ public final class LCDProxy implements LCD {
     private final ScheduledFuture<?> peerPingScheduledFuture;
     private final ScheduledFuture<?> batteryHeaterScheduledFuture;
     private final ScheduledFuture<?> lcdEventScheduledFuture;
+    private final ScheduledFuture<?> brakeLightScheduledFuture;
+    private final ScheduledFuture<?> propertiesBackupOneScheduledFuture;
+    private final ScheduledFuture<?> propertiesBackupTwoScheduledFuture;
     private final Collection<CreateLabDevicePingFailureEventListener> createLabDevicePingFailureEventListeners = new HashSet<CreateLabDevicePingFailureEventListener>();
     private final Set<ButtonPanelEventListener> buttonPanelEventListeners = new HashSet<ButtonPanelEventListener>();
 
@@ -142,6 +158,24 @@ public final class LCDProxy implements LCD {
                 1, // delay before first ping
                 DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL, // delay between pings
                 TimeUnit.SECONDS);
+
+        brakeLightScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDBrakeLightPoller(),
+                1, // delay before first ping
+                DELAY_IN_MILISECONDS_BETWEEN_BRAKELIGHT_POLL, // delay between pings
+                TimeUnit.MILLISECONDS);
+
+
+        propertiesBackupOneScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesBackupOnePoller(),
+                1, // delay before first ping
+                DELAY_IN_SECONDS_BETWEEN_BACKUPONE_POLL, // delay between pings
+                TimeUnit.SECONDS);
+
+
+        propertiesBackupTwoScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesBackupTwoPoller(),
+                1, // delay before first ping
+                DELAY_IN_SECONDS_BETWEEN_BACKUPTWO_POLL, // delay between pings
+                TimeUnit.SECONDS);
+
     }
 
     public String getPortName() {
@@ -178,6 +212,10 @@ public final class LCDProxy implements LCD {
 
     public boolean setText(final int row, final int column, final String displayString) {
         return noReturnValueCommandExecutor.executeAndReturnStatus(new DisplayCommandStrategy(row, column, displayString));
+    }
+
+    public boolean setText(final int row, final int column, final String displayString, final boolean doAscii) {
+        return noReturnValueCommandExecutor.executeAndReturnStatus(new DisplayCommandStrategy(row, column, displayString, true));
     }
 
     public Double getControllerTemperatureInKelvin() {
@@ -381,11 +419,98 @@ public final class LCDProxy implements LCD {
     }
 
     public int getBatteryHeaterCutoffTemp() {
-        return batteryHeaterTurnOnValue;
+        return Integer.parseInt(getSavedProperty("batteryHeaterTurnOnValue"));
     }
 
     public void setBatteryHeaterCutoffTemp(int newBatteryHeaterTurnOnValue) {
-        batteryHeaterTurnOnValue = newBatteryHeaterTurnOnValue;
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            //tempertaure in celsius
+            setSavedProperty("batteryHeaterTurnOnValue", Integer.toString(newBatteryHeaterTurnOnValue));
+            writeSavedProperties();
+        }
+    }
+
+    public String getSavedProperty(String key) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return null;
+            String value = savedProperties.getProperty(key);
+            return value;
+        }
+    }
+
+    public void setSavedProperty(String key, String value) {
+        if (savedProperties == null) return;
+        savedProperties.setProperty(key, value);
+    }
+
+    public boolean openSavedProperties(String fileName) {
+        synchronized (dataSynchronizationLock) {
+            savedProperties = new Properties();
+            try {
+                savedProperties.load(new FileInputStream(fileName));
+            } catch (IOException e) {
+                LOG.error("Error reading properties file.");
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public void writeSavedProperties() {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            try {
+                //if file does not exist, a new one will be created
+                savedProperties.store(new FileOutputStream(savePropertiesFileName), null);
+            } catch (IOException e) {
+                LOG.error("Error writing to properties file.");
+            }
+        }
+    }
+
+    public void writeSavedPropertiesBackup1() {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            try {
+                //if file does not exist, a new one will be created
+                savedProperties.store(new FileOutputStream(LCDConstants.APP_PROPERTIES_FILE_BACKUP1), null);
+            } catch (IOException e) {
+                LOG.error("Error writing to backup1 properties file.");
+            }
+        }
+    }
+
+    public void writeSavedPropertiesBackup2() {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            try {
+                //if file does not exist, a new one will be created
+                savedProperties.store(new FileOutputStream(LCDConstants.APP_PROPERTIES_FILE_BACKUP2), null);
+            } catch (IOException e) {
+                LOG.error("Error writing to backup2 properties file.");
+            }
+        }
+    }
+
+    public int getNumberOfSavedProperties() {
+        return savedProperties.size();
+    }
+
+    public String getCurrentPropertiesFileName() {
+        return savePropertiesFileName;
+    }
+
+    public void setCurrentPropertiesFileName(String newPropertiesFileName) {
+        savePropertiesFileName = newPropertiesFileName;
+    }
+
+    public double getTripDistance() {
+        return tripDistance;
+    }
+
+    public double getChargingTime() {
+        return chargingTime;
     }
 
 //chargecar end
@@ -399,13 +524,16 @@ public final class LCDProxy implements LCD {
             LOG.debug("LCDProxy.disconnect(" + willAddDisconnectCommandToQueue + ")");
         }
 
-        // turn off the peer pinger
+        // turn off the peer pingers
         try {
             peerPingScheduledFuture.cancel(false);
+            batteryHeaterScheduledFuture.cancel(false);
+            lcdEventScheduledFuture.cancel(false);
             peerPingScheduler.shutdownNow();
-            LOG.debug("LCDProxy.disconnect(): Successfully shut down CarLCD pinger.");
+
+            LOG.debug("LCDProxy.disconnect(): Successfully shut down CarLCD pingers.");
         } catch (Exception e) {
-            LOG.error("LCDProxy.disconnect(): Exception caught while trying to shut down peer pinger", e);
+            LOG.error("LCDProxy.disconnect(): Exception caught while trying to shut down peer pingers", e);
         }
 
         // optionally send goodbye command to the CarLCD
@@ -432,9 +560,51 @@ public final class LCDProxy implements LCD {
         }
     }
 
+    private class LCDPropertiesBackupOnePoller implements Runnable {
+        public void run() {
+            writeSavedPropertiesBackup1();
+        }
+    }
+
+    private class LCDPropertiesBackupTwoPoller implements Runnable {
+        public void run() {
+            writeSavedPropertiesBackup2();
+        }
+    }
+
+    private class LCDBrakeLightPoller implements Runnable {
+        public void run() {
+            final BMSManager bmsManager = BMSManager.getInstance();
+            final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+            final LCD lcd = LCDProxy.getInstance();
+
+            if (bmsManager == null || bmsData == null) {
+                LOG.error("LCDBrakeLightPoller.performAction(): bms is null");
+                return;
+            } else if (lcd == null) {
+                LOG.error("LCDBrakeLightPoller.run(): lcd is null");
+                return;
+            }
+
+            if (bmsData.getEnergyEquation().getKilowattHoursDelta() < 0) {
+                lcd.turnOnBrakeLight();
+                brakeLightOn = true;
+            } else {
+                if (brakeLightOn) {
+                    lcd.turnOffBrakeLight();
+                    brakeLightOn = false;
+                }
+            }
+        }
+    }
+
     private class LCDEventPoller implements Runnable {
         public void run() {
             final LCD lcd = LCDProxy.getInstance();
+            BMSManager bmsManager = BMSManager.getInstance();
+            BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+            GPSManager gpsManager = GPSManager.getInstance();
+            GPSEvent gpsData = (gpsManager == null) ? null : gpsManager.getData();
 
             if (lcd == null) {
                 LOG.error("LCDBatteryHeaterPoller.run(): lcd is null");
@@ -444,6 +614,43 @@ public final class LCDProxy implements LCD {
             final int[] rawValues = getInputs();
             final boolean isRunning = lcd.isCarRunning(rawValues);
             final boolean isCharging = lcd.isCarCharging(rawValues);
+            double distance = 0.0;
+
+            if (isCharging) {
+                chargingTime += 1; //seconds
+                final double lifetimeChargingTime = Double.valueOf(getSavedProperty("lifetimeChargingTime")) + 1;
+                setSavedProperty("lifetimeChargingTime", String.valueOf(lifetimeChargingTime));
+            } else if (isRunning) {
+                if ((bmsManager == null || bmsData == null) && (gpsManager != null && gpsData != null && (gpsData.getLatitude() != null || gpsData.getLongitude() != null))) {
+                    List<Double> currentLatLng = GPSHelper.toDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
+                    if (previousLatLng == null)
+                        previousLatLng = currentLatLng;
+                    distance = GPSHelper.distFrom(previousLatLng.get(0), previousLatLng.get(1), currentLatLng.get(0), currentLatLng.get(1));
+                    previousLatLng = currentLatLng;
+                    tripDistance += distance;
+                }
+                drivingTime += 1; //seconds
+
+                final double lifetimeDrivingTime = Double.valueOf(getSavedProperty("lifetimeDrivingTime")) + 1;
+                setSavedProperty("lifetimeDrivingTime", String.valueOf(lifetimeDrivingTime));
+                final double lifetimeEfficiency = Double.valueOf(getSavedProperty("lifetimeEfficiency")) + (bmsData.getEnergyEquation().getKilowattHoursDelta() * distance);
+                setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
+                final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distance;
+                setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
+
+                final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
+                if (kwhDelta < 0) {
+                    final double lifetimeEnergyRegen = Double.valueOf(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
+                    setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
+                } else if (kwhDelta > 0) {
+                    final double lifetimeEnergyDischarge = Double.valueOf(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
+                    setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
+                }
+                final double lifetimeEnergyConsumed = Double.valueOf(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
+                setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
+                writeSavedProperties();
+            }
+
             final double motorControllerTemperature = lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin());
             final double motorTemperature = lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin());
             final int motorControllerErrorCodes = lcd.getMotorControllerErrorCodes();
@@ -591,7 +798,6 @@ public final class LCDProxy implements LCD {
 
                 prevRawValues = rawValues;
                 if (isSame) return;
-
 
                 if (wasUpButtonPressed(rawValues)) {
                     LOG.trace("wasUpButtonPressed");

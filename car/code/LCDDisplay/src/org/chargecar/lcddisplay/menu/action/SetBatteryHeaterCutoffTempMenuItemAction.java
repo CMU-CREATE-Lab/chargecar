@@ -6,7 +6,9 @@ import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
+import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
+import org.chargecar.lcddisplay.helpers.GeneralHelper;
 
 import java.util.Map;
 
@@ -44,6 +46,8 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
         newTemp = getBatteryHeaterTurnOnTemp();
         getCharacterDisplay().setLine(0, "^ Battery Heater");
         getCharacterDisplay().setLine(1, "  Cutoff Temp: " + newTemp);
+        getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+        getCharacterDisplay().setLine(3, GeneralHelper.padRight("v",LCDConstants.NUM_COLS-1));
         //getCharacterDisplay().setText("Battery Heater Turn On Temp: " + newTemp + " F");
         //getCharacterDisplay().setLine(2,"(use up/down buttons)");
         //getCharacterDisplay().setLine(3,"to set a new value)");

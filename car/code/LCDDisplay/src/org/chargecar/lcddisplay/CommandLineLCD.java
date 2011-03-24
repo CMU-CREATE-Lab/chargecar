@@ -1,11 +1,12 @@
 package org.chargecar.lcddisplay;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.SortedMap;
 import edu.cmu.ri.createlab.device.CreateLabDevicePingFailureEventListener;
 import edu.cmu.ri.createlab.serial.commandline.SerialDeviceCommandLineApplication;
 import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.util.Properties;
+import java.util.SortedMap;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -15,9 +16,26 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication
    private static final Logger LOG = Logger.getLogger(CommandLineLCD.class);
    private static final int THIRTY_SECONDS_IN_MILLIS = 30000;
 
+
    public static void main(final String[] args)
       {
-      final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+          // Read properties file.
+          Properties defaultProperties = new Properties();
+          try {
+              defaultProperties.load(new FileInputStream("filename.properties"));
+          } catch (IOException e) {
+          }
+
+          String string = defaultProperties.getProperty("a.b");
+          defaultProperties.setProperty("a.b", "new value");
+          
+          // Write properties file.
+          try {
+              defaultProperties.store(new FileOutputStream("filename.properties"), null);
+          } catch (IOException e) {
+          }
+
+          final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
       new CommandLineLCD(in).run();
       }
