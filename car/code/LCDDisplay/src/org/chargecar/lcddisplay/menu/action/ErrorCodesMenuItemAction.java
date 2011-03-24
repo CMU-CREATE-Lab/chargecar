@@ -50,10 +50,18 @@ public final class ErrorCodesMenuItemAction extends CharacterDisplayMenuItemActi
             if (controllerErrorCode != 0 && bmsErrorCode != 0) {
                 getCharacterDisplay().setLine(0, "Controller Error: " + controllerErrorCode);
                 getCharacterDisplay().setLine(1, "BMS Error: " + bmsErrorCode);
+                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             } else if (controllerErrorCode != 0) {
                 getCharacterDisplay().setLine(0, "Controller Error: " + controllerErrorCode);
+                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             } else if (bmsErrorCode != 0) {
                 getCharacterDisplay().setLine(0, "BMS Error: " + bmsErrorCode);
+                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             }
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
