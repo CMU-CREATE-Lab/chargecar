@@ -633,8 +633,7 @@ public final class LCDProxy implements LCD {
 
                 final double lifetimeDrivingTime = Double.valueOf(getSavedProperty("lifetimeDrivingTime")) + 1;
                 setSavedProperty("lifetimeDrivingTime", String.valueOf(lifetimeDrivingTime));
-                final double lifetimeEfficiency = Double.valueOf(getSavedProperty("lifetimeEfficiency")) + (bmsData.getEnergyEquation().getKilowattHoursDelta() * distance);
-                setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
+                
                 final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distance;
                 setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
 
@@ -648,6 +647,10 @@ public final class LCDProxy implements LCD {
                 }
                 final double lifetimeEnergyConsumed = Double.valueOf(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
                 setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
+
+                final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
+                setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
+
                 writeSavedProperties();
             }
 

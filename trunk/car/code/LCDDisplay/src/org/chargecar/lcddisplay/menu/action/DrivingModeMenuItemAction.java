@@ -61,7 +61,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             //instantaneous
             double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
             powerFlowInKw = Math.round(powerFlowInKw * 100.0) / 100.0;
-            double currentEfficiency = ((bmsData.getEnergyEquation().getKilowattHours() * lcd.getTripDistance()) * 100.0) / 100.0;
+            double currentEfficiency = lcd.getTripDistance() / bmsData.getEnergyEquation().getKilowattHours();
             currentEfficiency = Math.round(currentEfficiency * 100.0) / 100.0;
             LOG.trace("DrivingModeMenuItemAction.performAction(): updating kwhMeter");
             getCharacterDisplay().setLine(0, "^| Charge " + GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage()/2 + "%", LCDConstants.NUM_COLS - 10));
