@@ -101,7 +101,7 @@ public final class LCDConstants {
     public static final int NUM_PROPERTIES = 8;
     
     public static final double SECONDS_TO_HOURS = 0.000277777778;
-
+    public static final double METERS_TO_MILES = 0.000621371192;
     /**
      * menu choices
      */

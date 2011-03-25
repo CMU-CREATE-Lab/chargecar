@@ -24,6 +24,7 @@
       <pathelement path="${honda-in-dash-display.build.dir}"/>
 
       <!-- third-party jars -->
+      <pathelement path="${chargecar-core.jar}/"/>
       <pathelement path="${create-lab-commons-device.jar}"/>
       <pathelement path="${create-lab-commons-menu.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
@@ -154,7 +155,17 @@
       <property name="build-honda-in-dash-display-is-complete" value="true"/>
    </target>
 
-   <target name="build-lcd-display" depends="build-honda-in-dash-display" description="compiles the java source for lcd-display" unless="build-lcd-display-is-complete">
+    <target name="build-chargecar-core" description="builds chargecar.org core" unless="build-chargecar-core-is-complete">
+        <ant dir="${chargecar-org.dir}" antfile="${chargecar-org.dir}/build.xml" target="clean-core" inheritall="false"/>
+        <ant dir="${chargecar-org.dir}" antfile="${chargecar-org.dir}/build.xml" target="dist-core" inheritall="false">
+            <property name="gridfloat-index.database.connection.username" value="bogus"/>
+            <property name="gridfloat-index.database.connection.password" value="bogus"/>
+        </ant>
+
+        <property name="build-chargecar-core-is-complete" value="true"/>
+    </target>
+
+   <target name="build-lcd-display" depends="build-honda-in-dash-display, build-chargecar-core" description="compiles the java source for lcd-display" unless="build-lcd-display-is-complete">
       <!-- get the svn revision -->
       <svn>
          <status path="${lcd-display.src.dir}" revisionProperty="lcd-display.svn.revision"/>
@@ -214,7 +225,7 @@
    </target>
 
    <target name="dist-honda-in-dash-display" depends="build-honda-in-dash-display" description="builds the honda-in-dash-display" unless="dist-honda-in-dash-display-is-complete">
-      <create-dist component.name="honda-in-dash-display">
+      <car-create-dist component.name="honda-in-dash-display">
          <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.honda.InDashDisplay"/>
          </jar-manifest-attributes>
@@ -226,18 +237,19 @@
             <fileset file="${jfreechart2.jar}"/>
             <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
-      </create-dist>
+      </car-create-dist>
 
       <property name="dist-honda-in-dash-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-lcd-display" depends="dist-honda-in-dash-display, build-lcd-display" description="builds the lcd-display" unless="dist-lcd-display-is-complete">
-      <create-dist component.name="lcd-display">
+      <car-create-dist component.name="lcd-display">
          <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.lcddisplay.demo.LCDDemo"/>
          </jar-manifest-attributes>
          <additional-files-to-copy>
             <fileset file="${honda-in-dash-display.dist.dir}/${honda-in-dash-display.jar.filename}"/>
+            <fileset file="${chargecar-core.jar}"/>
             <fileset file="${create-lab-commons-device.jar}"/>
             <fileset file="${create-lab-commons-menu.jar}"/>
             <fileset file="${create-lab-commons-serial.jar}"/>
@@ -252,13 +264,13 @@
             <fileset file="${rxtx-windows.native2}"/>
             <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
-      </create-dist>
+      </car-create-dist>
 
       <property name="dist-lcd-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-in-dash-display" depends="dist-sensor-board-reader, build-in-dash-display" description="builds the in-dash-display" unless="dist-in-dash-display-is-complete">
-      <create-dist component.name="in-dash-display">
+      <car-create-dist component.name="in-dash-display">
          <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.InDashDisplay"/>
          </jar-manifest-attributes>
@@ -272,13 +284,13 @@
             <fileset file="${jfreechart2.jar}"/>
             <fileset file="${swing-layout.jar}"/>
          </additional-files-to-copy>
-      </create-dist>
+      </car-create-dist>
 
       <property name="dist-in-dash-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-sensor-board-reader" depends="build-sensor-board-reader" description="builds the sensor-board-reader" unless="dist-sensor-board-reader-is-complete">
-      <create-dist component.name="sensor-board-reader">
+      <car-create-dist component.name="sensor-board-reader">
          <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.sensorboard.SensorBoardConsole"/>
          </jar-manifest-attributes>
@@ -286,7 +298,7 @@
             <fileset file="${create-lab-commons-serial.jar}"/>
             <fileset file="${create-lab-commons-util.jar}"/>
          </additional-files-to-copy>
-      </create-dist>
+      </car-create-dist>
 
       <property name="dist-sensor-board-reader-is-complete" value="true"/>
    </target>
@@ -329,7 +341,7 @@
       </sequential>
    </macrodef>
 
-   <macrodef name="create-dist">
+   <macrodef name="car-create-dist">
       <attribute name="component.name"/>
       <element name="jar-manifest-attributes" optional="true"/>
       <element name="additional-files-to-copy" optional="true"/>

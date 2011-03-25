@@ -10,10 +10,12 @@ import edu.cmu.ri.createlab.util.sequence.SequenceNumber;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.chargecar.gpx.DistanceCalculator;
+import org.chargecar.gpx.GPSCoordinate;
+import org.chargecar.gpx.SphericalLawOfCosinesDistanceCalculator;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.lcddisplay.commands.*;
-import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.lcd.LCDEvent;
 
 import java.io.FileInputStream;
@@ -50,7 +52,8 @@ public final class LCDProxy implements LCD {
     private double tripDistance = 0.0;
     private double chargingTime = 0.0;
     private double drivingTime = 0.0;
-    List<Double> previousLatLng = null;
+    private GPSCoordinate previousTrackPoint = null;
+    private final DistanceCalculator distanceCalculator = SphericalLawOfCosinesDistanceCalculator.getInstance();
 
     private static class LazyHolder {
         private static final LCDCreator INSTANCE = new LCDCreator();
@@ -614,27 +617,27 @@ public final class LCDProxy implements LCD {
             final int[] rawValues = getInputs();
             final boolean isRunning = lcd.isCarRunning(rawValues);
             final boolean isCharging = lcd.isCarCharging(rawValues);
-            double distance = 0.0;
+            double distanceInMiles = 0.0;
 
             if (isCharging) {
                 chargingTime += 1; //seconds
                 final double lifetimeChargingTime = Double.valueOf(getSavedProperty("lifetimeChargingTime")) + 1;
                 setSavedProperty("lifetimeChargingTime", String.valueOf(lifetimeChargingTime));
             } else if (isRunning) {
-                if ((bmsManager == null || bmsData == null) && (gpsManager != null && gpsData != null && (gpsData.getLatitude() != null || gpsData.getLongitude() != null))) {
-                    List<Double> currentLatLng = GPSHelper.toDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
-                    if (previousLatLng == null)
-                        previousLatLng = currentLatLng;
-                    distance = GPSHelper.distFrom(previousLatLng.get(0), previousLatLng.get(1), currentLatLng.get(0), currentLatLng.get(1));
-                    previousLatLng = currentLatLng;
-                    tripDistance += distance;
+                if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
+                    GPSCoordinate currentTrackPoint = new GPSCoordinate(gpsData.getLongitude(), gpsData.getLatitude());
+                    if (previousTrackPoint == null)
+                        previousTrackPoint = currentTrackPoint;
+                    distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
+                    previousTrackPoint = currentTrackPoint;
+                    tripDistance += distanceInMiles;
                 }
                 drivingTime += 1; //seconds
 
                 final double lifetimeDrivingTime = Double.valueOf(getSavedProperty("lifetimeDrivingTime")) + 1;
                 setSavedProperty("lifetimeDrivingTime", String.valueOf(lifetimeDrivingTime));
-                
-                final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distance;
+
+                final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
                 setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
 
                 final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
