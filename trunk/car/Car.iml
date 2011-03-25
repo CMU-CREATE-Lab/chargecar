@@ -184,6 +184,7 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="ChargeCar.org" />
   </component>
 </module>
 

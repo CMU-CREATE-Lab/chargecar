@@ -43,7 +43,9 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("ChargingModeMenuItemAction.performAction(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("ChargingModeMenuItemAction.performAction(): lcd is null");
@@ -57,15 +59,11 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
         else {
             //instantaneous
             currentState = 1;
-            double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
-            powerFlowInKw = Math.round(powerFlowInKw * 100.0) / 100.0;
-            double currentEfficiency = ((bmsData.getEnergyEquation().getKilowattHours() * lcd.getTripDistance()) * 100.0) / 100.0;
-            currentEfficiency = Math.round(currentEfficiency * 100.0) / 100.0;
             LOG.trace("ChargingModeMenuItemAction.performAction(): updating kwhMeter");
-            getCharacterDisplay().setLine(0, "^| Charge " + GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage()/2 + "%", LCDConstants.NUM_COLS - 10));
-            getCharacterDisplay().setLine(1, " | " + "Src Curnt " + GeneralHelper.padLeft(String.valueOf(Math.round(bmsData.getBmsState().getSourceCurrentAmps() * 100.0) / 100.0), LCDConstants.NUM_COLS - 13));
-            getCharacterDisplay().setLine(2, " | Charging Time " + GeneralHelper.padLeft(String.valueOf(Math.round(((lcd.getChargingTime() * LCDConstants.SECONDS_TO_HOURS) * 100.0) / 100.0)), LCDConstants.NUM_COLS - 17));
-            getCharacterDisplay().setLine(3, "v|               hrs");
+            getCharacterDisplay().setLine(0, "^ Charge " + GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage() / 2 + "%", LCDConstants.NUM_COLS - 9));
+            getCharacterDisplay().setLine(1, "  " + "Src Curnt " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getSourceCurrentAmps(), 2)), LCDConstants.NUM_COLS - 12));
+            getCharacterDisplay().setLine(2, "  Charging Time " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lcd.getChargingTime() * LCDConstants.SECONDS_TO_HOURS, 2)), LCDConstants.NUM_COLS - 16));
+            getCharacterDisplay().setLine(3, "v                hrs");
         }
     }
 
@@ -80,17 +78,18 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("ChargingModeMenuItemAction.performAction2(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("ChargingModeMenuItemAction.performAction2(): lcd is null");
             return;
         }
-
-        getCharacterDisplay().setLine(0, "^|" + "BATT TEMPERATURES");
-        getCharacterDisplay().setLine(1, " | " + "Avg Temp " + GeneralHelper.padLeft((Math.round(bmsData.getBmsState().getAverageCellBoardTemp() * 100.0) / 100.0) + "C", LCDConstants.NUM_COLS - 12));
-        getCharacterDisplay().setLine(2, " | " + "Min Temp " + GeneralHelper.padLeft((Math.round(bmsData.getBmsState().getMinimumCellBoardTemp() * 100.0) / 100.0) + "C", LCDConstants.NUM_COLS - 12));
-        getCharacterDisplay().setLine(3, "v| " + "Max Temp " + GeneralHelper.padLeft((Math.round(bmsData.getBmsState().getMinimumCellBoardTemp() * 100.0) / 100.0) + "C", LCDConstants.NUM_COLS - 12));
+        getCharacterDisplay().setLine(0, "^ " + "BATT TEMPERATURES");
+        getCharacterDisplay().setLine(1, "  " + "Avg Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getAverageCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
+        getCharacterDisplay().setLine(2, "  " + "Min Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMinimumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
+        getCharacterDisplay().setLine(3, "v " + "Max Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMaximumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
     }
 
     protected void performAction3() {
@@ -104,18 +103,18 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("ChargingModeMenuItemAction.performAction2(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("ChargingModeMenuItemAction.performAction2(): lcd is null");
             return;
         }
-
-        getCharacterDisplay().setLine(0, "^|" + "    VOLTAGES");
-        getCharacterDisplay().setLine(1, " | " + "Avg Voltage " + GeneralHelper.padLeft(String.valueOf(Math.round(bmsData.getBmsState().getAverageCellVoltage() * 100.0) / 100.0), LCDConstants.NUM_COLS - 14));
-        getCharacterDisplay().setLine(2, " | " + "Min Voltage " + GeneralHelper.padLeft(String.valueOf(Math.round(bmsData.getBmsState().getMinimumCellVoltage() * 100.0) / 100.0), LCDConstants.NUM_COLS - 15));
-        getCharacterDisplay().setLine(3, "v| " + "Max Voltage " + GeneralHelper.padLeft(String.valueOf(Math.round(bmsData.getBmsState().getMaximumCellVoltage() * 100.0) / 100.0), LCDConstants.NUM_COLS - 15));
-
+        getCharacterDisplay().setLine(0, "^ " + "     VOLTAGES");
+        getCharacterDisplay().setLine(1, "  " + "Avg Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getAverageCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
+        getCharacterDisplay().setLine(2, "  " + "Min Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
+        getCharacterDisplay().setLine(3, "v " + "Max Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
     }
 
     public void upEvent() {

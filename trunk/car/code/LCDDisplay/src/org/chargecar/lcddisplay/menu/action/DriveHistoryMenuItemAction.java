@@ -46,7 +46,9 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction(): lcd is null");
@@ -62,18 +64,17 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         else if (currentState == 5)
             performAction5();
         else {
-            double totalEnergyConsumed = Math.round(bmsData.getEnergyEquation().getKilowattHours() * 100.0) / 100.0;
-            //total discharge (positive in the case of the bmsModel)
-            double totalDischarge = Math.round(bmsData.getEnergyEquation().getKilowattHoursUsed() * 100.0) / 100.0;
-            //total charge (regen, negative in the case of the bmsModel)
-            double totalCharge = Math.round(bmsData.getEnergyEquation().getKilowattHoursRegen() * 100.0) / 100.0;
-
-            getCharacterDisplay().setLine(0, "^|" + "    TRIP ENERGY");
-            getCharacterDisplay().setLine(1, " | " + "Regen " + GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 9));
-            getCharacterDisplay().setLine(2, " | " + "Discharge " + GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 13));
-            getCharacterDisplay().setLine(3, "v| " + "Consumed " + GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 12));
-
             currentState = 1;
+            double totalEnergyConsumed = GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHours(), 2);
+            //total discharge (positive in the case of the bmsModel)
+            double totalDischarge = GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHoursUsed(), 2);
+            //total charge (regen, negative in the case of the bmsModel)
+            double totalCharge = GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHoursRegen(), 2);
+
+            getCharacterDisplay().setLine(0, "^ " + "   TRIP ENERGY");
+            getCharacterDisplay().setLine(1, "  " + "Regen " + GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
+            getCharacterDisplay().setLine(2, "  " + "Discharge " + GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
+            getCharacterDisplay().setLine(3, "v " + "Consumed " + GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 11));
         }
     }
 
@@ -88,7 +89,9 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction2(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction2(): lcd is null");
@@ -96,17 +99,16 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         }
 
 
-        double totalEnergyConsumed = Math.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed")) * 100.0) / 100.0;
+        double totalEnergyConsumed = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed")), 2);
         //total discharge (positive in the case of the bmsModel)
-        double totalDischarge = Math.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyDischarge")) * 100.0) / 100.0;
+        double totalDischarge = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyDischarge")), 2);
         //total charge (regen, negative in the case of the bmsModel)
-        double totalCharge = Math.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyRegen")) * 100.0) / 100.0;
+        double totalCharge = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyRegen")), 2);
 
-        getCharacterDisplay().setLine(0, "^|" + "  LIFETIME ENERGY");
-        getCharacterDisplay().setLine(1, " | " + "Regen " + GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 9));
-        getCharacterDisplay().setLine(2, " | " + "Discharge " + GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 13));
-        getCharacterDisplay().setLine(3, "v| " + "Consumed " + GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 12));
-
+        getCharacterDisplay().setLine(0, "^ " + "  LIFETIME ENERGY");
+        getCharacterDisplay().setLine(1, "  " + "Regen " + GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
+        getCharacterDisplay().setLine(2, "  " + "Discharge " + GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
+        getCharacterDisplay().setLine(3, "v " + "Consumed " + GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 11));
     }
 
     protected void performAction3() {
@@ -120,20 +122,21 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction3(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction3(): lcd is null");
             return;
         }
 
+        double lifetimeEfficiency = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEfficiency")), 2);
 
-        double lifetimeEfficiency = Math.round(Double.valueOf(lcd.getSavedProperty("lifetimeEfficiency")) * 100.0) / 100.0;
-
-        getCharacterDisplay().setLine(0, "^|" + "    LIFETIME");
-        getCharacterDisplay().setLine(1, " |" + "    EFFICIENCY");
-        getCharacterDisplay().setLine(2, " |" + GeneralHelper.padLeft(String.valueOf(lifetimeEfficiency), LCDConstants.NUM_COLS - 2));
-        getCharacterDisplay().setLine(3, "v|         miles/kWh");
+        getCharacterDisplay().setLine(0, "^ " + "    LIFETIME");
+        getCharacterDisplay().setLine(1, "  " + "    EFFICIENCY");
+        getCharacterDisplay().setLine(2, "  " + GeneralHelper.padLeft(String.valueOf(lifetimeEfficiency), LCDConstants.NUM_COLS - 2));
+        getCharacterDisplay().setLine(3, "v          miles/kWh");
     }
 
     protected void performAction4() {
@@ -147,21 +150,22 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction4(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction4(): lcd is null");
             return;
         }
 
+        double lifetimeChargingTime = GeneralHelper.round((Double.valueOf(lcd.getSavedProperty("lifetimeChargingTime")) * LCDConstants.SECONDS_TO_HOURS), 2);
+        double lifetimeDrivingTime = GeneralHelper.round((Double.valueOf(lcd.getSavedProperty("lifetimeDrivingTime")) * LCDConstants.SECONDS_TO_HOURS), 2);
 
-        double lifetimeChargingTime = Math.round((Double.valueOf(lcd.getSavedProperty("lifetimeChargingTime")) * LCDConstants.SECONDS_TO_HOURS) * 100.0) / 100.0;
-        double lifetimeDrivingTime = Math.round((Double.valueOf(lcd.getSavedProperty("lifetimeDrivingTime")) * LCDConstants.SECONDS_TO_HOURS) * 100.0) / 100.0;
-
-        getCharacterDisplay().setLine(0, "^|" + "    LIFETIME");
-        getCharacterDisplay().setLine(1, " |" + "    OPERATING");
-        getCharacterDisplay().setLine(2, " |" + " Drive " + GeneralHelper.padLeft(String.valueOf(lifetimeDrivingTime) + "hrs", LCDConstants.NUM_COLS - 9));
-        getCharacterDisplay().setLine(3, "v|" + " Charge " + GeneralHelper.padLeft(String.valueOf(lifetimeChargingTime) + "hrs", LCDConstants.NUM_COLS - 10));
+        getCharacterDisplay().setLine(0, "^ " + "    LIFETIME");
+        getCharacterDisplay().setLine(1, "  " + "    OPERATING");
+        getCharacterDisplay().setLine(2, "  " + " Drive " + GeneralHelper.padLeft(String.valueOf(lifetimeDrivingTime) + "hrs", LCDConstants.NUM_COLS - 9));
+        getCharacterDisplay().setLine(3, "v " + " Charge " + GeneralHelper.padLeft(String.valueOf(lifetimeChargingTime) + "hrs", LCDConstants.NUM_COLS - 10));
     }
 
     protected void performAction5() {
@@ -175,26 +179,22 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         if (bmsManager == null || bmsData == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction5(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("DriveHistoryMenuItemAction.performAction5(): lcd is null");
             return;
         }
 
+        double lifetimeCostEletric = GeneralHelper.round(costOfEnergy * Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed")), 2);
+        double lifetimeCostGas = GeneralHelper.round(((Double.valueOf(lcd.getSavedProperty("lifetimeDistanceTraveled")) / civicMpg) * averageGasPrice), 2);
 
-        double lifetimeCostEletric = Math.round((costOfEnergy * Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed")) * 100.0) / 100.0);
-        double lifetimeCostGas = ((((Double.valueOf(lcd.getSavedProperty("lifetimeDistanceTraveled")) / civicMpg) * averageGasPrice) * 100.0) / 100.0);
-
-        getCharacterDisplay().setLine(0, "^|" + "    OPERATING");
-        getCharacterDisplay().setLine(1, " |" + "    COSTS");
-        getCharacterDisplay().setLine(2, " |" + "Electric " + GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostEletric), LCDConstants.NUM_COLS - 11));
-        getCharacterDisplay().setLine(3, "v|" + "Gas " + GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostGas), LCDConstants.NUM_COLS - 6));
-
-
-        //@money_saved = (@gas_price - @electricity_price).round(2)
-	    //@percent_saved = ((@money_saved / @gas_price).round(2) * 100).to_i
-
+        getCharacterDisplay().setLine(0, "^ " + "    OPERATING");
+        getCharacterDisplay().setLine(1, "  " + "    COSTS");
+        getCharacterDisplay().setLine(2, "  " + "Electric " + GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostEletric), LCDConstants.NUM_COLS - 11));
+        getCharacterDisplay().setLine(3, "v " + "Gas " + GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostGas), LCDConstants.NUM_COLS - 6));
     }
 
     public void upEvent() {
