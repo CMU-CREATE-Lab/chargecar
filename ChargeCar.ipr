@@ -1129,6 +1129,13 @@
       <SOURCES />
       <jarDirectory url="file://$PROJECT_DIR$/car/lib/create-lab-commons-device" recursive="false" />
     </library>
+    <library name="PostgreSQL">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/car/lib/postgresql/postgresql-9.0-801.jdbc4.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 
