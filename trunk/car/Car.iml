@@ -185,6 +185,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="ChargeCar.org" />
+    <orderEntry type="library" name="PostgreSQL" level="project" />
   </component>
 </module>
 

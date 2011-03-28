@@ -425,7 +425,7 @@ public final class LCDProxy implements LCD {
         return Integer.parseInt(getSavedProperty("batteryHeaterTurnOnValue"));
     }
 
-    public void setBatteryHeaterCutoffTemp(int newBatteryHeaterTurnOnValue) {
+    public void setBatteryHeaterCutoffTemp(final int newBatteryHeaterTurnOnValue) {
         synchronized (dataSynchronizationLock) {
             if (savedProperties == null) return;
             //tempertaure in celsius
@@ -434,20 +434,21 @@ public final class LCDProxy implements LCD {
         }
     }
 
-    public String getSavedProperty(String key) {
+    public String getSavedProperty(final String key) {
         synchronized (dataSynchronizationLock) {
             if (savedProperties == null) return null;
-            String value = savedProperties.getProperty(key);
-            return value;
+            return savedProperties.getProperty(key);
         }
     }
 
-    public void setSavedProperty(String key, String value) {
-        if (savedProperties == null) return;
-        savedProperties.setProperty(key, value);
+    public void setSavedProperty(final String key, final String value) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            savedProperties.setProperty(key, value);
+        }
     }
 
-    public boolean openSavedProperties(String fileName) {
+    public boolean openSavedProperties(final String fileName) {
         synchronized (dataSynchronizationLock) {
             savedProperties = new Properties();
             try {
@@ -504,7 +505,7 @@ public final class LCDProxy implements LCD {
         return savePropertiesFileName;
     }
 
-    public void setCurrentPropertiesFileName(String newPropertiesFileName) {
+    public void setCurrentPropertiesFileName(final String newPropertiesFileName) {
         savePropertiesFileName = newPropertiesFileName;
     }
 
@@ -604,10 +605,10 @@ public final class LCDProxy implements LCD {
     private class LCDEventPoller implements Runnable {
         public void run() {
             final LCD lcd = LCDProxy.getInstance();
-            BMSManager bmsManager = BMSManager.getInstance();
-            BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
-            GPSManager gpsManager = GPSManager.getInstance();
-            GPSEvent gpsData = (gpsManager == null) ? null : gpsManager.getData();
+            final BMSManager bmsManager = BMSManager.getInstance();
+            final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+            final GPSManager gpsManager = GPSManager.getInstance();
+            final GPSEvent gpsData = (gpsManager == null) ? null : gpsManager.getData();
 
             if (lcd == null) {
                 LOG.error("LCDBatteryHeaterPoller.run(): lcd is null");
@@ -625,7 +626,7 @@ public final class LCDProxy implements LCD {
                 setSavedProperty("lifetimeChargingTime", String.valueOf(lifetimeChargingTime));
             } else if (isRunning) {
                 if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
-                    GPSCoordinate currentTrackPoint = new GPSCoordinate(gpsData.getLongitude(), gpsData.getLatitude());
+                    final GPSCoordinate currentTrackPoint = new GPSCoordinate(gpsData.getLongitude(), gpsData.getLatitude());
                     if (previousTrackPoint == null)
                         previousTrackPoint = currentTrackPoint;
                     distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
@@ -652,6 +653,7 @@ public final class LCDProxy implements LCD {
                 setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
 
                 final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
+                
                 setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
 
                 writeSavedProperties();
