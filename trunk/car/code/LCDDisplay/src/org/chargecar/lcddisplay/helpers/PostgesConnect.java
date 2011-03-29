@@ -13,6 +13,9 @@ public class PostgesConnect {
     private static final Logger LOG = Logger.getLogger(PostgesConnect.class);
     private Connection conn = null;
     private Map<String, Integer> tables = new HashMap<String, Integer>(); //[tableName, numColums]
+    private static final String database = "template_postgis15";
+    private static final String databaseUserName = "postgres";
+    private static final String databasePassword = "test";
 
     public PostgesConnect() {
         // connect to the database
@@ -25,10 +28,12 @@ public class PostgesConnect {
     }
 
     public List<List> makeQuery(final Connection conn, final String tableName, final String statement) {
+        if (conn == null || tables.get(tableName) == null || statement == null) return null;
         return makeQuery(conn, tables.get(tableName), statement);
     }
 
     public List<List> makeQuery(final Connection conn, final int numCols, final String statement) {
+        if (conn == null || statement == null) return null;
         final List<List> results = new ArrayList<List>();
         try {
             final Statement st = conn.createStatement();
@@ -51,8 +56,8 @@ public class PostgesConnect {
         Connection tmpConn = null;
         try {
             Class.forName("org.postgresql.Driver"); //ensure the jdbc driver exists in path
-            final String url = "jdbc:postgresql://localhost/template_postgis15";
-            tmpConn = DriverManager.getConnection(url, "postgres", "test");
+            final String url = "jdbc:postgresql://localhost/"+database;
+            tmpConn = DriverManager.getConnection(url, databaseUserName, databasePassword);
         } catch (ClassNotFoundException e) {
             LOG.trace(e);
             System.exit(1);
