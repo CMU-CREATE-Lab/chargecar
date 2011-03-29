@@ -70,11 +70,6 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage() / 2.0 + "%", LCDConstants.NUM_COLS - 9));
             getCharacterDisplay().setCharacter(1, 12, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getSourceCurrentAmps(), 2)), LCDConstants.NUM_COLS - 12));
             getCharacterDisplay().setCharacter(2, 16, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lcd.getChargingTime() * LCDConstants.SECONDS_TO_HOURS, 2)), LCDConstants.NUM_COLS - 16));
-
-            //getCharacterDisplay().setLine(0, "^ Charge " + GeneralHelper.padLeft(bmsData.getBmsState().getStateOfChargePercentage() / 2 + "%", LCDConstants.NUM_COLS - 9));
-            //getCharacterDisplay().setLine(1, "  " + "Src Curnt " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getSourceCurrentAmps(), 2)), LCDConstants.NUM_COLS - 12));
-            //getCharacterDisplay().setLine(2, "  Charging Time " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lcd.getChargingTime() * LCDConstants.SECONDS_TO_HOURS, 2)), LCDConstants.NUM_COLS - 16));
-            //getCharacterDisplay().setLine(3, "v                hrs");
         }
     }
 
@@ -107,11 +102,6 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
         getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getAverageCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
         getCharacterDisplay().setCharacter(2, 11, GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMinimumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
         getCharacterDisplay().setCharacter(3, 11, GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMaximumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
-
-        //getCharacterDisplay().setLine(0, "^ " + "BATT TEMPERATURES");
-        //getCharacterDisplay().setLine(1, "  " + "Avg Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getAverageCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
-        //getCharacterDisplay().setLine(2, "  " + "Min Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMinimumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
-        //getCharacterDisplay().setLine(3, "v " + "Max Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMaximumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
     }
 
     public void performAction3() {
@@ -142,11 +132,6 @@ public final class ChargingModeMenuItemAction extends RepeatingActionCharacterDi
         getCharacterDisplay().setCharacter(1, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getAverageCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
         getCharacterDisplay().setCharacter(2, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
         getCharacterDisplay().setCharacter(3, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
-
-        //getCharacterDisplay().setLine(0, "^ " + "     VOLTAGES");
-        //getCharacterDisplay().setLine(1, "  " + "Avg Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getAverageCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
-        //getCharacterDisplay().setLine(2, "  " + "Min Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
-        //getCharacterDisplay().setLine(3, "v " + "Max Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
     }
 
     public void upEvent() {

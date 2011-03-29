@@ -18,7 +18,7 @@
         </item>
     </item>
     <item text="[ ] Driving Mode  [ ] Charging Mode [ ] Drive History [*] Options">
-        <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Version Info">
+        <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Reset Trip    [ ] Version Info">
             <item text="[*] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating">
                 <item text="">
                     <implementation-class
@@ -67,12 +67,24 @@
                 </item>
             </item>
         </item>
-         <item text="[ ] Toggle Acc.   [*] Error Codes   [ ] Version Info">
+        <item text="[ ] Toggle Acc.   [*] Error Codes   [ ] Reset Trip    [ ] Version Info">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.ErrorCodesMenuItemAction"/>
             </item>
+         </item>
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [*] Reset Trip    [ ] Version Info">
+            <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.ResetTripDataMenuItemAction">
+                            <property key="action.prompt">Reset Trip Data?</property>
+                            <property key="action.cancel">Cancelled!</property>
+                            <property key="choice.option1">Yes  </property>
+                            <property key="choice.option2">No</property>
+                            <property key="action.option1">Trip data was reset.</property>
+                            <property key="action.option2">Trip data was not   reset.</property>
+                </implementation-class>
+            </item>
         </item>
-        <item text="[ ] Toggle Acc.   [ ] Error Codes   [*] Version Info">
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [ ] Reset Trip    [*] Version Info">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.VersionInfoMenuItemAction"/>
             </item>
