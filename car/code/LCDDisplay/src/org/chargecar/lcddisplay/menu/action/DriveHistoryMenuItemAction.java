@@ -85,11 +85,6 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
             getCharacterDisplay().setCharacter(2, 12, GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
             getCharacterDisplay().setCharacter(3, 11, GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 11));
-
-            //getCharacterDisplay().setLine(0, "^ " + "   TRIP ENERGY");
-            //getCharacterDisplay().setLine(1, "  " + "Regen " + GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
-            //getCharacterDisplay().setLine(2, "  " + "Discharge " + GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
-            //getCharacterDisplay().setLine(3, "v " + "Consumed " + GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 11));
         }
     }
 
@@ -158,11 +153,6 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
         getCharacterDisplay().setCharacter(2, 12, GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
         getCharacterDisplay().setCharacter(3, 11, GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 11));
-
-        //getCharacterDisplay().setLine(0, "^ " + "  LIFETIME ENERGY");
-        //getCharacterDisplay().setLine(1, "  " + "Regen " + GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
-        //getCharacterDisplay().setLine(2, "  " + "Discharge " + GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
-        //getCharacterDisplay().setLine(3, "v " + "Consumed " + GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + "kWh", LCDConstants.NUM_COLS - 11));
     }
 
     public void performAction4() {
@@ -193,10 +183,6 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
 
         final double lifetimeEfficiency = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEfficiency")), 2);
         getCharacterDisplay().setCharacter(2, 2, GeneralHelper.padLeft(String.valueOf(lifetimeEfficiency), LCDConstants.NUM_COLS - 2));
-        //getCharacterDisplay().setLine(0, "^ " + "    LIFETIME");
-        //getCharacterDisplay().setLine(1, "  " + "    EFFICIENCY");
-        //getCharacterDisplay().setLine(2, "  " + GeneralHelper.padLeft(String.valueOf(lifetimeEfficiency), LCDConstants.NUM_COLS - 2));
-        //getCharacterDisplay().setLine(3, "v          miles/kWh");
     }
 
     public void performAction5() {
@@ -230,11 +216,6 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
 
         getCharacterDisplay().setCharacter(2, 9, GeneralHelper.padLeft(String.valueOf(lifetimeDrivingTime) + "hrs", LCDConstants.NUM_COLS - 9));
         getCharacterDisplay().setCharacter(3, 10, GeneralHelper.padLeft(String.valueOf(lifetimeChargingTime) + "hrs", LCDConstants.NUM_COLS - 10));
-
-        //getCharacterDisplay().setLine(0, "^ " + "    LIFETIME");
-        //getCharacterDisplay().setLine(1, "  " + "    OPERATING");
-        //getCharacterDisplay().setLine(2, "  " + " Drive " + GeneralHelper.padLeft(String.valueOf(lifetimeDrivingTime) + "hrs", LCDConstants.NUM_COLS - 9));
-        //getCharacterDisplay().setLine(3, "v " + " Charge " + GeneralHelper.padLeft(String.valueOf(lifetimeChargingTime) + "hrs", LCDConstants.NUM_COLS - 10));
     }
 
     public void performAction6() {
@@ -272,11 +253,6 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
         getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostEletric), LCDConstants.NUM_COLS - 11));
         getCharacterDisplay().setCharacter(2, 6, GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostGas), LCDConstants.NUM_COLS - 6));
         getCharacterDisplay().setCharacter(3, 11, GeneralHelper.padLeft("$" + String.valueOf(moneySaved), LCDConstants.NUM_COLS - 11));
-
-        //getCharacterDisplay().setLine(0, "^ " + " OPERATING COSTS");
-        //getCharacterDisplay().setLine(1, "% savings!...");
-        //getCharacterDisplay().setLine(2, "  " + "Electric " + GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostEletric), LCDConstants.NUM_COLS - 11));
-        //getCharacterDisplay().setLine(3, "v " + "Gas " + GeneralHelper.padLeft("$" + String.valueOf(lifetimeCostGas), LCDConstants.NUM_COLS - 6));
     }
 
     public void upEvent() {

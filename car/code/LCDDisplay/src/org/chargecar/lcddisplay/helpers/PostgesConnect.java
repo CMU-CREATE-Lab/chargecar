@@ -12,8 +12,7 @@ import java.util.*;
 public class PostgesConnect {
     private static final Logger LOG = Logger.getLogger(PostgesConnect.class);
     private Connection conn = null;
-    //[table name, num_colums]
-    private Map<String, Integer> tables = new HashMap<String, Integer>();
+    private Map<String, Integer> tables = new HashMap<String, Integer>(); //[tableName, numColums]
 
     public PostgesConnect() {
         // connect to the database
@@ -21,60 +20,47 @@ public class PostgesConnect {
         this.conn = connectToDatabaseOrDie();
         LOG.trace("Connected to postgres db....");
         LOG.trace("Getting information about each table....");
+        //get table names and number of columns in each table
         getTableInfo();
     }
 
-    public List makeQuery(final Connection conn, final String tableName, final String statement) {
-        final List<String> results = new ArrayList<String>();
-        int numColumns = 0;
-        try {
-            final Statement st = conn.createStatement();
-            final ResultSet rs = st.executeQuery(statement);
-            while (rs.next()) {
-                numColumns = tables.get(tableName);
-                for (int i = 0; i < numColumns; i++)
-                    results.add(rs.getString(i + 1));
-            }
-            rs.close();
-            st.close();
-        } catch (SQLException se) {
-            LOG.error("Threw a SQLException creating a list of the query results: " + se.getMessage());
-        }
-        return results;
+    public List<List> makeQuery(final Connection conn, final String tableName, final String statement) {
+        return makeQuery(conn, tables.get(tableName), statement);
     }
 
-    public List makeQuery(final Connection conn, final int numCols, final String statement) {
-        final List<String> results = new ArrayList<String>();
+    public List<List> makeQuery(final Connection conn, final int numCols, final String statement) {
+        final List<List> results = new ArrayList<List>();
         try {
             final Statement st = conn.createStatement();
             final ResultSet rs = st.executeQuery(statement);
+            final List<String> columns = new ArrayList<String>(numCols);
             while (rs.next()) {
-
                 for (int i = 0; i < numCols; i++)
-                    results.add(rs.getString(i + 1));
+                    columns.add(rs.getString(i + 1)); //db starts numbering at 1
+                results.add(columns);
             }
             rs.close();
             st.close();
         } catch (SQLException se) {
-            LOG.error("Threw a SQLException creating a list of the query results: " + se.getMessage());
+            LOG.error("Threw a SQLException while creating a list of the query results: " + se);
         }
         return results;
     }
 
     private Connection connectToDatabaseOrDie() {
-        Connection conn = null;
+        Connection tmpConn = null;
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName("org.postgresql.Driver"); //ensure the jdbc driver exists in path
             final String url = "jdbc:postgresql://localhost/template_postgis15";
-            conn = DriverManager.getConnection(url, "postgres", "test");
+            tmpConn = DriverManager.getConnection(url, "postgres", "test");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOG.trace(e);
             System.exit(1);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.trace(e);
             System.exit(2);
         }
-        return conn;
+        return tmpConn;
     }
 
     private void getTableInfo() {
@@ -95,14 +81,11 @@ public class PostgesConnect {
             rs.close();
             st.close();
         } catch (SQLException se) {
-            LOG.error("Threw a SQLException creating the list of table info: " + se.getMessage());
+            LOG.error("Threw a SQLException while creating the list of table info: " + se);
         }
     }
 
     public Connection getConn() {
         return conn;
     }
-
-
 }
-

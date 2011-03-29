@@ -19,10 +19,13 @@ public interface LCD extends CreateLabDeviceProxy {
 
     int getNumberOfSavedProperties();
 
+    void setTripDistance(double newTripDistance);
+    
     double getTripDistance();
 
     double getChargingTime();
 
+    double getDrivingTime();
 
     void setCurrentPropertiesFileName(String newPropertiesFileName);
     /**

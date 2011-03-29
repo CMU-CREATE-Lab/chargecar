@@ -31,7 +31,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     private static final String roadTable = "pa_2010_priseroads";
     private static final String cityStateTable = "us_2008_uac";
     private static final String roadTablecolumnName = "fullname";
-    private static final String cityStatecolumnName = "name";
+    private static final String cityStateTablecolumnName = "name";
     private static final String srid = "4269";
 
     //number of performAction methods there are in this class, set all to true so that
@@ -84,16 +84,10 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             powerFlowInKw = GeneralHelper.round(powerFlowInKw, 2);
             double currentEfficiency = lcd.getTripDistance() / bmsData.getEnergyEquation().getKilowattHours();
             currentEfficiency = GeneralHelper.round(currentEfficiency, 2);
-            LOG.trace("DrivingModeMenuItemAction.performAction(): updating kwhMeter");
 
             getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(GeneralHelper.round((bmsData.getBmsState().getStateOfChargePercentage() / 2.0), 2) + "%", LCDConstants.NUM_COLS - 9));
             getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padLeft(powerFlowInKw + "kW", LCDConstants.NUM_COLS - 11));
             getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(String.valueOf(currentEfficiency), LCDConstants.NUM_COLS - 13));
-
-            //getCharacterDisplay().setLine(0, "^ Charge " + GeneralHelper.padLeft(GeneralHelper.round((bmsData.getBmsState().getStateOfChargePercentage() / 2.0), 2) + "%", LCDConstants.NUM_COLS - 9));
-            //getCharacterDisplay().setLine(1, "  Pwr Flow " + GeneralHelper.padLeft(powerFlowInKw + "kW", LCDConstants.NUM_COLS - 11));
-            //getCharacterDisplay().setLine(2, "  Efficiency " + GeneralHelper.padLeft(String.valueOf(currentEfficiency), LCDConstants.NUM_COLS - 13));
-            //getCharacterDisplay().setLine(3, "v          miles/kWh");
         }
     }
 
@@ -125,11 +119,6 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
 
         getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 8));
         getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 13));
-
-        //getCharacterDisplay().setLine(0, "^ " + "GENRL TEMPERATURES");
-        //getCharacterDisplay().setLine(1, "  " + "Motor " + GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 8));
-        //getCharacterDisplay().setLine(2, "  " + "Controller " + GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 13));
-        //getCharacterDisplay().setLine(3, "v                   ");
     }
 
     public void performAction3() {
@@ -141,7 +130,9 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         if (bmsManager == null || bmsData == null) {
             LOG.error("DrivingModeMenuItemAction.performAction3(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("DrivingModeMenuItemAction.performAction3(): lcd is null");
@@ -159,11 +150,6 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getAverageCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
         getCharacterDisplay().setCharacter(2, 11, GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMinimumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
         getCharacterDisplay().setCharacter(3, 11, GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMaximumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
-
-        //getCharacterDisplay().setLine(0, "^ " + "BATT TEMPERATURES");
-        //getCharacterDisplay().setLine(1, "  " + "Avg Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getAverageCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
-        //getCharacterDisplay().setLine(2, "  " + "Min Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMinimumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
-        //getCharacterDisplay().setLine(3, "v " + "Max Temp " + GeneralHelper.padLeft((GeneralHelper.round(bmsData.getBmsState().getMaximumCellBoardTemp(), 2)) + "C", LCDConstants.NUM_COLS - 11));
     }
 
     public void performAction4() {
@@ -195,17 +181,10 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         getCharacterDisplay().setCharacter(1, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getAverageCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
         getCharacterDisplay().setCharacter(2, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
         getCharacterDisplay().setCharacter(3, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
-
-        //getCharacterDisplay().setLine(0, "^ " + "     VOLTAGES");
-        //getCharacterDisplay().setLine(1, "  " + "Avg Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getAverageCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
-        //getCharacterDisplay().setLine(2, "  " + "Min Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
-        //getCharacterDisplay().setLine(3, "v " + "Max Voltage " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
     }
 
     public void performAction5() {
         currentState = 5;
-
-
         lcd = LCDProxy.getInstance();
         bmsManager = BMSManager.getInstance();
         bmsData = (bmsManager == null) ? null : bmsManager.getData();
@@ -233,7 +212,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
 
         if (printHeadings.get(4)) {
             printHeadings.set(4, false);
-            getCharacterDisplay().setLine(0, "^    MY LOCATION");
+            getCharacterDisplay().setLine(0, "^    MY LOCATION    ");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, "v  ");
         }
@@ -242,21 +221,33 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             postgesConnection = new PostgesConnect();
 
         final GPSCoordinate currentTrackPoint = new GPSCoordinate(gpsData.getLongitude(), gpsData.getLatitude());
+        final double lat;
+        final double lng;
 
-        if (currentTrackPoint != null && !currentTrackPoint.isNull()) {
-            final double lat = currentTrackPoint.getLatitude();
-            final double lng = currentTrackPoint.getLongitude();
+        if (currentTrackPoint == null || currentTrackPoint.isNull()) {
+            getCharacterDisplay().setLine(2, "No connection to GPS.");
+            getCharacterDisplay().setCharacter(3, 1, GeneralHelper.padRight(" ", LCDConstants.NUM_COLS - 1));
+            return;
         }
 
-        final double lat = 40.444583;
-        final double lng = -79.942868;
+        lat = currentTrackPoint.getLatitude();
+        lng = currentTrackPoint.getLongitude();
+
+        //lat = 40.444583;
+        //lng = -79.942868;
 
         //http://www.macgeekery.com/hacks/software/using_postgis_reverse_geocode
-        final List road = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.001;");
-        final List cityState = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + cityStatecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.001;");
+        final List<List> road = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.001;");
+        final List<List> cityState = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + cityStateTablecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.001;");
 
-        getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(road).replaceAll("\\[|\\]", ""), LCDConstants.NUM_COLS));
-        getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(cityState.get(0)), LCDConstants.NUM_COLS - 2));
+        if (road == null || road.size() == 0 || cityState == null || cityState.size() == 0) {
+            getCharacterDisplay().setLine(2, GeneralHelper.padRight("  Location Unknown.", LCDConstants.NUM_COLS - 18));
+            getCharacterDisplay().setLine(3, GeneralHelper.padRight("v", LCDConstants.NUM_COLS - 1));
+            return;
+        }
+
+        getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(road.get(0).get(0)).replaceAll("\\[|\\]", ""), LCDConstants.NUM_COLS));
+        getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(cityState.get(0).get(0)), LCDConstants.NUM_COLS - 2));
     }
 
     public void upEvent() {

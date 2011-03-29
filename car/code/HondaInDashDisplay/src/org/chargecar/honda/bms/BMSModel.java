@@ -107,7 +107,7 @@ public final class BMSModel extends StreamingSerialPortDeviceModel<BMSEvent, BMS
             }
         }
 
-        private void reset() {
+        public void reset() {
             LOG.info("BMSModel$EnergyEquationImpl.reset(): Resetting battery energy equation");
             kwhDelta = 0.0;
             kwhUsed = 0.0;

@@ -454,7 +454,7 @@ public final class LCDProxy implements LCD {
             try {
                 savedProperties.load(new FileInputStream(fileName));
             } catch (IOException e) {
-                LOG.error("Error reading properties file.");
+                LOG.error("Error reading properties file: " + e);
                 return false;
             }
             return true;
@@ -468,7 +468,7 @@ public final class LCDProxy implements LCD {
                 //if file does not exist, a new one will be created
                 savedProperties.store(new FileOutputStream(savePropertiesFileName), null);
             } catch (IOException e) {
-                LOG.error("Error writing to properties file.");
+                LOG.error("Error writing to properties file: " + e);
             }
         }
     }
@@ -480,7 +480,7 @@ public final class LCDProxy implements LCD {
                 //if file does not exist, a new one will be created
                 savedProperties.store(new FileOutputStream(LCDConstants.APP_PROPERTIES_FILE_BACKUP1), null);
             } catch (IOException e) {
-                LOG.error("Error writing to backup1 properties file.");
+                LOG.error("Error writing to backup1 properties file: " + e);
             }
         }
     }
@@ -492,7 +492,7 @@ public final class LCDProxy implements LCD {
                 //if file does not exist, a new one will be created
                 savedProperties.store(new FileOutputStream(LCDConstants.APP_PROPERTIES_FILE_BACKUP2), null);
             } catch (IOException e) {
-                LOG.error("Error writing to backup2 properties file.");
+                LOG.error("Error writing to backup2 properties file: " + e);
             }
         }
     }
@@ -509,12 +509,20 @@ public final class LCDProxy implements LCD {
         savePropertiesFileName = newPropertiesFileName;
     }
 
+    public void setTripDistance(final double newTripDistance) {
+        tripDistance = newTripDistance;
+    }
+
     public double getTripDistance() {
         return tripDistance;
     }
 
     public double getChargingTime() {
         return chargingTime;
+    }
+
+    public double getDrivingTime() {
+        return drivingTime;
     }
 
 //chargecar end
@@ -653,7 +661,6 @@ public final class LCDProxy implements LCD {
                 setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
 
                 final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
-                
                 setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
 
                 writeSavedProperties();
