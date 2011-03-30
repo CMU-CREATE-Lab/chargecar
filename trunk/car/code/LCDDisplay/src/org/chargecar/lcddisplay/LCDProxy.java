@@ -16,6 +16,7 @@ import org.chargecar.gpx.SphericalLawOfCosinesDistanceCalculator;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.lcddisplay.commands.*;
+import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.lcd.LCDEvent;
 
 import java.io.FileInputStream;
@@ -628,20 +629,38 @@ public final class LCDProxy implements LCD {
             final boolean isCharging = lcd.isCarCharging(rawValues);
             double distanceInMiles = 0.0;
 
+            final double motorControllerTemperature = lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin());
+            final double motorTemperature = lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin());
+            final int motorControllerErrorCodes = lcd.getMotorControllerErrorCodes();
+            final int rpm = lcd.getRPM();
+
+            lcdEvent = new LCDEvent(new Date(), isRunning, isCharging, motorControllerTemperature, motorTemperature, motorControllerErrorCodes, rpm);
+            if (DATA_LOG.isInfoEnabled())
+                DATA_LOG.info(lcdEvent.toLoggingString());
+
             if (isCharging) {
                 chargingTime += 1; //seconds
                 final double lifetimeChargingTime = Double.valueOf(getSavedProperty("lifetimeChargingTime")) + 1;
                 setSavedProperty("lifetimeChargingTime", String.valueOf(lifetimeChargingTime));
             } else if (isRunning) {
+                drivingTime += 1; //seconds
+
+                //don't keep track if we are basiccally idle
+                final double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
+                if (Math.abs(powerFlowInKw) < 1.0) {
+                    return;
+                }
+
                 if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
-                    final GPSCoordinate currentTrackPoint = new GPSCoordinate(gpsData.getLongitude(), gpsData.getLatitude());
+                    final List<Double> latLng = GPSHelper.toDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
+                    final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
                     if (previousTrackPoint == null)
                         previousTrackPoint = currentTrackPoint;
+
                     distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
                     previousTrackPoint = currentTrackPoint;
                     tripDistance += distanceInMiles;
                 }
-                drivingTime += 1; //seconds
 
                 final double lifetimeDrivingTime = Double.valueOf(getSavedProperty("lifetimeDrivingTime")) + 1;
                 setSavedProperty("lifetimeDrivingTime", String.valueOf(lifetimeDrivingTime));
@@ -666,14 +685,6 @@ public final class LCDProxy implements LCD {
                 writeSavedProperties();
             }
 
-            final double motorControllerTemperature = lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin());
-            final double motorTemperature = lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin());
-            final int motorControllerErrorCodes = lcd.getMotorControllerErrorCodes();
-            final int rpm = lcd.getRPM();
-
-            lcdEvent = new LCDEvent(new Date(), isRunning, isCharging, motorControllerTemperature, motorTemperature, motorControllerErrorCodes, rpm);
-            if (DATA_LOG.isInfoEnabled())
-                DATA_LOG.info(lcdEvent.toLoggingString());
         }
     }
 

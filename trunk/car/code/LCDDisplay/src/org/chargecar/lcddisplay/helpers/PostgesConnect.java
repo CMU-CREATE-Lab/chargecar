@@ -6,6 +6,8 @@ package org.chargecar.lcddisplay.helpers;
 
 import org.apache.log4j.Logger;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
@@ -13,16 +15,55 @@ public class PostgesConnect {
     private static final Logger LOG = Logger.getLogger(PostgesConnect.class);
     private Connection conn = null;
     private Map<String, Integer> tables = new HashMap<String, Integer>(); //[tableName, numColums]
-    private static final String database = "template_postgis15";
-    private static final String databaseUserName = "postgres";
-    private static final String databasePassword = "test";
+    private static final String defaultDatabase = "geodb";
+    private static final String defaultDatabaseUserName = "postgres";
+    private static final String defaultDatabasePassword = "chargecar";
+
+    private String database;
+    private String databaseUserName;
+    private String databasePassword;
+    private static final String dbPropertiesFileName = "postgresdb.properties";
+
+    private final byte[] dataSynchronizationLock = new byte[0];
+    private Properties savedProperties = null;
+
+    public String getSavedProperty(final String key) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return null;
+            return savedProperties.getProperty(key);
+        }
+    }
+
+    public boolean openSavedProperties(final String fileName) {
+        synchronized (dataSynchronizationLock) {
+            savedProperties = new Properties();
+            try {
+                savedProperties.load(new FileInputStream(fileName));
+            } catch (IOException e) {
+                LOG.error("Error reading properties file: " + e);
+                return false;
+            }
+            return true;
+        }
+    }
 
     public PostgesConnect() {
+        //read in db properties file
+        LOG.debug("Reading in db properties file....");
+        openSavedProperties(dbPropertiesFileName);
+        database = getSavedProperty("database");
+        databaseUserName = getSavedProperty("databaseUserName");
+        databasePassword = getSavedProperty("databasePassword");
+        if (database == null || databaseUserName == null || databasePassword == null) {
+            database = defaultDatabase;
+            databaseUserName = defaultDatabaseUserName;
+            databasePassword = defaultDatabasePassword;
+        }
         // connect to the database
-        LOG.trace("Connecting to postgres db....");
+        LOG.debug("Connecting to postgres db....");
         this.conn = connectToDatabaseOrDie();
-        LOG.trace("Connected to postgres db....");
-        LOG.trace("Getting information about each table....");
+        LOG.debug("Connected to postgres db....");
+        LOG.debug("Getting information about each table....");
         //get table names and number of columns in each table
         getTableInfo();
     }
@@ -53,17 +94,17 @@ public class PostgesConnect {
     }
 
     private Connection connectToDatabaseOrDie() {
-        Connection tmpConn = null;
+        final Connection tmpConn;
         try {
             Class.forName("org.postgresql.Driver"); //ensure the jdbc driver exists in path
-            final String url = "jdbc:postgresql://localhost/"+database;
+            final String url = "jdbc:postgresql://localhost/" + database;
             tmpConn = DriverManager.getConnection(url, databaseUserName, databasePassword);
         } catch (ClassNotFoundException e) {
-            LOG.trace(e);
-            System.exit(1);
+            LOG.error(e);
+            return null;
         } catch (SQLException e) {
-            LOG.trace(e);
-            System.exit(2);
+            LOG.error(e);
+            return null;
         }
         return tmpConn;
     }
@@ -92,5 +133,13 @@ public class PostgesConnect {
 
     public Connection getConn() {
         return conn;
+    }
+
+    public void closeConnection() {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            LOG.error("Unable to close postges database. Either the database was not open, or there was a problem closing it: " + e);
+        }
     }
 }

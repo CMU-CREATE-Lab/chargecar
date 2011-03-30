@@ -5,23 +5,26 @@ package org.chargecar.lcddisplay.helpers;
  */
 public class GeneralHelper {
 
-    public static String padRight(String s, int n) {
+    private GeneralHelper() {
+    }
+
+    public static String padRight(final String s, final int n) {
         return String.format("%1$-" + n + "s", s);
     }
 
-    public static String padLeft(String s, int n) {
+    public static String padLeft(final String s, final int n) {
         return String.format("%1$#" + n + "s", s);
     }
 
-    public static double round(double val, int places) {
-        long factor = (long) Math.pow(10, places);
+    public static double round(final double val, final int places) {
+        final long factor = (long) Math.pow(10, places);
 
         // Shift the decimal the correct number of places
         // to the right.
-        val = val * factor;
+        final double newVal = val * factor;
 
         // Round to the nearest integer.
-        long tmp = Math.round(val);
+        final long tmp = Math.round(newVal);
 
         // Shift the decimal the correct number of places
         // back to the left.
