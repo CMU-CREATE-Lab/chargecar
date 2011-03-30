@@ -24,7 +24,7 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
     private static final String PROPERTY_ACTION_PERFORMED = "action.performed";
     private static final String PROPERTY_ACTION_CANCELLED = "action.cancelled";
 
-    final LCD lcd = LCDProxy.getInstance();
+    private final LCD lcd = LCDProxy.getInstance();
 
     //private int temperature = lcd.getBatteryHeaterCutoffTemp();
     private int newTemp = lcd.getBatteryHeaterCutoffTemp();
@@ -47,11 +47,7 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
         getCharacterDisplay().setLine(0, "^ Battery Heater");
         getCharacterDisplay().setLine(1, "  Cutoff Temp: " + newTemp);
         getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-        getCharacterDisplay().setLine(3, GeneralHelper.padRight("v",LCDConstants.NUM_COLS-1));
-        //getCharacterDisplay().setText("Battery Heater Turn On Temp: " + newTemp + " F");
-        //getCharacterDisplay().setLine(2,"(use up/down buttons)");
-        //getCharacterDisplay().setLine(3,"to set a new value)");
-        //getCharacterDisplay().setLine(1, generateVolumeGraphLine());
+        getCharacterDisplay().setLine(3, GeneralHelper.padRight("v", LCDConstants.NUM_COLS - 1));
     }
 
     public final void start() {
@@ -72,9 +68,6 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
             newTemp = 99;
 
         getCharacterDisplay().setCharacter(1, 15, String.valueOf(newTemp));
-        //getCharacterDisplay().setText("Battery Heater Turn On Temp: " + newTemp + " F");
-        //getCharacterDisplay().setLine(2,"(use up/down buttons)");
-        //getCharacterDisplay().setLine(3,"to set a new value)");
     }
 
     public void downEvent() {
@@ -84,19 +77,14 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
             newTemp = 10;
 
         getCharacterDisplay().setCharacter(1, 15, String.valueOf(newTemp));
-        //getCharacterDisplay().setText("Battery Heater Turn On Temp: " + newTemp + " F");
-        //getCharacterDisplay().setLine(2,"(use up/down buttons)");
-        //getCharacterDisplay().setLine(3,"to set a new value)");
     }
 
     public final void rightEvent() {
-        //getCharacterDisplay().setLine(0, generateVolumeLine());
-        //getCharacterDisplay().setLine(1, generateVolumeGraphLine());
+        //do nothing
     }
 
     public final void leftEvent() {
-        //getCharacterDisplay().setLine(0, generateVolumeLine());
-        //getCharacterDisplay().setLine(1, generateVolumeGraphLine());
+        //do nothing
     }
 
     private String getActionPerformedText() {
@@ -108,12 +96,10 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
     }
 
     private int getBatteryHeaterTurnOnTemp() {
-        // TODO: fetch from wherever we're persisting this
         return lcd.getBatteryHeaterCutoffTemp();
     }
 
     private void setBatteryHeaterTurnOnTemp(final int temp) {
-        // TODO: persist this
         lcd.setBatteryHeaterCutoffTemp(temp);
     }
 

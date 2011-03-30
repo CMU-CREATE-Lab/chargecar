@@ -25,8 +25,8 @@ public final class ErrorCodesMenuItemAction extends CharacterDisplayMenuItemActi
 
     public void activate() {
         final LCD lcd = LCDProxy.getInstance();
-        BMSManager bmsManager = BMSManager.getInstance();
-        BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+        final BMSManager bmsManager = BMSManager.getInstance();
+        final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
 
         if (bmsManager == null || bmsData == null) {
             LOG.error("ErrorCodesMenuItemAction.performAction(): bms is null");

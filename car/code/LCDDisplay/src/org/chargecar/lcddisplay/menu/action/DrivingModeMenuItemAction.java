@@ -10,7 +10,7 @@ import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.lcddisplay.*;
 import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.helpers.GeneralHelper;
-import org.chargecar.lcddisplay.helpers.PostgesConnect;
+import org.chargecar.lcddisplay.helpers.PostgresqlConnect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,13 +27,12 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     private GPSManager gpsManager = null;
     private GPSEvent gpsData = null;
     private int currentState = 1;
-    private PostgesConnect postgesConnection = null;
-    private static final String roadTable = "pa_2010_prisecroads";
+    private PostgresqlConnect postgresqlConnection = null;
+    private static final String roadTable = "pa_2010_priseroads";
     private static final String cityStateTable = "us_2008_uac";
     private static final String roadTablecolumnName = "fullname";
     private static final String cityStateTablecolumnName = "name";
     private static final String srid = "4269";
-    private boolean doOnce = false;
 
     //number of performAction methods there are in this class, set all to true so that
     //the first time we enter the action we print out their headings
@@ -192,11 +191,14 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         gpsManager = GPSManager.getInstance();
         gpsData = (gpsManager == null) ? null : gpsManager.getData();
 
+        final String latString = gpsData.getLatitude();
+        final String lngString = gpsData.getLongitude();
+
         if (gpsManager == null || gpsData == null) {
             LOG.error("DrivingModeMenuItemAction.performAction5(): gps is null");
-            getCharacterDisplay().setLine(0, "No connection to GPS.");
+            getCharacterDisplay().setLine(0, "^    MY LOCATION    ");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, "No connection to GPS.");
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (bmsManager == null || bmsData == null) {
@@ -216,40 +218,23 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             getCharacterDisplay().setLine(0, "^    MY LOCATION    ");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(2, "   Calculating...   ");
-            getCharacterDisplay().setLine(3, "v  ");
+            getCharacterDisplay().setLine(3, "v                   ");
         }
 
-        if (!doOnce && postgesConnection == null) {
-            doOnce = true;
-            postgesConnection = new PostgesConnect();
+        postgresqlConnection = PostgresqlConnect.getInstance();
+        if (postgresqlConnection == null || latString == null || lngString == null) {
+            getCharacterDisplay().setLine(2, "  Error Connecting.");
+            return;
         }
 
+        final List<Double> latLng = GPSHelper.degreeDecimalMinutesToDecimalDegrees(latString, lngString);
 
-        final List<Double> latLng = GPSHelper.toDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
-        //final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
-
-        final double lat;
-        final double lng;
-
-        //if (currentTrackPoint == null || currentTrackPoint.isNull()) {
-        //    getCharacterDisplay().setLine(2, "No connection to GPS.");
-        //    getCharacterDisplay().setCharacter(3, 1, GeneralHelper.padRight(" ", LCDConstants.NUM_COLS - 1));
-        //    return;
-        //}
-
-        //lat = currentTrackPoint.getLatitude();
-        //lng = currentTrackPoint.getLongitude();
-
-        lat = latLng.get(0);
-        lng = latLng.get(1);
-        //LOG.debug("lat: " + lat + " lng: " + lng);
+        final double lat = latLng.get(0);
+        final double lng = latLng.get(1);
 
         //http://www.macgeekery.com/hacks/software/using_postgis_reverse_geocode
-        final List<List> road = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.01;");
-        final List<List> cityState = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + cityStateTablecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.01;");
-
-        //LOG.debug(road.size());
-        //LOG.debug(cityState.size());
+        final List<List> road = postgresqlConnection.makeQuery(postgresqlConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.005;");
+        final List<List> cityState = postgresqlConnection.makeQuery(postgresqlConnection.getConn(), 1, "SELECT " + cityStateTablecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.005;");
 
         if (road == null || road.size() == 0 || road.get(0) == null || cityState == null || cityState.size() == 0 || cityState.get(0) == null) {
             getCharacterDisplay().setLine(2, GeneralHelper.padRight("  Location Unknown. ", LCDConstants.NUM_COLS - 18));
@@ -317,6 +302,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     }
 
     protected void postDeactivate() {
-        postgesConnection.closeConnection();
+        //right now we are just leaving the database open for the whole time the display is on
+        //if (postgresqlConnection != null) postgresqlConnection.closeConnection();
     }
 }
