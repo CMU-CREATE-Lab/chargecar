@@ -79,7 +79,7 @@ public final class LCDConstants {
     public static final String APP_PROPERTIES_FILE = "app.properties";
     public static final String APP_PROPERTIES_FILE_BACKUP1 = "app_bk1.properties";
     public static final String APP_PROPERTIES_FILE_BACKUP2 = "app_bk2.properties";
-    public final static List<String[]> DEFAULT_PROPERTIES = new ArrayList<String[]>();
+    public static final List<String[]> DEFAULT_PROPERTIES = new ArrayList<String[]>();
     static {
         String[] property = {"batteryHeaterTurnOnValue", "10"};
         DEFAULT_PROPERTIES.add(property);

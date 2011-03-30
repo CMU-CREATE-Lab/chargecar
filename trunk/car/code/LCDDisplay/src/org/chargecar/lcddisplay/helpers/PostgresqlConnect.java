@@ -11,26 +11,65 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
-public class PostgesConnect {
-    private static final Logger LOG = Logger.getLogger(PostgesConnect.class);
+public class PostgresqlConnect {
+    private static final Logger LOG = Logger.getLogger(PostgresqlConnect.class);
     private Connection conn = null;
     private Map<String, Integer> tables = new HashMap<String, Integer>(); //[tableName, numColums]
     private static final String defaultDatabase = "geodb";
     private static final String defaultDatabaseUserName = "postgres";
     private static final String defaultDatabasePassword = "chargecar";
-
     private String database;
     private String databaseUserName;
     private String databasePassword;
-    private static final String dbPropertiesFileName = "postgresdb.properties";
-
+    private String dbPropertiesFileName = "postgresdb.properties";
     private final byte[] dataSynchronizationLock = new byte[0];
     private Properties savedProperties = null;
+
+    private static class LazyHolder {
+        private static final PostgresqlConnect INSTANCE = new PostgresqlConnect();
+
+        private LazyHolder() {
+        }
+    }
+
+    public static PostgresqlConnect getInstance() {
+        try {
+            return LazyHolder.INSTANCE;
+        } catch (Throwable t) {
+            LOG.error("PostgresqlConnect.getInstance(): " + t);
+            return null;
+        }
+    }
+
+    public Map<Object, Object> getPropertiesInstance() {
+        synchronized (dataSynchronizationLock) {
+            return Collections.unmodifiableMap(savedProperties);
+        }
+    }
 
     public String getSavedProperty(final String key) {
         synchronized (dataSynchronizationLock) {
             if (savedProperties == null) return null;
             return savedProperties.getProperty(key);
+        }
+    }
+
+    public void setSavedProperty(final String key, final String value) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            savedProperties.setProperty(key, value);
+        }
+    }
+
+    public String getCurrentPropertiesFileName() {
+        synchronized (dataSynchronizationLock) {
+            return dbPropertiesFileName;
+        }
+    }
+
+    public void setCurrentPropertiesFileName(final String newPropertiesFileName) {
+        synchronized (dataSynchronizationLock) {
+            dbPropertiesFileName = newPropertiesFileName;
         }
     }
 
@@ -47,22 +86,23 @@ public class PostgesConnect {
         }
     }
 
-    public PostgesConnect() {
+    public PostgresqlConnect() {
         //read in db properties file
-        LOG.debug("Reading in db properties file....");
+        LOG.debug("Reading in postgres db properties file...");
         openSavedProperties(dbPropertiesFileName);
         database = getSavedProperty("database");
         databaseUserName = getSavedProperty("databaseUserName");
         databasePassword = getSavedProperty("databasePassword");
+        //fill in default values if we failed to read in from the properties file
         if (database == null || databaseUserName == null || databasePassword == null) {
             database = defaultDatabase;
             databaseUserName = defaultDatabaseUserName;
             databasePassword = defaultDatabasePassword;
         }
         // connect to the database
-        LOG.debug("Connecting to postgres db....");
-        this.conn = connectToDatabaseOrDie();
-        LOG.debug("Connected to postgres db....");
+        LOG.debug("Connecting to postgres db...");
+        this.conn = connectToDatabase();
+        LOG.debug("Connected to postgres db...");
         LOG.debug("Getting information about each table....");
         //get table names and number of columns in each table
         getTableInfo();
@@ -93,7 +133,7 @@ public class PostgesConnect {
         return results;
     }
 
-    private Connection connectToDatabaseOrDie() {
+    private Connection connectToDatabase() {
         final Connection tmpConn;
         try {
             Class.forName("org.postgresql.Driver"); //ensure the jdbc driver exists in path
@@ -139,7 +179,7 @@ public class PostgesConnect {
         try {
             conn.close();
         } catch (SQLException e) {
-            LOG.error("Unable to close postges database. Either the database was not open, or there was a problem closing it: " + e);
+            LOG.error("Unable to close PostgreSQL database. Either the database was not open, or there was a problem closing it: " + e);
         }
     }
 }

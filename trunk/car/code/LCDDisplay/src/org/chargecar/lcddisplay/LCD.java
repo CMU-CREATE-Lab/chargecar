@@ -2,10 +2,14 @@ package org.chargecar.lcddisplay;
 
 import edu.cmu.ri.createlab.device.CreateLabDeviceProxy;
 
+import java.util.Map;
+
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public interface LCD extends CreateLabDeviceProxy {
+
+    Map<Object, Object> getPropertiesInstance();
 
     void setSavedProperty(String key, String value);
 
@@ -20,7 +24,7 @@ public interface LCD extends CreateLabDeviceProxy {
     int getNumberOfSavedProperties();
 
     void setTripDistance(double newTripDistance);
-    
+
     double getTripDistance();
 
     double getChargingTime();
@@ -28,6 +32,7 @@ public interface LCD extends CreateLabDeviceProxy {
     double getDrivingTime();
 
     void setCurrentPropertiesFileName(String newPropertiesFileName);
+
     /**
      * Displays characters on a single line of the display
      *

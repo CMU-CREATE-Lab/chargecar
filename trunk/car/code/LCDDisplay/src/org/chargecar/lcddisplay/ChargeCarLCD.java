@@ -5,6 +5,7 @@ import edu.cmu.ri.createlab.menu.DefaultMenuStatusManager;
 import edu.cmu.ri.createlab.menu.Menu;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
+import org.chargecar.lcddisplay.helpers.PostgresqlConnect;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -67,9 +68,9 @@ public final class ChargeCarLCD {
                     if (!lcd.openSavedProperties(LCDConstants.DEFAULT_PROPERTIES_FILE) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
                         LOG.debug("ChargeCarLCD(): Failed to load default properties file. Creating new default properties file...");
                         for (int i = 0; i < LCDConstants.NUM_PROPERTIES; i++) {
-                            String[] property = LCDConstants.DEFAULT_PROPERTIES.get(i);
-                            String key = property[0];
-                            String value = property[1];
+                            final String[] property = LCDConstants.DEFAULT_PROPERTIES.get(i);
+                            final String key = property[0];
+                            final String value = property[1];
                             lcd.setSavedProperty(key, value);
                             lcd.writeSavedProperties();
                         }
@@ -100,6 +101,9 @@ public final class ChargeCarLCD {
                 },
                 menu.hasWelcomeText() ? 2 : 0,
                 TimeUnit.SECONDS);
+
+        //connect to the postgreSQL database
+        PostgresqlConnect.getInstance();
     }
 
     private static class MyButtonPanelEventListener implements ButtonPanelEventListener {

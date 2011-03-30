@@ -49,7 +49,7 @@ public final class LCDProxy implements LCD {
     private boolean heaterOn = false;
     private boolean brakeLightOn = false;
     private Properties savedProperties = null;
-    private String savePropertiesFileName = LCDConstants.DEFAULT_PROPERTIES_FILE;
+    private String savedPropertiesFileName = LCDConstants.DEFAULT_PROPERTIES_FILE;
     private double tripDistance = 0.0;
     private double chargingTime = 0.0;
     private double drivingTime = 0.0;
@@ -435,6 +435,12 @@ public final class LCDProxy implements LCD {
         }
     }
 
+    public Map<Object, Object> getPropertiesInstance() {
+        synchronized (dataSynchronizationLock) {
+            return Collections.unmodifiableMap(savedProperties);
+        }
+    }
+
     public String getSavedProperty(final String key) {
         synchronized (dataSynchronizationLock) {
             if (savedProperties == null) return null;
@@ -467,7 +473,7 @@ public final class LCDProxy implements LCD {
             if (savedProperties == null) return;
             try {
                 //if file does not exist, a new one will be created
-                savedProperties.store(new FileOutputStream(savePropertiesFileName), null);
+                savedProperties.store(new FileOutputStream(savedPropertiesFileName), null);
             } catch (IOException e) {
                 LOG.error("Error writing to properties file: " + e);
             }
@@ -499,15 +505,21 @@ public final class LCDProxy implements LCD {
     }
 
     public int getNumberOfSavedProperties() {
-        return savedProperties.size();
+        synchronized (dataSynchronizationLock) {
+            return savedProperties.size();
+        }
     }
 
     public String getCurrentPropertiesFileName() {
-        return savePropertiesFileName;
+        synchronized (dataSynchronizationLock) {
+            return savedPropertiesFileName;
+        }
     }
 
     public void setCurrentPropertiesFileName(final String newPropertiesFileName) {
-        savePropertiesFileName = newPropertiesFileName;
+        synchronized (dataSynchronizationLock) {
+            savedPropertiesFileName = newPropertiesFileName;
+        }
     }
 
     public void setTripDistance(final double newTripDistance) {
@@ -645,46 +657,44 @@ public final class LCDProxy implements LCD {
             } else if (isRunning) {
                 drivingTime += 1; //seconds
 
-                //don't keep track if we are basiccally idle
-                final double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
-                if (Math.abs(powerFlowInKw) < 1.0) {
-                    return;
-                }
-
-                if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
-                    final List<Double> latLng = GPSHelper.toDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
-                    final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
-                    if (previousTrackPoint == null)
-                        previousTrackPoint = currentTrackPoint;
-
-                    distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
-                    previousTrackPoint = currentTrackPoint;
-                    tripDistance += distanceInMiles;
-                }
-
                 final double lifetimeDrivingTime = Double.valueOf(getSavedProperty("lifetimeDrivingTime")) + 1;
                 setSavedProperty("lifetimeDrivingTime", String.valueOf(lifetimeDrivingTime));
 
-                final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
-                setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
+                //don't keep track if we are basiccally idle
+                final double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
+                if (Math.abs(powerFlowInKw) > 1.0) {
+                    if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
+                        final List<Double> latLng = GPSHelper.degreeDecimalMinutesToDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
+                        final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
+                        if (previousTrackPoint == null)
+                            previousTrackPoint = currentTrackPoint;
 
-                final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
-                if (kwhDelta < 0) {
-                    final double lifetimeEnergyRegen = Double.valueOf(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
-                    setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
-                } else if (kwhDelta > 0) {
-                    final double lifetimeEnergyDischarge = Double.valueOf(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
-                    setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
+                        distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
+                        previousTrackPoint = currentTrackPoint;
+
+                        //account for gps location jumps; note that distance is calculated every second
+                        if (distanceInMiles < .01) tripDistance += distanceInMiles;
+                    }
+
+                    final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
+                    setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
+
+                    final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
+                    if (kwhDelta < 0) {
+                        final double lifetimeEnergyRegen = Double.valueOf(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
+                        setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
+                    } else if (kwhDelta > 0) {
+                        final double lifetimeEnergyDischarge = Double.valueOf(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
+                        setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
+                    }
+                    final double lifetimeEnergyConsumed = Double.valueOf(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
+                    setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
+
+                    final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
+                    setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
                 }
-                final double lifetimeEnergyConsumed = Double.valueOf(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
-                setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
-
-                final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
-                setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
-
                 writeSavedProperties();
             }
-
         }
     }
 
