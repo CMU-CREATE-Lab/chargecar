@@ -9,9 +9,12 @@ import java.util.StringTokenizer;
  */
 public class GPSHelper {
 
+    private GPSHelper() {
+    }
+
     /*
-        Compute distance in miles using the Haversine method
-     */
+       Compute distance in miles using the Haversine method
+    */
     public static float distFrom(final Double lat1, final Double lng1, final Double lat2, final Double lng2) {
         final double earthRadius = 3958.75;
         final double dLat = Math.toRadians(lat2 - lat1);
@@ -26,20 +29,33 @@ public class GPSHelper {
     }
 
     public static List<Double> toDecimalDegrees(final String lat, final String lng) {
-        StringTokenizer tokenizer = new StringTokenizer(lat, " °.'");
+        StringTokenizer tokenizer = new StringTokenizer(lat, " °.'?");
         List<String> gpsTokens = new ArrayList<String>(4);
-        while (tokenizer.hasMoreTokens())
-            gpsTokens.add(tokenizer.nextToken());
+        while (tokenizer.hasMoreTokens()) {
+            final String token = tokenizer.nextToken();
+            if (token.length() > 1 && "S0".equals(token.substring(0, 2))) {
+                gpsTokens.add(token.substring(0, 1));
+                gpsTokens.add("-" + token.substring(1));
+            } else {
+                gpsTokens.add(token);
+            }
+        }
 
-        double latDecimalDegrees = Double.valueOf(gpsTokens.get(1)) + Double.valueOf(gpsTokens.get(2)) / 60 + Double.valueOf(gpsTokens.get(3)) / 3600;
+        final double latDecimalDegrees = Double.valueOf(gpsTokens.get(1)) + Double.valueOf(gpsTokens.get(2)) / 60 + Double.valueOf(gpsTokens.get(3)) / 3600;
 
-        tokenizer = new StringTokenizer(lng, " °.'");
+        tokenizer = new StringTokenizer(lng, " °.'?");
         gpsTokens = new ArrayList<String>(4);
-        while (tokenizer.hasMoreTokens())
-            gpsTokens.add(tokenizer.nextToken());
+        while (tokenizer.hasMoreTokens()) {
+            final String token = tokenizer.nextToken();
+            if (token.length() > 1 && "W0".equals(token.substring(0, 2))) {
+                gpsTokens.add(token.substring(0, 1));
+                gpsTokens.add("-" + token.substring(1));
+            } else {
+                gpsTokens.add(token);
+            }
+        }
 
-        double lngDecimalDegrees = Double.valueOf(gpsTokens.get(1)) + Double.valueOf(gpsTokens.get(2)) / 60 + Double.valueOf(gpsTokens.get(3)) / 3600;
-
+        final double lngDecimalDegrees = Double.valueOf(gpsTokens.get(1)) + Double.valueOf(gpsTokens.get(2)) / 60 + Double.valueOf(gpsTokens.get(3)) / 3600;
         final List<Double> latLng = new ArrayList<Double>(2);
 
         latLng.add(latDecimalDegrees);
@@ -47,8 +63,4 @@ public class GPSHelper {
 
         return latLng;
     }
-
 }
-
-
-

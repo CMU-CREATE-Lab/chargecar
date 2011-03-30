@@ -5,10 +5,10 @@ import edu.cmu.ri.createlab.display.character.menu.RepeatingActionCharacterDispl
 import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
-import org.chargecar.gpx.GPSCoordinate;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.lcddisplay.*;
+import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.helpers.GeneralHelper;
 import org.chargecar.lcddisplay.helpers.PostgesConnect;
 
@@ -28,11 +28,12 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     private GPSEvent gpsData = null;
     private int currentState = 1;
     private PostgesConnect postgesConnection = null;
-    private static final String roadTable = "pa_2010_priseroads";
+    private static final String roadTable = "pa_2010_prisecroads";
     private static final String cityStateTable = "us_2008_uac";
     private static final String roadTablecolumnName = "fullname";
     private static final String cityStateTablecolumnName = "name";
     private static final String srid = "4269";
+    private boolean doOnce = false;
 
     //number of performAction methods there are in this class, set all to true so that
     //the first time we enter the action we print out their headings
@@ -214,34 +215,44 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             printHeadings.set(4, false);
             getCharacterDisplay().setLine(0, "^    MY LOCATION    ");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, "   Calculating...   ");
             getCharacterDisplay().setLine(3, "v  ");
         }
 
-        if (postgesConnection == null)
+        if (!doOnce && postgesConnection == null) {
+            doOnce = true;
             postgesConnection = new PostgesConnect();
+        }
 
-        final GPSCoordinate currentTrackPoint = new GPSCoordinate(gpsData.getLongitude(), gpsData.getLatitude());
+
+        final List<Double> latLng = GPSHelper.toDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
+        //final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
+
         final double lat;
         final double lng;
 
-        if (currentTrackPoint == null || currentTrackPoint.isNull()) {
-            getCharacterDisplay().setLine(2, "No connection to GPS.");
-            getCharacterDisplay().setCharacter(3, 1, GeneralHelper.padRight(" ", LCDConstants.NUM_COLS - 1));
-            return;
-        }
+        //if (currentTrackPoint == null || currentTrackPoint.isNull()) {
+        //    getCharacterDisplay().setLine(2, "No connection to GPS.");
+        //    getCharacterDisplay().setCharacter(3, 1, GeneralHelper.padRight(" ", LCDConstants.NUM_COLS - 1));
+        //    return;
+        //}
 
-        lat = currentTrackPoint.getLatitude();
-        lng = currentTrackPoint.getLongitude();
+        //lat = currentTrackPoint.getLatitude();
+        //lng = currentTrackPoint.getLongitude();
 
-        //lat = 40.444583;
-        //lng = -79.942868;
+        lat = latLng.get(0);
+        lng = latLng.get(1);
+        //LOG.debug("lat: " + lat + " lng: " + lng);
 
         //http://www.macgeekery.com/hacks/software/using_postgis_reverse_geocode
-        final List<List> road = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.001;");
-        final List<List> cityState = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + cityStateTablecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.001;");
+        final List<List> road = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.01;");
+        final List<List> cityState = postgesConnection.makeQuery(postgesConnection.getConn(), 1, "SELECT " + cityStateTablecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.01;");
 
-        if (road == null || road.size() == 0 || cityState == null || cityState.size() == 0) {
-            getCharacterDisplay().setLine(2, GeneralHelper.padRight("  Location Unknown.", LCDConstants.NUM_COLS - 18));
+        //LOG.debug(road.size());
+        //LOG.debug(cityState.size());
+
+        if (road == null || road.size() == 0 || road.get(0) == null || cityState == null || cityState.size() == 0 || cityState.get(0) == null) {
+            getCharacterDisplay().setLine(2, GeneralHelper.padRight("  Location Unknown. ", LCDConstants.NUM_COLS - 18));
             getCharacterDisplay().setLine(3, GeneralHelper.padRight("v", LCDConstants.NUM_COLS - 1));
             return;
         }
@@ -303,5 +314,9 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         for (int i = 0; i < numActions; i++) {
             printHeadings.set(i, true);
         }
+    }
+
+    protected void postDeactivate() {
+        postgesConnection.closeConnection();
     }
 }
