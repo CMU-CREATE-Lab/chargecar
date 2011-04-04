@@ -97,8 +97,20 @@ public final class LCDConstants {
         DEFAULT_PROPERTIES.add(property);
         property = new String[]{"lifetimeEnergyConsumed", "0.0"};
         DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"costOfElectricity", ".11"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"costOfGas", "3.638"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"carMpg", "31"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"accessoryButtonOne", "A/C"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"accessoryButtonTwo", "Heat"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"accessoryButtonThree", "P/S"};
+        DEFAULT_PROPERTIES.add(property);
     }
-    public static final int NUM_PROPERTIES = 8;
+    public static final int NUM_PROPERTIES = 14;
     
     public static final double SECONDS_TO_HOURS = 0.000277777778;
     public static final double METERS_TO_MILES = 0.000621371192;

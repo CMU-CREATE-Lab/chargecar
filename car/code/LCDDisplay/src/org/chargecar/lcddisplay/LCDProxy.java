@@ -435,6 +435,42 @@ public final class LCDProxy implements LCD {
         }
     }
 
+    public double getCostOfElectricity() {
+        return Double.parseDouble(getSavedProperty("costOfElectricity"));
+    }
+
+    public void setCostOfElectricity(final double newCostOfElectricity) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            setSavedProperty("costOfElectricity", Double.toString(newCostOfElectricity));
+            writeSavedProperties();
+        }
+    }
+
+    public double getCostOfGas() {
+        return Double.parseDouble(getSavedProperty("costOfGas"));
+    }
+
+    public void setCostOfGas(final double newCostOfGas) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            setSavedProperty("costOfGas", Double.toString(newCostOfGas));
+            writeSavedProperties();
+        }
+    }
+
+    public int getCarMpg() {
+        return Integer.parseInt(getSavedProperty("carMpg"));
+    }
+
+    public void setCarMpg(final int newCarMpg) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            setSavedProperty("carMpg", Integer.toString(newCarMpg));
+            writeSavedProperties();
+        }
+    }
+
     public Map<Object, Object> getPropertiesInstance() {
         synchronized (dataSynchronizationLock) {
             return Collections.unmodifiableMap(savedProperties);
@@ -536,6 +572,42 @@ public final class LCDProxy implements LCD {
 
     public double getDrivingTime() {
         return drivingTime;
+    }
+
+    public String getAccessoryButtonOne() {
+        return getSavedProperty("accessoryButtonOne");
+    }
+
+    public void setAccessoryButtonOne(final String newAccessoryButtonOne) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            setSavedProperty("accessoryButtonOne", newAccessoryButtonOne);
+            writeSavedProperties();
+        }
+    }
+
+    public String getAccessoryButtonTwo() {
+        return getSavedProperty("accessoryButtonTwo");
+    }
+
+    public void setAccessoryButtonTwo(final String newAccessoryButtonTwo) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            setSavedProperty("accessoryButtonTwo", newAccessoryButtonTwo);
+            writeSavedProperties();
+        }
+    }
+
+    public String getAccessoryButtonThree() {
+        return getSavedProperty("accessoryButtonThree");
+    }
+
+    public void setAccessoryButtonThree(final String newAccessoryButtonThree) {
+        synchronized (dataSynchronizationLock) {
+            if (savedProperties == null) return;
+            setSavedProperty("accessoryButtonThree", newAccessoryButtonThree);
+            writeSavedProperties();
+        }
     }
 
 //chargecar end

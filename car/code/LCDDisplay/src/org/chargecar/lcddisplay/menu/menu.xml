@@ -18,7 +18,7 @@
         </item>
     </item>
     <item text="[ ] Driving Mode  [ ] Charging Mode [ ] Drive History [*] Options">
-        <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Reset Trip    [ ] Version Info">
+        <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Reset Settings[ ] Version Info">
             <item text="[*] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating">
                 <item text="">
                     <implementation-class
@@ -67,13 +67,14 @@
                 </item>
             </item>
         </item>
-        <item text="[ ] Toggle Acc.   [*] Error Codes   [ ] Reset Trip    [ ] Version Info">
+        <item text="[ ] Toggle Acc.   [*] Error Codes   [ ] Reset Settings[ ] Version Info">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.ErrorCodesMenuItemAction"/>
             </item>
          </item>
-        <item text="[ ] Toggle Acc.   [ ] Error Codes   [*] Reset Trip    [ ] Version Info">
-            <item text="">
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [*] Reset Settings[ ] Version Info">
+           <item text="[*] Reset Trip    [ ] Change Energy-     Cost Rates">
+                <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.ResetTripDataMenuItemAction">
                             <property key="action.prompt">Reset Trip Data?</property>
                             <property key="action.cancel">Cancelled!</property>
@@ -82,9 +83,23 @@
                             <property key="action.option1">Trip data was reset.</property>
                             <property key="action.option2">Trip data was not   reset.</property>
                 </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] Reset Trip    [*] Change Energy-     Cost Rates">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.ChangeEnergyCostRatesMenuItemAction">
+                        <property key="action.prompt">Enable LCD          Backlight?</property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1">LCD backlight       enabled.</property>
+                        <property key="action.option2">LCD backlight       disabled.</property>
+                    </implementation-class>
+                </item>
             </item>
         </item>
-        <item text="[ ] Toggle Acc.   [ ] Error Codes   [ ] Reset Trip    [*] Version Info">
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [ ] Reset Settings[*] Version Info">
             <item text="">
                 <implementation-class name="org.chargecar.lcddisplay.menu.action.VersionInfoMenuItemAction"/>
             </item>

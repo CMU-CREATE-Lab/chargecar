@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
-import org.chargecar.lcddisplay.helpers.GeneralHelper;
 
 import java.util.Map;
 
@@ -26,7 +25,6 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
 
     private final LCD lcd = LCDProxy.getInstance();
 
-    //private int temperature = lcd.getBatteryHeaterCutoffTemp();
     private int newTemp = lcd.getBatteryHeaterCutoffTemp();
 
     public SetBatteryHeaterCutoffTempMenuItemAction(final MenuItem menuItem,
@@ -44,10 +42,10 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
 
     public void activate() {
         newTemp = getBatteryHeaterTurnOnTemp();
-        getCharacterDisplay().setLine(0, "^ Battery Heater");
-        getCharacterDisplay().setLine(1, "  Cutoff Temp: " + newTemp);
+        getCharacterDisplay().setLine(0, "  Battery Heater");
+        getCharacterDisplay().setLine(1, "  Cutoff Temp: <" + newTemp + ">");
         getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-        getCharacterDisplay().setLine(3, GeneralHelper.padRight("v", LCDConstants.NUM_COLS - 1));
+        getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
     }
 
     public final void start() {
@@ -62,29 +60,29 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
     }
 
     public void upEvent() {
+        //do nothing
+    }
+
+    public void downEvent() {
+        //do nothing
+    }
+
+    public final void rightEvent() {
         newTemp++;
         //TODO alter at a  later point. Makes sense to have bounds checking, but the one right now is only useful with the initial layout
         if (newTemp > 99)
             newTemp = 99;
 
-        getCharacterDisplay().setCharacter(1, 15, String.valueOf(newTemp));
+        getCharacterDisplay().setCharacter(1, 16, String.valueOf(newTemp));
     }
 
-    public void downEvent() {
+    public final void leftEvent() {
         newTemp--;
         //TODO alter at a  later point. Makes sense to have bounds checking, but the one right now is only useful with the initial layout
         if (newTemp < 10)
             newTemp = 10;
 
-        getCharacterDisplay().setCharacter(1, 15, String.valueOf(newTemp));
-    }
-
-    public final void rightEvent() {
-        //do nothing
-    }
-
-    public final void leftEvent() {
-        //do nothing
+        getCharacterDisplay().setCharacter(1, 16, String.valueOf(newTemp));
     }
 
     private String getActionPerformedText() {
@@ -110,9 +108,9 @@ public final class SetBatteryHeaterCutoffTempMenuItemAction extends CharacterDis
 
     private void sleep() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
-            LOG.error("SetVolumeMenuItemAction.sleep(): InterruptedException while sleeping", e);
+            LOG.error("SetBatteryHeaterCutoffTempMenuItemAction.sleep(): InterruptedException while sleeping", e);
         }
     }
 }

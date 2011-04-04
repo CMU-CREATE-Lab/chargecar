@@ -31,6 +31,30 @@ public interface LCD extends CreateLabDeviceProxy {
 
     double getDrivingTime();
 
+    double getCostOfElectricity();
+
+    void setCostOfElectricity(double newCostOfElectricity);
+
+    double getCostOfGas();
+
+    void setCostOfGas(double newCostOfGas);
+
+    int getCarMpg();
+
+    void setCarMpg(int newCarMpg);
+
+    String getAccessoryButtonOne();
+
+    String getAccessoryButtonTwo();
+
+    String getAccessoryButtonThree();
+
+    void setAccessoryButtonOne(String newAccessoryButtonOne);
+
+    void setAccessoryButtonTwo(String newAccessoryButtonTwo);
+
+    void setAccessoryButtonThree(String newAccessoryButtonThree);
+
     void setCurrentPropertiesFileName(String newPropertiesFileName);
 
     /**
