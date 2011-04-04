@@ -25,9 +25,6 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
     private BMSManager bmsManager = null;
     private BMSAndEnergy bmsData = null;
     private int currentState = 1;
-    private static final double costOfEnergy = .11;
-    private static final double civicMpg = 31;
-    private static final double averageGasPrice = 3.532; //in PA on 3/24/2011
     //number of performAction methods there are in this class, set all to true so that
     //the first time we enter the action we print out their headings
     private List<Boolean> printHeadings = Arrays.asList(true, true, true, true, true, true, true);
@@ -277,8 +274,8 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v Savings ");
         }
 
-        double lifetimeCostEletric = costOfEnergy * Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed"));
-        double lifetimeCostGas = ((Double.valueOf(lcd.getSavedProperty("lifetimeDistanceTraveled")) / civicMpg) * averageGasPrice);
+        double lifetimeCostEletric = lcd.getCostOfElectricity() * Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed"));
+        double lifetimeCostGas = ((Double.valueOf(lcd.getSavedProperty("lifetimeDistanceTraveled")) / lcd.getCarMpg()) * lcd.getCostOfGas());
         final double moneySaved = GeneralHelper.round((lifetimeCostGas - lifetimeCostEletric), 2);
         lifetimeCostEletric = GeneralHelper.round(lifetimeCostEletric, 2);
         lifetimeCostGas = GeneralHelper.round(lifetimeCostGas, 2);
