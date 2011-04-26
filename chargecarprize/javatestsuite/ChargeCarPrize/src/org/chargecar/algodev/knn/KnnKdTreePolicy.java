@@ -1,8 +1,11 @@
 package org.chargecar.algodev.knn;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
 import org.chargecar.prize.util.PowerFlows;
+import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.TripBuilder;
 import org.chargecar.prize.util.TripFeatures;
 
@@ -22,7 +26,7 @@ public class KnnKdTreePolicy implements Policy {
     private KdTree featKdTree;
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead = 90; 
+    private final int lookahead = 120; 
     
     private String currentDriver;
     private BatteryModel modelCap;
@@ -38,7 +42,7 @@ public class KnnKdTreePolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn2/"+driver+".knn");
+		File currentKnnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn/"+driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
@@ -139,8 +143,8 @@ public class KnnKdTreePolicy implements Policy {
     }
     
     public double getFlow(PointFeatures pf){
-	List<Double> powers = featKdTree.getBestEstimate(scaleFeatures(pf), 5, 90);
-
+	List<Double> powers = featKdTree.getBestEstimate(scaleFeatures(pf), 5, lookahead);
+	//writePowers(powers);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
 	List<Double> rates = new ArrayList<Double>(lookahead);
@@ -165,6 +169,21 @@ public class KnnKdTreePolicy implements Policy {
 	return maxRate;
     }
     
+    public void writePowers(List<Double> powers) {
+	FileWriter fstream;
+	try {
+	    fstream = new FileWriter("C:/powersout.csv",true);
+	    BufferedWriter out = new BufferedWriter(fstream);
+	    for(Double p : powers){
+		out.write(p+",");
+	    }
+	    out.write("0.0\n");		
+	    out.close();
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
     private PointFeatures scaleFeatures(PointFeatures pf){
 	return new PointFeatures(
 		scale(pf.getLatitude(),means.getLatitude(),sdevs.getLatitude()),
