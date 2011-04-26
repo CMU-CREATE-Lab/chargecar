@@ -13,6 +13,7 @@ import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
 import org.chargecar.prize.policies.Policy;
+import org.chargecar.prize.util.DriverResults;
 import org.chargecar.prize.util.GPXTripParser;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
@@ -80,15 +81,15 @@ public class Simulator {
 	    p.loadState();
 	}
 	
-	List<SimulationResults> results = simulateTrips(policies, gpxFiles);
-	visualizer.visualizeSummary(results);
+	List<DriverResults> results = simulateTrips(policies, gpxFiles);
+	visualizer.visualizeDrivers(results);
     }
     
-    private static List<SimulationResults> simulateTrips(List<Policy> policies,
+    private static List<DriverResults> simulateTrips(List<Policy> policies,
 	    List<File> tripFiles) throws IOException {
-	List<SimulationResults> results = new ArrayList<SimulationResults>();
+	List<DriverResults> results = new ArrayList<DriverResults>();
 	for (Policy p : policies) {
-	    results.add(new SimulationResults(p.getName()));
+	    results.add(new DriverResults(p.getName()));
 	}
 	for (File tripFile : tripFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
@@ -110,7 +111,7 @@ public class Simulator {
     }
     
     private static void simulateTrip(Policy policy, Trip trip,
-	    SimulationResults results) throws PowerFlowException {
+	    DriverResults results) throws PowerFlowException {
 	BatteryModel tripBattery = new LeadAcidBattery(batteryWhr, batteryWhr, systemVoltage);
 	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);

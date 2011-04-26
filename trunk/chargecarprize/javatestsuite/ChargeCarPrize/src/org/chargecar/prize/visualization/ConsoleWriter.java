@@ -3,8 +3,10 @@ package org.chargecar.prize.visualization;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.DriverResults;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 
@@ -18,6 +20,16 @@ import org.chargecar.prize.util.Trip;
 public class ConsoleWriter implements Visualizer {
     DecimalFormat d = new DecimalFormat("0.000E0");
     DecimalFormat p = new DecimalFormat("0.000%");
+    
+    public void visualizeDrivers(List<DriverResults> results) {
+	for(DriverResults r : results){
+	    System.out.println("Policy: "+r.getPolicyName());
+	    for(Entry<String, Double> e : r.getBatteryCurrentSquaredIntegrals().entrySet()){
+		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue()));
+	    }	    
+	}
+	
+    }
     
     public void visualizeSummary(List<SimulationResults> results) {
 	int tripsTested = 0;

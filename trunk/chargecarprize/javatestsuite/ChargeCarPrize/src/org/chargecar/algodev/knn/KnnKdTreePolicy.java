@@ -143,7 +143,7 @@ public class KnnKdTreePolicy implements Policy {
     }
     
     public double getFlow(PointFeatures pf){
-	List<Double> powers = featKdTree.getBestEstimate(scaleFeatures(pf), 5, lookahead);
+	List<Double> powers = featKdTree.getBestEstimate(scaleFeatures(pf), 1, lookahead);
 	//writePowers(powers);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
