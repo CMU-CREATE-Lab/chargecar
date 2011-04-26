@@ -1,12 +1,8 @@
 package org.chargecar.algodev.knn;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
@@ -65,6 +61,7 @@ public class KnnTableTrainer implements Policy {
 	double accMean = 0;
 	double speedMean = 0;
 	double powerMean = 0;
+	double powerSumMean = 0;
 	double latSD = 0;
 	double lonSD = 0; 
 	double eleSD = 0;
@@ -72,6 +69,8 @@ public class KnnTableTrainer implements Policy {
 	double accSD = 0;
 	double speedSD = 0;
 	double powerSD = 0;
+	double powerSumSD = 0;
+	
 	int size = table.getKnnPoints().size();
 	for(KnnPoint kp : table.getKnnPoints()){
 	    accMean += kp.getFeatures().getAcceleration();
@@ -81,6 +80,7 @@ public class KnnTableTrainer implements Policy {
 	    lonMean += kp.getFeatures().getLongitude();
 	    eleMean += kp.getFeatures().getElevation();
 	    bearingMean += kp.getFeatures().getBearing();    
+	    powerSumMean += kp.getFeatures().getTotalPowerUsed();
 	}
 	accMean /= size;
 	speedMean /= size;
@@ -89,17 +89,20 @@ public class KnnTableTrainer implements Policy {
 	lonMean /= size;
 	eleMean /= size;
 	bearingMean /= size;
+	powerSumMean /= size;
 	
 	for(KnnPoint kp : table.getKnnPoints()){
 	    accSD += Math.pow(kp.getFeatures().getAcceleration() - accMean, 2.0);
 	    speedSD += Math.pow(kp.getFeatures().getSpeed() - speedMean, 2.0);
-	    powerSD += Math.pow(kp.getFeatures().getPowerDemand(), 2.0);
-	    latSD += Math.pow(kp.getFeatures().getLatitude(), 2.0);
-	    lonSD += Math.pow(kp.getFeatures().getLongitude(), 2.0);
-	    eleSD +=Math.pow(kp.getFeatures().getElevation(), 2.0);
-	    bearingSD += Math.pow(kp.getFeatures().getBearing(), 2.0);
+	    powerSD += Math.pow(kp.getFeatures().getPowerDemand() - powerMean, 2.0);
+	    latSD += Math.pow(kp.getFeatures().getLatitude() - latMean, 2.0);
+	    lonSD += Math.pow(kp.getFeatures().getLongitude() - lonMean, 2.0);
+	    eleSD +=Math.pow(kp.getFeatures().getElevation() - eleMean, 2.0);
+	    bearingSD += Math.pow(kp.getFeatures().getBearing() - bearingMean, 2.0);
+	    powerSumSD += Math.pow(kp.getFeatures().getTotalPowerUsed() - powerSumMean, 2.0);
 	}
 	
+	powerSumSD /=size;
 	accSD /= size;
 	speedSD /= size;
 	powerSD /= size;
@@ -108,8 +111,8 @@ public class KnnTableTrainer implements Policy {
 	eleSD /= size;
 	bearingSD /= size;
 
-	PointFeatures means = new PointFeatures(latMean,lonMean,eleMean,bearingMean,0,accMean,speedMean,powerMean, 0, null);
-	PointFeatures sdevs = new PointFeatures(latSD,lonSD,eleSD,bearingSD,0,accSD,speedSD,powerSD, 0, null);
+	PointFeatures means = new PointFeatures(latMean,lonMean,eleMean,bearingMean,0,accMean,speedMean,powerMean, powerSumMean,0, null);
+	PointFeatures sdevs = new PointFeatures(latSD,lonSD,eleSD,bearingSD,0,accSD,speedSD,powerSD, powerSumSD, 0, null);
 	
 	table.getKnnPoints().add(0, new KnnPoint(sdevs,0));
 	table.getKnnPoints().add(1, new KnnPoint(means,0));
@@ -125,7 +128,8 @@ public class KnnTableTrainer implements Policy {
 		    rawFeatures.getPlanarDist(),
 		    scale(rawFeatures.getAcceleration(),accMean,accSD),
 		    scale(rawFeatures.getSpeed(),speedMean, speedSD),
-		    scale(rawFeatures.getPowerDemand(),powerMean,powerSD),		    
+		    scale(rawFeatures.getPowerDemand(),powerMean,powerSD),
+		    scale(rawFeatures.getTotalPowerUsed(), powerSumMean, powerSumSD),
 		    rawFeatures.getPeriodMS(),	rawFeatures.getTime());
 	    table.getKnnPoints().set(i, new KnnPoint(scaledFeatures, rawPoint.getGroundTruthIndex()));
 	}

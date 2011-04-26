@@ -64,7 +64,10 @@ public class KdTree {
 	best = searchTree(branch, point, best, exclusions);
 	
 	double axialdist = nodeAxisValue - pointAxisValue;
-	if(best == null || axialdist * axialdist <= bestDist){
+	double axialWeight = getWeight(node.getSplitType());
+	axialdist = axialdist*axialdist*axialWeight;
+	
+	if(best == null || axialdist <= bestDist){
 	    branch = leftBranch ?  node.getRightSubtree() : node.getLeftSubtree();
 	    best = searchTree(branch, point, best, exclusions);
 	}
@@ -113,5 +116,9 @@ public class KdTree {
     }
     private double getValue(KnnPoint kp, int split){
 	return featureSet.getValue(kp, split);
+    }
+    
+    private double getWeight(int split){
+	return featureSet.getWeight(split);
     }
 }

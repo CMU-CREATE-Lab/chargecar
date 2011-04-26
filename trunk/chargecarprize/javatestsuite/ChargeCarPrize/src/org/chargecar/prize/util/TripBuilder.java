@@ -155,18 +155,20 @@ public class TripBuilder {
 	    powerDemands.add(pwr * 1000.0);// convert back to watts
 	    
 	}
-	
+	double powerSum = 0;
 	for (int i = 1; i < times.size(); i++) {
 	    int periodMS = (int) (times.get(i).getTimeInMillis() - times.get(
 		    i - 1).getTimeInMillis());
+	    double power = powerDemands.get(i);
 	    tripPoints.add(new PointFeatures(lats.get(i - 1), lons.get(i - 1),
 		    eles.get(i - 1), bearings.get(i - 1),planarDistances.get(i), accelerations
-		    .get(i), speeds.get(i), powerDemands.get(i),
+		    .get(i), speeds.get(i), power, powerSum,
 		    periodMS, times.get(i - 1)));
+	    powerSum += power;
 	}
 	PointFeatures endPoint = new PointFeatures(lats.get(lats.size() - 1),
 		lons.get(lons.size() - 1), eles.get(eles.size() - 1), bearings.get(bearings.size() - 1), 0.0, 0.0,
-		0.0, 0.0, 1000, times.get(times.size() - 1));
+		0.0, 0.0, powerSum, 1000, times.get(times.size() - 1));
 	tripPoints.add(endPoint);
 	
     }    
