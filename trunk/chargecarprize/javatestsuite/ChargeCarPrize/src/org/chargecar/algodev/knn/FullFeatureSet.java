@@ -6,8 +6,8 @@ import java.util.List;
 import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {    
-    private final int featureCount = 8;
-    private final double[] weights = new double[]{10,10,0,0,0,1,1,4};
+    private final int featureCount = 7;
+    private final double[] weights = new double[]{10,10,5,1,1,1,4};
     
     public int getFeatureCount(){
 	return featureCount;
@@ -19,11 +19,11 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	case 0: return point.getLatitude();
 	case 1: return point.getLongitude();
 	case 2: return point.getSpeed();
-	case 3: return point.getAcceleration();
-	case 4: return point.getElevation();
-	case 5: return point.getBearing();	
-	case 6: return point.getPowerDemand();
-	case 7: return point.getTotalPowerUsed();
+	//case 3: return point.getAcceleration();
+	case 3: return point.getElevation();
+	case 4: return point.getBearing();	
+	case 5: return point.getPowerDemand();
+	case 6: return point.getTotalPowerUsed();
 	
 	default: return 0.0;
 	}	
@@ -49,14 +49,9 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	    double distScaler = 1.0/(distance(pf, neighbors.get(i).getFeatures())+0.01);	    
 	    int powerInd = neighbors.get(i).getGroundTruthIndex();
 	    for(int j=0;j<lookahead;j++){
-		if(powerInd + j >= powers.size()){
-		    System.out.println("Illegal access: "+(powerInd+j));
-		    System.out.println("Last: "+(powers.size()-1)+" = "+powers.get(powers.size()-1));
-		}
 		Double powerD = powers.get(powerInd + j);
 		if(powerD == null) {
-		System.out.print('>');
-		break;
+		    break;
 		}
 		powerSums.set(j, powerSums.get(j)+powerD*distScaler);
 		pointScales.set(j, pointScales.get(j)+distScaler);		

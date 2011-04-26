@@ -92,7 +92,9 @@ public class Simulator {
 	}
 	for (File tripFile : tripFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
+	    //if(tripsToTest.size() >= 2) tripsToTest = tripsToTest.subList(0, 1);
 	    for (Trip t : tripsToTest) {
+	    
 		for (int i = 0; i < policies.size(); i++) {
 		    try {
 			simulateTrip(policies.get(i), t, results.get(i));
