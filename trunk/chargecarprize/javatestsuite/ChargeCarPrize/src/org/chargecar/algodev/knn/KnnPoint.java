@@ -6,20 +6,20 @@ import org.chargecar.algodev.ExtendedPointFeatures;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KnnPoint implements Serializable{
-    private final ExtendedPointFeatures features;
-    private final double truth;
+    private final PointFeatures features;
+    private final int truthIndex;
     
-    public KnnPoint(ExtendedPointFeatures features, double truth){
+    public KnnPoint(PointFeatures features, int truthIndex){
 	this.features = features;
-	this.truth = truth;
+	this.truthIndex = truthIndex;
     }
     
-    public ExtendedPointFeatures getFeatures(){
+    public PointFeatures getFeatures(){
 	return features;
     }
     
-    public double getGroundTruth(){
-	return truth;
+    public int getGroundTruthIndex(){
+	return truthIndex;
     }
     
 }

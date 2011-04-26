@@ -13,7 +13,13 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class OmniscientPolicy implements Policy {
     List<Double> optimalBCFlow;
+    public OmniscientPolicy(int lookAheadSeconds) {
+	super();
+	this.lookAheadSeconds = lookAheadSeconds;
+    }
     int currentIndex;
+    final int lookAheadSeconds;
+    
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
 	optimalBCFlow = new ArrayList<Double>(points.size());
@@ -33,7 +39,7 @@ public class OmniscientPolicy implements Policy {
 	while(startInd < rates.size()){
 	    double maxRate = Double.POSITIVE_INFINITY;
 	    int endInd = startInd;
-	    for(int i = startInd;i<rates.size();i++){
+	    for(int i = startInd;(i < startInd + lookAheadSeconds && i<rates.size());i++){
 		if(rates.get(i) < maxRate){
 		    endInd = i;
 		    maxRate = rates.get(i);

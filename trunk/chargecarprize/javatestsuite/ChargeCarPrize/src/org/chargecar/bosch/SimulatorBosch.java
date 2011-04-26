@@ -64,7 +64,7 @@ public class SimulatorBosch {
 	}
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new OmniscientPolicy());
+	policies.add(new OmniscientPolicy(10000));
 	
 	// load policies specified on the command-line, if any
 	if (args.length > 1) {

@@ -16,11 +16,12 @@ import org.chargecar.prize.util.TripBuilder;
 import org.chargecar.prize.util.TripFeatures;
 
 public class KnnPolicy implements Policy {
-    List<KnnPoint> knnTable;
+    KnnTable knnTable;
     String currentDriver;
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private String name = "Nearest Neighbor Policy";
+    private int lookahead = 90;
     
     @Override
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
@@ -31,15 +32,15 @@ public class KnnPolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/work/ccpbak/knn/"+driver+".knn");
+		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn/"+driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
-		knnTable = (ArrayList<KnnPoint>)ois.readObject();
+		knnTable = (KnnTable)ois.readObject();
 		System.out.println("Table loaded.");
 	    } catch (Exception e) {
-		knnTable = new ArrayList<KnnPoint>();
+		knnTable = new KnnTable();
 		e.printStackTrace();
 	    }
 	}
@@ -48,39 +49,39 @@ public class KnnPolicy implements Policy {
     
     @Override
     public PowerFlows calculatePowerFlows(PointFeatures pf) {
-	double oredictedFlow = getFlow(pf);
+	double predictedFlow = getFlow(pf);
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
-	double minCapCurrent = modelCap.getMinPower(periodMS);
-	double maxCapCurrent = modelCap.getMaxPower(periodMS);
+	double minCapPower = modelCap.getMinPower(periodMS);
+	double maxCapPower = modelCap.getMaxPower(periodMS);
 	double capToMotorWatts = 0.0;
 	double batteryToCapWatts = 0.0;
 	double batteryToMotorWatts = 0.0;
-	if (wattsDemanded < minCapCurrent) {
+	if (wattsDemanded < minCapPower) {
 	    // drawing more than the cap has
 	    // battery is already getting drawn, don't trickle cap
-	    capToMotorWatts = minCapCurrent;
+	    capToMotorWatts = minCapPower;
 	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	    batteryToCapWatts = oredictedFlow - batteryToMotorWatts;
-	} else if (wattsDemanded > maxCapCurrent) {
+	    batteryToCapWatts = predictedFlow - batteryToMotorWatts;
+	} else if (wattsDemanded > maxCapPower) {
 	    // overflowing cap with regen power
 	    // cap is full, no need to trickle.
-	    capToMotorWatts = maxCapCurrent;
+	    capToMotorWatts = maxCapPower;
 	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	    batteryToCapWatts = oredictedFlow - batteryToMotorWatts;
+	    batteryToCapWatts = predictedFlow - batteryToMotorWatts;
 	} else {
 	    // capacitor can handle the demand
 	    capToMotorWatts = wattsDemanded;
 	    batteryToMotorWatts = 0;
-	    batteryToCapWatts = oredictedFlow;
+	    batteryToCapWatts = predictedFlow;
 	   
 	}
 	batteryToCapWatts = 0 < batteryToCapWatts ? 0 : batteryToCapWatts;
 	
-	if (capToMotorWatts - batteryToCapWatts > maxCapCurrent) {
-		batteryToCapWatts = capToMotorWatts - maxCapCurrent;
-	    } else if(capToMotorWatts - batteryToCapWatts < minCapCurrent){
-		batteryToCapWatts = capToMotorWatts - minCapCurrent;
+	if (capToMotorWatts - batteryToCapWatts > maxCapPower) {
+		batteryToCapWatts = capToMotorWatts - maxCapPower;
+	    } else if(capToMotorWatts - batteryToCapWatts < minCapPower){
+		batteryToCapWatts = capToMotorWatts - minCapPower;
 	    }
 
 	try {
@@ -95,15 +96,40 @@ public class KnnPolicy implements Policy {
     
     public double getFlow(PointFeatures pf){
 	double minDist = Double.POSITIVE_INFINITY;
-	double flow = 0;
-	for(KnnPoint kp : knnTable){
+	int powerIndex = 0;
+	for(KnnPoint kp : knnTable.getKnnPoints()){
 	    double dist = computeDistance(pf,kp);
 	    if(dist < minDist){
 		minDist = dist;
-		flow = kp.getGroundTruth();
+		powerIndex = kp.getGroundTruthIndex();
 	    }
 	}
-	return flow;
+	
+	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
+	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
+	List<Double> rates = new ArrayList<Double>(lookahead);
+	double sum = -modelCap.getMinPower(1000);
+	int timesum = 0;
+	int index = 0;
+	Double powerD = knnTable.getPowers().get(powerIndex);
+	while(index < lookahead && powerD != null){
+	    index++;
+	    sum += powerD;
+	    timesum += 1000;
+	    cumulativeSum.add(sum);
+	    timeStamps.add(timesum);
+	    rates.add(1000*sum/timesum);
+	    powerD = knnTable.getPowers().get(powerIndex + index); 
+	}
+	
+	double maxRate = Double.POSITIVE_INFINITY;
+	for(int i = 0;i<rates.size();i++){
+	    if(rates.get(i) < maxRate){
+		maxRate = rates.get(i);
+	    }
+	}
+	
+	return maxRate;
 	
     }
     
