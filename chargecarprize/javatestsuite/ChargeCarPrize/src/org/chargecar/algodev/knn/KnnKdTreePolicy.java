@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.chargecar.algodev.ExtendedPointFeatures;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
@@ -19,15 +18,11 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class KnnKdTreePolicy implements Policy {
     
-    private KdTree gpsKdTree;
-    //private KdTree featKdTree;
-    private ExtendedPointFeatures means;
-    private ExtendedPointFeatures sdevs;
-    
-    private final List<Double> speedHist = new ArrayList<Double>();
-    private final List<Double> accelHist = new ArrayList<Double>();
-    private int histIndex = 0;
-    private final int histLength = 20;
+    //private KdTree gpsKdTree;
+    private KdTree featKdTree;
+    private PointFeatures means;
+    private PointFeatures sdevs;    
+    private final int lookahead = 90; 
     
     private String currentDriver;
     private BatteryModel modelCap;
@@ -40,25 +35,21 @@ public class KnnKdTreePolicy implements Policy {
 	String driver = tripFeatures.getDriver();
 	modelCap = capacitorClone;
 	modelBatt = batteryClone;
-	histIndex = 0;
-	speedHist.clear();
-	accelHist.clear();
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/work/ccpbak/knn/"+driver+".knn");
+		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn/"+driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
-		List<KnnPoint> knnTable = (ArrayList<KnnPoint>)ois.readObject();
+		KnnTable knnTable = (KnnTable)ois.readObject();
 		System.out.println("Table loaded.  Building trees... ");
-		means = knnTable.get(0).getFeatures();
-		sdevs = knnTable.get(1).getFeatures();
-		knnTable.remove(1);
-		knnTable.remove(0);
-		gpsKdTree = new KdTree(knnTable, new GPSFeatureSet());
-		//featKdTree = new KdTree(knnTable, new FullFeatureSet());
+		means = knnTable.getKnnPoints().get(0).getFeatures();
+		sdevs = knnTable.getKnnPoints().get(1).getFeatures();
+		knnTable.getKnnPoints().remove(1);
+		knnTable.getKnnPoints().remove(0);
+		featKdTree = new KdTree(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet());
 		System.out.println("Trees built.");
 	    } catch (Exception e) {		
 		e.printStackTrace();
@@ -83,7 +74,7 @@ public class KnnKdTreePolicy implements Policy {
 	histIndex = (histIndex +1)%histLength;
 	double predictedFlow = getFlow(new ExtendedPointFeatures(pf,speedVar,accelVar));
 	*/
-	double predictedFlow = getFlow(new ExtendedPointFeatures(pf,0,0));
+	double predictedFlow = getFlow(pf);
 	
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
@@ -146,22 +137,44 @@ public class KnnKdTreePolicy implements Policy {
 	return sum/(list.size());	
     }
     
-    public double getFlow(ExtendedPointFeatures epf){
-	//epf = scaleFeatures(epf);
-	//return featKdTree.getBestEstimate(epf, 5);
-	return gpsKdTree.getBestEstimate(epf, 20);
+    public double getFlow(PointFeatures pf){
+	List<Double> powers = featKdTree.getBestEstimate(scaleFeatures(pf), 5, 90);
+
+	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
+	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
+	List<Double> rates = new ArrayList<Double>(lookahead);
+	double sum = -modelCap.getMinPower(1000);
+	int timesum = 0;
+
+	for(int i=0;i<lookahead;i++){	    
+	    sum += powers.get(i);
+	    timesum += 1000;
+	    cumulativeSum.add(sum);
+	    timeStamps.add(timesum);
+	    rates.add(1000*sum/timesum);
+	}
+	
+	double maxRate = Double.POSITIVE_INFINITY;
+	for(int i = 0;i<rates.size();i++){
+	    if(rates.get(i) < maxRate){
+		maxRate = rates.get(i);
+	    }
+	}
+	
+	return maxRate;
     }
     
-    private ExtendedPointFeatures scaleFeatures(ExtendedPointFeatures epf){
-	return new ExtendedPointFeatures(
-		epf.getLatitude(),epf.getLongitude(),
-		epf.getElevation(),epf.getBearing(),epf.getPlanarDist(),
-		scale(epf.getAcceleration(),means.getAcceleration(),sdevs.getAcceleration()),
-		scale(epf.getSpeed(),means.getSpeed(), sdevs.getSpeed()),
-		scale(epf.getPowerDemand(),means.getPowerDemand(),sdevs.getPowerDemand()),
-		scale(epf.getSpeedHistVar(),means.getSpeedHistVar(), sdevs.getSpeedHistVar()),
-		scale(epf.getAccelHistVar(),means.getAccelHistVar(), sdevs.getAccelHistVar()),
-		epf.getPeriodMS(), epf.getTime());
+    private PointFeatures scaleFeatures(PointFeatures pf){
+	return new PointFeatures(
+		scale(pf.getLatitude(),means.getLatitude(),sdevs.getLatitude()),
+		scale(pf.getLongitude(),means.getLongitude(),sdevs.getLongitude()),
+		scale(pf.getElevation(),means.getElevation(),sdevs.getElevation()),
+		scale(pf.getBearing(),means.getBearing(),sdevs.getBearing()),
+		pf.getPlanarDist(),
+		scale(pf.getAcceleration(),means.getAcceleration(),sdevs.getAcceleration()),
+		scale(pf.getSpeed(),means.getSpeed(), sdevs.getSpeed()),
+		scale(pf.getPowerDemand(),means.getPowerDemand(),sdevs.getPowerDemand()),		
+		pf.getPeriodMS(), pf.getTime());
 	
     }
     

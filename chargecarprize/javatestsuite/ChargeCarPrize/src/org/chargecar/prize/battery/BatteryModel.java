@@ -48,11 +48,11 @@ public abstract class BatteryModel {
 	// after the period is up, update charge & temp
 	this.temperature = calculateTemperature(this.current, this.periodMS);
 	this.voltage = calculateVoltage(this.current, this.periodMS);
-	if (power < 0) {
-	    this.charge = charge + power / this.efficiency
+	if (current < 0) {
+	    this.charge = charge + current / this.efficiency
 		    * (periodMS / MS_PER_HOUR);
 	} else {
-	    this.charge = charge + power * this.efficiency
+	    this.charge = charge + current * this.efficiency
 		    * (periodMS / MS_PER_HOUR);
 	}
     }
@@ -127,18 +127,20 @@ public abstract class BatteryModel {
     }
     
     public double getMaxPower(int periodMS) {
-	double currentActualMax = (this.maxCharge - this.charge)
+	double currentInternalMax = (this.maxCharge - this.charge)
 		/ (periodMS / MS_PER_HOUR);
-	return currentActualMax / efficiency;
-	// 100% efficient, max current is the maximum positive current that
+	double currentAdjusted = currentInternalMax * calculateEfficiency(currentInternalMax, periodMS);
+	return currentToPower(currentAdjusted);
+	//  max current is the maximum positive current that
 	// would fill the capacitor to maximum over the given period
     }
     
     public double getMinPower(int periodMS) {
-	double currentActualMin = (-1.0) * this.charge
+	double currentInternalMin = (-1.0) * this.charge
 		/ (periodMS / MS_PER_HOUR);
-	return currentActualMin * efficiency;
-	// 100% efficient, min current is maximum negative current that
+	double currentAdjusted = currentInternalMin * calculateEfficiency(currentInternalMin, periodMS);
+	return currentToPower(currentAdjusted);
+	// min current is maximum negative current that
 	// would empty the current charge over the given period
     }
     
@@ -150,5 +152,9 @@ public abstract class BatteryModel {
     
     public double powerToCurrent(double power){
 	return power/this.voltage;
+    }
+    
+    public double currentToPower(double current){
+	return current*this.voltage;
     }
 }

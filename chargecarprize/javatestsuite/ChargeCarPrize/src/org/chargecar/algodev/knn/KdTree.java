@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.chargecar.algodev.ExtendedPointFeatures;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KdTree {
+    private final List<Double> powers;
     private final KdTreeNode root;
     private final Random randomGenerator = new Random();
     private final KdTreeFeatureSet featureSet;
     private double bestDist = Double.MAX_VALUE;
     
-    public KdTree(List<KnnPoint> points, KdTreeFeatureSet featureSet){
+    public KdTree(List<KnnPoint> points, List<Double> powers, KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
-	root = buildTree(points, 0);	
+	this.root = buildTree(points, 0);
+	this.powers = powers;
     }
     
     private KdTreeNode buildTree(List<KnnPoint> points, int splitType){
@@ -35,17 +36,17 @@ public class KdTree {
 	return node;
     }
     
-    public double getBestEstimate(ExtendedPointFeatures point, int k){
+    public List<Double> getBestEstimate(PointFeatures point, int k, int lookahead){
 	List<KnnPoint> neighbors = new ArrayList<KnnPoint>();
 	for(int i=0;i<k;i++){
 	    bestDist = Double.MAX_VALUE;
 	    neighbors.add(searchTree(root, point, null, neighbors));
 	}
-	return featureSet.estimate(point, neighbors);
+	return featureSet.estimate(point, neighbors, powers, lookahead);
     }
     
    
-    private KnnPoint searchTree(KdTreeNode node, ExtendedPointFeatures point, KnnPoint best, List<KnnPoint> exclusions){	 
+    private KnnPoint searchTree(KdTreeNode node, PointFeatures point, KnnPoint best, List<KnnPoint> exclusions){	 
 	
 	if(node == null) return best;
 	else if(exclusions.contains(node.getValue())==false){
@@ -104,10 +105,10 @@ public class KdTree {
 	points.set(y, temp);
     }
     
-    private double distance(ExtendedPointFeatures one, ExtendedPointFeatures two){
+    private double distance(PointFeatures one, PointFeatures two){
 	return featureSet.distance(one, two);
     }
-    private double getValue(ExtendedPointFeatures epf, int split){
+    private double getValue(PointFeatures epf, int split){
 	return featureSet.getValue(epf, split);
     }
     private double getValue(KnnPoint kp, int split){
