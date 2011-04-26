@@ -12,6 +12,10 @@ import java.util.Calendar;
  * @author Alex Styler
  */
 public class PointFeatures implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     final private double latitude;
     final private double longitude;
     final private double elevation;
@@ -20,12 +24,13 @@ public class PointFeatures implements Serializable {
     final private double speed;
     final private double powerDemand;
     final private double planarDist;
+    final private double totalPowerUsed;
     final private int periodMS;
     final private Calendar time;
     
     public PointFeatures(double latitude, double longitude, double elevation, double bearing,
 	    double planarDist, double acceleration, double speed,
-	    double powerDemand, int periodMS, Calendar time) {
+	    double powerDemand, double totalPowerUsed, int periodMS, Calendar time) {
 	this.latitude = latitude;
 	this.longitude = longitude;
 	this.elevation = elevation;
@@ -33,6 +38,7 @@ public class PointFeatures implements Serializable {
 	this.acceleration = acceleration;
 	this.speed = speed;
 	this.powerDemand = powerDemand;
+	this.totalPowerUsed = totalPowerUsed;
 	this.periodMS = periodMS;
 	this.planarDist = planarDist;
 	this.time = time;
@@ -41,7 +47,7 @@ public class PointFeatures implements Serializable {
     public PointFeatures clone() {
 	return new PointFeatures(this.latitude, this.longitude, this.elevation, 
 		this.bearing, this.planarDist, this.acceleration, this.speed,
-		this.powerDemand, this.periodMS, (Calendar) this.time.clone());
+		this.powerDemand, this.totalPowerUsed, this.periodMS, (Calendar) this.time.clone());
     }
     
     public double getLatitude() {
@@ -74,6 +80,10 @@ public class PointFeatures implements Serializable {
     
     public double getPowerDemand() {
 	return this.powerDemand;
+    }
+    
+    public double getTotalPowerUsed(){
+	return this.totalPowerUsed;
     }
     
     public int getPeriodMS() {

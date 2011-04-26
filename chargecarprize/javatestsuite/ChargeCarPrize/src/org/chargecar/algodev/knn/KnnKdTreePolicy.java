@@ -38,7 +38,7 @@ public class KnnKdTreePolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn/"+driver+".knn");
+		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn2/"+driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
@@ -120,6 +120,7 @@ public class KnnKdTreePolicy implements Policy {
 		batteryToCapWatts);
     }
     
+    @SuppressWarnings("unused")
     private double calculateVariance(List<Double> list){
 	double sum = 0.0;
 	for(int i = 0;i<list.size();i++)
@@ -173,7 +174,8 @@ public class KnnKdTreePolicy implements Policy {
 		pf.getPlanarDist(),
 		scale(pf.getAcceleration(),means.getAcceleration(),sdevs.getAcceleration()),
 		scale(pf.getSpeed(),means.getSpeed(), sdevs.getSpeed()),
-		scale(pf.getPowerDemand(),means.getPowerDemand(),sdevs.getPowerDemand()),		
+		scale(pf.getPowerDemand(),means.getPowerDemand(),sdevs.getPowerDemand()),
+		scale(pf.getTotalPowerUsed(), means.getTotalPowerUsed(), sdevs.getTotalPowerUsed()),
 		pf.getPeriodMS(), pf.getTime());
 	
     }
