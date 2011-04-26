@@ -6,6 +6,7 @@ package org.chargecar.prize.visualization;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.DriverResults;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 
@@ -27,4 +28,6 @@ public interface Visualizer {
     public void visualizeTrips(SimulationResults simResults);
     
     public void visualizeSummary(List<SimulationResults> simResults);
+    
+    public void visualizeDrivers(List<DriverResults> driverResults);
 }
