@@ -30,7 +30,8 @@ public class KnnTableTrainer implements Policy {
 	    currentDriver = driver;
 	    table = new KnnTable();	    
 	}
-	else if(table.getKnnPoints().size() < 10000){	
+	
+	if(table.getKnnPoints().size() < 10000){	
 	    for(PointFeatures pf : trip.getPoints()){	
 		table.addPoint(pf, pf.getPowerDemand());
 	    }
@@ -43,7 +44,7 @@ public class KnnTableTrainer implements Policy {
 	
 	FileOutputStream fos;
 	try {
-	    File knnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn/"+currentDriver+".knn");
+	    File knnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn2/"+currentDriver+".knn");
 	    knnTableFile.createNewFile();
 	    fos = new FileOutputStream(knnTableFile);
 	    ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -141,7 +142,7 @@ public class KnnTableTrainer implements Policy {
     
     public void finishTraining()
     {
-	scaleFeatures();
+	//scaleFeatures();
 	writeTable();
     }
     

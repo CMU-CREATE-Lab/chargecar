@@ -27,6 +27,7 @@ public class KnnKdTreePolicy implements Policy {
     private PointFeatures means;
     private PointFeatures sdevs;    
     private final int lookahead = 120; 
+    private int pointsTested = 0;
     
     private String currentDriver;
     private BatteryModel modelCap;
@@ -42,19 +43,19 @@ public class KnnKdTreePolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		File currentKnnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn/"+driver+".knn");
+		File currentKnnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn2/"+driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		KnnTable knnTable = (KnnTable)ois.readObject();
-		System.out.println("Table loaded.  Building trees... ");
-		means = knnTable.getKnnPoints().get(0).getFeatures();
-		sdevs = knnTable.getKnnPoints().get(1).getFeatures();
-		knnTable.getKnnPoints().remove(1);
-		knnTable.getKnnPoints().remove(0);
+		System.out.println("Table loaded. "+knnTable.getKnnPoints().size()+" points. Building trees... ");
+		//means = knnTable.getKnnPoints().get(0).getFeatures();
+		//sdevs = knnTable.getKnnPoints().get(1).getFeatures();
+		//knnTable.getKnnPoints().remove(1);
+		//knnTable.getKnnPoints().remove(0);
 		featKdTree = new KdTree(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet());
-		System.out.println("Trees built.");
+		System.out.println("Trees built.. "+featKdTree.countNodes()+" nodes.");
 	    } catch (Exception e) {		
 		e.printStackTrace();
 	    }
@@ -64,6 +65,7 @@ public class KnnKdTreePolicy implements Policy {
     
     @Override
     public PowerFlows calculatePowerFlows(PointFeatures pf) {
+	pointsTested++;
 	/*if(speedHist.size() > histIndex){
 	    speedHist.set(histIndex, pf.getSpeed());
 	    accelHist.set(histIndex, pf.getAcceleration());
@@ -143,7 +145,7 @@ public class KnnKdTreePolicy implements Policy {
     }
     
     public double getFlow(PointFeatures pf){
-	List<Double> powers = featKdTree.getBestEstimate(scaleFeatures(pf), 1, lookahead);
+	List<Double> powers = featKdTree.getBestEstimate(pf, 1, lookahead);
 	//writePowers(powers);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);

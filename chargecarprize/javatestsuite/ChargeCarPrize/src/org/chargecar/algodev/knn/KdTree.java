@@ -27,13 +27,17 @@ public class KdTree {
 	    KnnPoint point = points.get(0);
 	    node = new KdTreeNode(point, null, null, splitType);	    
 	}
-	else{	    
-	    int pivot = select(points, 0, points.size()-1, (int)((points.size()+1)/2), splitType);
-	    KdTreeNode leftSubtree = buildTree(points.subList(0, pivot), splitType+1);
-	    KdTreeNode rightSubtree = buildTree(points.subList(pivot+1, points.size()), splitType+1);
+	else{ 
+	    int pivot = select(points, 0, points.size()-1, (int)(points.size()/2), splitType);
+	    KdTreeNode leftSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(0, pivot)), splitType+1);
+	    KdTreeNode rightSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(pivot+1, points.size())), splitType+1);
 	    node = new KdTreeNode(points.get(pivot), leftSubtree, rightSubtree, splitType);
 	}
 	return node;
+    }
+    
+    public int countNodes(){
+	return root.countNodes();
     }
     
     public List<Double> getBestEstimate(PointFeatures point, int k, int lookahead){
@@ -73,10 +77,10 @@ public class KdTree {
 	}
 	
 	return best;
-    }
+	}
     
     private int select(List<KnnPoint> points, int left, int right, int k, int splitType) {
-	while(true){
+	while(true){	    
 	    int pivotIndex = randomGenerator.nextInt(right-left+1)+left;
 	    int pivotNewIndex = partition(points, left, right, pivotIndex, splitType);
 	    if (k == pivotNewIndex)
@@ -92,7 +96,7 @@ public class KdTree {
 	double pivotValue = getValue(points.get(pivot),splitType);
 	swap(points, pivot, right);
 	int storeIndex = left;
-	for(int i = left; i <right-1;i++){
+	for(int i = left; i <= right-1;i++){
 	    if(getValue(points.get(i),splitType) < pivotValue){
 		swap(points, storeIndex, i);
 		storeIndex++;
@@ -111,8 +115,8 @@ public class KdTree {
     private double distance(PointFeatures one, PointFeatures two){
 	return featureSet.distance(one, two);
     }
-    private double getValue(PointFeatures epf, int split){
-	return featureSet.getValue(epf, split);
+    private double getValue(PointFeatures pf, int split){
+	return featureSet.getValue(pf, split);
     }
     private double getValue(KnnPoint kp, int split){
 	return featureSet.getValue(kp, split);

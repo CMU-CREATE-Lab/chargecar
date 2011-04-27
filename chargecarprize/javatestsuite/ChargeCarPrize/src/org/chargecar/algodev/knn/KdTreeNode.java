@@ -29,4 +29,12 @@ public class KdTreeNode {
 	this.rightSubtree = rightSubtree;
 	this.splitType = splitType;
     }
+    
+    public int countNodes(){
+	int nodes = 1;
+	if(rightSubtree != null) nodes += rightSubtree.countNodes();
+	if(leftSubtree != null) nodes += leftSubtree.countNodes();
+	return nodes;
+	
+    }
 }

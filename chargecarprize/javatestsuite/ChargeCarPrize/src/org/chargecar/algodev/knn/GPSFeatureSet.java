@@ -2,7 +2,7 @@ package org.chargecar.algodev.knn;
 
 import java.util.List;
 
-import org.chargecar.algodev.ExtendedPointFeatures;
+import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.TripBuilder;
 
 public class GPSFeatureSet extends KdTreeFeatureSet {
@@ -13,7 +13,7 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
 	return featureCount;
     }
    
-    public double getValue(ExtendedPointFeatures point, int splitType) {
+    public double getValue(PointFeatures point, int splitType) {
 	switch(splitType)
 	{
 	case 0: return point.getLatitude();
@@ -22,7 +22,7 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
 	}
     }
     @Override
-    public double estimate(ExtendedPointFeatures epf, List<KnnPoint> neighbors) {
+    public double estimate(PointFeatures pf, List<KnnPoint> neighbors) {
 	
 	double distSum = 0;
 	double estimate = 0;
@@ -37,7 +37,7 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
 	return ffs.estimate(epf, neighbors);
     }
     
-    public double distance(ExtendedPointFeatures point1, ExtendedPointFeatures point2){
+    public double distance(PointFeatures point1, PointFeatures point2){
 	double dist = 0.0;
 	for(int i =0;i<getFeatureCount();i++){
 	    double temp = getValue(point1, i) - getValue(point2,i);
@@ -55,11 +55,6 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
 	}
 	return bear;
     }
-    
-    
-    private double getHaversineDist(ExtendedPointFeatures epf, KnnPoint kp){
-	return TripBuilder.Haversine(epf.getLatitude(), epf.getLongitude(), kp.getFeatures().getLatitude(), kp.getFeatures().getLongitude());
-    }
-    
+        
 }
 
