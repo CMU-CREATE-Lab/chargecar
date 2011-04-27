@@ -25,7 +25,9 @@ public class ConsoleWriter implements Visualizer {
 	for(DriverResults r : results){
 	    System.out.println("Policy: "+r.getPolicyName());
 	    for(Entry<String, Double> e : r.getBatteryCurrentSquaredIntegrals().entrySet()){
-		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue()));
+		double i2base = results.get(0).getBatteryCurrentSquaredIntegrals().get(e.getKey());
+		double i2Percent = 1 - (e.getValue() / i2base);
+		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue())+" :: "+ p.format(i2Percent));
 	    }	    
 	}
 	

@@ -48,14 +48,16 @@ public class SimulatorTrainer {
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
 	KnnTableTrainer policy = new KnnTableTrainer();
 	
+	int count = 0;
 	for (File tripFile : gpxFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
 	    for (Trip t : tripsToTest) {
 		policy.parseTrip(t);
+		count++;
 	    }
 	}	
 	policy.finishTraining();
-	System.out.println("Complete.");
+	System.out.println("Complete. Trips trained on: "+count);
     }    
     
     private static List<Trip> parseTrips(File gpxFile) throws IOException {
@@ -65,9 +67,9 @@ public class SimulatorTrainer {
 	    String driverName = gpxFile.getParentFile().getName();
 	    TripFeatures tf = new TripFeatures(driverName, civic, tripPoints
 		    .get(0));
-	    trips.add(new Trip(tf, tripPoints));
-	    gpxparser.clear();
+	    trips.add(new Trip(tf, tripPoints));	    
 	}
+	gpxparser.clear();
 	return trips;
     }
     

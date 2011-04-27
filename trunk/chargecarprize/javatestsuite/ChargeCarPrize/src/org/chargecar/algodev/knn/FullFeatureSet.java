@@ -6,8 +6,9 @@ import java.util.List;
 import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {    
-    private final int featureCount = 7;
-    private final double[] weights = new double[]{10,10,5,1,1,1,4};
+    private final int featureCount = 8;
+    //private final double[] weights = new double[]{10,10,5,1,1,1,4};
+    private final double[] weights = new double[]{1,1,1,1,1,1,1,1};
     
     public int getFeatureCount(){
 	return featureCount;
@@ -19,20 +20,21 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	case 0: return point.getLatitude();
 	case 1: return point.getLongitude();
 	case 2: return point.getSpeed();
-	//case 3: return point.getAcceleration();
 	case 3: return point.getElevation();
 	case 4: return point.getBearing();	
 	case 5: return point.getPowerDemand();
 	case 6: return point.getTotalPowerUsed();
+	case 7: return point.getAcceleration();
 	
-	default: return 0.0;
+	default: System.out.println("Danger!"); 
+	    return 0.0;
 	}	
     }
     
     public double distance(PointFeatures point1, PointFeatures point2){
 	double dist = 0.0;
-	for(int i =0;i<getFeatureCount();i++){
-	    double temp = getValue(point1, i) - getValue(point2,i);
+	for(int i=0;i<featureCount;i++){
+	    double temp = getValue(point1, i) - getValue(point2, i);
 	    dist += temp*temp*weights[i];
 	}
 	return dist;
@@ -46,7 +48,9 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	    pointScales.add(0.0);
 	}
 	for(int i=0;i<neighbors.size();i++){
-	    double distScaler = 1.0/(distance(pf, neighbors.get(i).getFeatures())+0.01);	    
+	    double dist = distance(pf, neighbors.get(i).getFeatures());
+	    System.out.println(dist);
+	    double distScaler = 1.0/(dist+0.01);	    
 	    int powerInd = neighbors.get(i).getGroundTruthIndex();
 	    for(int j=0;j<lookahead;j++){
 		Double powerD = powers.get(powerInd + j);

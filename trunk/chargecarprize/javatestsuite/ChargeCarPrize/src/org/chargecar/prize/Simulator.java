@@ -91,15 +91,17 @@ public class Simulator {
 	for (Policy p : policies) {
 	    results.add(new DriverResults(p.getName()));
 	}
+	int count = 0;
 	for (File tripFile : tripFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
 	    //if(tripsToTest.size() >= 2) tripsToTest = tripsToTest.subList(0, 1);
 	    for (Trip t : tripsToTest) {
-	    
+		count++;
+		System.out.println("Trip "+count+": "+t.getPoints().size()+"points.");
 		for (int i = 0; i < policies.size(); i++) {
 		    try {
 			simulateTrip(policies.get(i), t, results.get(i));
-			System.out.print('.');
+						
 		    } catch (PowerFlowException e) {
 			e.printStackTrace();
 		    }
@@ -107,6 +109,7 @@ public class Simulator {
 	    }
 	}
 	System.out.println();
+	System.out.println("Trips tested: "+count);
 	return results;
     }
     
@@ -140,9 +143,9 @@ public class Simulator {
 	    String driverName = gpxFile.getParentFile().getName();
 	    TripFeatures tf = new TripFeatures(driverName, civic, tripPoints
 		    .get(0));
-	    trips.add(new Trip(tf, tripPoints));
-	    gpxparser.clear();
+	    trips.add(new Trip(tf, tripPoints));	    
 	}
+	gpxparser.clear();
 	return trips;
     }
     
