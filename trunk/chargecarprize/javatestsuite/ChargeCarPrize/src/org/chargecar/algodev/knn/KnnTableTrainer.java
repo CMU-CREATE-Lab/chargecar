@@ -31,7 +31,7 @@ public class KnnTableTrainer implements Policy {
 	    table = new KnnTable();	    
 	}
 	
-	if(table.getKnnPoints().size() < 10000){	
+	if(table.getKnnPoints().size() < 200000){	
 	    for(PointFeatures pf : trip.getPoints()){	
 		table.addPoint(pf, pf.getPowerDemand());
 	    }
@@ -116,8 +116,8 @@ public class KnnTableTrainer implements Policy {
 	PointFeatures sdevs = new PointFeatures(latSD,lonSD,eleSD,bearingSD,0,accSD,speedSD,powerSD, powerSumSD, 0, null);
 	
 	table.getKnnPoints().add(0, new KnnPoint(sdevs,0));
-	table.getKnnPoints().add(1, new KnnPoint(means,0));
-	
+	table.getKnnPoints().add(0, new KnnPoint(means,0));
+
 	for(int i = 2;i<table.getKnnPoints().size();i++){
 	    KnnPoint rawPoint = table.getKnnPoints().get(i);
 	    PointFeatures rawFeatures = rawPoint.getFeatures();
@@ -142,7 +142,7 @@ public class KnnTableTrainer implements Policy {
     
     public void finishTraining()
     {
-	//scaleFeatures();
+	scaleFeatures();
 	writeTable();
     }
     

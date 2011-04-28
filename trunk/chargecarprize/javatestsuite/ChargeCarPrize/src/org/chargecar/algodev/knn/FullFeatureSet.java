@@ -7,8 +7,8 @@ import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {    
     private final int featureCount = 8;
-    //private final double[] weights = new double[]{10,10,5,1,1,1,4};
-    private final double[] weights = new double[]{1,1,1,1,1,1,1,1};
+    private final double[] weights = new double[]{10,10,5,1,1,1,4,1};
+    //private final double[] weights = new double[]{1,1,1,1,1,1,1,1};
     
     public int getFeatureCount(){
 	return featureCount;
@@ -49,8 +49,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	}
 	for(int i=0;i<neighbors.size();i++){
 	    double dist = distance(pf, neighbors.get(i).getFeatures());
-	    System.out.println(dist);
-	    double distScaler = 1.0/(dist+0.01);	    
+	    double distScaler = 1.0/(dist+1e-9);	    
 	    int powerInd = neighbors.get(i).getGroundTruthIndex();
 	    for(int j=0;j<lookahead;j++){
 		Double powerD = powers.get(powerInd + j);
