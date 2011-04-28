@@ -26,7 +26,7 @@ public class KnnKdTreePolicy implements Policy {
     private KdTree featKdTree;
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead = 120; 
+    private final int lookahead = 240; 
     private int pointsTested = 0;
     
     private String currentDriver;
@@ -50,10 +50,10 @@ public class KnnKdTreePolicy implements Policy {
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		KnnTable knnTable = (KnnTable)ois.readObject();
 		System.out.println("Table loaded. "+knnTable.getKnnPoints().size()+" points. Building trees... ");
-		//means = knnTable.getKnnPoints().get(0).getFeatures();
-		//sdevs = knnTable.getKnnPoints().get(1).getFeatures();
-		//knnTable.getKnnPoints().remove(1);
-		//knnTable.getKnnPoints().remove(0);
+		means = knnTable.getKnnPoints().get(0).getFeatures();
+		sdevs = knnTable.getKnnPoints().get(1).getFeatures();
+		knnTable.getKnnPoints().remove(1);
+		knnTable.getKnnPoints().remove(0);
 		featKdTree = new KdTree(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet());
 		System.out.println("Trees built.. "+featKdTree.countNodes()+" nodes.");
 	    } catch (Exception e) {		
@@ -145,7 +145,8 @@ public class KnnKdTreePolicy implements Policy {
     }
     
     public double getFlow(PointFeatures pf){
-	List<Double> powers = featKdTree.getBestEstimate(pf, 1, lookahead);
+	PointFeatures spf = scaleFeatures(pf);
+	List<Double> powers = featKdTree.getBestEstimate(spf, 5, lookahead);
 	//writePowers(powers);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
@@ -208,9 +209,7 @@ public class KnnKdTreePolicy implements Policy {
     @Override
     public void endTrip() {
 	// TODO Auto-generated method stub
-    }
-    
-    
+    }    
     
     @Override
     public String getName() {

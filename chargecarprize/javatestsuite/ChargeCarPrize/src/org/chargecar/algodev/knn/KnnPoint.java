@@ -2,7 +2,6 @@ package org.chargecar.algodev.knn;
 
 import java.io.Serializable;
 
-import org.chargecar.algodev.ExtendedPointFeatures;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KnnPoint implements Serializable{
