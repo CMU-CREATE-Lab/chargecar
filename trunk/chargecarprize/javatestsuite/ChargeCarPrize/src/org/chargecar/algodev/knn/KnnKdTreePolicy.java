@@ -43,6 +43,7 @@ public class KnnKdTreePolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
+		featKdTree = null;
 		File currentKnnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn2/"+driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
