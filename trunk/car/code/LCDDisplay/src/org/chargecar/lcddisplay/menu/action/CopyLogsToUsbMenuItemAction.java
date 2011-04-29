@@ -70,16 +70,18 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
     public final void start() {
         if (!doOnce) {
             doOnce = true;
+            getCharacterDisplay().setLine(0, "Preparing transfer.");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-            copyLCDFiles();
+            sleep();
+            copyLogFiles();
             unmountUsbDrive();
             sleepLongThenPopUpToParentMenuItem();
         }
     }
 
-    public final void copyLCDFiles() {
+    public final void copyLogFiles() {
         try {
             final File inputPath = new File(LCDConstants.LOG_PATH);
             final File[] tmpOutputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
@@ -88,7 +90,7 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
                 getCharacterDisplay().setLine(0, "Local dir not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
-            } else if (tmpOutputPath == null || tmpOutputPath[0].list().length == 0) {
+            } else if (tmpOutputPath == null) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
@@ -104,7 +106,7 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
                 getCharacterDisplay().setLine(3, "your USB drive.");
             }
         } catch (IOException e) {
-            LOG.error("CopyLogsToUsbMenuItemAction.copyLogFiles(): " + e.getMessage());
+            LOG.error("CopyLogsToUsbMenuItemAction.copyLcdFiles(): " + e.getMessage());
             getCharacterDisplay().setLine(0, "There was an error");
             getCharacterDisplay().setLine(1, "transferring.");
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
@@ -166,6 +168,7 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
     private void sleepLong() {
         try {
             Thread.sleep(10000);
+            doOnce = false;
         } catch (InterruptedException e) {
             LOG.error("CopyLogsToUsbMenuItemAction.sleepLong(): InterruptedException while sleeping", e);
         }

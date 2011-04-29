@@ -57,16 +57,18 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     public final void start() {
         if (!doOnce) {
             doOnce = true;
+            getCharacterDisplay().setLine(0, "Preparing transfer.");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-            copyLogFiles();
+            sleep();
+            copyLcdFiles();
             unmountUsbDrive();
             sleepLongThenPopUpToParentMenuItem();
         }
     }
 
-    public final void copyLogFiles() {
+    public final void copyLcdFiles() {
         try {
             final File inputPath = new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
             final File[] tmpOutputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
@@ -75,7 +77,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(0, "Local dir not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
-            } else if (tmpOutputPath == null || tmpOutputPath[0].list().length == 0) {
+            } else if (tmpOutputPath == null) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
@@ -88,7 +90,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(3, "your USB drive.");
             }
         } catch (IOException e) {
-            LOG.error("UpdateLCDSoftwareMenuItemAction.copyLogFiles(): " + e.getMessage());
+            LOG.error("UpdateLCDSoftwareMenuItemAction.copyLcdFiles(): " + e.getMessage());
             getCharacterDisplay().setLine(0, "There was an error");
             getCharacterDisplay().setLine(1, "transferring.");
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
@@ -150,6 +152,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     private void sleepLong() {
         try {
             Thread.sleep(10000);
+            doOnce = false;
         } catch (InterruptedException e) {
             LOG.error("UpdateLCDSoftwareMenuItemAction.sleepLong(): InterruptedException while sleeping", e);
         }
