@@ -41,7 +41,7 @@ public class SimulatorOmniscient {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 96;
     static double batteryWhr = 50000;
-    static double capWhr = 1e10;
+    static double capWhr = 50;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -64,23 +64,23 @@ public class SimulatorOmniscient {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	/*policies.add(new OmniscientPolicy(1));
-	policies.add(new OmniscientPolicy(2));
+	//policies.add(new OmniscientPolicy(1));
+	//policies.add(new OmniscientPolicy(2));
 	policies.add(new OmniscientPolicy(5));
 	policies.add(new OmniscientPolicy(10));
-	policies.add(new OmniscientPolicy(20));*/
+	//policies.add(new OmniscientPolicy(20));
 	policies.add(new OmniscientPolicy(30));
 	//policies.add(new OmniscientPolicy(45));
 	//policies.add(new OmniscientPolicy(60));
 	policies.add(new OmniscientPolicy(90));
-	/*policies.add(new OmniscientPolicy(120));
-	policies.add(new OmniscientPolicy(180));
-	policies.add(new OmniscientPolicy(240));*/
+	policies.add(new OmniscientPolicy(120));
+	//policies.add(new OmniscientPolicy(180));
+	//policies.add(new OmniscientPolicy(240));
 	policies.add(new OmniscientPolicy(300));
-	/*policies.add(new OmniscientPolicy(360));
-	policies.add(new OmniscientPolicy(420));
-	policies.add(new OmniscientPolicy(480));
-	policies.add(new OmniscientPolicy(540));*/
+	//policies.add(new OmniscientPolicy(360));
+	//policies.add(new OmniscientPolicy(420));
+	//policies.add(new OmniscientPolicy(480));
+	//policies.add(new OmniscientPolicy(540));
 	policies.add(new OmniscientPolicy(600));
 	//policies.add(new OmniscientPolicy(900));
 	//policies.add(new OmniscientPolicy(1200));
