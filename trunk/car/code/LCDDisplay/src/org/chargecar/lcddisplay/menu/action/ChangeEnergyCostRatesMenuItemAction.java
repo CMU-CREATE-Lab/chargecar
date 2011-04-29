@@ -6,6 +6,7 @@ import edu.cmu.ri.createlab.menu.MenuItem;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
+import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
 import org.chargecar.lcddisplay.helpers.GeneralHelper;
 
@@ -32,6 +33,7 @@ public final class ChangeEnergyCostRatesMenuItemAction extends CharacterDisplayM
     private double costOfGas;
 
     private int state = 1;
+    private double newRate;
 
     public ChangeEnergyCostRatesMenuItemAction(final MenuItem menuItem,
                                                final MenuStatusManager menuStatusManager,
@@ -47,45 +49,48 @@ public final class ChangeEnergyCostRatesMenuItemAction extends CharacterDisplayM
     }
 
     public void activate() {
-        costOfElectricity = lcd.getCostOfElectricity();
-        carMpg = lcd.getCarMpg();
-        costOfGas = lcd.getCostOfGas();
+        costOfElectricity = getCostOfElectricity();
+        carMpg = getCarMpg();
+        costOfGas = getCostOfGas();
 
-        if (state == 2)
+        if (state == 2) {
+            newRate = costOfGas;
             activate2();
-        else if (state == 3)
+        } else if (state == 3) {
+            newRate = carMpg;
             activate3();
-        else {
-            getCharacterDisplay().setLine(0, "^  Energy-Cost Rates");
-            getCharacterDisplay().setLine(1, "   Eletric: $<" + GeneralHelper.round(costOfElectricity, 2) + ">");
-            getCharacterDisplay().setLine(2, "   Gas: $" + GeneralHelper.round(costOfGas, 2));
-            getCharacterDisplay().setLine(3, "v  Mpg: " + carMpg);
+        } else {
+            newRate = costOfElectricity;
+            getCharacterDisplay().setLine(0, "^ Energy-Cost Rates");
+            getCharacterDisplay().setLine(1, "  Eletric: $<" + GeneralHelper.round(costOfElectricity, 2) + ">");
+            getCharacterDisplay().setLine(2, "  Gas: $" + GeneralHelper.round(costOfGas, 2));
+            getCharacterDisplay().setLine(3, "v Mpg: " + carMpg);
         }
     }
 
     public void activate2() {
-        getCharacterDisplay().setLine(0, "^  Energy-Cost Rates");
-        getCharacterDisplay().setLine(1, "   Eletric: $" + GeneralHelper.round(costOfElectricity, 2));
-        getCharacterDisplay().setLine(2, "   Gas: $<" + GeneralHelper.round(costOfGas, 2) + ">");
-        getCharacterDisplay().setLine(3, "v  Mpg: " + carMpg);
+        getCharacterDisplay().setLine(0, "^ Energy-Cost Rates");
+        getCharacterDisplay().setLine(1, "  Eletric: $" + GeneralHelper.round(costOfElectricity, 2));
+        getCharacterDisplay().setLine(2, "  Gas: $<" + GeneralHelper.round(costOfGas, 2) + ">");
+        getCharacterDisplay().setLine(3, "v Mpg: " + carMpg);
     }
 
     public void activate3() {
-        getCharacterDisplay().setLine(0, "^  Energy-Cost Rates");
-        getCharacterDisplay().setLine(1, "   Eletric: $" + GeneralHelper.round(costOfElectricity, 2));
-        getCharacterDisplay().setLine(2, "   Gas: $" + GeneralHelper.round(costOfGas, 2));
-        getCharacterDisplay().setLine(3, "v  Mpg: <" + carMpg + ">");
+        getCharacterDisplay().setLine(0, "^ Energy-Cost Rates");
+        getCharacterDisplay().setLine(1, "  Eletric: $" + GeneralHelper.round(costOfElectricity, 2));
+        getCharacterDisplay().setLine(2, "  Gas: $" + GeneralHelper.round(costOfGas, 2));
+        getCharacterDisplay().setLine(3, "v Mpg: <" + carMpg + ">");
     }
 
     public final void start() {
         if (state == 1) {
-            setCostOfElectricity(costOfElectricity);
+            setCostOfElectricity(newRate);
             getCharacterDisplay().setText(getActionPerformedText());
         } else if (state == 2) {
-            setCostOfGas(costOfGas);
+            setCostOfGas(newRate);
             getCharacterDisplay().setText(getActionPerformedText2());
         } else if (state == 3) {
-            setCarMpg(carMpg);
+            setCarMpg((int) newRate);
             getCharacterDisplay().setText(getActionPerformedText3());
         }
         sleepThenPopUpToParentMenuItem();
@@ -99,12 +104,15 @@ public final class ChangeEnergyCostRatesMenuItemAction extends CharacterDisplayM
     public void upEvent() {
         if (state == 1) {
             state = 3;
+            newRate = getCarMpg();
             activate3();
         } else if (state == 2) {
             state = 1;
+            newRate = getCostOfElectricity();
             activate();
         } else if (state == 3) {
             state = 2;
+            newRate = getCostOfGas();
             activate2();
         }
     }
@@ -112,51 +120,54 @@ public final class ChangeEnergyCostRatesMenuItemAction extends CharacterDisplayM
     public void downEvent() {
         if (state == 1) {
             state = 2;
+            newRate = getCostOfGas();
             activate2();
         } else if (state == 2) {
             state = 3;
+            newRate = getCarMpg();
             activate3();
         } else if (state == 3) {
             state = 1;
+            newRate = getCostOfElectricity();
             activate();
         }
     }
 
     public final void rightEvent() {
         if (state == 1) {
-            costOfElectricity += .01;
-            if (costOfElectricity > 9.99)
-                costOfElectricity = 9.99;
-            getCharacterDisplay().setCharacter(1, 14, String.valueOf(GeneralHelper.round(costOfElectricity, 2)));
+            newRate += .01;
+            if (newRate > 99999.99)
+                newRate = 99999.99;
+            getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padRight("$<" + String.valueOf(GeneralHelper.round(newRate, 2)) + ">", LCDConstants.NUM_COLS - 11));
         } else if (state == 2) {
-            costOfGas += .01;
-            if (costOfGas > 9.99)
-                costOfGas = 9.99;
-            getCharacterDisplay().setCharacter(2, 10, String.valueOf(GeneralHelper.round(costOfGas, 2)));
+            newRate += .01;
+            if (newRate > 99999.99)
+                newRate = 99999.99;
+            getCharacterDisplay().setCharacter(2, 7, GeneralHelper.padRight("$<" + String.valueOf(GeneralHelper.round(newRate, 2)) + ">", LCDConstants.NUM_COLS - 7));
         } else if (state == 3) {
-            carMpg += 1;
-            if (carMpg > 99)
-                carMpg = 99;
-            getCharacterDisplay().setCharacter(3, 9, String.valueOf(carMpg));
+            newRate += 1;
+            if (newRate > 999)
+                newRate = 999;
+            getCharacterDisplay().setCharacter(3, 7, GeneralHelper.padRight("<" + String.valueOf((int) newRate) + ">", LCDConstants.NUM_COLS - 7));
         }
     }
 
     public final void leftEvent() {
         if (state == 1) {
-            costOfElectricity -= .01;
-            if (costOfElectricity < .01)
-                costOfElectricity = .01;
-            getCharacterDisplay().setCharacter(1, 14, String.valueOf(GeneralHelper.round(costOfElectricity, 2)));
+            newRate -= .01;
+            if (newRate < .01)
+                newRate = .01;
+            getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padRight("$<" + String.valueOf(GeneralHelper.round(newRate, 2)) + ">", LCDConstants.NUM_COLS - 11));
         } else if (state == 2) {
-            costOfGas -= .01;
-            if (costOfGas < .01)
-                costOfGas = .01;
-            getCharacterDisplay().setCharacter(2, 10, String.valueOf(GeneralHelper.round(costOfGas, 2)));
+            newRate -= .01;
+            if (newRate < .01)
+                newRate = .01;
+            getCharacterDisplay().setCharacter(2, 7, GeneralHelper.padRight("$<" + String.valueOf(GeneralHelper.round(newRate, 2)) + ">", LCDConstants.NUM_COLS - 7));
         } else if (state == 3) {
-            carMpg -= 1;
-            if (carMpg < 10)
-                carMpg = 10;
-            getCharacterDisplay().setCharacter(3, 9, String.valueOf(carMpg));
+            newRate -= 1;
+            if (newRate <= 0)
+                newRate = 1;
+            getCharacterDisplay().setCharacter(3, 7, GeneralHelper.padRight("<" + String.valueOf((int) newRate) + ">", LCDConstants.NUM_COLS - 7));
         }
     }
 

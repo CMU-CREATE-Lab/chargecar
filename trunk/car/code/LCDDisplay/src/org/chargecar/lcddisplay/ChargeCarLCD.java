@@ -144,11 +144,25 @@ public final class ChargeCarLCD {
             if (accessoryOneOn) {
                 accessoryOneOn = false;
                 lcd.turnOffAccessoryOneLED();
-                lcd.turnOffAirConditioning();
+                if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
+                    lcd.turnOffAirConditioning();
+                } else if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(1))) {
+                    lcd.turnOffCabinHeat();
+                } else if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(2))) {
+                    lcd.turnOffPowerSteering();
+                }
+                //lcd.turnOffAirConditioning();
             } else {
                 accessoryOneOn = true;
                 lcd.turnOnAccessoryOneLED();
-                lcd.turnOnAirConditioning();
+                if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
+                    lcd.turnOnAirConditioning();
+                } else if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(1))) {
+                    lcd.turnOnCabinHeat();
+                } else if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(2))) {
+                    lcd.turnOnPowerSteering();
+                }
+                //lcd.turnOnAirConditioning();
             }
             //menuStatusManager.handleAccessoryOneEvent();
         }
@@ -159,11 +173,25 @@ public final class ChargeCarLCD {
             if (accessoryTwoOn) {
                 accessoryTwoOn = false;
                 lcd.turnOffAccessoryTwoLED();
-                lcd.turnOffCabinHeat();
+                if (lcd.getAccessoryButtonTwo().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
+                    lcd.turnOffAirConditioning();
+                } else if (lcd.getAccessoryButtonTwo().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(1))) {
+                    lcd.turnOffCabinHeat();
+                } else if (lcd.getAccessoryButtonTwo().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(2))) {
+                    lcd.turnOffPowerSteering();
+                }
+                //lcd.turnOffCabinHeat();
             } else {
                 accessoryTwoOn = true;
                 lcd.turnOnAccessoryTwoLED();
-                lcd.turnOnCabinHeat();
+                if (lcd.getAccessoryButtonTwo().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
+                    lcd.turnOnAirConditioning();
+                } else if (lcd.getAccessoryButtonTwo().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(1))) {
+                    lcd.turnOnCabinHeat();
+                } else if (lcd.getAccessoryButtonTwo().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(2))) {
+                    lcd.turnOnPowerSteering();
+                }
+                //lcd.turnOnCabinHeat();
             }
             //menuStatusManager.handleAccessoryTwoEvent();
         }
@@ -174,11 +202,25 @@ public final class ChargeCarLCD {
             if (accessoryThreeOn) {
                 accessoryThreeOn = false;
                 lcd.turnOffAccessoryThreeLED();
-                lcd.turnOffPowerSteering();
+                if (lcd.getAccessoryButtonThree().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
+                    lcd.turnOffAirConditioning();
+                } else if (lcd.getAccessoryButtonThree().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(1))) {
+                    lcd.turnOffCabinHeat();
+                } else if (lcd.getAccessoryButtonThree().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(2))) {
+                    lcd.turnOffPowerSteering();
+                }
+                //lcd.turnOffPowerSteering();
             } else {
                 accessoryThreeOn = true;
                 lcd.turnOnAccessoryThreeLED();
-                lcd.turnOnPowerSteering();
+                if (lcd.getAccessoryButtonThree().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
+                    lcd.turnOnAirConditioning();
+                } else if (lcd.getAccessoryButtonThree().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(1))) {
+                    lcd.turnOnCabinHeat();
+                } else if (lcd.getAccessoryButtonThree().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(2))) {
+                    lcd.turnOnPowerSteering();
+                }
+                //lcd.turnOnPowerSteering();
             }
             //menuStatusManager.handleAccessoryThreeEvent();
         }

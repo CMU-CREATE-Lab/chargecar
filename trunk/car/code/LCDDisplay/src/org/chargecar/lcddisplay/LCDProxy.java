@@ -610,6 +610,7 @@ public final class LCDProxy implements LCD {
         }
     }
 
+
 //chargecar end
 
     public void disconnect() {
