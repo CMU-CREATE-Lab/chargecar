@@ -1,9 +1,24 @@
 package org.chargecar.lcddisplay.helpers;
 
+import org.apache.log4j.Logger;
+import org.chargecar.lcddisplay.LCD;
+import org.chargecar.lcddisplay.LCDConstants;
+import org.chargecar.lcddisplay.LCDProxy;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
 public class GeneralHelper {
+    private static final Logger LOG = Logger.getLogger(GeneralHelper.class);
+    private static double index = 1;
+    private static double numFiles;
+    private static final LCD lcd = LCDProxy.getInstance();
 
     private GeneralHelper() {
     }
@@ -30,4 +45,66 @@ public class GeneralHelper {
         // back to the left.
         return (double) tmp / factor;
     }
+
+    /* Lists the contents of a directory. Only does one level*/
+    public static File[] listPath(final File path) {
+        final File[] files = path.listFiles();
+        if (files == null) return null;
+        return files;
+    }
+
+    public static int numFiles(final File file) {
+        //Store the total size of all files
+        int size = 0;
+        if (file.isDirectory()) {
+            //All files and subdirectories
+            final File[] files = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                //Recursive call
+                size += numFiles(files[i]);
+            }
+        }
+        //Base case
+        else {
+            size += 1;
+        }
+        return size;
+    }
+
+    /* copy a directory from one location to another*/
+    public static void copyDirectory(final File sourceLocation, final File targetLocation)
+            throws IOException {
+
+        if (numFiles == 0) {
+            lcd.setText(0, 0, "Transfer in progress");
+            numFiles = numFiles(sourceLocation);
+            lcd.setText(2, 4, "0% complete");
+        }
+
+        if (sourceLocation.isDirectory()) {
+            if (!targetLocation.exists()) {
+                targetLocation.mkdir();
+            }
+            
+            final String[] children = sourceLocation.list();
+            for (int i = 0; i < children.length; i++) {
+                copyDirectory(new File(sourceLocation, children[i]),
+                        new File(targetLocation, children[i]));
+            }
+        } else {
+            FileChannel in = new FileInputStream(sourceLocation).getChannel();
+            FileChannel out = new FileOutputStream(targetLocation).getChannel();
+            in.transferTo(0, in.size(), out);
+
+            //final Process p = Runtime.getRuntime().exec("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");
+            /*try {
+                p.waitFor();
+            } catch (InterruptedException e) {
+                LOG.error("GeneralHelper.copyDirectory(): " + e.getMessage());
+            }
+            System.out.println("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");*/
+            lcd.setText(2, 4, padRight(Math.round((index++ / numFiles) * 100) + "% complete", LCDConstants.NUM_COLS));
+        }
+    }
+
 }

@@ -120,6 +120,27 @@ public final class LCDConstants {
     public static final String SELECTED_OPTION = String.valueOf((char) 255);
     public static final String UNSELECTED_OPTION = String.valueOf((char) 219);
 
+
+    public static final List<String> ACCESSORY_BUTTON_STATES = new ArrayList<String>();
+    static {
+        String state = "A/C";
+        ACCESSORY_BUTTON_STATES.add(state);
+        state = "Heat";
+        ACCESSORY_BUTTON_STATES.add(state);
+        state = "P/S";
+        ACCESSORY_BUTTON_STATES.add(state);
+    }
+
+    //public static final String LOG_PATH = "C:\\Documents and Settings\\Paul\\My Documents\\CMU\\CREATE\\projects\\chargecar\\cars\\display\\LCD6\\chargecar\\car\\logs";
+    public static final String LOG_PATH = "/home/chargecar/ChargeCar/trunk/car/logs";
+    //public static final String OUTPUT_LOG_PATH = "E:\\ChargeCar_logs";
+    public static final String USB_UNMOUNT_PATH = "/dev/sdb";
+    public static final String USB_UNMOUNT_PATH2 = "/dev/sdc";
+    public static final String USB_ROOT_PATH = "/media";
+
+    public static final String LOCAL_LCD_SOFTWARE_PATH = "/home/chargecar/ChargeCar/trunk/car/";
+    public static final String USB_LCD_SOFTWARE_PATH = "/chargecar/car";
+
     /**
      * Prefix for system property used to store the name of the serial port for a particular subsystem.
      */
