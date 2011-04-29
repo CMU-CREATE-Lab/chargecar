@@ -17,7 +17,7 @@ import java.nio.channels.FileChannel;
 public class GeneralHelper {
     private static final Logger LOG = Logger.getLogger(GeneralHelper.class);
     private static double index = 1;
-    private static double numFiles;
+    private static double numFiles = 0;
     private static final LCD lcd = LCDProxy.getInstance();
 
     private GeneralHelper() {
@@ -53,6 +53,7 @@ public class GeneralHelper {
         return files;
     }
 
+    /* Count the number of files in a directory. Does so recursively*/
     public static int numFiles(final File file) {
         //Store the total size of all files
         int size = 0;
@@ -71,7 +72,7 @@ public class GeneralHelper {
         return size;
     }
 
-    /* copy a directory from one location to another*/
+    /* copy files from one location to another*/
     public static void copyDirectory(final File sourceLocation, final File targetLocation)
             throws IOException {
 
@@ -95,7 +96,7 @@ public class GeneralHelper {
             FileChannel in = new FileInputStream(sourceLocation).getChannel();
             FileChannel out = new FileOutputStream(targetLocation).getChannel();
             in.transferTo(0, in.size(), out);
-
+         
             //final Process p = Runtime.getRuntime().exec("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");
             /*try {
                 p.waitFor();
@@ -104,6 +105,11 @@ public class GeneralHelper {
             }
             System.out.println("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");*/
             lcd.setText(2, 4, padRight(Math.round((index++ / numFiles) * 100) + "% complete", LCDConstants.NUM_COLS));
+            
+            if (((index / numFiles) * 100) >= 100) {
+                numFiles = 0;
+                index = 1;
+            }
         }
     }
 
