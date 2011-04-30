@@ -23,7 +23,7 @@ public class KnnTableTrainer implements Policy {
     
     private void updateDriverTable(Trip trip){
 	String driver = trip.getFeatures().getDriver();
-	if(trip.getPoints().size() > 7200) return;
+	if(trip.getPoints().size() > 3600) return;
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    if(currentDriver != null) finishTraining();
 	    System.out.println("New driver: "+driver);	    
@@ -31,7 +31,7 @@ public class KnnTableTrainer implements Policy {
 	    table = new KnnTable();	    
 	}
 	
-	if(table.getKnnPoints().size() < 100000){	
+	if(table.getKnnPoints().size() < 200000){	
 	    for(PointFeatures pf : trip.getPoints()){	
 		table.addPoint(pf, pf.getPowerDemand());
 	    }
