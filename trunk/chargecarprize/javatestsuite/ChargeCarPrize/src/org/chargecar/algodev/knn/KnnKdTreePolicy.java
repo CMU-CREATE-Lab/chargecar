@@ -26,7 +26,7 @@ public class KnnKdTreePolicy implements Policy {
     private KdTree featKdTree;
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead = 600; 
+    private final int lookahead = 240; 
     private int pointsTested = 0;
     
     private String currentDriver;
@@ -148,7 +148,6 @@ public class KnnKdTreePolicy implements Policy {
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
 	List<Double> powers = featKdTree.getBestEstimate(spf, 9, lookahead);
-	//writePowers(powers);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
 	List<Double> rates = new ArrayList<Double>(lookahead);
@@ -163,7 +162,7 @@ public class KnnKdTreePolicy implements Policy {
 	    rates.add(1000*sum/timesum);
 	}
 	
-	double maxRate = Double.POSITIVE_INFINITY;
+	double maxRate = 1e10;//Double.POSITIVE_INFINITY;
 	for(int i = 0;i<rates.size();i++){
 	    if(rates.get(i) < maxRate){
 		maxRate = rates.get(i);
