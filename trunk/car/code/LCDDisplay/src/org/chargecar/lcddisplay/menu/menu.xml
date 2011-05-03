@@ -19,7 +19,7 @@
     </item>
     <item text="[ ] Driving Mode  [ ] Charging Mode [ ] Drive History [*] Options">
         <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Settings      [ ] Version Info">
-            <item text="[*] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating">
+            <item text="[*] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating  [ ] Batt Testing">
                 <item text="">
                     <implementation-class
                             name="org.chargecar.lcddisplay.menu.action.ToggleDisplayBackLightMenuItemAction">
@@ -32,7 +32,7 @@
                     </implementation-class>
                 </item>
             </item>
-            <item text="[ ] LCD Backlight [*] Batt Cooling  [ ] Batt Heating">
+            <item text="[ ] LCD Backlight [*] Batt Cooling  [ ] Batt Heating  [ ] Batt Testing">
                 <item text="">
                     <implementation-class
                             name="org.chargecar.lcddisplay.menu.action.ToggleBatteryCoolingMenuItemAction">
@@ -45,7 +45,7 @@
                     </implementation-class>
                 </item>
             </item>
-            <item text="[ ] LCD Backlight [ ] Batt Cooling  [*] Batt Heating">
+            <item text="[ ] LCD Backlight [ ] Batt Cooling  [*] Batt Heating  [ ] Batt Testing">
                 <item text="[*] Toggle Batt       Heating       [ ] Set Batt          Heater Cutoff">
                     <item text="">
                         <implementation-class
@@ -64,6 +64,11 @@
                         <implementation-class
                                 name="org.chargecar.lcddisplay.menu.action.SetBatteryHeaterCutoffTempMenuItemAction"/>
                     </item>
+                </item>
+            </item>
+            <item text="[ ] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating  [*] Batt Testing">
+                <item text="">
+                    <implementation-class name="org.chargecar.lcddisplay.menu.action.BatteryTestMenuItemAction"/>
                 </item>
             </item>
         </item>
