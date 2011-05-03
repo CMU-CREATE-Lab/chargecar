@@ -750,21 +750,37 @@ public final class LCDProxy implements LCD {
                     }
 
                     final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
+                    final double tripDistanceTraveled = Double.valueOf(getSavedProperty("tripDistanceTraveled")) + distanceInMiles;
                     setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
+                    setSavedProperty("tripDistanceTraveled", String.valueOf(tripDistanceTraveled));
 
                     final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
                     if (kwhDelta < 0) {
                         final double lifetimeEnergyRegen = Double.valueOf(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
+                        final double tripEnergyRegen = Double.valueOf(getSavedProperty("tripEnergyRegen")) + kwhDelta;
                         setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
+                        setSavedProperty("tripEnergyRegen", String.valueOf(tripEnergyRegen));
                     } else if (kwhDelta > 0) {
                         final double lifetimeEnergyDischarge = Double.valueOf(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
+                        final double tripEnergyDischarge = Double.valueOf(getSavedProperty("tripEnergyDischarge")) + kwhDelta;
                         setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
+                        setSavedProperty("tripEnergyDischarge", String.valueOf(tripEnergyDischarge));
                     }
                     final double lifetimeEnergyConsumed = Double.valueOf(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
+                    final double tripEnergyConsumed = Double.valueOf(getSavedProperty("tripEnergyConsumed")) + kwhDelta;
                     setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
+                    setSavedProperty("tripEnergyConsumed", String.valueOf(tripEnergyConsumed));
 
                     final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
+                    final double tripEfficiency = tripDistanceTraveled / tripEnergyConsumed;
                     setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
+                    setSavedProperty("tripEfficiency", String.valueOf(tripEfficiency));
+
+                    final double ampHours = (bmsData.getEnergyEquation().getKilowattHours() * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+                    final double lifetimeAmpHours = Double.valueOf(getSavedProperty("lifetimeAmpHours")) + ampHours;
+                    final double tripAmpHours = Double.valueOf(getSavedProperty("tripAmpHours")) + ampHours;
+                    setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
+                    setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                 }
                 writeSavedProperties();
             }

@@ -70,19 +70,27 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
 
     public final void copyLcdFiles() {
         try {
-            final File inputPath = new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
-            final File[] tmpOutputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
+            final File outputPath = new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
+            final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
 
-            if (!inputPath.exists()) {
-                getCharacterDisplay().setLine(0, "Local dir not found.");
-                getCharacterDisplay().setLine(1, "No files were");
-                getCharacterDisplay().setLine(2, "transferred.");
-            } else if (tmpOutputPath == null) {
+            if (tmpInputPath == null) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
+                return;
+            }
+
+            final File inputPath = new File(tmpInputPath[0].toString() + LCDConstants.USB_LCD_SOFTWARE_PATH);
+
+            if (!outputPath.exists()) {
+                getCharacterDisplay().setLine(0, "Local dir not found.");
+                getCharacterDisplay().setLine(1, "No files were");
+                getCharacterDisplay().setLine(2, "transferred.");
+            } else if (!inputPath.exists()) {
+                getCharacterDisplay().setLine(0, "Update dir not found");
+                getCharacterDisplay().setLine(1, "No files were");
+                getCharacterDisplay().setLine(2, "transferred.");
             } else {
-                final File outputPath = new File(tmpOutputPath[0].toString() + LCDConstants.USB_LCD_SOFTWARE_PATH);
                 GeneralHelper.copyDirectory(inputPath, outputPath);
                 getCharacterDisplay().setLine(0, "Software updated.");
                 getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);

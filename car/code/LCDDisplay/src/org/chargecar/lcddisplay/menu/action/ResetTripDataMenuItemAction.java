@@ -62,5 +62,11 @@ public final class ResetTripDataMenuItemAction extends TwoOptionMenuItemAction {
         getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
         lcd.setTripDistance(0);
         bmsData.getEnergyEquation().reset();
+        lcd.setSavedProperty("tripEnergyConsumed","0.0");
+        lcd.setSavedProperty("tripEnergyDischarge","0.0");
+        lcd.setSavedProperty("tripEnergyRegen","0.0");
+        lcd.setSavedProperty("tripAmpHours","0.0");
+        lcd.setSavedProperty("tripEfficiency","0.0");
+        lcd.setSavedProperty("tripDistanceTraveled","0.0");
     }
 }

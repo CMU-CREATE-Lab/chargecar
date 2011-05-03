@@ -109,8 +109,22 @@ public final class LCDConstants {
         DEFAULT_PROPERTIES.add(property);
         property = new String[]{"accessoryButtonThree", "P/S"};
         DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"tripEnergyConsumed", "0.0"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"tripEnergyDischarge", "0.0"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"tripEnergyRegen", "0.0"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"tripAmpHours", "0.0"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"tripEfficiency", "0.0"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"tripDistanceTraveled", "0.0"};
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"lifetimeAmpHours", "0.0"};
+        DEFAULT_PROPERTIES.add(property);             
     }
-    public static final int NUM_PROPERTIES = 14;
+    public static final int NUM_PROPERTIES = 21;
     
     public static final double SECONDS_TO_HOURS = 0.000277777778;
     public static final double METERS_TO_MILES = 0.000621371192;
