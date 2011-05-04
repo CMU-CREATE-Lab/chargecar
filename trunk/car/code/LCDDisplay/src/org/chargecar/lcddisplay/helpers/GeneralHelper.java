@@ -86,17 +86,17 @@ public class GeneralHelper {
             if (!targetLocation.exists()) {
                 targetLocation.mkdir();
             }
-            
+
             final String[] children = sourceLocation.list();
             for (int i = 0; i < children.length; i++) {
                 copyDirectory(new File(sourceLocation, children[i]),
                         new File(targetLocation, children[i]));
             }
         } else {
-            FileChannel in = new FileInputStream(sourceLocation).getChannel();
-            FileChannel out = new FileOutputStream(targetLocation).getChannel();
+            final FileChannel in = new FileInputStream(sourceLocation).getChannel();
+            final FileChannel out = new FileOutputStream(targetLocation).getChannel();
             in.transferTo(0, in.size(), out);
-         
+
             //final Process p = Runtime.getRuntime().exec("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");
             /*try {
                 p.waitFor();
@@ -105,7 +105,7 @@ public class GeneralHelper {
             }
             System.out.println("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");*/
             lcd.setText(2, 4, padRight(Math.round((index++ / numFiles) * 100) + "% complete", LCDConstants.NUM_COLS));
-            
+
             if (((index / numFiles) * 100) >= 100) {
                 numFiles = 0;
                 index = 1;

@@ -20,14 +20,14 @@ import java.util.concurrent.TimeUnit;
 public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDisplayMenuItemAction {
     private static final Logger LOG = Logger.getLogger(GPSMenuItemAction.class);
 
-    double previousLoadCurrent;
-    double previousTotalEnergyConsumed;
-    double previousAmpHours;
-    double previousMaxVoltage;
-    double previousMinVoltage;
+    private double previousLoadCurrent;
+    private double previousTotalEnergyConsumed;
+    private double previousAmpHours;
+    private double previousMaxVoltage;
+    private double previousMinVoltage;
 
-    double totalEnergyConsumed = 0;
-    double ampHours = 0;
+    private double totalEnergyConsumed = 0;
+    private double ampHours = 0;
 
     public BatteryTestMenuItemAction(final MenuItem menuItem,
                                      final MenuStatusManager menuStatusManager,
@@ -38,8 +38,8 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
     @Override
     protected void performAction() {
         final LCD lcd = LCDProxy.getInstance();
-        BMSManager bmsManager = BMSManager.getInstance();
-        BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+        final BMSManager bmsManager = BMSManager.getInstance();
+        final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
 
         if (bmsManager == null || bmsData == null) {
             LOG.error("GPSMenuItemAction.performAction(): gps is null");
