@@ -28,7 +28,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     private GPSEvent gpsData = null;
     private int currentState = 1;
     private PostgresqlConnect postgresqlConnection = null;
-    private static final String roadTable = "pa_2010_priseroads";
+    private static final String roadTable = "pa_2010_prisecroads";
     private static final String cityStateTable = "us_2008_uac";
     private static final String roadTablecolumnName = "fullname";
     private static final String cityStateTablecolumnName = "name";

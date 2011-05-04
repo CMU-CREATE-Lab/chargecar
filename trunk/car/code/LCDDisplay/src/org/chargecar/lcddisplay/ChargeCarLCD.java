@@ -61,8 +61,8 @@ public final class ChargeCarLCD {
             lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE_BACKUP1);
             if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP1) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
                 LOG.debug("ChargeCarLCD(): Failed to load first backup of app properties file. Opening second backup...");
-                lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE_BACKUP1);
-                if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP1) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
+                lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE_BACKUP2);
+                if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP2) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
                     LOG.debug("ChargeCarLCD(): Failed to load second backup of app properties file. Opening default properties file...");
                     lcd.setCurrentPropertiesFileName(LCDConstants.DEFAULT_PROPERTIES_FILE);
                     if (!lcd.openSavedProperties(LCDConstants.DEFAULT_PROPERTIES_FILE) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
