@@ -26,6 +26,9 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
     double previousMaxVoltage;
     double previousMinVoltage;
 
+    double totalEnergyConsumed = 0;
+    double ampHours = 0;
+
     public BatteryTestMenuItemAction(final MenuItem menuItem,
                                      final MenuStatusManager menuStatusManager,
                                      final CharacterDisplay characterDisplay) {
@@ -49,8 +52,8 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
         }
 
         final double loadCurrent = GeneralHelper.round(bmsData.getBmsState().getLoadCurrentAmps(), 2);
-        final double totalEnergyConsumed = GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHours(), 2);
-        final double ampHours = GeneralHelper.round((bmsData.getEnergyEquation().getKilowattHours() * 1000) / bmsData.getBmsState().getPackTotalVoltage(), 2);
+        totalEnergyConsumed += GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHoursDelta(), 2);
+        ampHours += GeneralHelper.round((totalEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage(), 2);
         final double maxVoltage = GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2);
         final double minVoltage = GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2);
 

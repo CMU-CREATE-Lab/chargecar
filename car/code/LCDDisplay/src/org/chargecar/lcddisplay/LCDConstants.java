@@ -52,12 +52,6 @@ public final class LCDConstants {
     public static final int MOTOR_TEMPERATURE = 1;
 
     /**
-     * states
-     */
-    public static final int TRUE = 84;
-    public static final int FALSE = 70;
-
-    /**
      * temperature constants
      */
     public static final double KELVIN_FREEZING_POINT = 273.15;
@@ -79,6 +73,7 @@ public final class LCDConstants {
     public static final String APP_PROPERTIES_FILE = "app.properties";
     public static final String APP_PROPERTIES_FILE_BACKUP1 = "app_bk1.properties";
     public static final String APP_PROPERTIES_FILE_BACKUP2 = "app_bk2.properties";
+    public static final int NUM_PROPERTIES = 21;
     public static final List<String[]> DEFAULT_PROPERTIES = new ArrayList<String[]>();
     static {
         String[] property = {"batteryHeaterTurnOnValue", "10"};
@@ -124,16 +119,9 @@ public final class LCDConstants {
         property = new String[]{"lifetimeAmpHours", "0.0"};
         DEFAULT_PROPERTIES.add(property);             
     }
-    public static final int NUM_PROPERTIES = 21;
-    
+
     public static final double SECONDS_TO_HOURS = 0.000277777778;
     public static final double METERS_TO_MILES = 0.000621371192;
-    /**
-     * menu choices
-     */
-    public static final String SELECTED_OPTION = String.valueOf((char) 255);
-    public static final String UNSELECTED_OPTION = String.valueOf((char) 219);
-
 
     public static final List<String> ACCESSORY_BUTTON_STATES = new ArrayList<String>();
     static {
@@ -145,6 +133,9 @@ public final class LCDConstants {
         ACCESSORY_BUTTON_STATES.add(state);
     }
 
+    /**
+     * Paths for transferring files to and from the car computer
+     */
     //public static final String LOG_PATH = "C:\\Documents and Settings\\Paul\\My Documents\\CMU\\CREATE\\projects\\chargecar\\cars\\display\\LCD6\\chargecar\\car\\logs";
     public static final String LOG_PATH = "/home/chargecar/ChargeCar/trunk/car/logs";
     //public static final String OUTPUT_LOG_PATH = "E:\\ChargeCar_logs";
