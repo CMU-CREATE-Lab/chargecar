@@ -42,16 +42,16 @@ public final class ChargeCarLCD {
         // create the menu status manager
         final MenuStatusManager menuStatusManager = new DefaultMenuStatusManager();
 
-        LOG.debug("ChargeCarLCD(): about to connect to the BMS and GPS...");
-        // call .getInstance() on the various managers to kick off connection establishment to them
-        BMSManager.getInstance();
-        GPSManager.getInstance();
-
         LOG.debug("ChargeCarLCD(): about to call LCDProxy.getInstance()...");
         final LCD lcd = LCDProxy.getInstance();
 
         //always turn on the display back light when the program starts
         lcd.turnOnDisplayBackLight();
+
+        LOG.debug("ChargeCarLCD(): about to connect to the BMS and GPS...");
+        // call .getInstance() on the various managers to kick off connection establishment to them
+        BMSManager.getInstance();
+        GPSManager.getInstance();
 
         //load in properties file
         LOG.debug("ChargeCarLCD(): about to read in properties file...");
@@ -80,6 +80,8 @@ public final class ChargeCarLCD {
         }
         //now matter what file was opened, start writing to the app properties file
         lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE);
+        lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE);
+        
         //add button panel listener
         lcd.addButtonPanelEventListener(new MyButtonPanelEventListener(menuStatusManager));
 
