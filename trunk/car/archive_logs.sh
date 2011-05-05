@@ -12,4 +12,6 @@ fi
 output="archived_logs/""$current_date""_ChargeCar_logs.zip"
 zip -r $output . -i \*.log
 #tar cvzf $output --exclude='*.tar.gz' *
-find -type f -name "*.log" -exec rm -f {} \;
+if [ -d "$output" ]; then
+  find -type f -name "*.log" -exec rm -f {} \;
+fi

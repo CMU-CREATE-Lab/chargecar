@@ -26,13 +26,29 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
     private double previousMaxVoltage;
     private double previousMinVoltage;
 
-    private double totalEnergyConsumed = 0;
-    private double ampHours = 0;
+    private double totalEnergyConsumed = 0.0;
+    private double ampHours = 0.0;
+    private short state = 0;
 
     public BatteryTestMenuItemAction(final MenuItem menuItem,
                                      final MenuStatusManager menuStatusManager,
                                      final CharacterDisplay characterDisplay) {
         super(menuItem, menuStatusManager, characterDisplay, 0, 1, TimeUnit.SECONDS);
+    }
+
+    protected void postActivate() {
+        previousLoadCurrent = 0.0;
+        previousTotalEnergyConsumed = 0.0;
+        previousAmpHours = 0.0;
+        previousMaxVoltage = 0.0;
+        previousMinVoltage = 0.0;
+        totalEnergyConsumed = 0.0;
+        ampHours = 0.0;
+        state = 0;
+    }
+
+    public final void start() {
+        state = 1;
     }
 
     @Override
@@ -51,29 +67,35 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
             return;
         }
 
-        final double loadCurrent = GeneralHelper.round(bmsData.getBmsState().getLoadCurrentAmps(), 2);
-        totalEnergyConsumed += GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHoursDelta(), 2);
-        ampHours += GeneralHelper.round((totalEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage(), 2);
-        final double maxVoltage = GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2);
-        final double minVoltage = GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2);
+        if (state == 0) {
+            getCharacterDisplay().setLine(0, "BATT TEST           ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setCharacter(2, 1, GeneralHelper.padLeft("[*] Begin Test Now ",1));
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+        } else if (state == 1) {
 
-        getCharacterDisplay().setCharacter(0, 0, "BATT TEST");
+            final double loadCurrent = GeneralHelper.round(bmsData.getBmsState().getLoadCurrentAmps(), 2);
+            totalEnergyConsumed += GeneralHelper.round(bmsData.getEnergyEquation().getKilowattHoursDelta(), 2);
+            ampHours += GeneralHelper.round((totalEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage(), 2);
+            final double maxVoltage = GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2);
+            final double minVoltage = GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2);
 
-        if (bmsData.getBmsState().getPackTotalVoltage() < 82.5 || bmsData.getBmsState().getMinimumCellVoltage() < 2.00) {
-            getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(String.valueOf(previousLoadCurrent) + " amps", LCDConstants.NUM_COLS - 9));
-            getCharacterDisplay().setCharacter(1, 0, GeneralHelper.padLeft(String.valueOf(previousTotalEnergyConsumed) + " kWh", LCDConstants.NUM_COLS));
-            getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(previousAmpHours) + " Ah", LCDConstants.NUM_COLS));
-            getCharacterDisplay().setCharacter(3, 0, GeneralHelper.padLeft(String.valueOf(previousMinVoltage) + "/" + String.valueOf(previousMaxVoltage), LCDConstants.NUM_COLS));
-        } else {
-            previousLoadCurrent = loadCurrent;
-            previousTotalEnergyConsumed = totalEnergyConsumed;
-            previousAmpHours = ampHours;
-            previousMaxVoltage = maxVoltage;
-            previousMinVoltage = minVoltage;
-            getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(String.valueOf(loadCurrent) + " amps", LCDConstants.NUM_COLS - 9));
-            getCharacterDisplay().setCharacter(1, 0, GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + " kWh", LCDConstants.NUM_COLS));
-            getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(ampHours) + " Ah", LCDConstants.NUM_COLS));
-            getCharacterDisplay().setCharacter(3, 0, GeneralHelper.padLeft(String.valueOf(minVoltage) + "/" + String.valueOf(maxVoltage), LCDConstants.NUM_COLS));
+            if (bmsData.getBmsState().getPackTotalVoltage() < 82.5 || bmsData.getBmsState().getMinimumCellVoltage() < 2.00) {
+                getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(String.valueOf(previousLoadCurrent) + " amps", LCDConstants.NUM_COLS - 9));
+                getCharacterDisplay().setCharacter(1, 0, GeneralHelper.padLeft(String.valueOf(previousTotalEnergyConsumed) + " kWh", LCDConstants.NUM_COLS));
+                getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(previousAmpHours) + " Ah", LCDConstants.NUM_COLS));
+                getCharacterDisplay().setCharacter(3, 0, GeneralHelper.padLeft(String.valueOf(previousMinVoltage) + "/" + String.valueOf(previousMaxVoltage), LCDConstants.NUM_COLS));
+            } else {
+                previousLoadCurrent = loadCurrent;
+                previousTotalEnergyConsumed = totalEnergyConsumed;
+                previousAmpHours = ampHours;
+                previousMaxVoltage = maxVoltage;
+                previousMinVoltage = minVoltage;
+                getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(String.valueOf(loadCurrent) + " amps", LCDConstants.NUM_COLS - 9));
+                getCharacterDisplay().setCharacter(1, 0, GeneralHelper.padLeft(String.valueOf(totalEnergyConsumed) + " kWh", LCDConstants.NUM_COLS));
+                getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(ampHours) + " Ah", LCDConstants.NUM_COLS));
+                getCharacterDisplay().setCharacter(3, 0, GeneralHelper.padLeft(String.valueOf(minVoltage) + "/" + String.valueOf(maxVoltage), LCDConstants.NUM_COLS));
+            }
         }
     }
 }
