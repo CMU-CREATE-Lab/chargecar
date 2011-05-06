@@ -136,14 +136,13 @@ public final class LCDConstants {
     /**
      * Paths for transferring files to and from the car computer
      */
-    //public static final String LOG_PATH = "C:\\Documents and Settings\\Paul\\My Documents\\CMU\\CREATE\\projects\\chargecar\\cars\\display\\LCD6\\chargecar\\car\\logs";
     public static final String LOG_PATH = "/home/chargecar/ChargeCar/trunk/car/logs";
-    //public static final String OUTPUT_LOG_PATH = "E:\\ChargeCar_logs";
     public static final String USB_UNMOUNT_PATH = "/dev/sdb";
     public static final String USB_UNMOUNT_PATH2 = "/dev/sdc";
     public static final String USB_ROOT_PATH = "/media";
 
     public static final String LOCAL_LCD_SOFTWARE_PATH = "/home/chargecar/ChargeCar/trunk/car/";
+    public static final String TMP_LOCAL_LCD_SOFTWARE_PATH = "/home/chargecar/ChargeCar/trunk/car_tmp/";
     public static final String USB_LCD_SOFTWARE_PATH = "/chargecar/car";
 
     /**

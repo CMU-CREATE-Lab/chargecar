@@ -19,10 +19,8 @@ import java.util.Map;
 public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuItemAction {
 
     private static final Logger LOG = Logger.getLogger(UpdateLCDSoftwareMenuItemAction.class);
-    private static final String DEFAULT_LABEL_ACTION_PERFORMED = "Files transferred.";
     private static final String DEFAULT_LABEL_ACTION_CANCELLED = "Cancelled!";
 
-    private static final String PROPERTY_ACTION_PERFORMED = "action.performed";
     private static final String PROPERTY_ACTION_CANCELLED = "action.cancelled";
 
     private final LCD lcd = LCDProxy.getInstance();
@@ -62,40 +60,60 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             sleep();
-            copyLcdFiles();
-            unmountUsbDrive();
+            if (copyLcdFiles()) {
+                getCharacterDisplay().setLine(0, "Software updated.");
+                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(2, "Unplug the USB drive");
+                getCharacterDisplay().setLine(3, "and cycle power now.");
+            }
             sleepLongThenPopUpToParentMenuItem();
         }
     }
 
-    public final void copyLcdFiles() {
+    public void cleanUp() {
+        GeneralHelper.resetCounts();
+        unmountUsbDrive();
+    }
+
+    public final void renameDirs() {
+        if (new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH).exists() &&  new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH).exists()) {
+            try {
+                Runtime.getRuntime().exec("rm -rf " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH + ";" + "mv " + LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH + " " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
+            } catch (IOException e) {
+                LOG.error("UpdateLCDSoftwareMenuItemAction.renameDirs(): " + e.getMessage());
+            }
+        }
+    }
+
+    public final boolean copyLcdFiles() {
         try {
-            final File outputPath = new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
+            final File outputPath = new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH);
             final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
 
             if (tmpInputPath == null) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
-                return;
+                return false;
             }
 
-            final File inputPath = new File(tmpInputPath[0].toString() + LCDConstants.USB_LCD_SOFTWARE_PATH);
+            final File inputPath = new File(tmpInputPath[0] + LCDConstants.USB_LCD_SOFTWARE_PATH);
 
-            if (!outputPath.exists()) {
-                getCharacterDisplay().setLine(0, "Local dir not found.");
-                getCharacterDisplay().setLine(1, "No files were");
-                getCharacterDisplay().setLine(2, "transferred.");
-            } else if (!inputPath.exists()) {
+            if (inputPath.exists()) {
+                GeneralHelper.copyDirectory(inputPath, outputPath);
+                getCharacterDisplay().setLine(0, "Finalizing.");
+                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+                cleanUp();
+                renameDirs();
+                return true;
+            } else {
                 getCharacterDisplay().setLine(0, "Update dir not found");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
-            } else {
-                GeneralHelper.copyDirectory(inputPath, outputPath);
-                getCharacterDisplay().setLine(0, "Software updated.");
-                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-                getCharacterDisplay().setLine(2, "It is safe to unplug");
-                getCharacterDisplay().setLine(3, "your USB drive.");
+                cleanUp();
+                return false;
             }
         } catch (IOException e) {
             LOG.error("UpdateLCDSoftwareMenuItemAction.copyLcdFiles(): " + e.getMessage());
@@ -103,6 +121,8 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
             getCharacterDisplay().setLine(1, "transferring.");
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+            cleanUp();
+            return false;
         }
     }
 
@@ -129,10 +149,6 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
         } catch (IOException e) {
             LOG.error("UpdateLCDSoftwareMenuItemAction.unmountUsbDrive(): " + e.getMessage());
         }
-    }
-
-    private String getActionPerformedText() {
-        return getProperty(PROPERTY_ACTION_PERFORMED, DEFAULT_LABEL_ACTION_PERFORMED);
     }
 
     private String getActionCancelledText() {
