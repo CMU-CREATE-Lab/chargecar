@@ -221,7 +221,6 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             getCharacterDisplay().setLine(3, "v                   ");
         }
 
-        postgresqlConnection = PostgresqlConnect.getInstance();
         if (postgresqlConnection == null || latString == null || lngString == null) {
             getCharacterDisplay().setLine(2, "  Error Connecting.");
             return;
@@ -294,6 +293,10 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         }
     }
 
+    protected void preActivate() {
+        postgresqlConnection = PostgresqlConnect.getInstance();
+    }
+    
     protected void postActivate() {
         final int numActions = printHeadings.size();
         for (int i = 0; i < numActions; i++) {

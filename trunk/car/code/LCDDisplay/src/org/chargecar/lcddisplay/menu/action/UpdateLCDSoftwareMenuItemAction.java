@@ -87,10 +87,10 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
 
     public final boolean copyLcdFiles() {
         try {
-            final File outputPath = new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH);
+            final File outputPath = new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
             final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
 
-            if (tmpInputPath == null) {
+            if (tmpInputPath == null || tmpInputPath[0].lastModified() != 0) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
@@ -106,7 +106,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
                 getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
                 cleanUp();
-                renameDirs();
+                //renameDirs();
                 return true;
             } else {
                 getCharacterDisplay().setLine(0, "Update dir not found");
