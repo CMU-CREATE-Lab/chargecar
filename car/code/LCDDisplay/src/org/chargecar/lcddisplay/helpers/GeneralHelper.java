@@ -78,8 +78,8 @@ public class GeneralHelper {
 
         if (numFiles == 0) {
             lcd.setText(0, 0, "Transfer in progress");
-            numFiles = numFiles(sourceLocation);
             lcd.setText(2, 4, "0% complete");
+            numFiles = numFiles(sourceLocation);
         }
 
         if (sourceLocation.isDirectory()) {
@@ -93,24 +93,22 @@ public class GeneralHelper {
                         new File(targetLocation, children[i]));
             }
         } else {
-            final FileChannel in = new FileInputStream(sourceLocation).getChannel();
-            final FileChannel out = new FileOutputStream(targetLocation).getChannel();
-            in.transferTo(0, in.size(), out);
-
-            //final Process p = Runtime.getRuntime().exec("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");
-            /*try {
-                p.waitFor();
-            } catch (InterruptedException e) {
+            try {
+                final FileChannel in = new FileInputStream(sourceLocation).getChannel();
+                final FileChannel out = new FileOutputStream(targetLocation).getChannel();
+                in.transferTo(0, in.size(), out);
+            } catch (IOException e) {
                 LOG.error("GeneralHelper.copyDirectory(): " + e.getMessage());
             }
-            System.out.println("cp " + "\"" + sourceLocation + "\"" + " " + "\"" + targetLocation + "\"");*/
+
             lcd.setText(2, 4, padRight(Math.round((index++ / numFiles) * 100) + "% complete", LCDConstants.NUM_COLS));
 
-            if (((index / numFiles) * 100) >= 100) {
-                numFiles = 0;
-                index = 1;
-            }
         }
+    }
+
+    public static void resetCounts() {
+        numFiles = 0;
+        index = 1;
     }
 
 }

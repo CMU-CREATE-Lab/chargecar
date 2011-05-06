@@ -36,7 +36,7 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
         super(menuItem, menuStatusManager, characterDisplay, 0, 1, TimeUnit.SECONDS);
     }
 
-    protected void postActivate() {
+    protected void postDeactivate() {
         previousLoadCurrent = 0.0;
         previousTotalEnergyConsumed = 0.0;
         previousAmpHours = 0.0;
@@ -70,7 +70,7 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
         if (state == 0) {
             getCharacterDisplay().setLine(0, "BATT TEST           ");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setCharacter(2, 1, GeneralHelper.padLeft("[*] Begin Test Now ",1));
+            getCharacterDisplay().setCharacter(2, 1, GeneralHelper.padLeft("[*] Begin Test Now ", 1));
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
         } else if (state == 1) {
 
