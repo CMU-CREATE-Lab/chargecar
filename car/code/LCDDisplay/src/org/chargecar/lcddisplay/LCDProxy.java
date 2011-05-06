@@ -153,13 +153,13 @@ public final class LCDProxy implements LCD {
 
 
         batteryHeaterScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDBatteryHeaterPoller(),
-                1, // delay before first ping
+                5, // delay before first ping
                 DELAY_IN_SECONDS_BETWEEN_BATTERY_HEATER_CHECK, // delay between pings
                 TimeUnit.SECONDS);
 
 
         lcdEventScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDEventPoller(),
-                1, // delay before first ping
+                5, // delay before first ping
                 DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL, // delay between pings
                 TimeUnit.SECONDS);
 
@@ -170,13 +170,13 @@ public final class LCDProxy implements LCD {
 
 
         propertiesBackupOneScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesBackupOnePoller(),
-                1, // delay before first ping
+                5, // delay before first ping
                 DELAY_IN_SECONDS_BETWEEN_BACKUPONE_POLL, // delay between pings
                 TimeUnit.SECONDS);
 
 
         propertiesBackupTwoScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesBackupTwoPoller(),
-                1, // delay before first ping
+                5, // delay before first ping
                 DELAY_IN_SECONDS_BETWEEN_BACKUPTWO_POLL, // delay between pings
                 TimeUnit.SECONDS);
 
@@ -509,7 +509,7 @@ public final class LCDProxy implements LCD {
             if (savedProperties == null) return;
             try {
                 //if file does not exist, a new one will be created
-                savedProperties.store(new FileOutputStream(savedPropertiesFileName), null);
+                savedProperties.store(new FileOutputStream(LCDConstants.APP_PROPERTIES_FILE), null);
             } catch (IOException e) {
                 LOG.error("Error writing to properties file: " + e);
             }
