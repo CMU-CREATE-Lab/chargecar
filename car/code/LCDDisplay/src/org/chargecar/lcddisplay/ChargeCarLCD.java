@@ -22,16 +22,6 @@ public final class ChargeCarLCD {
     private static boolean accessoryThreeOn = false;
 
     public static void main(final String[] args) {
-        for (final String arg : args) {
-            final String[] keyValue = arg.split("=");
-            if (keyValue.length == 2) {
-                LOG.debug("Associating [" + keyValue[0] + "] with serial port [" + keyValue[1] + "]");
-                System.setProperty(LCDConstants.SERIAL_PORT_SYSTEM_PROPERTY_KEY_PREFIX + keyValue[0].toLowerCase(), keyValue[1]);
-            } else {
-                LOG.info("Ignoring unexpected switch [" + arg + "]");
-            }
-        }
-
         new ChargeCarLCD();
     }
 
@@ -81,7 +71,7 @@ public final class ChargeCarLCD {
         //now matter what file was opened, start writing to the app properties file
         lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE);
         //lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE);
-        
+
         //add button panel listener
         lcd.addButtonPanelEventListener(new MyButtonPanelEventListener(menuStatusManager));
 

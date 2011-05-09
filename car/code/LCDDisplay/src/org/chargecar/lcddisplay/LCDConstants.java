@@ -141,9 +141,9 @@ public final class LCDConstants {
     public static final String USB_UNMOUNT_PATH2 = "/dev/sdc";
     public static final String USB_ROOT_PATH = "/media";
 
-    public static final String LOCAL_LCD_SOFTWARE_PATH = "/home/chargecar/ChargeCar/trunk/car/";
+    public static final String LOCAL_LCD_SOFTWARE_PATH = "/home/chargecar/ChargeCar/trunk/car/code/LCDDisplay";
     public static final String TMP_LOCAL_LCD_SOFTWARE_PATH = "/home/chargecar/ChargeCar/trunk/car_tmp/";
-    public static final String USB_LCD_SOFTWARE_PATH = "/chargecar/car";
+    public static final String USB_LCD_SOFTWARE_PATH = "/chargecar/car/code/LCDDisplay";
 
     /**
      * Prefix for system property used to store the name of the serial port for a particular subsystem.

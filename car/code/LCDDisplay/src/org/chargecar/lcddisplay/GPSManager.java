@@ -1,11 +1,15 @@
 package org.chargecar.lcddisplay;
 
+import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
+import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 import org.chargecar.honda.StreamingSerialPortDeviceModel;
 import org.chargecar.honda.gps.GPSController;
 import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.honda.gps.GPSModel;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceManager;
+
+import java.util.SortedSet;
 
 /**
  * <code>GPSManager</code> is a singleton which acts as a front-end for GPS data.  The singleton instance is created
@@ -17,43 +21,82 @@ import org.chargecar.serial.streaming.StreamingSerialPortDeviceManager;
  *
  * @author Chris Bartley (bartley@cmu.edu)
  */
-public final class GPSManager extends StreamingSerialPortDeviceManager<GPSEvent, GPSEvent>
-   {
-   private static final String DEVICE_NAME = "gps";
+public final class GPSManager extends StreamingSerialPortDeviceManager<GPSEvent, GPSEvent> {
+    private static final Logger LOG = Logger.getLogger(BMSManager.class);
 
-   private static class LazyHolder
-      {
-      private static final GPSManager INSTANCE;
+    private static class LazyHolder {
+        private static final GPSManager INSTANCE;
 
-      static
-         {
-         final String serialPortName = System.getProperty(LCDConstants.SERIAL_PORT_SYSTEM_PROPERTY_KEY_PREFIX + DEVICE_NAME, null);
-         if (serialPortName == null)
-            {
-            INSTANCE = null;
+        static {
+            GPSManager gpsManager = null;
+            boolean wasFound = false;
+            int portScanCount = 0;
+
+            while (portScanCount < 5 && !wasFound) {
+                // If the user specified one or more serial ports, then just start trying to connect to it/them.  Otherwise,
+                // check each available serial port for the target serial device, and connect to the first one found.  This
+                // makes connection time much faster for when you know the name of the serial port.
+                LOG.debug("GPSManager: GPS port scan attempt " + portScanCount);
+                final SortedSet<String> availableSerialPorts;
+                if (SerialPortEnumerator.didUserDefineSetOfSerialPorts()) {
+                    availableSerialPorts = SerialPortEnumerator.getSerialPorts();
+                } else {
+                    availableSerialPorts = SerialPortEnumerator.getAvailableSerialPorts();
+                }
+
+                // try the serial ports
+                if ((availableSerialPorts != null) && (!availableSerialPorts.isEmpty())) {
+                    for (final String portName : availableSerialPorts) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("GPSManager: checking serial port [" + portName + "]");
+                        }
+
+                        final GPSModel model = new GPSModel();
+                        final GPSController controller = GPSController.create(portName, model);
+                        gpsManager = new GPSManager(model, controller);
+
+                        // sleep until we're reading...
+                        int isReadingCount = 0;
+                        do {
+                            sleep(100);
+                            isReadingCount++;
+                        } while (!gpsManager.isReading() && isReadingCount < 20);
+
+                        if (gpsManager.getData() != null) {
+                            LOG.debug("GPSManager: Valid GPS port found.");
+                            wasFound = true;
+                            break;
+                        }
+                    }
+                } else {
+                    LOG.debug("GPSManager: No available serial ports.");
+                    sleep(100);
+                }
+                portScanCount++;
             }
-         else
-            {
-            final GPSModel model = new GPSModel();
-            final GPSController controller = GPSController.create(serialPortName, model);
-            INSTANCE = new GPSManager(model, controller);
+
+            INSTANCE = gpsManager;
+        }
+
+        private static void sleep(final int millisToSleep) {
+            try {
+                Thread.sleep(millisToSleep);
+            } catch (InterruptedException e) {
+                LOG.error("GPSManager.sleep(): sleep interrupted: " + e);
             }
-         }
+        }
 
-      private LazyHolder()
-         {
-         // private to prevent instantiation
-         }
-      }
+        private LazyHolder() {
+            // private to prevent instantiation
+        }
+    }
 
-   public static GPSManager getInstance()
-      {
-      return LazyHolder.INSTANCE;
-      }
+    public static GPSManager getInstance() {
+        return LazyHolder.INSTANCE;
+    }
 
-   private GPSManager(final StreamingSerialPortDeviceModel<GPSEvent, GPSEvent> model,
-                      final StreamingSerialPortDeviceController<GPSEvent, GPSEvent> controller)
-      {
-      super(model, controller);
-      }
-   }
+    private GPSManager(final StreamingSerialPortDeviceModel<GPSEvent, GPSEvent> model,
+                       final StreamingSerialPortDeviceController<GPSEvent, GPSEvent> controller) {
+        super(model, controller);
+    }
+}
