@@ -1,5 +1,9 @@
 package org.chargecar.serial.streaming;
 
+import edu.cmu.ri.createlab.serial.SerialPortException;
+import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
@@ -9,9 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import edu.cmu.ri.createlab.serial.SerialPortException;
-import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
-import org.apache.log4j.Logger;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -181,12 +182,16 @@ public abstract class StreamingSerialPortReader<E> implements StreamingSerialPor
          {
          LOG.debug("StreamingSerialPortReader.disconnect(): Shutting down the serial port command execution queue");
          final List<Runnable> unexecutedTasks = executor.shutdownNow();
+         final int numUnexecutedTasks = unexecutedTasks == null ? 0 : unexecutedTasks.size();
          if (LOG.isDebugEnabled())
             {
-            LOG.debug("StreamingSerialPortReader.disconnect(): Unexecuted tasks: " + (unexecutedTasks == null ? 0 : unexecutedTasks.size()));
+            LOG.debug("StreamingSerialPortReader.disconnect(): Unexecuted tasks: " + numUnexecutedTasks);
             }
          LOG.debug("StreamingSerialPortReader.disconnect(): Waiting for the serial port command execution queue to shutdown.");
-         executor.awaitTermination(10, TimeUnit.SECONDS);
+         if (numUnexecutedTasks > 0)
+            {
+            executor.awaitTermination(10, TimeUnit.SECONDS);
+            }
          executor = null;
          LOG.debug("StreamingSerialPortReader.disconnect(): Serial port command execution queue successfully shutdown");
          }

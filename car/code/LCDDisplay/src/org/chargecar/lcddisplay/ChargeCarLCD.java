@@ -4,9 +4,12 @@ import edu.cmu.ri.createlab.display.character.menu.CharacterDisplayMenu;
 import edu.cmu.ri.createlab.menu.DefaultMenuStatusManager;
 import edu.cmu.ri.createlab.menu.Menu;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
+import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.helpers.PostgresqlConnect;
 
+import java.util.Collections;
+import java.util.SortedSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +23,7 @@ public final class ChargeCarLCD {
     private static boolean accessoryOneOn = false;
     private static boolean accessoryTwoOn = false;
     private static boolean accessoryThreeOn = false;
+    private static SortedSet<String> availableSerialPorts = null;
 
     public static void main(final String[] args) {
         new ChargeCarLCD();
@@ -31,6 +35,7 @@ public final class ChargeCarLCD {
 
         // create the menu status manager
         final MenuStatusManager menuStatusManager = new DefaultMenuStatusManager();
+        availableSerialPorts = SerialPortEnumerator.getAvailableSerialPorts();
 
         LOG.debug("ChargeCarLCD(): about to connect to the BMS and GPS...");
         // call .getInstance() on the various managers to kick off connection establishment to them
@@ -96,6 +101,14 @@ public final class ChargeCarLCD {
 
         //connect to the postgreSQL database
         PostgresqlConnect.getInstance();
+    }
+
+    public static SortedSet<String> getAvailableSerialPorts() {
+        return Collections.unmodifiableSortedSet(availableSerialPorts);
+    }
+
+    public static void removeAvailableSerialPort(final String portName) {
+        availableSerialPorts.remove(portName);
     }
 
     private static class MyButtonPanelEventListener implements ButtonPanelEventListener {

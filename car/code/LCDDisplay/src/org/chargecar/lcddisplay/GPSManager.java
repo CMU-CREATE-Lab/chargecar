@@ -1,6 +1,5 @@
 package org.chargecar.lcddisplay;
 
-import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 import org.chargecar.honda.StreamingSerialPortDeviceModel;
@@ -8,8 +7,6 @@ import org.chargecar.honda.gps.GPSController;
 import org.chargecar.honda.gps.GPSEvent;
 import org.chargecar.honda.gps.GPSModel;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceManager;
-
-import java.util.SortedSet;
 
 /**
  * <code>GPSManager</code> is a singleton which acts as a front-end for GPS data.  The singleton instance is created
@@ -23,7 +20,7 @@ import java.util.SortedSet;
  */
 public final class GPSManager extends StreamingSerialPortDeviceManager<GPSEvent, GPSEvent> {
     private static final Logger LOG = Logger.getLogger(BMSManager.class);
-
+    private static final String DEVICE_NAME = "gps";
     private static class LazyHolder {
         private static final GPSManager INSTANCE;
 
@@ -37,16 +34,16 @@ public final class GPSManager extends StreamingSerialPortDeviceManager<GPSEvent,
                 // check each available serial port for the target serial device, and connect to the first one found.  This
                 // makes connection time much faster for when you know the name of the serial port.
                 LOG.debug("GPSManager: GPS port scan attempt " + portScanCount);
-                final SortedSet<String> availableSerialPorts;
+                /*final SortedSet<String> availableSerialPorts;
                 if (SerialPortEnumerator.didUserDefineSetOfSerialPorts()) {
                     availableSerialPorts = SerialPortEnumerator.getSerialPorts();
                 } else {
                     availableSerialPorts = SerialPortEnumerator.getAvailableSerialPorts();
-                }
+                }*/
 
                 // try the serial ports
-                if ((availableSerialPorts != null) && (!availableSerialPorts.isEmpty())) {
-                    for (final String portName : availableSerialPorts) {
+                if ((ChargeCarLCD.getAvailableSerialPorts() != null) && (!ChargeCarLCD.getAvailableSerialPorts().isEmpty())) {
+                    for (final String portName : ChargeCarLCD.getAvailableSerialPorts()) {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("GPSManager: checking serial port [" + portName + "]");
                         }
@@ -57,13 +54,27 @@ public final class GPSManager extends StreamingSerialPortDeviceManager<GPSEvent,
 
                         // sleep until we're reading...
                         int isReadingCount = 0;
+                        int getDataCount = 0;
+
                         do {
                             sleep(100);
                             isReadingCount++;
-                        } while (!gpsManager.isReading() && isReadingCount < 20);
+                        } while (!gpsManager.isReading() && isReadingCount < 40);
 
-                        if (gpsManager.getData() != null) {
+                        LOG.debug("GPSManager isReading: " + gpsManager.isReading());
+
+                        do {
+                            sleep(100);
+                            getDataCount++;
+                        } while (gpsManager.getData() == null && getDataCount < 40);
+
+                        LOG.debug("GPSManager getData: " + gpsManager.getData());
+
+                        if (gpsManager.getData() == null) {
+                            gpsManager.shutdown();
+                        } else {
                             LOG.debug("GPSManager: Valid GPS port found.");
+                            ChargeCarLCD.removeAvailableSerialPort(portName);
                             wasFound = true;
                             break;
                         }
