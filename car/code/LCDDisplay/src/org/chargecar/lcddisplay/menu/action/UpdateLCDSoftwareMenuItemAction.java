@@ -78,7 +78,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     public final void renameDirs() {
         if (new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH).exists() &&  new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH).exists()) {
             try {
-                Runtime.getRuntime().exec("rm -rf " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH + ";" + "mv " + LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH + " " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
+                Runtime.getRuntime().exec("mv " + LCDConstants.LOG_PATH + " " + LCDConstants.TMP_LOG_PATH + "; " + "rm -rf " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH + "; " + "mv " + LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH + " " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
             } catch (IOException e) {
                 LOG.error("UpdateLCDSoftwareMenuItemAction.renameDirs(): " + e.getMessage());
             }
@@ -87,7 +87,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
 
     public final boolean copyLcdFiles() {
         try {
-            final File outputPath = new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
+            final File outputPath = new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH);
             final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
 
             if (tmpInputPath == null || tmpInputPath[0].lastModified() != 0) {
@@ -106,7 +106,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
                 getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
                 cleanUp();
-                //renameDirs();
+                renameDirs();
                 return true;
             } else {
                 getCharacterDisplay().setLine(0, "Update dir not found");
