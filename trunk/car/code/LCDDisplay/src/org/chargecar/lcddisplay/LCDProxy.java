@@ -782,8 +782,8 @@ public final class LCDProxy implements LCD {
                     setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
                     setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                 }
-                writeSavedProperties();
             }
+            writeSavedProperties();
         }
     }
 

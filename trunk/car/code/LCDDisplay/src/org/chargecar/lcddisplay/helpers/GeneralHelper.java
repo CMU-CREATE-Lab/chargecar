@@ -61,11 +61,9 @@ public class GeneralHelper {
             //All files and subdirectories
             final File[] files = file.listFiles();
             for (int i = 0; i < files.length; i++) {
-                //Recursive call
                 size += numFiles(files[i]);
             }
         }
-        //Base case
         else {
             size += 1;
         }
@@ -96,13 +94,13 @@ public class GeneralHelper {
             try {
                 final FileChannel in = new FileInputStream(sourceLocation).getChannel();
                 final FileChannel out = new FileOutputStream(targetLocation).getChannel();
-                in.transferTo(0, in.size(), out);
+                final long size = in.size();
+                if (in != null && out != null && size >= 0) in.transferTo(0, size, out);
             } catch (IOException e) {
                 LOG.error("GeneralHelper.copyDirectory(): " + e.getMessage());
             }
 
             lcd.setText(2, 4, padRight(Math.round((index++ / numFiles) * 100) + "% complete", LCDConstants.NUM_COLS));
-
         }
     }
 

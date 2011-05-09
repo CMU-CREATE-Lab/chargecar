@@ -1,10 +1,11 @@
 package org.chargecar.lcddisplay;
 
-import java.util.SortedSet;
 import edu.cmu.ri.createlab.device.CreateLabDeviceProxy;
 import edu.cmu.ri.createlab.device.connectivity.BaseCreateLabDeviceConnectivityManager;
 import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import org.apache.log4j.Logger;
+
+import java.util.SortedSet;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
