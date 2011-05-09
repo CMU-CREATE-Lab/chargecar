@@ -58,12 +58,12 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
         final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
 
         if (bmsManager == null || bmsData == null) {
-            LOG.error("GPSMenuItemAction.performAction(): gps is null");
-            getCharacterDisplay().setLine(0, "No connection to GPS.");
+            LOG.error("BatteryTestMenuItemAction.performAction(): bms is null");
+            getCharacterDisplay().setLine(0, "No connection to BMS.");
             getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
             return;
         } else if (lcd == null) {
-            LOG.error("GPSMenuItemAction.performAction(): lcd is null");
+            LOG.error("BatteryTestMenuItemAction.performAction(): lcd is null");
             return;
         }
 
