@@ -114,7 +114,7 @@ public abstract class BatteryModel {
 	this.voltageHistory.add(voltage);
     }
     
-    public Double currentSquaredIntegral() {
+    public double getCurrentSquaredIntegral() {
 	List<Double> currents = this.getCurrentDrawHistory();
 	List<Integer> periods = this.getPeriodHistory();
 	double integral = 0;
@@ -124,6 +124,17 @@ public abstract class BatteryModel {
 	    integral += currentSquared * timeLength;
 	}
 	return integral;
+    }
+    
+    public double getTotalAmpHoursServed(){
+	List<Double> currents = this.getCurrentDrawHistory();
+	List<Integer> periods = this.getPeriodHistory();
+	double total = 0;
+	for (int i = 0; i < currents.size(); i++) {
+	    double abscurrent = Math.abs(currents.get(i));	    
+	    total += abscurrent * (periods.get(i) / MS_PER_HOUR);
+	}
+	return total;
     }
     
     public double getMaxPower(int periodMS) {

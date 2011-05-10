@@ -38,7 +38,7 @@ import org.chargecar.prize.visualization.Visualizer;
  * 
  */
 public class Simulator {
-    static Visualizer visualizer = new ConsoleWriter();//CSVWriter("C:/out.csv");
+    static Visualizer visualizer = new CSVWriter("C:/final.csv");
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 48;
     static double batteryWhr = 50000;
@@ -81,15 +81,17 @@ public class Simulator {
 	    p.loadState();
 	}
 	
-	List<DriverResults> results = simulateTrips(policies, gpxFiles);
-	visualizer.visualizeDrivers(results);
+	//List<DriverResults> results = simulateTrips(policies, gpxFiles);
+	//visualizer.visualizeDrivers(results);
+	List<SimulationResults> results = simulateTrips(policies, gpxFiles);
+	visualizer.visualizeSummary(results);
     }
     
-    private static List<DriverResults> simulateTrips(List<Policy> policies,
+    private static List<SimulationResults> simulateTrips(List<Policy> policies,
 	    List<File> tripFiles) throws IOException {
-	List<DriverResults> results = new ArrayList<DriverResults>();
+	List<SimulationResults> results = new ArrayList<SimulationResults>();
 	for (Policy p : policies) {
-	    results.add(new DriverResults(p.getName()));
+	    results.add(new SimulationResults(p.getName()));
 	}
 	int count = 0;
 	for (File tripFile : tripFiles) {
@@ -114,7 +116,7 @@ public class Simulator {
     }
     
     private static void simulateTrip(Policy policy, Trip trip,
-	    DriverResults results) throws PowerFlowException {
+	    SimulationResults results) throws PowerFlowException {
 	BatteryModel tripBattery = new LeadAcidBattery(batteryWhr, batteryWhr, systemVoltage);
 	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
