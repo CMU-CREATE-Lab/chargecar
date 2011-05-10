@@ -78,7 +78,8 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     public final void renameDirs() {
         if (new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH).exists() &&  new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH).exists()) {
             try {
-                Runtime.getRuntime().exec("mv " + LCDConstants.LOG_PATH + " " + LCDConstants.TMP_LOG_PATH + "; " + "rm -rf " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH + "; " + "mv " + LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH + " " + LCDConstants.LOCAL_LCD_SOFTWARE_PATH);
+                LOG.debug("UpdateLCDSoftwareMenuItemAction.renameDirs(): cleanup of old files.");
+                Runtime.getRuntime().exec("sh /home/chargecar/ChargeCar/trunk/car/software_update_cleanup.sh");
             } catch (IOException e) {
                 LOG.error("UpdateLCDSoftwareMenuItemAction.renameDirs(): " + e.getMessage());
             }
@@ -107,6 +108,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
                 cleanUp();
                 renameDirs();
+                sleep();
                 return true;
             } else {
                 getCharacterDisplay().setLine(0, "Update dir not found");

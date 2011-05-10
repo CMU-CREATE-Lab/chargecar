@@ -96,6 +96,8 @@ public class GeneralHelper {
                 final FileChannel out = new FileOutputStream(targetLocation).getChannel();
                 final long size = in.size();
                 if (in != null && out != null && size >= 0) in.transferTo(0, size, out);
+                in.close();
+                out.close();
             } catch (IOException e) {
                 LOG.error("GeneralHelper.copyDirectory(): " + e.getMessage());
             }
