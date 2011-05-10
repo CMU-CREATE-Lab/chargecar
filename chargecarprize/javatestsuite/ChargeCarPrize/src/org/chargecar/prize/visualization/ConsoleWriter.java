@@ -27,8 +27,14 @@ public class ConsoleWriter implements Visualizer {
 	    for(Entry<String, Double> e : r.getBatteryCurrentSquaredIntegrals().entrySet()){
 		double i2base = results.get(0).getBatteryCurrentSquaredIntegrals().get(e.getKey());
 		double i2Percent = 1 - (e.getValue() / i2base);
-		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue())+" :: "+ p.format(i2Percent));
+		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue())+" :: "+ p.format(i2Percent) + " i2 reduction.");
 	    }	    
+
+	    for(Entry<String, Double> e : r.getTotalAmpHoursServedSums().entrySet()){
+		double ahbase = results.get(0).getTotalAmpHoursServedSums().get(e.getKey());
+		double ahPercent = 1 - (e.getValue() / ahbase);
+		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue())+" :: "+ p.format(ahPercent) + " total Amp Hours served reduction");
+	    }	
 	}
 	
     }
@@ -78,7 +84,7 @@ public class ConsoleWriter implements Visualizer {
 	    BatteryModel capacitor) {
 	System.out.println(trip);
 	System.out.println("Integral of current squared: "
-		+ d.format(battery.currentSquaredIntegral()));
+		+ d.format(battery.getCurrentSquaredIntegral()));
     }
     
     public void visualizeTrips(SimulationResults simResults) {

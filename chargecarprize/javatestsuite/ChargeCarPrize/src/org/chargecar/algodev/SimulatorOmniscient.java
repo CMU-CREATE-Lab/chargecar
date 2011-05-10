@@ -13,6 +13,7 @@ import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
 import org.chargecar.prize.policies.Policy;
+import org.chargecar.prize.util.DriverResults;
 import org.chargecar.prize.util.GPXTripParser;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
@@ -37,9 +38,9 @@ import org.chargecar.prize.visualization.Visualizer;
  * 
  */
 public class SimulatorOmniscient {
-    static Visualizer visualizer = new ConsoleWriter();
+    static Visualizer visualizer = new CSVWriter("C:/finalopt.csv");
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    static double systemVoltage = 96;
+    static double systemVoltage = 48;
     static double batteryWhr = 50000;
     static double capWhr = 50;
     /**
@@ -69,19 +70,19 @@ public class SimulatorOmniscient {
 	policies.add(new OmniscientPolicy(5));
 	policies.add(new OmniscientPolicy(10));
 	//policies.add(new OmniscientPolicy(20));
-	policies.add(new OmniscientPolicy(30));
+	//policies.add(new OmniscientPolicy(30));
 	//policies.add(new OmniscientPolicy(45));
 	//policies.add(new OmniscientPolicy(60));
-	policies.add(new OmniscientPolicy(90));
-	policies.add(new OmniscientPolicy(120));
-	//policies.add(new OmniscientPolicy(180));
-	//policies.add(new OmniscientPolicy(240));
-	policies.add(new OmniscientPolicy(300));
+	//policies.add(new OmniscientPolicy(90));
+	/*policies.add(new OmniscientPolicy(120));
+	policies.add(new OmniscientPolicy(180));*/
+	policies.add(new OmniscientPolicy(240));
+	//policies.add(new OmniscientPolicy(300));
 	//policies.add(new OmniscientPolicy(360));
 	//policies.add(new OmniscientPolicy(420));
 	//policies.add(new OmniscientPolicy(480));
 	//policies.add(new OmniscientPolicy(540));
-	policies.add(new OmniscientPolicy(600));
+	//policies.add(new OmniscientPolicy(600));
 	//policies.add(new OmniscientPolicy(900));
 	//policies.add(new OmniscientPolicy(1200));
 	policies.add(new OmniscientPolicy(1000000));

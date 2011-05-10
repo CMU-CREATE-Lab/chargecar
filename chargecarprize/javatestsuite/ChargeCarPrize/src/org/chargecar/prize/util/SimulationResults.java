@@ -15,20 +15,23 @@ import org.chargecar.prize.battery.BatteryModel;
  * 
  */
 public class SimulationResults {
-    private List<Double> batteryCurrentSquaredIntegrals;
-    private List<Double> chargeSpent;
-    private List<String> tripStrings;
-    private String policyName;
+    private final List<Double> batteryCurrentSquaredIntegrals;
+    private final List<Double> chargeSpent;
+    private final List<Double> ampHoursSums;
+    private final List<String> tripStrings;
+    private final String policyName;
     
     public SimulationResults(String policyName) {
 	this.policyName = policyName;
 	tripStrings = new ArrayList<String>();
 	batteryCurrentSquaredIntegrals = new ArrayList<Double>();
 	chargeSpent = new ArrayList<Double>();
+	ampHoursSums = new ArrayList<Double>();
     }
     
     public void addTrip(Trip trip, BatteryModel battery, BatteryModel capacitor) {
-	batteryCurrentSquaredIntegrals.add(battery.currentSquaredIntegral());
+	batteryCurrentSquaredIntegrals.add(battery.getCurrentSquaredIntegral());
+	ampHoursSums.add(battery.getTotalAmpHoursServed());
 	chargeSpent.add(battery.getMaxCharge() - battery.getCharge()
 		- capacitor.getCharge());
 	tripStrings.add(trip.toString());
@@ -37,7 +40,10 @@ public class SimulationResults {
     public List<Double> getBatteryCurrentSquaredIntegrals() {
 	return batteryCurrentSquaredIntegrals;
     }
-    
+
+    public List<Double> getAmpHoursServedSums() {
+	return ampHoursSums;
+    }
     public List<Double> getChargeSpent() {
 	return chargeSpent;
     }

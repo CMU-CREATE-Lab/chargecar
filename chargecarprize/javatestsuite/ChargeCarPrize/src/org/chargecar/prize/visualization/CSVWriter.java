@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.DriverResults;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 
@@ -45,6 +46,12 @@ public class CSVWriter implements Visualizer {
 		    out.write(chargeSpentSum+",");
 		}
 		out.write("0.0\n");
+		double ahServedSum = 0.0;
+		for (Double d : r.getAmpHoursServedSums()) {
+		    ahServedSum += d;
+		    out.write(ahServedSum+",");
+		}
+		out.write("0.0\n");
 	    }
 	    out.close();
 	} catch (IOException e) {
@@ -57,10 +64,16 @@ public class CSVWriter implements Visualizer {
 	    BatteryModel capacitor) {
 	System.out.println(trip);
 	System.out.println("Integral of current squared: "
-		+ d.format(battery.currentSquaredIntegral()));
+		+ d.format(battery.getCurrentSquaredIntegral()));
     }
     
     public void visualizeTrips(SimulationResults simResults) {
 
+    }
+
+    @Override
+    public void visualizeDrivers(List<DriverResults> driverResults) {
+	// TODO Auto-generated method stub
+	
     }
 }

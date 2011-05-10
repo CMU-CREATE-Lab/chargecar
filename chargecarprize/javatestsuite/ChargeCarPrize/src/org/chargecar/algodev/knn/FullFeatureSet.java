@@ -7,7 +7,7 @@ import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {    
     private final int featureCount = 8;
-    private final double[] weights = new double[]{1,1,1,1,1,1,1,1};
+    private final double[] weights = new double[]{20,20,1,5,1,1,10,0};
     //private final double[] weights = new double[]{1,1,1,1,1,1,1,1};
     
     public int getFeatureCount(){
