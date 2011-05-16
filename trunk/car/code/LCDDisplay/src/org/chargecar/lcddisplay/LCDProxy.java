@@ -735,7 +735,7 @@ public final class LCDProxy implements LCD {
 
                 //don't keep track if we are basiccally idle
                 final double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
-                if (Math.abs(powerFlowInKw) > 1.0) {
+                if (Math.abs(powerFlowInKw) > 0.5) {
                     if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
                         final List<Double> latLng = GPSHelper.degreeDecimalMinutesToDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
                         final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
@@ -776,7 +776,7 @@ public final class LCDProxy implements LCD {
                     setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
                     setSavedProperty("tripEfficiency", String.valueOf(tripEfficiency));
 
-                    final double ampHours = (bmsData.getEnergyEquation().getKilowattHours() * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+                    final double ampHours = Math.abs((kwhDelta * 1000)) / bmsData.getBmsState().getPackTotalVoltage();
                     final double lifetimeAmpHours = Double.valueOf(getSavedProperty("lifetimeAmpHours")) + ampHours;
                     final double tripAmpHours = Double.valueOf(getSavedProperty("tripAmpHours")) + ampHours;
                     setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
