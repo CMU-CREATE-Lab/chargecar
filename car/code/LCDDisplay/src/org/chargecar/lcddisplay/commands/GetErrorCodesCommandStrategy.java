@@ -1,5 +1,6 @@
 package org.chargecar.lcddisplay.commands;
 
+import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
 import edu.cmu.ri.createlab.util.ByteUtils;
 import org.chargecar.lcddisplay.LCDProxy;
@@ -7,10 +8,10 @@ import org.chargecar.lcddisplay.LCDProxy;
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
-public final class GetErrorCodesCommandStrategy extends ReturnValueCommandStrategy<Integer>
+public final class GetErrorCodesCommandStrategy extends CreateLabSerialDeviceReturnValueCommandStrategy<Integer>
    {
    /** The command character used to request error codes from the motor controller */
-private static final byte COMMAND_PREFIX = 'E';
+   private static final byte COMMAND_PREFIX = 'E';
 
    private final byte[] command;
 
@@ -33,7 +34,7 @@ private static final byte COMMAND_PREFIX = 'E';
       return command.clone();
       }
 
-   public Integer convertResult(final SerialPortCommandResponse result)
+   public Integer convertResponse(final SerialPortCommandResponse result)
       {
       if (result != null && result.wasSuccessful())
          {
@@ -41,7 +42,7 @@ private static final byte COMMAND_PREFIX = 'E';
 
          if (responseData != null && responseData.length == SIZE_IN_BYTES_OF_EXPECTED_RESPONSE)
             {
-                return ByteUtils.unsignedByteToInt(responseData[0]);
+            return ByteUtils.unsignedByteToInt(responseData[0]);
             }
          }
 

@@ -2,6 +2,7 @@ package org.chargecar.lcddisplay.commands;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
 import edu.cmu.ri.createlab.util.ByteUtils;
 import org.chargecar.lcddisplay.LCDProxy;
@@ -9,15 +10,14 @@ import org.chargecar.lcddisplay.LCDProxy;
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
-public final class GetTemperatureCommandStrategy extends ReturnValueCommandStrategy<Double>
+public final class GetTemperatureCommandStrategy extends CreateLabSerialDeviceReturnValueCommandStrategy<Double>
    {
    /** The command character used to request the temperature */
    private static final byte COMMAND_PREFIX = 'T';
 
    private final byte[] command;
 
-
-       public GetTemperatureCommandStrategy(final int sensorNumber)
+   public GetTemperatureCommandStrategy(final int sensorNumber)
       {
       this.command = new byte[]{COMMAND_PREFIX,
                                 ByteUtils.intToUnsignedByte(sensorNumber),
@@ -37,7 +37,7 @@ public final class GetTemperatureCommandStrategy extends ReturnValueCommandStrat
       return command.clone();
       }
 
-   public Double convertResult(final SerialPortCommandResponse result)
+   public Double convertResponse(final SerialPortCommandResponse result)
       {
       if (result != null && result.wasSuccessful())
          {
@@ -46,8 +46,8 @@ public final class GetTemperatureCommandStrategy extends ReturnValueCommandStrat
 
          if (responseData != null && responseData.length == SIZE_IN_BYTES_OF_EXPECTED_RESPONSE)
             {
-                //temperature in Kelvin
-                return (577.37*Math.pow(bb.getShort(), -0.104));
+            //temperature in Kelvin
+            return (577.37 * Math.pow(bb.getShort(), -0.104));
             }
          }
 

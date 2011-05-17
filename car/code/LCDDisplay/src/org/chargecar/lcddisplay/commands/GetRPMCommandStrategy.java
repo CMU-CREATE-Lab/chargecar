@@ -2,6 +2,7 @@ package org.chargecar.lcddisplay.commands;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
 import edu.cmu.ri.createlab.util.ByteUtils;
 import org.chargecar.lcddisplay.LCDProxy;
@@ -9,10 +10,10 @@ import org.chargecar.lcddisplay.LCDProxy;
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
  */
-public final class GetRPMCommandStrategy extends ReturnValueCommandStrategy<Integer>
+public final class GetRPMCommandStrategy extends CreateLabSerialDeviceReturnValueCommandStrategy<Integer>
    {
    /** The command character used to request the RPMMenuItemAction value */
-private static final byte COMMAND_PREFIX = 'S';
+   private static final byte COMMAND_PREFIX = 'S';
 
    private final byte[] command;
 
@@ -35,7 +36,7 @@ private static final byte COMMAND_PREFIX = 'S';
       return command.clone();
       }
 
-   public Integer convertResult(final SerialPortCommandResponse result)
+   public Integer convertResponse(final SerialPortCommandResponse result)
       {
       if (result != null && result.wasSuccessful())
          {
@@ -44,7 +45,7 @@ private static final byte COMMAND_PREFIX = 'S';
 
          if (responseData != null && responseData.length == SIZE_IN_BYTES_OF_EXPECTED_RESPONSE)
             {
-                return (int)(bb.getShort());
+            return (int)(bb.getShort());
             }
          }
       return null;
