@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
-abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends CreateLabSerialDeviceReturnValueCommandStrategy
+abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends CreateLabSerialDeviceReturnValueCommandStrategy<E>
    {
    private static final Logger LOG = Logger.getLogger(ChargeCarSerialDeviceReturnValueCommandStrategy.class);
 
