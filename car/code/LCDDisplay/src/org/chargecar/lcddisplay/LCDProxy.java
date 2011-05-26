@@ -1,33 +1,8 @@
 package org.chargecar.lcddisplay;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.device.CreateLabDevicePingFailureEventListener;
-import edu.cmu.ri.createlab.serial.CommandExecutionFailureHandler;
-import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceNoReturnValueCommandStrategy;
-import edu.cmu.ri.createlab.serial.NoReturnValueCommandExecutor;
-import edu.cmu.ri.createlab.serial.ReturnValueCommandExecutor;
-import edu.cmu.ri.createlab.serial.SerialPortCommandExecutionQueue;
-import edu.cmu.ri.createlab.serial.config.BaudRate;
-import edu.cmu.ri.createlab.serial.config.CharacterSize;
-import edu.cmu.ri.createlab.serial.config.FlowControl;
-import edu.cmu.ri.createlab.serial.config.Parity;
-import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
-import edu.cmu.ri.createlab.serial.config.StopBits;
+import edu.cmu.ri.createlab.serial.*;
+import edu.cmu.ri.createlab.serial.config.*;
 import edu.cmu.ri.createlab.util.sequence.BoundedSequenceNumber;
 import edu.cmu.ri.createlab.util.sequence.SequenceNumber;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
@@ -38,17 +13,15 @@ import org.chargecar.gpx.GPSCoordinate;
 import org.chargecar.gpx.SphericalLawOfCosinesDistanceCalculator;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
-import org.chargecar.lcddisplay.commands.DisconnectCommandStrategy;
-import org.chargecar.lcddisplay.commands.DisplayCommandStrategy;
-import org.chargecar.lcddisplay.commands.GetErrorCodesCommandStrategy;
-import org.chargecar.lcddisplay.commands.GetRPMCommandStrategy;
-import org.chargecar.lcddisplay.commands.GetTemperatureCommandStrategy;
-import org.chargecar.lcddisplay.commands.HandshakeCommandStrategy;
-import org.chargecar.lcddisplay.commands.InputCommandStrategy;
-import org.chargecar.lcddisplay.commands.OutputCommandStrategy;
-import org.chargecar.lcddisplay.commands.ResetDisplayCommandStrategy;
+import org.chargecar.lcddisplay.commands.*;
 import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.lcd.LCDEvent;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -1031,9 +1004,9 @@ public final class LCDProxy implements LCD
                setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
                setSavedProperty("tripEfficiency", String.valueOf(tripEfficiency));
 
-               final double ampHours = Math.abs((kwhDelta * 1000)) / bmsData.getBmsState().getPackTotalVoltage();
-               final double lifetimeAmpHours = Double.valueOf(getSavedProperty("lifetimeAmpHours")) + ampHours;
-               final double tripAmpHours = Double.valueOf(getSavedProperty("tripAmpHours")) + ampHours;
+               //final double ampHours = (kwhDelta * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+               final double lifetimeAmpHours = lifetimeEnergyConsumed / bmsData.getBmsState().getPackTotalVoltage();
+               final double tripAmpHours = tripEnergyConsumed / bmsData.getBmsState().getPackTotalVoltage();
                setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
                setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                }
