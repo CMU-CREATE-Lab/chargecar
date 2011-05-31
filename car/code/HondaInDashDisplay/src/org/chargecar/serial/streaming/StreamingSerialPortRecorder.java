@@ -10,9 +10,9 @@ import java.io.InputStreamReader;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import edu.cmu.ri.createlab.serial.SerialDeviceIOHelper;
 import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import edu.cmu.ri.createlab.serial.SerialPortException;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -122,7 +122,7 @@ public final class StreamingSerialPortRecorder extends BaseCommandLineApplicatio
                   final DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(outputFile));
 
                   // read from the serial port
-                  final SerialPortIOHelper ioHelper = serialIOManager.getSerialPortIoHelper();
+                  final SerialDeviceIOHelper ioHelper = serialIOManager.getSerialDeviceIOHelper();
                   final long endTime = System.currentTimeMillis() + numSecondsToRead * 1000;
                   while (System.currentTimeMillis() < endTime)
                      {

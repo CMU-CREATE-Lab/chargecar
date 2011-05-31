@@ -10,6 +10,7 @@ public final class ResetDisplayCommandStrategy extends CreateLabSerialDeviceNoRe
    /** The command character used to put the display back into start-up mode */
    private static final byte[] COMMAND = {'R'};
 
+   @Override
    protected byte[] getCommand()
       {
       return COMMAND.clone();

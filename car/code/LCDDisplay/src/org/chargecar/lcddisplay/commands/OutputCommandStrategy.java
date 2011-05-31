@@ -21,6 +21,7 @@ private final byte[] command;
                                 ByteUtils.intToUnsignedByte(LCDProxy.SEQUENCE_NUMBER.next())};
       }
 
+   @Override
    protected byte[] getCommand()
       {
       return command.clone();

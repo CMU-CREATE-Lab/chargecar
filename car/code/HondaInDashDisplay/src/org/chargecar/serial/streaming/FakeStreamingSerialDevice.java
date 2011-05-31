@@ -5,14 +5,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
+import edu.cmu.ri.createlab.serial.SerialDeviceIOHelper;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
 public abstract class FakeStreamingSerialDevice implements SerialIOManager
    {
-   private final SerialPortIOHelper serialPortIOHelper;
+   private final SerialDeviceIOHelper SerialDeviceIOHelper;
 
    protected FakeStreamingSerialDevice(final String fakeData)
       {
@@ -21,7 +21,7 @@ public abstract class FakeStreamingSerialDevice implements SerialIOManager
 
    protected FakeStreamingSerialDevice(final InputStream inputStream)
       {
-      serialPortIOHelper = new MySerialPortIOHelper(new BufferedInputStream(inputStream));
+      SerialDeviceIOHelper = new MySerialDeviceIOHelper(new BufferedInputStream(inputStream));
       }
 
    public final boolean connect()
@@ -29,9 +29,9 @@ public abstract class FakeStreamingSerialDevice implements SerialIOManager
       return true;
       }
 
-   public final SerialPortIOHelper getSerialPortIoHelper()
+   public final SerialDeviceIOHelper getSerialDeviceIOHelper()
       {
-      return serialPortIOHelper;
+      return SerialDeviceIOHelper;
       }
 
    @SuppressWarnings({"NoopMethodInAbstractClass"})
@@ -40,11 +40,11 @@ public abstract class FakeStreamingSerialDevice implements SerialIOManager
       // nothing to do
       }
 
-   private final class MySerialPortIOHelper implements SerialPortIOHelper
+   private final class MySerialDeviceIOHelper implements SerialDeviceIOHelper
       {
       private BufferedInputStream inputStream;
 
-      private MySerialPortIOHelper(final BufferedInputStream bufferedInputStream)
+      private MySerialDeviceIOHelper(final BufferedInputStream bufferedInputStream)
          {
          inputStream = bufferedInputStream;
          }

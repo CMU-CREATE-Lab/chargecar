@@ -18,11 +18,13 @@ public final class HandshakeCommandStrategy extends CreateLabSerialDeviceHandsha
       super(5000, DEFAULT_SLURP_TIMEOUT_MILLIS, DEFAULT_MAX_NUMBER_OF_RETRIES);
       }
 
+   @Override
    protected byte[] getReceiveModeCharacters()
       {
       return RECEIVE_MODE_CHARACTERS.clone();
       }
 
+   @Override
    protected byte[] getStartupModeCharacters()
       {
       return STARTUP_MODE_SONG_CHARACTERS.clone();

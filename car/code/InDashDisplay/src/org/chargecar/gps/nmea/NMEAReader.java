@@ -13,10 +13,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import edu.cmu.ri.createlab.serial.DefaultSerialPortIOHelper;
+import edu.cmu.ri.createlab.serial.DefaultSerialDeviceIOHelper;
+import edu.cmu.ri.createlab.serial.SerialDeviceIOHelper;
 import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import edu.cmu.ri.createlab.serial.SerialPortException;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -61,7 +61,7 @@ public final class NMEAReader
    private final String applicationName;
    private final Set<GPSEventListener> eventListeners = new HashSet<GPSEventListener>();
    private SerialPort port;
-   private SerialPortIOHelper ioHelper;
+   private SerialDeviceIOHelper ioHelper;
    private ScheduledExecutorService executor;
    private ScheduledFuture<?> scheduledFuture;
 
@@ -138,7 +138,7 @@ public final class NMEAReader
                   LOG.debug("NMEAReader.connect(): Check whether setting serial port receive timeout worked: (is enabled=" + port.isReceiveTimeoutEnabled() + ",timeout=" + port.getReceiveTimeout() + ")");
                   }
 
-               ioHelper = new DefaultSerialPortIOHelper(new BufferedInputStream(port.getInputStream()),
+               ioHelper = new DefaultSerialDeviceIOHelper(new BufferedInputStream(port.getInputStream()),
                                                         new BufferedOutputStream(port.getOutputStream()));
                executor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("NMEAReader.executor"));
                }
@@ -222,7 +222,7 @@ public final class NMEAReader
       private static final String DEGREES_SYMBOL = "\u00b0";
       private static final String GPS_FIX_DATA_SENTENCE_PREFIX = "$GPGGA";
       private static final String GARMIN_ALTITUDE_SENTENCE_PREFIX = "$PGRMZ";
-      private final SerialPortIOHelper ioHelper;
+      private final SerialDeviceIOHelper ioHelper;
       private final Set<GPSEventListener> eventListeners;
       private String currentData = "";
       private static final Map<String, NMEASentenceProcessor> SENTENCE_PROCESSORS = new HashMap<String, NMEASentenceProcessor>();
@@ -266,7 +266,7 @@ public final class NMEAReader
                                  });
          }
 
-      private NMEASentenceParser(final SerialPortIOHelper ioHelper, final Set<GPSEventListener> eventListeners)
+      private NMEASentenceParser(final SerialDeviceIOHelper ioHelper, final Set<GPSEventListener> eventListeners)
          {
          this.ioHelper = ioHelper;
          this.eventListeners = eventListeners;

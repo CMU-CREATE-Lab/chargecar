@@ -6,9 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import edu.cmu.ri.createlab.serial.SerialPortCommandExecutionQueue;
-import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
-import edu.cmu.ri.createlab.serial.SerialPortCommandStrategy;
+import edu.cmu.ri.createlab.serial.SerialDeviceCommandExecutionQueue;
+import edu.cmu.ri.createlab.serial.SerialDeviceCommandResponse;
 import edu.cmu.ri.createlab.serial.config.BaudRate;
 import edu.cmu.ri.createlab.serial.config.CharacterSize;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
@@ -63,7 +62,7 @@ public class SensorBoardProxy implements SerialDeviceProxy
       try
          {
          // create the serial port command queue
-         final SerialPortCommandExecutionQueue commandQueue = SerialPortCommandExecutionQueue.create(APPLICATION_NAME, config);
+         final SerialDeviceCommandExecutionQueue commandQueue = SerialDeviceCommandExecutionQueue.create(APPLICATION_NAME, config);
 
          // see whether its creation was successful
          if (commandQueue == null)
@@ -108,19 +107,19 @@ public class SensorBoardProxy implements SerialDeviceProxy
       return null;
       }
 
-   private final SerialPortCommandExecutionQueue commandQueue;
+   private final SerialDeviceCommandExecutionQueue commandQueue;
    private final GetSpeedCommandStrategy getSpeedCommandStrategy = new GetSpeedCommandStrategy();
    private final GetTemperaturesCommandStrategy getTemperaturesCommandStrategy = new GetTemperaturesCommandStrategy();
    private final GetCurrentsCommandStrategy getCurrentsCommandStrategy = new GetCurrentsCommandStrategy();
    private final IsCapacitorOverVoltageCommandStrategy isCapacitorOverVoltageCommandStrategy = new IsCapacitorOverVoltageCommandStrategy();
    private final GetPedalPositionsCommandStrategy getPedalPositionsCommandStrategy = new GetPedalPositionsCommandStrategy();
    private final GetVoltagesCommandStrategy getVoltagesCommandStrategy = new GetVoltagesCommandStrategy();
-   private final SerialPortCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
+   private final DisconnectCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
    private final ScheduledExecutorService peerPingScheduler = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("SensorBoardProxy.peerPingScheduler"));
    private final ScheduledFuture<?> peerPingScheduledFuture;
    private final Collection<SerialDevicePingFailureEventListener> serialDevicePingFailureEventListeners = new HashSet<SerialDevicePingFailureEventListener>();
 
-   public SensorBoardProxy(final SerialPortCommandExecutionQueue commandQueue)
+   public SensorBoardProxy(final SerialDeviceCommandExecutionQueue commandQueue)
       {
       this.commandQueue = commandQueue;
 
@@ -152,42 +151,42 @@ public class SensorBoardProxy implements SerialDeviceProxy
     */
    public Speed getSpeed()
       {
-      final SerialPortCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
+      final SerialDeviceCommandResponse response = commandQueue.execute(getSpeedCommandStrategy);
 
       return getSpeedCommandStrategy.convertResponse(response);
       }
 
    public Temperatures getTemperatures()
       {
-      final SerialPortCommandResponse response = commandQueue.execute(getTemperaturesCommandStrategy);
+      final SerialDeviceCommandResponse response = commandQueue.execute(getTemperaturesCommandStrategy);
 
       return getTemperaturesCommandStrategy.convertResponse(response);
       }
 
    public Currents getCurrents()
       {
-      final SerialPortCommandResponse response = commandQueue.execute(getCurrentsCommandStrategy);
+      final SerialDeviceCommandResponse response = commandQueue.execute(getCurrentsCommandStrategy);
 
       return getCurrentsCommandStrategy.convertResponse(response);
       }
 
    public Boolean isCapacitorOverVoltage()
       {
-      final SerialPortCommandResponse response = commandQueue.execute(isCapacitorOverVoltageCommandStrategy);
+      final SerialDeviceCommandResponse response = commandQueue.execute(isCapacitorOverVoltageCommandStrategy);
 
       return isCapacitorOverVoltageCommandStrategy.convertResponse(response);
       }
 
    public PedalPositions getPedalPositions()
       {
-      final SerialPortCommandResponse response = commandQueue.execute(getPedalPositionsCommandStrategy);
+      final SerialDeviceCommandResponse response = commandQueue.execute(getPedalPositionsCommandStrategy);
 
       return getPedalPositionsCommandStrategy.convertResponse(response);
       }
 
    public Voltages getVoltages()
       {
-      final SerialPortCommandResponse response = commandQueue.execute(getVoltagesCommandStrategy);
+      final SerialDeviceCommandResponse response = commandQueue.execute(getVoltagesCommandStrategy);
 
       return getVoltagesCommandStrategy.convertResponse(response);
       }

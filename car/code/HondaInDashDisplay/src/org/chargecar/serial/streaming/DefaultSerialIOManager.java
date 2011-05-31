@@ -3,10 +3,10 @@ package org.chargecar.serial.streaming;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import edu.cmu.ri.createlab.serial.DefaultSerialPortIOHelper;
+import edu.cmu.ri.createlab.serial.DefaultSerialDeviceIOHelper;
+import edu.cmu.ri.createlab.serial.SerialDeviceIOHelper;
 import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import edu.cmu.ri.createlab.serial.SerialPortException;
-import edu.cmu.ri.createlab.serial.SerialPortIOHelper;
 import edu.cmu.ri.createlab.serial.config.FlowControl;
 import edu.cmu.ri.createlab.serial.config.Parity;
 import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
@@ -43,7 +43,7 @@ public class DefaultSerialIOManager implements SerialIOManager
       }
 
    private SerialPort port;
-   private SerialPortIOHelper ioHelper;
+   private SerialDeviceIOHelper ioHelper;
    private final String applicationName;
    private final SerialIOConfiguration config;
 
@@ -116,7 +116,7 @@ public class DefaultSerialIOManager implements SerialIOManager
                   LOG.debug("StreamingSerialPortReader.connect(): Check whether setting serial port receive timeout worked: (is enabled=" + port.isReceiveTimeoutEnabled() + ",timeout=" + port.getReceiveTimeout() + ")");
                   }
 
-               ioHelper = new DefaultSerialPortIOHelper(new BufferedInputStream(port.getInputStream()),
+               ioHelper = new DefaultSerialDeviceIOHelper(new BufferedInputStream(port.getInputStream()),
                                                         new BufferedOutputStream(port.getOutputStream()));
 
                return true;
@@ -140,7 +140,7 @@ public class DefaultSerialIOManager implements SerialIOManager
       return false;
       }
 
-   public SerialPortIOHelper getSerialPortIoHelper()
+   public SerialDeviceIOHelper getSerialDeviceIOHelper()
       {
       return ioHelper;
       }
