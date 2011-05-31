@@ -1,8 +1,33 @@
 package org.chargecar.lcddisplay;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import edu.cmu.ri.createlab.device.CreateLabDevicePingFailureEventListener;
-import edu.cmu.ri.createlab.serial.*;
-import edu.cmu.ri.createlab.serial.config.*;
+import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceNoReturnValueCommandStrategy;
+import edu.cmu.ri.createlab.serial.SerialDeviceCommandExecutionQueue;
+import edu.cmu.ri.createlab.serial.SerialDeviceNoReturnValueCommandExecutor;
+import edu.cmu.ri.createlab.serial.SerialDeviceReturnValueCommandExecutor;
+import edu.cmu.ri.createlab.serial.config.BaudRate;
+import edu.cmu.ri.createlab.serial.config.CharacterSize;
+import edu.cmu.ri.createlab.serial.config.FlowControl;
+import edu.cmu.ri.createlab.serial.config.Parity;
+import edu.cmu.ri.createlab.serial.config.SerialIOConfiguration;
+import edu.cmu.ri.createlab.serial.config.StopBits;
+import edu.cmu.ri.createlab.util.commandexecution.CommandExecutionFailureHandler;
 import edu.cmu.ri.createlab.util.sequence.BoundedSequenceNumber;
 import edu.cmu.ri.createlab.util.sequence.SequenceNumber;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
@@ -13,15 +38,17 @@ import org.chargecar.gpx.GPSCoordinate;
 import org.chargecar.gpx.SphericalLawOfCosinesDistanceCalculator;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
-import org.chargecar.lcddisplay.commands.*;
+import org.chargecar.lcddisplay.commands.DisconnectCommandStrategy;
+import org.chargecar.lcddisplay.commands.DisplayCommandStrategy;
+import org.chargecar.lcddisplay.commands.GetErrorCodesCommandStrategy;
+import org.chargecar.lcddisplay.commands.GetRPMCommandStrategy;
+import org.chargecar.lcddisplay.commands.GetTemperatureCommandStrategy;
+import org.chargecar.lcddisplay.commands.HandshakeCommandStrategy;
+import org.chargecar.lcddisplay.commands.InputCommandStrategy;
+import org.chargecar.lcddisplay.commands.OutputCommandStrategy;
+import org.chargecar.lcddisplay.commands.ResetDisplayCommandStrategy;
 import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.lcd.LCDEvent;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -95,7 +122,7 @@ public final class LCDProxy implements LCD
       try
          {
          // create the serial port command queue
-         final SerialPortCommandExecutionQueue commandQueue = SerialPortCommandExecutionQueue.create(APPLICATION_NAME, config);
+         final SerialDeviceCommandExecutionQueue commandQueue = SerialDeviceCommandExecutionQueue.create(APPLICATION_NAME, config);
 
          // see whether its creation was successful
          if (commandQueue == null)
@@ -140,14 +167,14 @@ public final class LCDProxy implements LCD
       return null;
       }
 
-   private final SerialPortCommandExecutionQueue commandQueue;
+   private final SerialDeviceCommandExecutionQueue commandQueue;
    private final String serialPortName;
    private final CreateLabSerialDeviceNoReturnValueCommandStrategy disconnectCommandStrategy = new DisconnectCommandStrategy();
 
-   private final NoReturnValueCommandExecutor noReturnValueCommandExecutor;
-   private final ReturnValueCommandExecutor<Double> doubleReturnValueCommandExecutor;
-   private final ReturnValueCommandExecutor<Integer> integerReturnValueCommandExecutor;
-   private final ReturnValueCommandExecutor<int[]> intArrayReturnValueCommandExecutor;
+   private final SerialDeviceNoReturnValueCommandExecutor noReturnValueCommandExecutor;
+   private final SerialDeviceReturnValueCommandExecutor<Double> doubleReturnValueCommandExecutor;
+   private final SerialDeviceReturnValueCommandExecutor<Integer> integerReturnValueCommandExecutor;
+   private final SerialDeviceReturnValueCommandExecutor<int[]> intArrayReturnValueCommandExecutor;
 
    private final LCDPinger lcdPinger = new LCDPinger();
    private final ScheduledExecutorService peerPingScheduler = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("LCDProxy.peerPingScheduler"));
@@ -160,7 +187,7 @@ public final class LCDProxy implements LCD
    private final Collection<CreateLabDevicePingFailureEventListener> createLabDevicePingFailureEventListeners = new HashSet<CreateLabDevicePingFailureEventListener>();
    private final Set<ButtonPanelEventListener> buttonPanelEventListeners = new HashSet<ButtonPanelEventListener>();
 
-   private LCDProxy(final SerialPortCommandExecutionQueue commandQueue, final String serialPortName)
+   private LCDProxy(final SerialDeviceCommandExecutionQueue commandQueue, final String serialPortName)
       {
       this.commandQueue = commandQueue;
       this.serialPortName = serialPortName;
@@ -174,10 +201,10 @@ public final class LCDProxy implements LCD
                }
             };
 
-      noReturnValueCommandExecutor = new NoReturnValueCommandExecutor(commandQueue, commandExecutionFailureHandler);
-      doubleReturnValueCommandExecutor = new ReturnValueCommandExecutor<Double>(commandQueue, commandExecutionFailureHandler);
-      integerReturnValueCommandExecutor = new ReturnValueCommandExecutor<Integer>(commandQueue, commandExecutionFailureHandler);
-      intArrayReturnValueCommandExecutor = new ReturnValueCommandExecutor<int[]>(commandQueue, commandExecutionFailureHandler);
+      noReturnValueCommandExecutor = new SerialDeviceNoReturnValueCommandExecutor(commandQueue, commandExecutionFailureHandler);
+      doubleReturnValueCommandExecutor = new SerialDeviceReturnValueCommandExecutor<Double>(commandQueue, commandExecutionFailureHandler);
+      integerReturnValueCommandExecutor = new SerialDeviceReturnValueCommandExecutor<Integer>(commandQueue, commandExecutionFailureHandler);
+      intArrayReturnValueCommandExecutor = new SerialDeviceReturnValueCommandExecutor<int[]>(commandQueue, commandExecutionFailureHandler);
 
       // schedule periodic peer pings
       peerPingScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDButtonPoller(),
@@ -845,13 +872,13 @@ public final class LCDProxy implements LCD
       // shut down the command queue, which closes the serial port
       try
          {
-         LOG.debug("LCDProxy.disconnect(): shutting down the SerialPortCommandExecutionQueue...");
+         LOG.debug("LCDProxy.disconnect(): shutting down the SerialDeviceCommandExecutionQueue...");
          commandQueue.shutdown();
-         LOG.debug("LCDProxy.disconnect(): done shutting down the SerialPortCommandExecutionQueue");
+         LOG.debug("LCDProxy.disconnect(): done shutting down the SerialDeviceCommandExecutionQueue");
          }
       catch (Exception e)
          {
-         LOG.error("LCDProxy.disconnect(): Exception while trying to shut down the SerialPortCommandExecutionQueue", e);
+         LOG.error("LCDProxy.disconnect(): Exception while trying to shut down the SerialDeviceCommandExecutionQueue", e);
          }
       }
 

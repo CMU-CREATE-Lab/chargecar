@@ -3,7 +3,7 @@ package org.chargecar.sensorboard.serial.proxy;
 import java.io.UnsupportedEncodingException;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceCommandStrategy;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceReturnValueCommandStrategy;
-import edu.cmu.ri.createlab.serial.SerialPortCommandResponse;
+import edu.cmu.ri.createlab.serial.SerialDeviceCommandResponse;
 import org.apache.log4j.Logger;
 
 /**
@@ -43,7 +43,7 @@ abstract class ChargeCarSerialDeviceReturnValueCommandStrategy<E> extends Create
       super(readTimeoutMillis, slurpTimeoutMillis, maxNumberOfRetries);
       }
 
-   public final E convertResponse(final SerialPortCommandResponse response)
+   public final E convertResponse(final SerialDeviceCommandResponse response)
       {
       if (response != null)
          {

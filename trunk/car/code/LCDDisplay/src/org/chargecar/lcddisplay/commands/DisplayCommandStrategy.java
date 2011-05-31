@@ -1,11 +1,10 @@
 package org.chargecar.lcddisplay.commands;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import edu.cmu.ri.createlab.serial.CreateLabSerialDeviceNoReturnValueCommandStrategy;
 import edu.cmu.ri.createlab.util.ByteUtils;
 import org.chargecar.lcddisplay.LCDProxy;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -42,6 +41,7 @@ public final class DisplayCommandStrategy extends CreateLabSerialDeviceNoReturnV
         this.command = bb.array();
     }
 
+    @Override
     protected byte[] getCommand() {
         return command.clone();
     }

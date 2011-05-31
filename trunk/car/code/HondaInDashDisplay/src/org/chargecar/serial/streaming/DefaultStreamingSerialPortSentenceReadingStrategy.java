@@ -21,7 +21,7 @@ public final class DefaultStreamingSerialPortSentenceReadingStrategy implements 
 
    public boolean isDataAvailable() throws IOException
       {
-      return serialIOManager.getSerialPortIoHelper().isDataAvailable();
+      return serialIOManager.getSerialDeviceIOHelper().isDataAvailable();
       }
 
    public byte[] getNextSentence() throws IOException
@@ -67,9 +67,9 @@ public final class DefaultStreamingSerialPortSentenceReadingStrategy implements 
     */
    private Byte readByte() throws IOException
       {
-      if (serialIOManager.getSerialPortIoHelper().isDataAvailable())
+      if (serialIOManager.getSerialDeviceIOHelper().isDataAvailable())
          {
-         final int b = serialIOManager.getSerialPortIoHelper().read();
+         final int b = serialIOManager.getSerialDeviceIOHelper().read();
 
          if (b >= 0)
             {
