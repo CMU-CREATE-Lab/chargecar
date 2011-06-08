@@ -122,8 +122,10 @@ public class KnnTableTrainer implements Policy {
 	    KnnPoint rawPoint = table.getKnnPoints().get(i);
 	    PointFeatures rawFeatures = rawPoint.getFeatures();
 	    PointFeatures scaledFeatures = new PointFeatures(
-		    scale(rawFeatures.getLatitude(),latMean,latSD),
-		    scale(rawFeatures.getLongitude(),lonMean,lonSD),
+		    //scale(rawFeatures.getLatitude(),latMean,latSD),
+		    //scale(rawFeatures.getLongitude(),lonMean,lonSD),
+		    rawFeatures.getLatitude(),
+		    rawFeatures.getLongitude(),
 		    scale(rawFeatures.getElevation(),eleMean, eleSD),
 		    scale(rawFeatures.getBearing(),bearingMean,bearingSD),
 		    rawFeatures.getPlanarDist(),

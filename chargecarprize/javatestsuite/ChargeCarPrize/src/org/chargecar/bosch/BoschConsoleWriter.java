@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.DriverResults;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.visualization.Visualizer;
@@ -67,7 +68,7 @@ public class BoschConsoleWriter implements Visualizer {
 	    BatteryModel capacitor) {
 	System.out.println(trip);
 	System.out.println("Integral of current squared: "
-		+ d.format(battery.currentSquaredIntegral()));
+		+ d.format(battery.getCurrentSquaredIntegral()));
     }
     
     public void visualizeTrips(SimulationResults simResults) {
@@ -80,5 +81,11 @@ public class BoschConsoleWriter implements Visualizer {
 		    .getBatteryCurrentSquaredIntegrals().get(i);
 	    System.out.println(d.format(currentSquaredIntegral) + "; " + trip);
 	}
+    }
+
+    @Override
+    public void visualizeDrivers(List<DriverResults> driverResults) {
+	// TODO Auto-generated method stub
+	
     }
 }

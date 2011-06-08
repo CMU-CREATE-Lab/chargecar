@@ -14,4 +14,7 @@ public abstract class KdTreeFeatureSet {
     }
     
     public abstract double distance(PointFeatures point1, PointFeatures point2);
+    
+    public abstract double axialDistance(PointFeatures point1, PointFeatures point2, int splitType);
+    
 }
