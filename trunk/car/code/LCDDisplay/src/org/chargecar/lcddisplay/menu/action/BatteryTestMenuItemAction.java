@@ -30,6 +30,10 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
     private double ampHours = 0.0;
     private short state = 0;
 
+    final LCD lcd = LCDProxy.getInstance();
+    final BMSManager bmsManager = BMSManager.getInstance();
+    final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+
     public BatteryTestMenuItemAction(final MenuItem menuItem,
                                      final MenuStatusManager menuStatusManager,
                                      final CharacterDisplay characterDisplay) {
@@ -45,17 +49,19 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
         totalEnergyConsumed = 0.0;
         ampHours = 0.0;
         state = 0;
+        lcd.turnOffAirConditioning();
     }
 
     public final void start() {
         state = 1;
+        if (lcd != null) {
+            lcd.turnOnAirConditioning();
+        }
     }
 
     @Override
     protected void performAction() {
-        final LCD lcd = LCDProxy.getInstance();
-        final BMSManager bmsManager = BMSManager.getInstance();
-        final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+
 
         if (bmsManager == null || bmsData == null) {
             LOG.error("BatteryTestMenuItemAction.performAction(): bms is null");
@@ -81,6 +87,7 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
             final double minVoltage = GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2);
 
             if (bmsData.getBmsState().getPackTotalVoltage() < 82.5 || bmsData.getBmsState().getMinimumCellVoltage() < 2.00) {
+                lcd.turnOffAirConditioning();
                 getCharacterDisplay().setLine(0, "TEST DONE           ");
                 getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(String.valueOf(previousLoadCurrent) + " amps", LCDConstants.NUM_COLS - 9));
                 getCharacterDisplay().setCharacter(1, 0, GeneralHelper.padLeft(String.valueOf(previousTotalEnergyConsumed) + " kWh", LCDConstants.NUM_COLS));

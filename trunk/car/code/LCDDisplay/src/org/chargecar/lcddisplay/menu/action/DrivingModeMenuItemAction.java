@@ -74,10 +74,11 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             currentState = 1;
             if (printHeadings.get(0)) {
                 printHeadings.set(0, false);
-                getCharacterDisplay().setLine(0, "^ Charge ");
-                getCharacterDisplay().setLine(1, "  Pwr Flow ");
-                getCharacterDisplay().setLine(2, "  Efficiency ");
-                getCharacterDisplay().setLine(3, "v          miles/kWh");
+                getCharacterDisplay().setLine(0, "^ Min Voltage ");
+                getCharacterDisplay().setLine(1, "^ Max Voltage ");
+                getCharacterDisplay().setLine(2, "  Pwr Flow ");
+                getCharacterDisplay().setLine(3, "  Efficiency ");
+                //getCharacterDisplay().setLine(3, "v          miles/kWh");
             }
             //instantaneous
             double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
@@ -85,9 +86,12 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             double currentEfficiency = lcd.getTripDistance() / bmsData.getEnergyEquation().getKilowattHours();
             currentEfficiency = GeneralHelper.round(currentEfficiency, 2);
 
-            getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(GeneralHelper.round((bmsData.getBmsState().getStateOfChargePercentage() / 2.0), 2) + "%", LCDConstants.NUM_COLS - 9));
-            getCharacterDisplay().setCharacter(1, 11, GeneralHelper.padLeft(powerFlowInKw + "kW", LCDConstants.NUM_COLS - 11));
-            getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(String.valueOf(currentEfficiency), LCDConstants.NUM_COLS - 13));
+            getCharacterDisplay().setCharacter(0, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMinimumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
+            getCharacterDisplay().setCharacter(1, 14, GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(bmsData.getBmsState().getMaximumCellVoltage(), 2)), LCDConstants.NUM_COLS - 14));
+
+            //getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(GeneralHelper.round((bmsData.getBmsState().getStateOfChargePercentage() / 2.0), 2) + "%", LCDConstants.NUM_COLS - 9));
+            getCharacterDisplay().setCharacter(2, 11, GeneralHelper.padLeft(powerFlowInKw + "kW", LCDConstants.NUM_COLS - 11));
+            getCharacterDisplay().setCharacter(3, 13, GeneralHelper.padLeft(String.valueOf(currentEfficiency), LCDConstants.NUM_COLS - 13));
         }
     }
 
@@ -296,7 +300,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     protected void preActivate() {
         postgresqlConnection = PostgresqlConnect.getInstance();
     }
-    
+
     protected void postActivate() {
         final int numActions = printHeadings.size();
         for (int i = 0; i < numActions; i++) {
