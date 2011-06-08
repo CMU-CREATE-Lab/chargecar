@@ -62,14 +62,15 @@ public class KdTree {
 	}
 	    
 	double pointAxisValue = getValue(point, node.getSplitType());
-	double nodeAxisValue = getValue(node.getValue(), node.getSplitType());
+	double nodeAxisValue = getValue(node.getValue().getFeatures(), node.getSplitType());
 	boolean leftBranch = pointAxisValue < nodeAxisValue;
 	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();
 	best = searchTree(branch, point, best, exclusions);
 	
-	double axialdist = nodeAxisValue - pointAxisValue;
-	double axialWeight = getWeight(node.getSplitType());
-	axialdist = axialdist*axialdist*axialWeight;
+//	double axialdist = nodeAxisValue - pointAxisValue;
+//        double axialWeight = getWeight(node.getSplitType());
+//        axialdist = axialdist*axialdist*axialWeight;
+	double axialdist = featureSet.axialDistance(node.getValue().getFeatures(),point, node.getSplitType());
 	
 	if(best == null || axialdist <= bestDist){
 	    branch = leftBranch ?  node.getRightSubtree() : node.getLeftSubtree();
@@ -93,11 +94,11 @@ public class KdTree {
     }
         
     private int partition(List<KnnPoint> points, int left, int right, int pivot, int splitType){
-	double pivotValue = getValue(points.get(pivot),splitType);
+	double pivotValue = getValue(points.get(pivot).getFeatures(),splitType);
 	swap(points, pivot, right);
 	int storeIndex = left;
 	for(int i = left; i <= right-1;i++){
-	    if(getValue(points.get(i),splitType) < pivotValue){
+	    if(getValue(points.get(i).getFeatures(),splitType) < pivotValue){
 		swap(points, storeIndex, i);
 		storeIndex++;
 	    }
@@ -117,9 +118,6 @@ public class KdTree {
     }
     private double getValue(PointFeatures pf, int split){
 	return featureSet.getValue(pf, split);
-    }
-    private double getValue(KnnPoint kp, int split){
-	return featureSet.getValue(kp, split);
     }
     
     private double getWeight(int split){

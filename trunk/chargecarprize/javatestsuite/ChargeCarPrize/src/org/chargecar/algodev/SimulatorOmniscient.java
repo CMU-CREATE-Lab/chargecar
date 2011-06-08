@@ -38,7 +38,8 @@ import org.chargecar.prize.visualization.Visualizer;
  * 
  */
 public class SimulatorOmniscient {
-    static Visualizer visualizer = new CSVWriter("C:/finalopt.csv");
+    //static Visualizer visualizer = new CSVWriter("C:/finalopt.csv");
+    static Visualizer visualizer = new ConsoleWriter();
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 48;
     static double batteryWhr = 50000;
