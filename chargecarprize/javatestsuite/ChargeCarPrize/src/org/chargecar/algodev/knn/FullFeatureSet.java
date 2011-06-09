@@ -2,6 +2,7 @@ package org.chargecar.algodev.knn;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 
 import org.chargecar.prize.util.PointFeatures;
@@ -123,7 +124,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	return dist * weights[split];
     }
     
-    public List<Double> estimate(PointFeatures pf, List<KnnPoint> neighbors,
+    public List<Double> estimate(PointFeatures pf, Collection<KnnPoint> neighbors,
 	    List<Double> powers, int lookahead) {
 	List<Double> powerSums = new ArrayList<Double>();
 	List<Double> pointScales = new ArrayList<Double>();
@@ -131,10 +132,10 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	    powerSums.add(0.0);
 	    pointScales.add(0.0);
 	}
-	for (int i = 0; i < neighbors.size(); i++) {
-	    double dist = distance(pf, neighbors.get(i).getFeatures());
+	for(KnnPoint neighbor : neighbors){
+	    double dist = distance(pf, neighbor.getFeatures());
 	    double distScaler = 1.0 / (dist + 1e-9);
-	    int powerInd = neighbors.get(i).getGroundTruthIndex();
+	    int powerInd = neighbor.getGroundTruthIndex();
 	    for (int j = 0; j < lookahead; j++) {
 		Double powerD = powers.get(powerInd + j);
 		if (powerD == null) {
@@ -144,6 +145,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 		pointScales.set(j, pointScales.get(j) + distScaler);
 	    }
 	}
+	
 	for (int i = 0; i < lookahead; i++) {
 	    if (pointScales.get(i) == 0)
 		powerSums.set(i, 0.0);
