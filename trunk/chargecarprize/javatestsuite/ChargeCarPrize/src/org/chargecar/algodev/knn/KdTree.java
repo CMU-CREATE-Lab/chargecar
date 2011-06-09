@@ -1,7 +1,9 @@
 package org.chargecar.algodev.knn;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 import org.chargecar.prize.util.PointFeatures;
@@ -11,7 +13,7 @@ public class KdTree {
     private final KdTreeNode root;
     private final Random randomGenerator = new Random();
     private final KdTreeFeatureSet featureSet;
-    private double bestDist = Double.MAX_VALUE;
+    private double kBestDist = Double.MAX_VALUE;
     
     public KdTree(List<KnnPoint> points, List<Double> powers, KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
@@ -41,44 +43,39 @@ public class KdTree {
     }
     
     public List<Double> getBestEstimate(PointFeatures point, int k, int lookahead){
-	List<KnnPoint> neighbors = new ArrayList<KnnPoint>();
-	for(int i=0;i<k;i++){
-	    bestDist = Double.MAX_VALUE;
-	    neighbors.add(searchTree(root, point, null, neighbors));
-	}
+	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
+	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
+	kBestDist = Double.MAX_VALUE;
+	searchTree(root, point, neighbors, k);	
 	return featureSet.estimate(point, neighbors, powers, lookahead);
     }
     
    
-    private KnnPoint searchTree(KdTreeNode node, PointFeatures point, KnnPoint best, List<KnnPoint> exclusions){	 
+    private void searchTree(KdTreeNode node, PointFeatures point, PriorityQueue<KnnPoint> bestKNeighbors, int k){	 
+	if(node == null) return;
 	
-	if(node == null) return best;
-	else if(exclusions.contains(node.getValue())==false){
-	    double dist = distance(node.getValue().getFeatures(),point);
-	    if(best == null || dist < bestDist){
-		best = node.getValue();
-		bestDist = dist;
-	    }
-	}
+	double dist = featureSet.distance(node.getValue().getFeatures(),point);
+	if(dist < kBestDist){    
+	    bestKNeighbors.add(node.getValue());
+	    while(bestKNeighbors.size() > k)
+		bestKNeighbors.poll();
+	    if(bestKNeighbors.size() == k )
+		kBestDist = featureSet.distance(bestKNeighbors.peek().getFeatures(), point);	    
+	}	
 	    
 	double pointAxisValue = getValue(point, node.getSplitType());
 	double nodeAxisValue = getValue(node.getValue().getFeatures(), node.getSplitType());
 	boolean leftBranch = pointAxisValue < nodeAxisValue;
-	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();
-	best = searchTree(branch, point, best, exclusions);
+	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();	
+	searchTree(branch, point, bestKNeighbors, k);
 	
-//	double axialdist = nodeAxisValue - pointAxisValue;
-//        double axialWeight = getWeight(node.getSplitType());
-//        axialdist = axialdist*axialdist*axialWeight;
 	double axialdist = featureSet.axialDistance(node.getValue().getFeatures(),point, node.getSplitType());
 	
-	if(best == null || axialdist <= bestDist){
+	if(axialdist <= kBestDist){
 	    branch = leftBranch ?  node.getRightSubtree() : node.getLeftSubtree();
-	    best = searchTree(branch, point, best, exclusions);
+	    searchTree(branch, point, bestKNeighbors, k);
 	}
-	
-	return best;
-	}
+}
     
     private int select(List<KnnPoint> points, int left, int right, int k, int splitType) {
 	while(true){	    
@@ -124,3 +121,22 @@ public class KdTree {
 	return featureSet.getWeight(split);
     }
 }
+
+class KnnComparator implements Comparator<KnnPoint>{
+    private final PointFeatures point;
+    private final KdTreeFeatureSet featureSet;
+    
+    public KnnComparator(PointFeatures p, KdTreeFeatureSet fs){
+	point = p;
+	featureSet = fs;
+    }
+    @Override
+    public int compare(KnnPoint p1, KnnPoint p2) {
+	double d1 = featureSet.distance(point, p1.getFeatures());
+	double d2 = featureSet.distance(point, p2.getFeatures());
+	
+	return Double.compare(d2, d1);
+    }
+    
+}
+
