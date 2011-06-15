@@ -50,7 +50,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
     public List<List<PointFeatures>> read(File gpxFile, Vehicle vehicle)
     throws IOException {
 	clear();
-	double accLimit = 9.81;
+	double accLimit = 4.9;
 	double minTripDist = 500;
 	this.vehicle = vehicle;
 	FileInputStream in = new FileInputStream(gpxFile);
@@ -69,6 +69,11 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	in.close();
 	
 	for (int i = 0; i < trips.size();) {
+	    if(trips.get(i) == null || trips.get(i).size() < 100){
+		trips.remove(i);
+		continue;
+	    }
+	    
 	    double sumPlanarDist = 0.0;
 	    double maxAccel = 0.0;
 	    double acc;
@@ -79,7 +84,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 		    maxAccel = acc;
 		}
 	    }
-	    if (sumPlanarDist < minTripDist || maxAccel > accLimit) {
+	    if (sumPlanarDist < minTripDist || maxAccel > accLimit){
 		trips.remove(i);
 	    } else {
 		i++;
@@ -112,7 +117,8 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	    if (msDiff > 360000) {
 		// if enough time has passed between points (360 seconds)
 		// consider them disjoint trips
-		trips.add(TripBuilder.calculateTrip(times, lats, lons, eles,
+		trips.add(TripBuilder2
+			.calculateTrip(times, lats, lons, eles,
 			vehicle));
 		times.clear();
 		lats.clear();
@@ -128,7 +134,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	
 	if (times.size() > 60) {
 	    // get last trip
-	    trips.add(TripBuilder.calculateTrip(times, lats, lons, eles,
+	    trips.add(TripBuilder2.calculateTrip(times, lats, lons, eles,
 		    vehicle));
 	}
 	

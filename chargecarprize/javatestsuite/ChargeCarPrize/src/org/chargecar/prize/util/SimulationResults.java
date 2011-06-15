@@ -16,8 +16,8 @@ import org.chargecar.prize.battery.BatteryModel;
  */
 public class SimulationResults {
     private final List<Double> batteryCurrentSquaredIntegrals;
-    private final List<Double> chargeSpent;
-    private final List<Double> ampHoursSums;
+    private final List<Double> whSpent;
+    private final List<Double> distanceSums;
     private final List<String> tripStrings;
     private final String policyName;
     
@@ -25,35 +25,44 @@ public class SimulationResults {
 	this.policyName = policyName;
 	tripStrings = new ArrayList<String>();
 	batteryCurrentSquaredIntegrals = new ArrayList<Double>();
-	chargeSpent = new ArrayList<Double>();
-	ampHoursSums = new ArrayList<Double>();
+	whSpent = new ArrayList<Double>();
+	distanceSums = new ArrayList<Double>();
     }
     
-    public void addTrip(Trip trip, BatteryModel battery, BatteryModel capacitor) {
+    public void addTrip(Trip trip, BatteryModel battery, BatteryModel capacitor) 
+    {
 	batteryCurrentSquaredIntegrals.add(battery.getCurrentSquaredIntegral());
-	ampHoursSums.add(battery.getTotalAmpHoursServed());
-	chargeSpent.add(battery.getMaxCharge() - battery.getCharge()
-		- capacitor.getCharge());
+	whSpent.add(battery.getMaxWattHours() - battery.getWattHours() - capacitor.getWattHours());
+	distanceSums.add(getDistance(trip));
 	tripStrings.add(trip.toString());
     }
+
+    private double getDistance(Trip trip){
+	double dist = 0.0;
+	for(PointFeatures pf : trip.getPoints())
+	{
+	    dist += pf.getPlanarDist();
+	}
+	return dist;
+    }
     
+    public List<Double> getDistances(){
+	return this.distanceSums;
+    }
     public List<Double> getBatteryCurrentSquaredIntegrals() {
-	return batteryCurrentSquaredIntegrals;
+	return this.batteryCurrentSquaredIntegrals;
     }
 
-    public List<Double> getAmpHoursServedSums() {
-	return ampHoursSums;
-    }
-    public List<Double> getChargeSpent() {
-	return chargeSpent;
+    public List<Double> getWhSpent() {
+	return this.whSpent;
     }
     
     public List<String> getTripStrings() {
-	return tripStrings;
+	return this.tripStrings;
     }
     
     public String getPolicyName() {
-	return policyName;
+	return this.policyName;
     }
     
 }

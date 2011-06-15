@@ -1,15 +1,15 @@
 package org.chargecar.prize.battery;
 
 public class LiFePo4 extends SimpleBattery {
-    private double puekertNumber = 1.0;
+    private double puekertNumber = 1.02;
     public LiFePo4(double maxCharge, double charge, double voltage) {
 	super(maxCharge, charge, voltage);
 	// TODO Auto-generated constructor stub
     }
-    public double calculateEfficiency(double current, int periodMS) {
-	current = Math.abs(current);
+    public double calculateEfficiency(double power, int periodMS) {
+	double current = Math.abs(powerToCurrent(power));
 	double effectiveCurrent = Math.pow(current, puekertNumber);
-	if(current == 0.0) return 1;
-	return current / effectiveCurrent;
+	if(effectiveCurrent <= 1.0) return 1;
+	return 0.9*current / effectiveCurrent;
     }
 }

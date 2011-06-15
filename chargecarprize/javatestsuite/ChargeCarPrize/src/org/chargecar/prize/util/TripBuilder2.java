@@ -16,40 +16,39 @@ import java.util.List;
  * @author Jacob Katz
  * 
  */
-public class TripBuilder {
+public class TripBuilder2 {
     public static List<PointFeatures> calculateTrip(List<Calendar> times,
 	    List<Double> lats, List<Double> lons, List<Double> eles,
 	    Vehicle vehicle) {
 	 List<PointFeatures> tripPoints;
-		boolean broken;
-		int fixes = 0;
-		do{	    
-		    broken = false;
-		    removeTunnels(times, lats, lons, eles);
-		    interpolatePoints(times, lats, lons, eles);
-		    tripPoints = new ArrayList<PointFeatures>(times.size());
-		    runPowerModel(tripPoints, times, lats, lons, eles, vehicle);
-		    for(int i=0; i < tripPoints.size();i++){
-				if(Math.abs(tripPoints.get(i).getAcceleration()) > 4.9){
-				    broken = true;
-				    fixes++;
-				    lats.remove(i);
-				    lons.remove(i);
-				    eles.remove(i);
-				    times.remove(i);
-				    tripPoints.remove(i);
-				    i=i+1;
-				}		
-		    }
-		    if(times.size() <60)
-			break;
-		}while(broken);
-		
-		if((double)fixes / (tripPoints.size()+fixes) > 0.02){
-		    System.out.println(fixes+"/"+(tripPoints.size()+fixes));
-		    return null;
-		}
-		return tripPoints;		
+	boolean broken;
+	int fixes = 0;
+	do{	    
+	    broken = false;
+	    removeTunnels(times, lats, lons, eles);
+	    interpolatePoints(times, lats, lons, eles);
+	    tripPoints = new ArrayList<PointFeatures>(times.size());
+	    runPowerModel(tripPoints, times, lats, lons, eles, vehicle);
+	    for(int i=0; i < tripPoints.size();i++){
+			if(Math.abs(tripPoints.get(i).getAcceleration()) > 4.9){
+			    broken = true;
+			    fixes++;
+			    lats.remove(i);
+			    lons.remove(i);
+			    eles.remove(i);
+			    times.remove(i);
+			    tripPoints.remove(i);
+			    i=i+1;
+			}		
+	    }
+	}while(broken);
+	
+	if((double)fixes / (tripPoints.size()+fixes) > 0.02){
+	    //System.out.println(fixes+"/"+(tripPoints.size()+fixes));
+	    return null;
+	}
+	
+	return tripPoints;	
     }
     
     private static void interpolatePoints(List<Calendar> times,
@@ -89,11 +88,9 @@ public class TripBuilder {
 	List<Double> accelerations = new ArrayList<Double>();
 	List<Double> powerDemands = new ArrayList<Double>();
 	
-	double vInit = 0.0;
-	
 	planarDistances.add(0.0);
 	adjustedDistances.add(0.0);
-	speeds.add(vInit);
+	speeds.add(0.0);
 	accelerations.add(0.0);
 	
 	for (int i = 1; i < times.size(); i++) {
@@ -102,32 +99,33 @@ public class TripBuilder {
 	    if (msDiff == 0) {
 		break;
 	    }
-	    double sDiff = msDiff / 1000.0;	    
 	    double eleDiff = eles.get(i) - eles.get(i - 1);
-	    double tempDist = Haversine(lats.get(i - 1), lons.get(i - 1), lats.get(i), lons.get(i));
-	    
-	    bearings.add(getBearing(lats.get(i - 1), lons.get(i - 1), lats.get(i), lons.get(i)));
+	    double tempDist = Haversine(lats.get(i - 1), lons.get(i - 1), lats
+		    .get(i), lons.get(i));
+	    bearings.add(getBearing(lats.get(i - 1), lons.get(i - 1), lats
+		    .get(i), lons.get(i)));
 	    planarDistances.add(tempDist);
 	    tempDist = Math.sqrt((tempDist * tempDist) + (eleDiff * eleDiff));
-	    adjustedDistances.add(tempDist);	    
+	    adjustedDistances.add(tempDist);
+	    double tempSpeed = 1000.0 * tempDist / msDiff;
 	    
-	    double vFinal = (2*tempDist / sDiff) - vInit;	    
 	    if (tempDist < 1E-6) {
-		vFinal = 0.0;		
-	    } 
-	    speeds.add(vFinal);	    
-	    accelerations.add((vFinal - vInit) / sDiff);
-	    
-	    vInit = vFinal;
-	    
+		speeds.add(0.0);
+	    } else {
+		speeds.add(tempSpeed);
+	    }
+	    accelerations.add(1000.0 * (speeds.get(i) - speeds.get(i - 1))
+		    / msDiff);
 	}
 	bearings.add(bearings.get(bearings.size()-1));
+	speeds.set(0, speeds.get(1));
+	accelerations.set(1, 0.0);
 	
 	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
 	final double offset = -0.35;
-	final double ineff = 1 / 0.85;
-	final double regenEff = 0.35;
+	final double ineff = 1 / 0.95;
+	final double regenEff = 0.55;
 	
 	final double outsideTemp = ((60 + 459.67) * 5 / 9);// 60F to kelvin
 	
@@ -172,11 +170,7 @@ public class TripBuilder {
 	    }
 	    
 	    pwr = ((pwr / -1000.0) + offset);
-	    
-//	    if (speed > 12.0) {
-//		pwr = ((pwr - (0.056 * (speed * speed))) + (0.68 * speed));
-//	    }
-	    
+	        
 	    powerDemands.add(pwr * 1000.0);// convert back to watts
 	    
 	}

@@ -12,9 +12,9 @@ import org.chargecar.prize.util.PowerFlowException;
  */
 public class SimpleCapacitor extends BatteryModel {
     
-    public SimpleCapacitor(double maxCharge, double charge, double voltage) {
-	this.maxCharge = maxCharge;
-	this.charge = charge;
+    public SimpleCapacitor(double maxWattHours, double wattHours, double voltage) {
+	this.maxWattHours = maxWattHours;
+	this.wattHours = wattHours;
 	this.temperature = 0.0;
 	this.current = 0.0;
 	this.efficiency = 1.0;
@@ -26,22 +26,22 @@ public class SimpleCapacitor extends BatteryModel {
 	    throws PowerFlowException {
 	super.drawPower(current, point);
 	
-	if (this.charge < -1E-6) {
-	    throw new PowerFlowException("Capacitor overdrawn: " + this.charge);
-	} else if (this.charge - this.maxCharge > 1E-6) {
+	if (this.wattHours < -1E-6) {
+	    throw new PowerFlowException("Capacitor overdrawn: " + this.wattHours);
+	} else if (this.wattHours - this.maxWattHours > 1E-6) {
 	    throw new PowerFlowException("Capacitor overcharged: "
-		    + this.charge);
+		    + this.wattHours);
 	}
     }
     
     @Override
     public BatteryModel createClone() {
-	final SimpleCapacitor clone = new SimpleCapacitor(this.maxCharge, this.charge, this.voltage);
-	clone.charge = this.charge;
+	final SimpleCapacitor clone = new SimpleCapacitor(this.maxWattHours, this.wattHours, this.voltage);
+	clone.wattHours = this.wattHours;
 	clone.current = this.current;
 	clone.efficiency = this.efficiency;
 	clone.temperature = this.temperature;
-	clone.chargeHistory.addAll(this.chargeHistory);
+	clone.wattHoursHistory.addAll(this.wattHoursHistory);
 	clone.temperatureHistory.addAll(this.temperatureHistory);
 	clone.currentDrawHistory.addAll(this.currentDrawHistory);
 	clone.efficiencyHistory.addAll(this.efficiencyHistory);
@@ -52,7 +52,7 @@ public class SimpleCapacitor extends BatteryModel {
 
     @Override
     public double calculateEfficiency(double current, int periodMS) {
-	return 1.0;
+	return 0.98;
     }
 
     @Override
