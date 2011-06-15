@@ -28,6 +28,7 @@ public class OmniscientPolicy implements Policy {
 	List<Double> rates = new ArrayList<Double>(points.size());
 	double sum = 0;
 	int timesum = 0;
+	
 	for(PointFeatures pf : points){
 	    sum += pf.getPowerDemand();
 	    timesum += pf.getPeriodMS();
@@ -35,6 +36,7 @@ public class OmniscientPolicy implements Policy {
 	    timeStamps.add(timesum);
 	    rates.add(1000*sum/timesum);
 	}
+	
 	int startInd = 0;
 	while(startInd < rates.size()){
 	    double maxRate = Double.POSITIVE_INFINITY;
@@ -75,21 +77,21 @@ public class OmniscientPolicy implements Policy {
     public PowerFlows calculatePowerFlows(PointFeatures pf) {
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
-	double minCapCurrent = modelCap.getMinPower(periodMS);
-	double maxCapCurrent = modelCap.getMaxPower(periodMS);
+	double minCapPower = modelCap.getMinPower(periodMS);
+	double maxCapPower = modelCap.getMaxPower(periodMS);
 	double capToMotorWatts = 0.0;
 	double batteryToCapWatts = 0.0;
 	double batteryToMotorWatts = 0.0;
-	if (wattsDemanded < minCapCurrent) {
+	if (wattsDemanded < minCapPower) {
 	    // drawing more than the cap has
 	    // battery is already getting drawn, don't trickle cap
-	    capToMotorWatts = minCapCurrent;
+	    capToMotorWatts = minCapPower;
 	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
 	    batteryToCapWatts = optimalBCFlow.get(currentIndex) - batteryToMotorWatts;
-	} else if (wattsDemanded > maxCapCurrent) {
+	} else if (wattsDemanded > maxCapPower) {
 	    // overflowing cap with regen power
 	    // cap is full, no need to trickle.
-	    capToMotorWatts = maxCapCurrent;
+	    capToMotorWatts = maxCapPower;
 	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
 	    batteryToCapWatts = optimalBCFlow.get(currentIndex) - batteryToMotorWatts;
 	} else {
@@ -101,10 +103,10 @@ public class OmniscientPolicy implements Policy {
 	}
 	batteryToCapWatts = 0 < batteryToCapWatts ? 0 : batteryToCapWatts;
 	
-	if (capToMotorWatts - batteryToCapWatts > maxCapCurrent) {
-		batteryToCapWatts = capToMotorWatts - maxCapCurrent;
-	    } else if(capToMotorWatts - batteryToCapWatts < minCapCurrent){
-		batteryToCapWatts = capToMotorWatts - minCapCurrent;
+	if (capToMotorWatts - batteryToCapWatts > maxCapPower) {
+		batteryToCapWatts = capToMotorWatts - maxCapPower;
+	    } else if(capToMotorWatts - batteryToCapWatts < minCapPower){
+		batteryToCapWatts = capToMotorWatts - minCapPower;
 	    }
 
 	try {

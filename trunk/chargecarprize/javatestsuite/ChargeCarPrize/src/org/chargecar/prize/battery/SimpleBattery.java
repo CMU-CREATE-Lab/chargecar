@@ -13,22 +13,22 @@ package org.chargecar.prize.battery;
  */
 public class SimpleBattery extends BatteryModel {
     
-    public SimpleBattery(double maxCharge, double charge, double voltage) {
+    public SimpleBattery(double maxWattHours, double wattHours, double voltage) {
 	this.current = 0.0;
 	this.temperature = 0.0;
 	this.efficiency = 1.0;
-	this.charge = charge;
-	this.maxCharge = maxCharge;
+	this.wattHours = wattHours;
+	this.maxWattHours  = maxWattHours;
 	this.voltage = voltage;
     }
 
     @Override
     public BatteryModel createClone() {
-	final BatteryModel clone = new SimpleBattery(this.maxCharge, this.charge, this.voltage);
+	final BatteryModel clone = new SimpleBattery(this.maxWattHours, this.wattHours, this.voltage);
 	clone.current = this.current;
 	clone.efficiency = this.efficiency;
 	clone.temperature = this.temperature;
-	clone.chargeHistory.addAll(this.chargeHistory);
+	clone.wattHoursHistory.addAll(this.wattHoursHistory);
 	clone.temperatureHistory.addAll(this.temperatureHistory);
 	clone.currentDrawHistory.addAll(this.currentDrawHistory);
 	clone.efficiencyHistory.addAll(this.efficiencyHistory);

@@ -19,6 +19,7 @@ import org.chargecar.prize.util.Trip;
  */
 public class ConsoleWriter implements Visualizer {
     DecimalFormat d = new DecimalFormat("0.000E0");
+    DecimalFormat d2 = new DecimalFormat("0.000");
     DecimalFormat p = new DecimalFormat("0.000%");
     
     public void visualizeDrivers(List<DriverResults> results) {
@@ -42,7 +43,8 @@ public class ConsoleWriter implements Visualizer {
     public void visualizeSummary(List<SimulationResults> results) {
 	int tripsTested = 0;
 	List<Double> currentSquaredSums = new ArrayList<Double>();
-	List<Double> chargeSpentSums = new ArrayList<Double>();
+	List<Double> kwhSums = new ArrayList<Double>();
+	List<Double> distSums = new ArrayList<Double>();
 	for (SimulationResults r : results) {
 	    tripsTested = r.getTripStrings().size();
 	    double currentSquaredSum = 0.0;
@@ -50,36 +52,50 @@ public class ConsoleWriter implements Visualizer {
 		currentSquaredSum += d;
 	    }
 	    currentSquaredSums.add(currentSquaredSum);
-	    double chargeSpentSum = 0.0;
-	    for (Double d : r.getChargeSpent()) {
-		chargeSpentSum += d;
+	    
+	    double distSum = 0.0;
+	    for(Double d : r.getDistances()){
+		distSum += d;
 	    }
-	    chargeSpentSums.add(chargeSpentSum);
+	    distSums.add(distSum); 
+	    
+	    double whSpentSum = 0.0;
+	    for (Double wh : r.getWhSpent()) {
+		whSpentSum += wh;
+	    }
+	    kwhSums.add(whSpentSum/1000.0);
 	}
 	
 	double i2BaseSum = currentSquaredSums.get(0);
-	double baseChargeSpentSum = chargeSpentSums.get(0);
+	double kwhBaseSum = kwhSums.get(0);
 	System.out.println("Trips tested: "+tripsTested);
+	System.out.println("Distance Traveled: "+distSums.get(0));
 	System.out.println("Baseline, " + results.get(0).getPolicyName()
 		+ ", i^2: " + d.format(i2BaseSum));
 	System.out.println("Baseline, " + results.get(0).getPolicyName()
-		+ ", charge spent: " + d.format(baseChargeSpentSum));
+		+ ", kWh: " + d.format(kwhBaseSum) + " kWh :: "+
+		d2.format(milesPerKwh(kwhBaseSum,distSums.get(0))) + " miles/kWh");
 	
 	for (int i = 1; i < results.size(); i++) {
 	    double i2Percent = 1 - (currentSquaredSums.get(i) / i2BaseSum);
 	    System.out.println(results.get(i).getPolicyName()
-		    + " i^2, vs. baseline: "
+		    + " i^2: "
 		    + d.format(currentSquaredSums.get(i)) + " :: "
 		    + p.format(i2Percent) + " reduction");
-	    double rangePercent =(baseChargeSpentSum / chargeSpentSums.get(i))-1;
+	    double rangePercent =(kwhBaseSum / kwhSums.get(i))-1;
 	    System.out.println(results.get(i).getPolicyName()
-		    + " charge spent, range vs. baseline: "
-		    + d.format(chargeSpentSums.get(i)) + " :: "
+		    + " kWh: "
+		    + d.format(kwhSums.get(i)) + " kWh :: "
+		    + d2.format(milesPerKwh(kwhSums.get(i),distSums.get(i))) + " miles/kWh :: "
 		    + p.format(rangePercent));
-	    //System.out.println(p.format(i2Percent));
+
 	}
     }
     
+    private double milesPerKwh(double kwh, double meters){
+	double miles = meters / 1609.34;
+	return miles/kwh;
+    }
     public void visualizeTrip(Trip trip, BatteryModel battery,
 	    BatteryModel capacitor) {
 	System.out.println(trip);

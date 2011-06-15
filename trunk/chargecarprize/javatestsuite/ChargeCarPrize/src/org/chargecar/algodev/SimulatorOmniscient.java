@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LeadAcidBattery;
+import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
@@ -41,7 +42,7 @@ public class SimulatorOmniscient {
     //static Visualizer visualizer = new CSVWriter("C:/finalopt.csv");
     static Visualizer visualizer = new ConsoleWriter();
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    static double systemVoltage = 48;
+    static double systemVoltage = 96;
     static double batteryWhr = 50000;
     static double capWhr = 50;
     /**
@@ -70,13 +71,13 @@ public class SimulatorOmniscient {
 	//policies.add(new OmniscientPolicy(2));
 	policies.add(new OmniscientPolicy(5));
 	policies.add(new OmniscientPolicy(10));
-	//policies.add(new OmniscientPolicy(20));
-	//policies.add(new OmniscientPolicy(30));
-	//policies.add(new OmniscientPolicy(45));
-	//policies.add(new OmniscientPolicy(60));
-	//policies.add(new OmniscientPolicy(90));
-	/*policies.add(new OmniscientPolicy(120));
-	policies.add(new OmniscientPolicy(180));*/
+	policies.add(new OmniscientPolicy(20));
+	policies.add(new OmniscientPolicy(30));
+	policies.add(new OmniscientPolicy(45));
+	policies.add(new OmniscientPolicy(60));
+	policies.add(new OmniscientPolicy(90));
+	policies.add(new OmniscientPolicy(120));
+	policies.add(new OmniscientPolicy(180));
 	policies.add(new OmniscientPolicy(240));
 	//policies.add(new OmniscientPolicy(300));
 	//policies.add(new OmniscientPolicy(360));
@@ -122,7 +123,7 @@ public class SimulatorOmniscient {
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new LeadAcidBattery(batteryWhr, batteryWhr, systemVoltage);
+	BatteryModel tripBattery = new LiFePo4(batteryWhr, batteryWhr, systemVoltage);
 	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
@@ -137,7 +138,7 @@ public class SimulatorOmniscient {
 	}
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
-	    pf.adjust(point.getPowerDemand());
+	    //pf.adjust(point.getPowerDemand());
 	    battery.drawPower(pf.getBatteryToCapacitor()
 		    + pf.getBatteryToMotor(), point);
 	    cap.drawPower(pf.getCapacitorToMotor()

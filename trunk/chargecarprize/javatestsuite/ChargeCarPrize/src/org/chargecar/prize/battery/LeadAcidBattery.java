@@ -6,10 +6,10 @@ public class LeadAcidBattery extends SimpleBattery {
 	super(maxCharge, charge, voltage);
 	// TODO Auto-generated constructor stub
     }
-    public double calculateEfficiency(double current, int periodMS) {
-	current = Math.abs(current);
+    public double calculateEfficiency(double power, int periodMS) {
+	double current = Math.abs(powerToCurrent(power));
 	double effectiveCurrent = Math.pow(current, puekertNumber);
-	if(current == 0.0) return 1;
+	if(effectiveCurrent <= 1.0) return 1;
 	return current / effectiveCurrent;
     }
 }
