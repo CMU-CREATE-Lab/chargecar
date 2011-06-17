@@ -26,7 +26,7 @@ public class KnnKdTreePolicy implements Policy {
     private KdTree featKdTree;
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead = 600; 
+    private final int lookahead = 240; 
     private final int neighbors = 7;
     private int pointsTested = 0;
     

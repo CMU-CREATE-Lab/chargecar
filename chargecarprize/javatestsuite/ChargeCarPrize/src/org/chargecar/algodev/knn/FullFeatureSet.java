@@ -9,9 +9,9 @@ import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {
     private final int featureCount = 8;
-    private final double MAXGPSDIST = 1e-5;
-    private final double[] weights = new double[] { 3e5, 3e5, 1, 5, 1, 1, 10,
-	    0, 1, 1 };
+    private final double MAXGPSDIST = 3e-5;
+    private final double[] weights = new double[] { 4e5, 4e5, 1, 5, 1, 1, 10,
+	    5, 0, 0 };
     
     public int getFeatureCount() {
 	return featureCount;
@@ -34,12 +34,12 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	case 6:
 	    return point.getTotalPowerUsed();
 	case 7:
-	    return point.getAcceleration();
+	    return (point.getTime().get(Calendar.HOUR_OF_DAY) * 60
+		    + point.getTime().get(Calendar.MINUTE))/480;
 	case 8:
-	    return point.getTime().get(Calendar.HOUR_OF_DAY) * 60
-		    + point.getTime().get(Calendar.MINUTE);
-	case 9:
 	    return point.getTime().get(Calendar.DAY_OF_WEEK)%7;
+	case 9:
+	    return point.getAcceleration();
 	    
 	default:
 	    System.err.println("Invalid feature request!");
@@ -48,22 +48,28 @@ public class FullFeatureSet extends KdTreeFeatureSet {
     }
     
     public double distance(PointFeatures point1, PointFeatures point2) {
-//	double gpsDist = calculateGPSDist(point1, point2);
-//	double dist = gpsDist * weights[0];
 	double dist = 0;
 	for (int i = 0; i < featureCount; i++) {
-	    double temp = getValue(point1, i) - getValue(point2, i);
-	    dist += Math.pow(temp,2.0) * weights[i];
+	    dist += axialDistance(point1,point2,i);
 	}
-	
-/*	double timeDist = calculateTimeDist(point1, point2);
-	dist += timeDist * weights[8];
-	
-	double dayDist = calculateDayDist(point1, point2);	
-	dist += dayDist * weights[9];
-*/
 	return dist;
     }
+    
+
+    public double axialDistance(PointFeatures point1, PointFeatures point2,
+	    int split) {
+	double dist = Math.pow(getValue(point1, split)- getValue(point2, split),2.0);
+	
+	if (split == 0 || split == 1)
+	    dist = dist > MAXGPSDIST ? MAXGPSDIST : dist;
+//	else if(split == 8)
+//	    dist = calculateTimeDist(point1,point2);
+//	else if(split == 9)
+//	    dist = calculateDayDist(point1,point2);
+	
+	return dist * weights[split];
+    }
+    
 
     private double calculateTimeDist(PointFeatures point1, PointFeatures point2) {
 	double timeDist = getValue(point1, 8) - getValue(point2, 8);
@@ -86,44 +92,34 @@ public class FullFeatureSet extends KdTreeFeatureSet {
     private double calculateDayDist(PointFeatures point1,
 	    PointFeatures point2) {
 	double dayDist;
-	if (getValue(point1, 9) == getValue(point2, 9))
+	double v1 = getValue(point1,9);
+	double v2 = getValue(point2,9);
+	if(v1 == Calendar.SATURDAY % 7) v1 = Calendar.SATURDAY;
+	if(v2 == Calendar.SATURDAY % 7) v2 = Calendar.SATURDAY;
+	
+	if (v1 == v2)
 	    dayDist = 0;
 	else if ((
-		(getValue(point1, 9) == Calendar.MONDAY)
-		|| (getValue(point1, 9) == Calendar.TUESDAY)
-		|| (getValue(point1, 9) == Calendar.WEDNESDAY)
-		|| (getValue(point1, 9) == Calendar.THURSDAY) 
-		|| (getValue(point1, 9) == Calendar.FRIDAY))
+		(v1 == Calendar.MONDAY)
+		|| (v1 == Calendar.TUESDAY)
+		|| (v1 == Calendar.WEDNESDAY)
+		|| (v1 == Calendar.THURSDAY) 
+		|| (v1 == Calendar.FRIDAY))
 		&& (
-		(getValue(point2, 9) == Calendar.MONDAY)
-		|| (getValue(point2, 9) == Calendar.TUESDAY)
-		|| (getValue(point2, 9) == Calendar.WEDNESDAY)
-		|| (getValue(point2, 9) == Calendar.THURSDAY) 
-		|| (getValue(point2, 9) == Calendar.FRIDAY)))
+		(v2 == Calendar.MONDAY)
+		|| (v2 == Calendar.TUESDAY)
+		|| (v2 == Calendar.WEDNESDAY)
+		|| (v2 == Calendar.THURSDAY) 
+		|| (v2 == Calendar.FRIDAY)))
 	    dayDist = 1;
 	else if ((
-		(getValue(point1, 9) == 0)//Calendar.SATURDAY) 
-		|| (getValue(point1, 9) == Calendar.SUNDAY))
-		&& ((getValue(point2, 9) == 0)//Calendar.SATURDAY)
-		|| (getValue(point2, 9) == Calendar.SUNDAY)))
+		(v1 == Calendar.SATURDAY) 
+		|| (v1 == Calendar.SUNDAY))
+		&& ((v2 == Calendar.SATURDAY)
+		|| (v2 == Calendar.SUNDAY)))
 	    dayDist = 1;
 	else dayDist = 2;
 	return Math.pow(dayDist,2.0);
-    }
-    
-    public double axialDistance(PointFeatures point1, PointFeatures point2,
-	    int split) {
-	double dist = Math.pow(getValue(point1, split)
-		- getValue(point2, split), 2.0);
-	
-/*/	if (split == 0 || split == 1)
-	    dist = dist > MAXGPSDIST ? MAXGPSDIST : dist;
-	else if(split == 8)
-	    dist = calculateTimeDist(point1,point2);
-	else if(split == 9)
-	    dist = calculateDayDist(point1,point2);*/
-	
-	return dist * weights[split];
     }
     
     public List<Double> estimate(PointFeatures pf, Collection<KnnPoint> neighbors,
