@@ -39,8 +39,8 @@ public class NaiveBufferPolicy implements Policy {
 	
 	// get min and max currents capacitor can handle based on charge-state
 	// and max charge
-	double min = modelCap.getMinPower(periodMS);
-	double max = modelCap.getMaxPower(periodMS);
+	double min = modelCap.getMinPowerDrawable(periodMS);
+	double max = modelCap.getMaxPowerDrawable(periodMS);
 	
 	// limit watts from capacitor based on min/max
 	double capToMotorWatts = wattsDemanded > max ? max : wattsDemanded;

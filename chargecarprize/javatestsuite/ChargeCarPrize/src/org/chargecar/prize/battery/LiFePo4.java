@@ -10,6 +10,6 @@ public class LiFePo4 extends SimpleBattery {
 	double current = Math.abs(powerToCurrent(power));
 	double effectiveCurrent = Math.pow(current, puekertNumber);
 	if(effectiveCurrent <= 1.0) return 1;
-	return 0.9*current / effectiveCurrent;
+	return 0.94*current / effectiveCurrent;
     }
 }

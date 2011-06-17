@@ -89,8 +89,9 @@ public class TripBuilder {
 	List<Double> accelerations = new ArrayList<Double>();
 	List<Double> powerDemands = new ArrayList<Double>();
 	
-	double vInit = 0.0;
 	
+	double vInit = (Math.pow(Haversine(lats.get(0), lons.get(0), lats.get(1), lons.get(1)),2.0) + Math.pow(eles.get(1)-eles.get(0), 2.0))
+	/ ((times.get(1).getTimeInMillis() - times.get(0).getTimeInMillis())/1000.0);
 	planarDistances.add(0.0);
 	adjustedDistances.add(0.0);
 	speeds.add(vInit);

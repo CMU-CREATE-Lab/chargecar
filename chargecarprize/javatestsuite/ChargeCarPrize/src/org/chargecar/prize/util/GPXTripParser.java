@@ -117,9 +117,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	    if (msDiff > 360000) {
 		// if enough time has passed between points (360 seconds)
 		// consider them disjoint trips
-		trips.add(TripBuilder2
-			.calculateTrip(times, lats, lons, eles,
-			vehicle));
+		trips.add(TripBuilder2.calculateTrip(times, lats, lons, eles, vehicle));
 		times.clear();
 		lats.clear();
 		lons.clear();
@@ -134,8 +132,7 @@ public class GPXTripParser extends org.xml.sax.helpers.DefaultHandler {
 	
 	if (times.size() > 60) {
 	    // get last trip
-	    trips.add(TripBuilder2.calculateTrip(times, lats, lons, eles,
-		    vehicle));
+	    trips.add(TripBuilder2.calculateTrip(times, lats, lons, eles, vehicle));
 	}
 	
 	clearRawData();

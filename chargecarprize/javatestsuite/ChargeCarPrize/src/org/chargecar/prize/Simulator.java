@@ -63,7 +63,14 @@ public class Simulator {
 	
 	String gpxFolder = args[0];
 	File folder = new File(gpxFolder);
-	List<File> gpxFiles = getGPXFiles(folder);
+	List<File> gpxFiles;
+	if(folder.isDirectory()){
+	    gpxFiles = getGPXFiles(folder);
+    	}else{
+    	    gpxFiles = new ArrayList<File>();
+    	    gpxFiles.add(folder);
+    	}
+    	    
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
