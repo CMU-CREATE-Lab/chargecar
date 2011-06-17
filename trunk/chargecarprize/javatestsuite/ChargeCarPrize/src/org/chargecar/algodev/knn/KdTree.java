@@ -75,7 +75,7 @@ public class KdTree {
 	for(int i=1;i<distSoFar.length;i++)
 	    distToSpace+=distSoFar[i];
 	
-	if(axialDist <= kBestDist){
+	if(distToSpace <= kBestDist){
 	    branch = leftBranch ?  node.getRightSubtree() : node.getLeftSubtree();
 	    searchTree(branch, point, bestKNeighbors, k, distSoFar.clone());
 	}
