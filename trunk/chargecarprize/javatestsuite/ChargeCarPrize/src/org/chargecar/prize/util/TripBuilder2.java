@@ -88,9 +88,9 @@ public class TripBuilder2 {
 	List<Double> accelerations = new ArrayList<Double>();
 	List<Double> powerDemands = new ArrayList<Double>();
 	
+	speeds.add(0.0);
 	planarDistances.add(0.0);
 	adjustedDistances.add(0.0);
-	speeds.add(0.0);
 	accelerations.add(0.0);
 	
 	for (int i = 1; i < times.size(); i++) {
@@ -109,25 +109,26 @@ public class TripBuilder2 {
 	    adjustedDistances.add(tempDist);
 	    double tempSpeed = 1000.0 * tempDist / msDiff;
 	    
-	    if (tempDist < 1E-6) {
+	    if (tempDist < 1E-5) {
 		speeds.add(0.0);
 	    } else {
 		speeds.add(tempSpeed);
 	    }
+	    //speeds.set(0, speeds.get(1));
 	    accelerations.add(1000.0 * (speeds.get(i) - speeds.get(i - 1))
 		    / msDiff);
 	}
 	bearings.add(bearings.get(bearings.size()-1));
-	speeds.set(0, speeds.get(1));
 	accelerations.set(1, 0.0);
+	speeds.set(0, speeds.get(1));	
 	
 	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
-	final double offset = -0.35;
+	final double offset = 350; //350 watts drawn
 	final double ineff = 1 / 0.95;
-	final double regenEff = 0.55;
+	final double regenEff = 0.50;
 	
-	final double outsideTemp = ((60 + 459.67) * 5 / 9);// 60F to kelvin
+	final double outsideTemp = ((50 + 459.67) * 5 / 9);// 60F to kelvin
 	
 	for (int i = 0; i < accelerations.size(); i++) {
 	    double pressure = 101325 * Math.pow(
@@ -169,9 +170,7 @@ public class TripBuilder2 {
 		pwr = regenEff*fMotor*speed;		
 	    }
 	    
-	    pwr = ((pwr / -1000.0) + offset);
-	        
-	    powerDemands.add(pwr * 1000.0);// convert back to watts
+	    powerDemands.add(pwr + offset);// convert back to watts
 	    
 	}
 	double powerSum = 0;

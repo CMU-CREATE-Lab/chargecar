@@ -26,7 +26,8 @@ public class KnnKdTreePolicy implements Policy {
     private KdTree featKdTree;
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead = 240; 
+    private final int lookahead = 600; 
+    private final int neighbors = 7;
     private int pointsTested = 0;
     
     private String currentDriver;
@@ -67,56 +68,24 @@ public class KnnKdTreePolicy implements Policy {
     @Override
     public PowerFlows calculatePowerFlows(PointFeatures pf) {
 	pointsTested++;
-	/*if(speedHist.size() > histIndex){
-	    speedHist.set(histIndex, pf.getSpeed());
-	    accelHist.set(histIndex, pf.getAcceleration());
-	}
-	else
-	{
-	    speedHist.add(pf.getSpeed());
-	    accelHist.add(pf.getAcceleration());
-	}
-	double speedVar = calculateVariance(speedHist);
-	double accelVar = calculateVariance(accelHist);
-	histIndex = (histIndex +1)%histLength;
-	double predictedFlow = getFlow(new ExtendedPointFeatures(pf,speedVar,accelVar));
-	*/
-	double predictedFlow = getFlow(pf);
-	
+	double idealFlow = getFlow(pf);	
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
-	double minCapCurrent = modelCap.getMinPower(periodMS);
-	double maxCapCurrent = modelCap.getMaxPower(periodMS);
-	double capToMotorWatts = 0.0;
-	double batteryToCapWatts = 0.0;
-	double batteryToMotorWatts = 0.0;
-	if (wattsDemanded < minCapCurrent) {
-	    // drawing more than the cap has
-	    // battery is already getting drawn, don't trickle cap
-	    capToMotorWatts = minCapCurrent;
-	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	    batteryToCapWatts = predictedFlow - batteryToMotorWatts;
-	} else if (wattsDemanded > maxCapCurrent) {
-	    // overflowing cap with regen power
-	    // cap is full, no need to trickle.
-	    capToMotorWatts = maxCapCurrent;
-	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	    batteryToCapWatts = predictedFlow - batteryToMotorWatts;
-	} else {
-	    // capacitor can handle the demand
-	    capToMotorWatts = wattsDemanded;
-	    batteryToMotorWatts = 0;
-	    batteryToCapWatts = predictedFlow;
-	    
-	}
-	batteryToCapWatts = 0 < batteryToCapWatts ? 0 : batteryToCapWatts;
+	double minCapPower = modelCap.getMinPowerDrawable(periodMS);
+	double maxCapPower = modelCap.getMaxPowerDrawable(periodMS);	
 	
-	if (capToMotorWatts - batteryToCapWatts > maxCapCurrent) {
-	    batteryToCapWatts = capToMotorWatts - maxCapCurrent;
-	} else if(capToMotorWatts - batteryToCapWatts < minCapCurrent){
-	    batteryToCapWatts = capToMotorWatts - minCapCurrent;
-	}
+	double capToMotorWatts = wattsDemanded > maxCapPower ? maxCapPower : wattsDemanded;
+	capToMotorWatts = capToMotorWatts < minCapPower ? minCapPower : capToMotorWatts;
+	double batteryToMotorWatts = wattsDemanded - capToMotorWatts;
+	double batteryToCapWatts = idealFlow - batteryToMotorWatts;	
+	batteryToCapWatts = batteryToCapWatts  < 0 ? 0 : batteryToCapWatts;	
 	
+	if (capToMotorWatts - batteryToCapWatts < minCapPower) {
+		batteryToCapWatts = capToMotorWatts - minCapPower;
+	    } else if(capToMotorWatts - batteryToCapWatts > maxCapPower){
+		batteryToCapWatts = capToMotorWatts - maxCapPower;
+	    }
+
 	try {
 	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
 	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, pf);
@@ -147,11 +116,13 @@ public class KnnKdTreePolicy implements Policy {
     
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
-	List<Double> powers = featKdTree.getBestEstimate(spf, 9, lookahead);
+	List<Double> powers = featKdTree.getBestEstimate(spf, neighbors, lookahead);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
 	List<Double> rates = new ArrayList<Double>(lookahead);
-	double sum = -modelCap.getMinPower(1000);
+	
+	//double sum = -modelCap.getMinPowerDrawable(pf.getPeriodMS());
+	double sum = -modelCap.getMaxPowerDrawable(pf.getPeriodMS());
 	int timesum = 0;
 
 	for(int i=0;i<lookahead;i++){	    
@@ -162,9 +133,9 @@ public class KnnKdTreePolicy implements Policy {
 	    rates.add(1000*sum/timesum);
 	}
 	
-	double maxRate = 1e10;//Double.POSITIVE_INFINITY;
+	double maxRate = Double.NEGATIVE_INFINITY;
 	for(int i = 0;i<rates.size();i++){
-	    if(rates.get(i) < maxRate){
+	    if(rates.get(i) > maxRate){
 		maxRate = rates.get(i);
 	    }
 	}

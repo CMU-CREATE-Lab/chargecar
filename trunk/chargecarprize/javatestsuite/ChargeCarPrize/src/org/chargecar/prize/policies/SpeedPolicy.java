@@ -34,40 +34,25 @@ public class SpeedPolicy implements Policy {
 	int periodMS = pf.getPeriodMS();
 	double speed = pf.getSpeed();
 	// leave more room in cap for regen braking from higher speeds
-	double targetWattHours = modelCap.getMaxWattHours() - 2.27*speed;
-	double minCapPower = modelCap.getMinPower(periodMS);
-	double maxCapPower = modelCap.getMaxPower(periodMS);
-	double defaultTrickleRate = -4500.0;
-	double capToMotorWatts = 0.0;
-	double batteryToCapWatts = 0.0;
-	double batteryToMotorWatts = 0.0;
-	if (wattsDemanded < minCapPower) {
-	    // drawing more than the cap has
-	    // battery is already getting drawn, don't trickle cap
-	    capToMotorWatts = minCapPower;
-	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	    batteryToCapWatts = 0;
-	} else if (wattsDemanded > maxCapPower) {
-	    // overflowing cap with regen power
-	    // cap is full, no need to trickle.
-	    capToMotorWatts = maxCapPower;
-	    batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	    batteryToCapWatts = 0;
-	} else {
-	    // capacitor can handle the demand
-	    capToMotorWatts = wattsDemanded;
-	    batteryToMotorWatts = 0;
-	    if (modelCap.getWattHours() < targetWattHours) {
-		batteryToCapWatts = defaultTrickleRate;
-	    } else {
-		//batteryToCapWatts = -defaultTrickleRate;
-	    }
-	    if (capToMotorWatts - batteryToCapWatts > maxCapPower) {
+	double targetWattHours = modelCap.getMaxWattHours() - 0*speed;
+	double minCapPower = modelCap.getMinPowerDrawable(periodMS);
+	double maxCapPower = modelCap.getMaxPowerDrawable(periodMS);
+	double defaultTrickleRate = 7000.0;
+	double batteryToCapWatts = 0;
+	
+	double capToMotorWatts = wattsDemanded > maxCapPower ? maxCapPower : wattsDemanded;
+	capToMotorWatts = capToMotorWatts < minCapPower ? minCapPower : capToMotorWatts;
+	double batteryToMotorWatts = wattsDemanded - capToMotorWatts;
+	if(modelCap.getWattHours() < targetWattHours){
+	    batteryToCapWatts = defaultTrickleRate - batteryToMotorWatts;
+	}
+	batteryToCapWatts = batteryToCapWatts  < 0 ? 0 : batteryToCapWatts;
+	
+	if (capToMotorWatts - batteryToCapWatts > maxCapPower) {
 		batteryToCapWatts = capToMotorWatts - maxCapPower;
 	    } else if(capToMotorWatts - batteryToCapWatts < minCapPower){
 		batteryToCapWatts = capToMotorWatts - minCapPower;
 	    }
-	}
 	
 	try {
 	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
