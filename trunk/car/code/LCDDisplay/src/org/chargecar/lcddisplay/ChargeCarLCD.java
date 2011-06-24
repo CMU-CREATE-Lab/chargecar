@@ -67,7 +67,6 @@ public final class ChargeCarLCD {
                             final String key = property[0];
                             final String value = property[1];
                             lcd.setSavedProperty(key, value);
-                            lcd.writeSavedProperties();
                         }
                     }
                 }

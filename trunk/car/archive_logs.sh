@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 #
 #Author: 	Paul Dille
 #Purpose:	Archive ChargeCar log files
 #
 current_date=$(date +"%Y%m%d")
-log_path="/home/chargecar/ChargeCar/trunk/car/logs/"
+log_path="/root/chargecar/trunk/car/logs/"
 cd $log_path
 if [ ! -d "archived_logs" ]; then
   mkdir archived_logs

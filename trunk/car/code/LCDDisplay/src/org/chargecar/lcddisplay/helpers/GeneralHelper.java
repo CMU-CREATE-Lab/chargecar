@@ -23,6 +23,14 @@ public class GeneralHelper {
     private GeneralHelper() {
     }
 
+    public static void unmountUsbDrive() {
+        try {
+            Runtime.getRuntime().exec("umount " + LCDConstants.USB_DRIVE_PATH);
+        } catch (IOException e) {
+            LOG.error("UpdateLCDSoftwareMenuItemAction.unmountUsbDrive(): " + e.getMessage());
+        }
+    }
+
     public static String padRight(final String s, final int n) {
         return String.format("%1$-" + n + "s", s);
     }
@@ -63,8 +71,7 @@ public class GeneralHelper {
             for (int i = 0; i < files.length; i++) {
                 size += numFiles(files[i]);
             }
-        }
-        else {
+        } else {
             size += 1;
         }
         return size;

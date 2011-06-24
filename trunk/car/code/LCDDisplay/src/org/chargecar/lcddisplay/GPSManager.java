@@ -21,6 +21,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortDeviceManager;
 public final class GPSManager extends StreamingSerialPortDeviceManager<GPSEvent, GPSEvent> {
     private static final Logger LOG = Logger.getLogger(BMSManager.class);
     private static final String DEVICE_NAME = "gps";
+
     private static class LazyHolder {
         private static final GPSManager INSTANCE;
 

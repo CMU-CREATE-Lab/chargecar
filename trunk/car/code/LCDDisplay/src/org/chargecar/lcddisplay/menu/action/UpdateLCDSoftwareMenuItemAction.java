@@ -72,14 +72,14 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
 
     public void cleanUp() {
         GeneralHelper.resetCounts();
-        unmountUsbDrive();
+        GeneralHelper.unmountUsbDrive();
     }
 
     public final void renameDirs() {
-        if (new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH).exists() &&  new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH).exists()) {
+        if (new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH).exists() && new File(LCDConstants.LOCAL_LCD_SOFTWARE_PATH).exists()) {
             try {
                 LOG.debug("UpdateLCDSoftwareMenuItemAction.renameDirs(): cleanup of old files.");
-                Runtime.getRuntime().exec("sh /home/chargecar/ChargeCar/trunk/car/software_update_cleanup.sh");
+                Runtime.getRuntime().exec("sh /root/software_update_cleanup.sh");
             } catch (IOException e) {
                 LOG.error("UpdateLCDSoftwareMenuItemAction.renameDirs(): " + e.getMessage());
             }
@@ -91,6 +91,8 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
             final File outputPath = new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH);
             final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
 
+            //a mounted drive has a date of 00:00:00 GMT, January 1, 1970
+            //thus the last modified time returns 0
             if (tmpInputPath == null || tmpInputPath[0].lastModified() != 0) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
@@ -131,26 +133,6 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     public final void stop() {
         getCharacterDisplay().setText(getActionCancelledText());
         sleepThenPopUpToParentMenuItem();
-    }
-
-    private void unmountUsbDrive() {
-        String path = LCDConstants.USB_UNMOUNT_PATH;
-        int index = 1;
-        try {
-            while (!new File(path).exists()) {
-                path += String.valueOf(index++);
-                if (index > 7) break;
-            }
-            path = LCDConstants.USB_UNMOUNT_PATH2;
-            index = 1;
-            while (!new File(path).exists()) {
-                path += String.valueOf(index++);
-                if (index > 7) break;
-            }
-            Runtime.getRuntime().exec("sudo umount " + path);
-        } catch (IOException e) {
-            LOG.error("UpdateLCDSoftwareMenuItemAction.unmountUsbDrive(): " + e.getMessage());
-        }
     }
 
     private String getActionCancelledText() {

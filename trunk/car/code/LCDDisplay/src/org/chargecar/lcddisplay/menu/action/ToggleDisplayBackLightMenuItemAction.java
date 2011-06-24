@@ -1,6 +1,5 @@
 package org.chargecar.lcddisplay.menu.action;
 
-import java.util.Map;
 import edu.cmu.ri.createlab.display.character.CharacterDisplay;
 import edu.cmu.ri.createlab.display.character.menu.TwoOptionMenuItemAction;
 import edu.cmu.ri.createlab.menu.MenuItem;
@@ -9,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
 import org.chargecar.lcddisplay.LCDProxy;
+
+import java.util.Map;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
