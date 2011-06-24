@@ -75,9 +75,9 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             if (printHeadings.get(0)) {
                 printHeadings.set(0, false);
                 getCharacterDisplay().setLine(0, "^ Min Voltage ");
-                getCharacterDisplay().setLine(1, "^ Max Voltage ");
+                getCharacterDisplay().setLine(1, "  Max Voltage ");
                 getCharacterDisplay().setLine(2, "  Pwr Flow ");
-                getCharacterDisplay().setLine(3, "  Efficiency ");
+                getCharacterDisplay().setLine(3, "v Efficiency ");
                 //getCharacterDisplay().setLine(3, "v          miles/kWh");
             }
             //instantaneous

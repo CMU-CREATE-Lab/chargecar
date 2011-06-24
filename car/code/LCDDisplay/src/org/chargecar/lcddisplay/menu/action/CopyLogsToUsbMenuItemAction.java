@@ -69,7 +69,7 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
 
     public void cleanUp() {
         GeneralHelper.resetCounts();
-        unmountUsbDrive();
+        GeneralHelper.unmountUsbDrive();
     }
 
     public final boolean copyLogFiles() {
@@ -129,26 +129,6 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
     public final void stop() {
         getCharacterDisplay().setText(getActionCancelledText());
         sleepThenPopUpToParentMenuItem();
-    }
-
-    private void unmountUsbDrive() {
-        String path = LCDConstants.USB_UNMOUNT_PATH;
-        int index = 1;
-        try {
-            while (!new File(path).exists()) {
-                path += String.valueOf(index++);
-                if (index > 7) break;
-            }
-            path = LCDConstants.USB_UNMOUNT_PATH2;
-            index = 1;
-            while (!new File(path).exists()) {
-                path += String.valueOf(index++);
-                if (index > 7) break;
-            }
-            Runtime.getRuntime().exec("sudo umount " + path);
-        } catch (IOException e) {
-            LOG.error("UpdateLCDSoftwareMenuItemAction.unmountUsbDrive(): " + e.getMessage());
-        }
     }
 
     private String getActionCancelledText() {
