@@ -42,7 +42,7 @@ public final class LCDProxy implements LCD {
     private static final int DELAY_IN_SECONDS_BETWEEN_BATTERY_HEATER_CHECK = 30;
     private static final int DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL = 1;
     private static final int DELAY_IN_MILISECONDS_BETWEEN_BRAKELIGHT_POLL = 100;
-    private static final int DELAY_IN_SECONDS_BETWEEN_WRITE_POLL = 1;
+    //private static final int DELAY_IN_SECONDS_BETWEEN_WRITE_POLL = 1;
     private static final int DELAY_IN_SECONDS_BETWEEN_BACKUPONE_POLL = 15;
     private static final int DELAY_IN_SECONDS_BETWEEN_BACKUPTWO_POLL = 60;
 
@@ -142,7 +142,7 @@ public final class LCDProxy implements LCD {
     private final ScheduledFuture<?> batteryHeaterScheduledFuture;
     private final ScheduledFuture<?> lcdEventScheduledFuture;
     private final ScheduledFuture<?> brakeLightScheduledFuture;
-    private final ScheduledFuture<?> propertiesWriteScheduledFuture;
+    //private final ScheduledFuture<?> propertiesWriteScheduledFuture;
     private final ScheduledFuture<?> propertiesBackupOneScheduledFuture;
     private final ScheduledFuture<?> propertiesBackupTwoScheduledFuture;
     private final Collection<CreateLabDevicePingFailureEventListener> createLabDevicePingFailureEventListeners = new HashSet<CreateLabDevicePingFailureEventListener>();
@@ -185,10 +185,10 @@ public final class LCDProxy implements LCD {
                 DELAY_IN_MILISECONDS_BETWEEN_BRAKELIGHT_POLL, // delay between pings
                 TimeUnit.MILLISECONDS);
 
-        propertiesWriteScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesPoller(),
+        /*propertiesWriteScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesPoller(),
                 5, // delay before first ping
                 DELAY_IN_SECONDS_BETWEEN_WRITE_POLL, // delay between pings
-                TimeUnit.SECONDS);
+                TimeUnit.SECONDS);*/
 
         propertiesBackupOneScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesBackupOnePoller(),
                 5, // delay before first ping
@@ -480,8 +480,8 @@ public final class LCDProxy implements LCD {
         }
     }
 
-    public int getCarMpg() {
-        return Integer.parseInt(getSavedProperty("carMpg"));
+    public double getCarMpg() {
+        return Double.parseDouble(getSavedProperty("carMpg"));
     }
 
     public void setCarMpg(final int newCarMpg) {
@@ -489,7 +489,7 @@ public final class LCDProxy implements LCD {
             if (savedProperties == null) {
                 return;
             }
-            setSavedProperty("carMpg", Integer.toString(newCarMpg));
+            setSavedProperty("carMpg", Double.toString(newCarMpg));
         }
     }
 
@@ -662,7 +662,7 @@ public final class LCDProxy implements LCD {
             batteryHeaterScheduledFuture.cancel(false);
             lcdEventScheduledFuture.cancel(false);
             brakeLightScheduledFuture.cancel(false);
-            propertiesWriteScheduledFuture.cancel(false);
+            //propertiesWriteScheduledFuture.cancel(false);
             propertiesBackupOneScheduledFuture.cancel(false);
             propertiesBackupTwoScheduledFuture.cancel(false);
             peerPingScheduler.shutdownNow();
@@ -696,11 +696,11 @@ public final class LCDProxy implements LCD {
         }
     }
 
-    private class LCDPropertiesPoller implements Runnable {
+   /* private class LCDPropertiesPoller implements Runnable {
         public void run() {
             writeSavedProperties();
         }
-    }
+    }*/
 
     private class LCDPropertiesBackupOnePoller implements Runnable {
         public void run() {
@@ -833,6 +833,7 @@ public final class LCDProxy implements LCD {
                     setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                 }
             }
+            writeSavedProperties();
         }
     }
 
