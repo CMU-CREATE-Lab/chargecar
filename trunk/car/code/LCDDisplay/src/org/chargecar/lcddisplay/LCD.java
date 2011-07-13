@@ -39,7 +39,7 @@ public interface LCD extends CreateLabDeviceProxy {
 
     void setCostOfGas(double newCostOfGas);
 
-    int getCarMpg();
+    double getCarMpg();
 
     void setCarMpg(int newCarMpg);
 

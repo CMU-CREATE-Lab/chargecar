@@ -29,7 +29,7 @@ public final class ChangeEnergyCostRatesMenuItemAction extends CharacterDisplayM
     private final LCD lcd = LCDProxy.getInstance();
 
     private double costOfElectricity;
-    private int carMpg;
+    private double carMpg;
     private double costOfGas;
 
     private int state = 1;
@@ -195,7 +195,7 @@ public final class ChangeEnergyCostRatesMenuItemAction extends CharacterDisplayM
         return lcd.getCostOfGas();
     }
 
-    private int getCarMpg() {
+    private double getCarMpg() {
         return lcd.getCarMpg();
     }
 
