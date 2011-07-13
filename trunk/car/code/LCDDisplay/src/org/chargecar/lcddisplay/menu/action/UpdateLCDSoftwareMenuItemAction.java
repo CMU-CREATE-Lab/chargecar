@@ -110,7 +110,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
                 cleanUp();
                 renameDirs();
-                sleep();
+                sleepLong();
                 return true;
             } else {
                 getCharacterDisplay().setLine(0, "Update dir not found");

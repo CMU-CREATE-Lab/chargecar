@@ -757,6 +757,8 @@ public final class LCDProxy implements LCD {
             final boolean isRunning = lcd.isCarRunning(rawValues);
             final boolean isCharging = lcd.isCarCharging(rawValues);
             double distanceInMiles = 0.0;
+            double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled"));
+            double tripDistanceTraveled = Double.valueOf(getSavedProperty("tripDistanceTraveled"));
 
             final double motorControllerTemperature = lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin());
             final double motorTemperature = lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin());
@@ -792,15 +794,19 @@ public final class LCDProxy implements LCD {
                         previousTrackPoint = currentTrackPoint;
 
                         //account for gps location jumps; note that distance is calculated every second
-                        if (distanceInMiles < .01) {
+                        if (distanceInMiles < .01 && !Double.isNaN(distanceInMiles)) {
                             tripDistance += distanceInMiles;
+                            lifetimeDistanceTraveled += distanceInMiles;
+                            tripDistanceTraveled += distanceInMiles;
+                            setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
+                            setSavedProperty("tripDistanceTraveled", String.valueOf(tripDistanceTraveled));
                         }
                     }
 
-                    final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
-                    final double tripDistanceTraveled = Double.valueOf(getSavedProperty("tripDistanceTraveled")) + distanceInMiles;
-                    setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
-                    setSavedProperty("tripDistanceTraveled", String.valueOf(tripDistanceTraveled));
+                    //final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
+                    //final double tripDistanceTraveled = Double.valueOf(getSavedProperty("tripDistanceTraveled")) + distanceInMiles;
+                    //setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
+                    //setSavedProperty("tripDistanceTraveled", String.valueOf(tripDistanceTraveled));
 
                     final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
                     if (kwhDelta < 0) {
