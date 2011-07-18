@@ -782,7 +782,7 @@ public final class LCDProxy implements LCD {
 
                 //don't keep track if we are basiccally idle
                 final double powerFlowInKw = (bmsData.getBmsState().getPackTotalVoltage() * bmsData.getBmsState().getLoadCurrentAmps()) / 1000;
-                if (Math.abs(powerFlowInKw) > 0.5) {
+                if (Math.abs(powerFlowInKw) >= 0.56) {
                     if ((gpsManager != null && gpsData != null) && (gpsData.getLatitude() != null && gpsData.getLongitude() != null)) {
                         final List<Double> latLng = GPSHelper.degreeDecimalMinutesToDecimalDegrees(gpsData.getLatitude(), gpsData.getLongitude());
                         final GPSCoordinate currentTrackPoint = new GPSCoordinate(String.valueOf(latLng.get(1)), String.valueOf(latLng.get(0)));
