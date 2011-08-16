@@ -44,8 +44,8 @@ public class TripBuilder2 {
 	}while(broken);
 	
 	if((double)fixes / (tripPoints.size()+fixes) > 0.02){
-	    //System.out.println(fixes+"/"+(tripPoints.size()+fixes));
-	    return null;
+	    System.out.println(fixes+"/"+(tripPoints.size()+fixes));
+	    //return null;
 	}
 	
 	return tripPoints;	
@@ -124,11 +124,11 @@ public class TripBuilder2 {
 	
 	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
-	final double offset = 350; //350 watts drawn
+	final double offset = 264; //350 watts drawn
 	final double ineff = 1 / 0.95;
-	final double regenEff = 0.50;
+	final double regenEff = 0.20;
 	
-	final double outsideTemp = ((50 + 459.67) * 5 / 9);// 60F to kelvin
+	final double outsideTemp = ((80 + 459.67) * 5 / 9);// 60F to kelvin
 	
 	for (int i = 0; i < accelerations.size(); i++) {
 	    double pressure = 101325 * Math.pow(

@@ -25,22 +25,22 @@ public class TripBuilder {
 		int fixes = 0;
 		do{	    
 		    broken = false;
-		    removeTunnels(times, lats, lons, eles);
-		    interpolatePoints(times, lats, lons, eles);
+		    //removeTunnels(times, lats, lons, eles);
+		    //interpolatePoints(times, lats, lons, eles);
 		    tripPoints = new ArrayList<PointFeatures>(times.size());
 		    runPowerModel(tripPoints, times, lats, lons, eles, vehicle);
-		    for(int i=0; i < tripPoints.size();i++){
-				if(Math.abs(tripPoints.get(i).getAcceleration()) > 4.9){
-				    broken = true;
-				    fixes++;
-				    lats.remove(i);
-				    lons.remove(i);
-				    eles.remove(i);
-				    times.remove(i);
-				    tripPoints.remove(i);
-				    i=i+1;
-				}		
-		    }
+//		    for(int i=0; i < tripPoints.size();i++){
+//				if(Math.abs(tripPoints.get(i).getAcceleration()) > 4.9){
+//				    broken = true;
+//				    fixes++;
+//				    lats.remove(i);
+//				    lons.remove(i);
+//				    eles.remove(i);
+//				    times.remove(i);
+//				    tripPoints.remove(i);
+//				    i=i+1;
+//				}		
+//		    }
 		    if(times.size() <60)
 			break;
 		}while(broken);
