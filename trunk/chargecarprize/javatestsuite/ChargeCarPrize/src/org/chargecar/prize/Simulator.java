@@ -42,6 +42,8 @@ public class Simulator {
    // static Visualizer visualizer = new CSVWriter("C:/final.csv");
     static Visualizer visualizer = new ConsoleWriter();
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
+    static Vehicle rav4 = new Vehicle(1560.35, 1.988, 0.35, 0.012);
+    
     static double systemVoltage = 96;
     static double batteryWhr = 50000;
     static double capWhr = 50;

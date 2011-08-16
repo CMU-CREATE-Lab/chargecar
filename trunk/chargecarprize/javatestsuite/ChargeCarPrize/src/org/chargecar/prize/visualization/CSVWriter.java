@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.util.DriverResults;
+import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 
@@ -41,17 +42,33 @@ public class CSVWriter implements Visualizer {
 		}
 		out.write("0.0\n");
 		double chargeSpentSum = 0.0;
-		for (Double d : r.getChargeSpent()) {
-		    chargeSpentSum += d;
-		    out.write(chargeSpentSum+",");
-		}
-		out.write("0.0\n");
-		double ahServedSum = 0.0;
-		for (Double d : r.getAmpHoursServedSums()) {
-		    ahServedSum += d;
-		    out.write(ahServedSum+",");
-		}
-		out.write("0.0\n");
+//		for (Double d : r.getChargeSpent()) {
+//		    chargeSpentSum += d;
+//		    out.write(chargeSpentSum+",");
+//		}
+//		out.write("0.0\n");
+//		double ahServedSum = 0.0;
+//		for (Double d : r.getAmpHoursServedSums()) {
+//		    ahServedSum += d;
+//		    out.write(ahServedSum+",");
+//		}
+//		out.write("0.0\n");
+	    }
+	    out.close();
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
+    
+    public void writeTripPowers(List<PointFeatures> pfs) {
+	FileWriter fstream;
+	try {
+	    fstream = new FileWriter(filename);
+	    BufferedWriter out = new BufferedWriter(fstream);
+	    for(PointFeatures pf : pfs){
+		out.write(pf.getTime().getTimeInMillis()/1000+",");
+		out.write(pf.getPowerDemand()+"\n");
 	    }
 	    out.close();
 	} catch (IOException e) {
