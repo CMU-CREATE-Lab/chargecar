@@ -124,11 +124,11 @@ public class TripBuilder2 {
 	
 	final double carMassKg = vehicle.getMass();
 	final double aGravity = 9.81;
-	final double offset = 264; //350 watts drawn
-	final double ineff = 1 / 0.95;
-	final double regenEff = 0.20;
+	final double offset = 240; //350 watts drawn
+	final double ineff = 1;
+	final double regenEff = 0.45;
 	
-	final double outsideTemp = ((80 + 459.67) * 5 / 9);// 60F to kelvin
+	final double outsideTemp = ((84 + 459.67) * 5 / 9);// 60F to kelvin
 	
 	for (int i = 0; i < accelerations.size(); i++) {
 	    double pressure = 101325 * Math.pow(
