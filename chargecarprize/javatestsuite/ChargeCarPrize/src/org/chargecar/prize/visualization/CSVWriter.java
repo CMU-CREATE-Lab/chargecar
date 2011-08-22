@@ -68,6 +68,7 @@ public class CSVWriter implements Visualizer {
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    for(PointFeatures pf : pfs){
 		out.write(pf.getTime().getTimeInMillis()/1000+",");
+		out.write(pf.getSpeed()+",");
 		out.write(pf.getPowerDemand()+"\n");
 	    }
 	    out.close();
