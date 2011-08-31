@@ -46,7 +46,7 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorRav4 {
    // static Visualizer visualizer = new CSVWriter("C:/final.csv");
     static Visualizer visualizer = new ConsoleWriter();
-    static Vehicle rav4 = new Vehicle(1640, 2.3, 0.28, 0.010);
+    static Vehicle rav4 = new Vehicle(1690, 2.3, 0.28, 0.010);
     
     static double systemVoltage = 320;
     static double batteryWhr = 50000;
