@@ -1,6 +1,5 @@
 package org.chargecar.lcddisplay;
 
-import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import org.apache.log4j.Logger;
 import org.chargecar.honda.StreamingSerialPortDeviceController;
 import org.chargecar.honda.StreamingSerialPortDeviceModel;
@@ -9,8 +8,6 @@ import org.chargecar.honda.bms.BMSController;
 import org.chargecar.honda.bms.BMSEvent;
 import org.chargecar.honda.bms.BMSModel;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceManager;
-
-import java.util.SortedSet;
 
 /**
  * <code>BMSManager</code> is a singleton which acts as a front-end for BMS data.  The singleton instance is created
@@ -30,23 +27,24 @@ public final class BMSManager extends StreamingSerialPortDeviceManager<BMSEvent,
 
         static {
             BMSManager bmsManager = null;
+            boolean wasFound = false;
             int portScanCount = 0;
 
-            while (portScanCount < 5) {
+            while (portScanCount < 5 && !wasFound) {
                 // If the user specified one or more serial ports, then just start trying to connect to it/them.  Otherwise,
                 // check each available serial port for the target serial device, and connect to the first one found.  This
                 // makes connection time much faster for when you know the name of the serial port.
                 LOG.debug("BMSManager: BMS port scan attempt " + portScanCount);
-                final SortedSet<String> availableSerialPorts;
+                /*final SortedSet<String> availableSerialPorts;
                 if (SerialPortEnumerator.didUserDefineSetOfSerialPorts()) {
                     availableSerialPorts = SerialPortEnumerator.getSerialPorts();
                 } else {
                     availableSerialPorts = SerialPortEnumerator.getAvailableSerialPorts();
-                }
+                }*/
 
                 // try the serial ports
-                if ((availableSerialPorts != null) && (!availableSerialPorts.isEmpty())) {
-                    for (final String portName : availableSerialPorts) {
+                if ((ChargeCarLCD.getAvailableSerialPorts() != null) && (!ChargeCarLCD.getAvailableSerialPorts().isEmpty())) {
+                    for (final String portName : ChargeCarLCD.getAvailableSerialPorts()) {
 
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("BMSManager: checking serial port [" + portName + "]");
@@ -76,6 +74,8 @@ public final class BMSManager extends StreamingSerialPortDeviceManager<BMSEvent,
                             bmsManager.shutdown();
                         } else {
                             LOG.debug("BMSManager: Valid BMS port found.");
+                            ChargeCarLCD.removeAvailableSerialPort(portName);
+                            wasFound = true;
                             break;
                         }
                     }
