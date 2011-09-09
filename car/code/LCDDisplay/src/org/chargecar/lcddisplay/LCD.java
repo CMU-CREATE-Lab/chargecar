@@ -351,4 +351,6 @@ public interface LCD extends CreateLabDeviceProxy {
     void addButtonPanelEventListener(ButtonPanelEventListener listener);
 
     void removeButtonPanelEventListener(ButtonPanelEventListener listener);
+
+    void writeMarkerToFile();
 }

@@ -77,11 +77,11 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
                 getCharacterDisplay().setLine(3, "v Consumed ");
             }
 
-            final double totalEnergyConsumed = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("tripEnergyConsumed")), 2);
+            final double totalEnergyConsumed = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("tripEnergyConsumed")), 2);
             //total discharge (positive in the case of the bmsModel)
-            final double totalDischarge = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("tripEnergyDischarge")), 2);
+            final double totalDischarge = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("tripEnergyDischarge")), 2);
             //total charge (regen, negative in the case of the bmsModel)
-            final double totalCharge = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("tripEnergyRegen")), 2);
+            final double totalCharge = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("tripEnergyRegen")), 2);
 
             getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
             getCharacterDisplay().setCharacter(2, 12, GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
@@ -115,7 +115,7 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v          miles/kWh");
         }
 
-        final double tripEfficiency = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("tripEfficiency")), 2);
+        final double tripEfficiency = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("tripEfficiency")), 2);
         getCharacterDisplay().setCharacter(2, 2, GeneralHelper.padLeft(String.valueOf(tripEfficiency), LCDConstants.NUM_COLS - 2));
     }
 
@@ -145,7 +145,7 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v                   ");
         }
         
-        final double ampHours = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("tripAmpHours")), 2);
+        final double ampHours = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("tripAmpHours")), 2);
 
         getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(ampHours) + "Ah", LCDConstants.NUM_COLS - 2));
     }
@@ -176,11 +176,11 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v Consumed ");
         }
 
-        final double totalEnergyConsumed = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed")), 2);
+        final double totalEnergyConsumed = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("lifetimeEnergyConsumed")), 2);
         //total discharge (positive in the case of the bmsModel)
-        final double totalDischarge = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyDischarge")), 2);
+        final double totalDischarge = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("lifetimeEnergyDischarge")), 2);
         //total charge (regen, negative in the case of the bmsModel)
-        final double totalCharge = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEnergyRegen")), 2);
+        final double totalCharge = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("lifetimeEnergyRegen")), 2);
 
         getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(String.valueOf(totalCharge) + "kWh", LCDConstants.NUM_COLS - 8));
         getCharacterDisplay().setCharacter(2, 12, GeneralHelper.padLeft(String.valueOf(totalDischarge) + "kWh", LCDConstants.NUM_COLS - 12));
@@ -213,7 +213,7 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v          miles/kWh");
         }
 
-        final double lifetimeEfficiency = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeEfficiency")), 2);
+        final double lifetimeEfficiency = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("lifetimeEfficiency")), 2);
         getCharacterDisplay().setCharacter(2, 2, GeneralHelper.padLeft(String.valueOf(lifetimeEfficiency), LCDConstants.NUM_COLS - 2));
     }
 
@@ -243,7 +243,7 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v                   ");
         }
 
-        final double lifetimeAmpHours = GeneralHelper.round(Double.valueOf(lcd.getSavedProperty("lifetimeAmpHours")), 2);
+        final double lifetimeAmpHours = GeneralHelper.round(Double.parseDouble(lcd.getSavedProperty("lifetimeAmpHours")), 2);
         getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(lifetimeAmpHours) + "Ah", LCDConstants.NUM_COLS - 2));
     }
 
@@ -273,8 +273,8 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v Charge ");
         }
 
-        final double lifetimeChargingTime = GeneralHelper.round((Double.valueOf(lcd.getSavedProperty("lifetimeChargingTime")) * LCDConstants.SECONDS_TO_HOURS), 2);
-        final double lifetimeDrivingTime = GeneralHelper.round((Double.valueOf(lcd.getSavedProperty("lifetimeDrivingTime")) * LCDConstants.SECONDS_TO_HOURS), 2);
+        final double lifetimeChargingTime = GeneralHelper.round((Double.parseDouble(lcd.getSavedProperty("lifetimeChargingTime")) * LCDConstants.SECONDS_TO_HOURS), 2);
+        final double lifetimeDrivingTime = GeneralHelper.round((Double.parseDouble(lcd.getSavedProperty("lifetimeDrivingTime")) * LCDConstants.SECONDS_TO_HOURS), 2);
 
         getCharacterDisplay().setCharacter(2, 9, GeneralHelper.padLeft(String.valueOf(lifetimeDrivingTime) + "hrs", LCDConstants.NUM_COLS - 9));
         getCharacterDisplay().setCharacter(3, 10, GeneralHelper.padLeft(String.valueOf(lifetimeChargingTime) + "hrs", LCDConstants.NUM_COLS - 10));
@@ -306,8 +306,8 @@ public final class DriveHistoryMenuItemAction extends RepeatingActionCharacterDi
             getCharacterDisplay().setLine(3, "v Savings ");
         }
 
-        double lifetimeCostEletric = lcd.getCostOfElectricity() * Double.valueOf(lcd.getSavedProperty("lifetimeEnergyConsumed"));
-        double lifetimeCostGas = ((Double.valueOf(lcd.getSavedProperty("lifetimeDistanceTraveled")) / lcd.getCarMpg()) * lcd.getCostOfGas());
+        double lifetimeCostEletric = lcd.getCostOfElectricity() * Double.parseDouble(lcd.getSavedProperty("lifetimeEnergyConsumed"));
+        double lifetimeCostGas = ((Double.parseDouble(lcd.getSavedProperty("lifetimeDistanceTraveled")) / lcd.getCarMpg()) * lcd.getCostOfGas());
         final double moneySaved = GeneralHelper.round((lifetimeCostGas - lifetimeCostEletric), 2);
         lifetimeCostEletric = GeneralHelper.round(lifetimeCostEletric, 2);
         lifetimeCostGas = GeneralHelper.round(lifetimeCostGas, 2);

@@ -103,7 +103,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
             final File inputPath = new File(tmpInputPath[0] + LCDConstants.USB_LCD_SOFTWARE_PATH);
 
             if (inputPath.exists()) {
-                GeneralHelper.copyDirectory(inputPath, outputPath);
+                GeneralHelper.copyDirectory(inputPath, outputPath, LCDConstants.FILTER_NONE);
                 getCharacterDisplay().setLine(0, "Finalizing.");
                 getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
                 getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);

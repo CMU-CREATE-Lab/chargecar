@@ -46,7 +46,7 @@ public class GPSHelper {
 
         if (gpsTokens.size() < 3) return null;
 
-        double latDecimalDegrees = Double.valueOf(gpsTokens.get(1)) + Double.valueOf(gpsTokens.get(2)) / 60;
+        double latDecimalDegrees = Double.parseDouble(gpsTokens.get(1)) + Double.parseDouble(gpsTokens.get(2)) / 60;
         if ("S".equals(gpsTokens.get(0).substring(0, 1))) {
             latDecimalDegrees *= -1;
         }
@@ -65,7 +65,7 @@ public class GPSHelper {
 
         if (gpsTokens.size() < 3) return null;
 
-        double lngDecimalDegrees = Double.valueOf(gpsTokens.get(1)) + Double.valueOf(gpsTokens.get(2)) / 60;
+        double lngDecimalDegrees = Double.parseDouble(gpsTokens.get(1)) + Double.parseDouble(gpsTokens.get(2)) / 60;
         if ("W".equals(gpsTokens.get(0).substring(0, 1))) {
             lngDecimalDegrees *= -1;
         }

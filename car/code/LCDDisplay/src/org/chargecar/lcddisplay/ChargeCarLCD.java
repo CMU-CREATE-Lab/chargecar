@@ -51,18 +51,19 @@ public final class ChargeCarLCD {
         //load in properties file
         LOG.debug("ChargeCarLCD(): about to read in properties file...");
         lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE);
-        if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
+        final int numProperties = LCDConstants.DEFAULT_PROPERTIES.size();
+        if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE) || (lcd.getNumberOfSavedProperties() < numProperties)) {
             LOG.debug("ChargeCarLCD(): Failed to load app properties file. Opening first backup...");
             lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE_BACKUP1);
-            if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP1) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
+            if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP1) || (lcd.getNumberOfSavedProperties() < numProperties)) {
                 LOG.debug("ChargeCarLCD(): Failed to load first backup of app properties file. Opening second backup...");
                 lcd.setCurrentPropertiesFileName(LCDConstants.APP_PROPERTIES_FILE_BACKUP2);
-                if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP2) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
+                if (!lcd.openSavedProperties(LCDConstants.APP_PROPERTIES_FILE_BACKUP2) || (lcd.getNumberOfSavedProperties() < numProperties)) {
                     LOG.debug("ChargeCarLCD(): Failed to load second backup of app properties file. Opening default properties file...");
                     lcd.setCurrentPropertiesFileName(LCDConstants.DEFAULT_PROPERTIES_FILE);
-                    if (!lcd.openSavedProperties(LCDConstants.DEFAULT_PROPERTIES_FILE) || (lcd.getNumberOfSavedProperties() < LCDConstants.NUM_PROPERTIES)) {
+                    if (!lcd.openSavedProperties(LCDConstants.DEFAULT_PROPERTIES_FILE) || (lcd.getNumberOfSavedProperties() < numProperties)) {
                         LOG.debug("ChargeCarLCD(): Failed to load default properties file. Creating new default properties file...");
-                        for (int i = 0; i < LCDConstants.NUM_PROPERTIES; i++) {
+                        for (int i = 0; i < numProperties; i++) {
                             final String[] property = LCDConstants.DEFAULT_PROPERTIES.get(i);
                             final String key = property[0];
                             final String value = property[1];
@@ -144,8 +145,15 @@ public final class ChargeCarLCD {
         @Override
         public void handleAccessoryOneEvent() {
             final LCD lcd = LCDProxy.getInstance();
-
-            if (accessoryOneOn) {
+            lcd.writeMarkerToFile();
+            lcd.turnOnAccessoryOneLED();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            lcd.turnOffAccessoryOneLED();
+            /*if (accessoryOneOn) {
                 accessoryOneOn = false;
                 lcd.turnOffAccessoryOneLED();
                 if (lcd.getAccessoryButtonOne().equalsIgnoreCase(LCDConstants.ACCESSORY_BUTTON_STATES.get(0))) {
@@ -168,7 +176,7 @@ public final class ChargeCarLCD {
                 }
                 //lcd.turnOnAirConditioning();
             }
-            //menuStatusManager.handleAccessoryOneEvent();
+            //menuStatusManager.handleAccessoryOneEvent();*/
         }
 
         @Override

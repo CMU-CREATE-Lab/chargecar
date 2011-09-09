@@ -66,6 +66,11 @@ public final class LCDConstants {
     public static final int NUM_COLS = 20;
     public static final String BLANK_LINE = "                    "; //20 spaces
 
+    public static final int FILTER_NONE = -1;
+    public static final int FILTER_TODAY = 0;
+    public static final int FILTER_SINCE_LAST_DOWNLOAD = 1;
+    public static final int FILTER_SINCE_BEGINNING = 2;
+
     /**
      * saved properties
      */
@@ -73,7 +78,6 @@ public final class LCDConstants {
     public static final String APP_PROPERTIES_FILE = "app.properties";
     public static final String APP_PROPERTIES_FILE_BACKUP1 = "app_bk1.properties";
     public static final String APP_PROPERTIES_FILE_BACKUP2 = "app_bk2.properties";
-    public static final int NUM_PROPERTIES = 21;
     public static final List<String[]> DEFAULT_PROPERTIES = new ArrayList<String[]>();
     static {
         String[] property = {"batteryHeaterTurnOnValue", "10"};
@@ -117,7 +121,9 @@ public final class LCDConstants {
         property = new String[]{"tripDistanceTraveled", "0.0"};
         DEFAULT_PROPERTIES.add(property);
         property = new String[]{"lifetimeAmpHours", "0.0"};
-        DEFAULT_PROPERTIES.add(property);             
+        DEFAULT_PROPERTIES.add(property);
+        property = new String[]{"lastDownloadDate", "20100101"};
+        DEFAULT_PROPERTIES.add(property);
     }
 
     public static final double SECONDS_TO_HOURS = 0.000277777778;
@@ -136,6 +142,7 @@ public final class LCDConstants {
     /**
      * Paths for transferring files to and from the car computer
      */
+
     public static final String LOG_PATH = "/root/chargecar/trunk/car/logs";
     public static final String USB_ROOT_PATH = "/media";
     public static final String USB_DRIVE_PATH = "/media/usb0";
