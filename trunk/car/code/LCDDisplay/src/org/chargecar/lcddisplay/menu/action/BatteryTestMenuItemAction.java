@@ -26,12 +26,21 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
     private double previousMaxVoltage;
     private double previousMinVoltage;
 
-    private double totalEnergyConsumed = 0.0;
-    private double ampHours = 0.0;
+    //private double totalEnergyConsumed = 0.0;
+    //private double ampHours = 0.0;
     private short state = 0;
 
-    final LCD lcd = LCDProxy.getInstance();
+    private boolean markStart = false;
+    private boolean markEnd = false;
 
+    private BMSManager bmsManager = null;
+    private BMSAndEnergy bmsData = null;
+
+    private final LCD lcd = LCDProxy.getInstance();
+
+    private static final int BMS_ERROR_CODE = 7;
+    private static final double CELL_VOLTAGE_CUTOFF = 2.01;
+    private static final double TOTAL_PACK_VOLTAGE_CUTOFF = 82.5;
 
     public BatteryTestMenuItemAction(final MenuItem menuItem,
                                      final MenuStatusManager menuStatusManager,
@@ -45,32 +54,34 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
         previousAmpHours = 0.0;
         previousMaxVoltage = 0.0;
         previousMinVoltage = 0.0;
-        totalEnergyConsumed = 0.0;
-        ampHours = 0.0;
         state = 0;
         lcd.turnOffAirConditioning();
     }
 
     public final void start() {
         state = 1;
-        if (lcd != null) {
-            lcd.turnOnAirConditioning();
+        lcd.turnOnAirConditioning();
+        markStart = false;
+        markEnd = false;
+
+        bmsManager = BMSManager.getInstance();
+        bmsData = (bmsManager == null) ? null : bmsManager.getData();
+        if (bmsManager != null || bmsData != null) {
+            bmsData.getEnergyEquation().reset();
         }
+
     }
 
     @Override
     protected void performAction() {
 
-        final BMSManager bmsManager = BMSManager.getInstance();
-        final BMSAndEnergy bmsData = (bmsManager == null) ? null : bmsManager.getData();
+        bmsManager = BMSManager.getInstance();
+        bmsData = (bmsManager == null) ? null : bmsManager.getData();
 
         if (bmsManager == null || bmsData == null) {
             LOG.error("BatteryTestMenuItemAction.performAction(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
             getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
-            return;
-        } else if (lcd == null) {
-            LOG.error("BatteryTestMenuItemAction.performAction(): lcd is null");
             return;
         }
 
@@ -80,16 +91,25 @@ public final class BatteryTestMenuItemAction extends RepeatingActionCharacterDis
             getCharacterDisplay().setCharacter(2, 1, GeneralHelper.padLeft("[*] Begin Test Now ", 1));
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
         } else if (state == 1) {
-
+            if (!markStart) {
+                lcd.writeMarkerToFile();
+                markStart = true;
+            }
             final double loadCurrent = bmsData.getBmsState().getLoadCurrentAmps();
-            totalEnergyConsumed += bmsData.getEnergyEquation().getKilowattHoursDelta();
-            ampHours += (bmsData.getEnergyEquation().getKilowattHoursDelta() * 1000) / bmsData.getBmsState().getPackTotalVoltage();
-            //ampHours = (totalEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+            final double totalEnergyConsumed = bmsData.getEnergyEquation().getKilowattHours();
+            //totalEnergyConsumed += bmsData.getEnergyEquation().getKilowattHoursDelta();
+            final double ampHours = (totalEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+            //ampHours += (bmsData.getEnergyEquation().getKilowattHoursDelta() * 1000) / bmsData.getBmsState().getPackTotalVoltage();
             final double maxVoltage = bmsData.getBmsState().getMaximumCellVoltage();
             final double minVoltage = bmsData.getBmsState().getMinimumCellVoltage();
             final double packTotalVoltage = bmsData.getBmsState().getPackTotalVoltage();
+            final int bmsErrorCode = bmsData.getBmsState().getBMSFault().getCode();
 
-            if (packTotalVoltage < 82.5 || minVoltage <= 2.01) {
+            if (packTotalVoltage < TOTAL_PACK_VOLTAGE_CUTOFF || minVoltage <= CELL_VOLTAGE_CUTOFF || bmsErrorCode == BMS_ERROR_CODE) {
+                if (!markEnd) {
+                    markEnd = true;
+                    lcd.writeMarkerToFile();
+                }
                 lcd.turnOffAirConditioning();
                 getCharacterDisplay().setLine(0, "TEST DONE           ");
                 getCharacterDisplay().setCharacter(0, 9, GeneralHelper.padLeft(String.valueOf(previousLoadCurrent) + " amps", LCDConstants.NUM_COLS - 9));

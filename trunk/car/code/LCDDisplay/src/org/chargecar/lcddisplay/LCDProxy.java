@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -42,7 +43,6 @@ public final class LCDProxy implements LCD {
     private static final int DELAY_IN_SECONDS_BETWEEN_BATTERY_HEATER_CHECK = 30;
     private static final int DELAY_IN_SECONDS_BETWEEN_LCD_EVENT_POLL = 1;
     private static final int DELAY_IN_MILISECONDS_BETWEEN_BRAKELIGHT_POLL = 100;
-    //private static final int DELAY_IN_SECONDS_BETWEEN_WRITE_POLL = 1;
     private static final int DELAY_IN_SECONDS_BETWEEN_BACKUPONE_POLL = 15;
     private static final int DELAY_IN_SECONDS_BETWEEN_BACKUPTWO_POLL = 60;
 
@@ -54,9 +54,11 @@ public final class LCDProxy implements LCD {
     private double tripDistance = 0.0;
     private double chargingTime = 0.0;
     private double drivingTime = 0.0;
-
+    private final AtomicInteger markValue = new AtomicInteger(0);
     private GPSCoordinate previousTrackPoint = null;
     private final DistanceCalculator distanceCalculator = SphericalLawOfCosinesDistanceCalculator.getInstance();
+    private Date previousDate = null;
+
 
     private static class LazyHolder {
         private static final LCDCreator INSTANCE = new LCDCreator();
@@ -142,7 +144,6 @@ public final class LCDProxy implements LCD {
     private final ScheduledFuture<?> batteryHeaterScheduledFuture;
     private final ScheduledFuture<?> lcdEventScheduledFuture;
     private final ScheduledFuture<?> brakeLightScheduledFuture;
-    //private final ScheduledFuture<?> propertiesWriteScheduledFuture;
     private final ScheduledFuture<?> propertiesBackupOneScheduledFuture;
     private final ScheduledFuture<?> propertiesBackupTwoScheduledFuture;
     private final Collection<CreateLabDevicePingFailureEventListener> createLabDevicePingFailureEventListeners = new HashSet<CreateLabDevicePingFailureEventListener>();
@@ -184,11 +185,6 @@ public final class LCDProxy implements LCD {
                 1, // delay before first ping
                 DELAY_IN_MILISECONDS_BETWEEN_BRAKELIGHT_POLL, // delay between pings
                 TimeUnit.MILLISECONDS);
-
-        /*propertiesWriteScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesPoller(),
-                5, // delay before first ping
-                DELAY_IN_SECONDS_BETWEEN_WRITE_POLL, // delay between pings
-                TimeUnit.SECONDS);*/
 
         propertiesBackupOneScheduledFuture = peerPingScheduler.scheduleWithFixedDelay(new LCDPropertiesBackupOnePoller(),
                 5, // delay before first ping
@@ -645,6 +641,9 @@ public final class LCDProxy implements LCD {
         }
     }
 
+    public void writeMarkerToFile() {
+        LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " (" + System.currentTimeMillis() + ") =============================================================");
+    }
     //chargecar end
 
     public void disconnect() {
@@ -696,7 +695,7 @@ public final class LCDProxy implements LCD {
         }
     }
 
-   /* private class LCDPropertiesPoller implements Runnable {
+    /* private class LCDPropertiesPoller implements Runnable {
         public void run() {
             writeSavedProperties();
         }
@@ -741,6 +740,11 @@ public final class LCDProxy implements LCD {
     }
 
     private class LCDEventPoller implements Runnable {
+        private double previousTripEnergyRegen = 0.0;
+        private double previousTripEnergyDischarge = 0.0;
+        private double previousTripEnergyConsumed = 0.0;
+        private double previousTripAmpHours = 0.0;
+
         public void run() {
             final LCD lcd = LCDProxy.getInstance();
             final BMSManager bmsManager = BMSManager.getInstance();
@@ -756,9 +760,8 @@ public final class LCDProxy implements LCD {
             final int[] rawValues = getInputs();
             final boolean isRunning = lcd.isCarRunning(rawValues);
             final boolean isCharging = lcd.isCarCharging(rawValues);
-            double distanceInMiles = 0.0;
-            double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled"));
-            double tripDistanceTraveled = Double.valueOf(getSavedProperty("tripDistanceTraveled"));
+            double lifetimeDistanceTraveled = Double.parseDouble(getSavedProperty("lifetimeDistanceTraveled"));
+            double tripDistanceTraveled = Double.parseDouble(getSavedProperty("tripDistanceTraveled"));
 
             final double motorControllerTemperature = lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin());
             final double motorTemperature = lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin());
@@ -770,14 +773,22 @@ public final class LCDProxy implements LCD {
                 DATA_LOG.info(lcdEvent.toLoggingString());
             }
 
+            final Date currentDate = new Date();
+            final double timeInSeconds;
+            if (previousDate == null) {
+                timeInSeconds = 1;
+            } else {
+                timeInSeconds = (currentDate.getTime() - previousDate.getTime()) / 1000.0; //time comes in in milliseconds
+            }
+            previousDate = currentDate;
+
             if (isCharging) {
-                chargingTime += 1; //seconds
-                final double lifetimeChargingTime = Double.valueOf(getSavedProperty("lifetimeChargingTime")) + 1;
+                chargingTime += timeInSeconds;
+                final double lifetimeChargingTime = Double.parseDouble(getSavedProperty("lifetimeChargingTime")) + timeInSeconds;
                 setSavedProperty("lifetimeChargingTime", String.valueOf(lifetimeChargingTime));
             } else if (isRunning) {
-                drivingTime += 1; //seconds
-
-                final double lifetimeDrivingTime = Double.valueOf(getSavedProperty("lifetimeDrivingTime")) + 1;
+                drivingTime += timeInSeconds;
+                final double lifetimeDrivingTime = Double.parseDouble(getSavedProperty("lifetimeDrivingTime")) + timeInSeconds;
                 setSavedProperty("lifetimeDrivingTime", String.valueOf(lifetimeDrivingTime));
 
                 //don't keep track if we are basiccally idle
@@ -790,10 +801,11 @@ public final class LCDProxy implements LCD {
                             previousTrackPoint = currentTrackPoint;
                         }
 
-                        distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
+                        final double distanceInMiles = distanceCalculator.compute2DDistance(previousTrackPoint, currentTrackPoint) * LCDConstants.METERS_TO_MILES;
                         previousTrackPoint = currentTrackPoint;
 
                         //account for gps location jumps; note that distance is calculated every second
+                        //TODO: this logic can drastically be improved; we lose tunnels
                         if (distanceInMiles < .01 && !Double.isNaN(distanceInMiles)) {
                             tripDistance += distanceInMiles;
                             lifetimeDistanceTraveled += distanceInMiles;
@@ -803,40 +815,96 @@ public final class LCDProxy implements LCD {
                         }
                     }
 
-                    //final double lifetimeDistanceTraveled = Double.valueOf(getSavedProperty("lifetimeDistanceTraveled")) + distanceInMiles;
-                    //final double tripDistanceTraveled = Double.valueOf(getSavedProperty("tripDistanceTraveled")) + distanceInMiles;
-                    //setSavedProperty("lifetimeDistanceTraveled", String.valueOf(lifetimeDistanceTraveled));
-                    //setSavedProperty("tripDistanceTraveled", String.valueOf(tripDistanceTraveled));
+                    double kwhDelta;
 
-                    final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
-                    if (kwhDelta < 0) {
-                        final double lifetimeEnergyRegen = Double.valueOf(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
-                        final double tripEnergyRegen = Double.valueOf(getSavedProperty("tripEnergyRegen")) + kwhDelta;
-                        setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
-                        setSavedProperty("tripEnergyRegen", String.valueOf(tripEnergyRegen));
-                    } else if (kwhDelta > 0) {
-                        final double lifetimeEnergyDischarge = Double.valueOf(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
-                        final double tripEnergyDischarge = Double.valueOf(getSavedProperty("tripEnergyDischarge")) + kwhDelta;
-                        setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
-                        setSavedProperty("tripEnergyDischarge", String.valueOf(tripEnergyDischarge));
+                    //regen
+                    final double tripEnergyRegen = bmsData.getEnergyEquation().getKilowattHoursRegen();
+                    setSavedProperty("tripEnergyRegen", String.valueOf(tripEnergyRegen));
+                    try {
+                        previousTripEnergyRegen = Double.parseDouble(getSavedProperty("tripEnergyRegen"));
+                    } catch (NumberFormatException nfe) {
+                        LOG.error("LCDProxy.LCDEventPoller(): " + nfe.getMessage());
+                        previousTripEnergyRegen = tripEnergyRegen;
                     }
-                    final double lifetimeEnergyConsumed = Double.valueOf(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
-                    final double tripEnergyConsumed = Double.valueOf(getSavedProperty("tripEnergyConsumed")) + kwhDelta;
-                    setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
-                    setSavedProperty("tripEnergyConsumed", String.valueOf(tripEnergyConsumed));
+                    kwhDelta = tripEnergyRegen - previousTripEnergyRegen;
+                    final double lifetimeEnergyRegen = Double.parseDouble(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
+                    setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
 
+                    //discharge
+                    final double tripEnergyDischarge = bmsData.getEnergyEquation().getKilowattHoursUsed();
+                    setSavedProperty("tripEnergyDischarge", String.valueOf(tripEnergyDischarge));
+                    try {
+                        previousTripEnergyDischarge = Double.parseDouble(getSavedProperty("tripEnergyDischarge"));
+                    } catch (NumberFormatException nfe) {
+                        LOG.error("LCDProxy.LCDEventPoller(): " + nfe.getMessage());
+                        previousTripEnergyDischarge = tripEnergyDischarge;
+                    }
+                    kwhDelta = tripEnergyDischarge - previousTripEnergyDischarge;
+                    final double lifetimeEnergyDischarge = Double.parseDouble(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
+                    setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
+
+                    //total
+                    final double tripEnergyConsumed = bmsData.getEnergyEquation().getKilowattHours();
+                    setSavedProperty("tripEnergyConsumed", String.valueOf(tripEnergyConsumed));
+                    try {
+                        previousTripEnergyConsumed = Double.parseDouble(getSavedProperty("tripEnergyConsumed"));
+                    } catch (NumberFormatException nfe) {
+                        LOG.error("LCDProxy.LCDEventPoller(): " + nfe.getMessage());
+                        previousTripEnergyConsumed = tripEnergyConsumed;
+                    }
+                    kwhDelta = tripEnergyConsumed - previousTripEnergyConsumed;
+                    final double lifetimeEnergyConsumed = Double.parseDouble(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
+                    setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
+
+                    //efficiencies
                     final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
                     final double tripEfficiency = tripDistanceTraveled / tripEnergyConsumed;
                     setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
                     setSavedProperty("tripEfficiency", String.valueOf(tripEfficiency));
 
-                    final double ampHours = (kwhDelta * 1000) / bmsData.getBmsState().getPackTotalVoltage();
-                    final double lifetimeAmpHours = Double.valueOf(getSavedProperty("lifetimeAmpHours")) + ampHours;
-                    final double tripAmpHours = Double.valueOf(getSavedProperty("tripAmpHours")) + ampHours;
-                    //final double lifetimeAmpHours = (lifetimeEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
-                    //final double tripAmpHours = (tripEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
-                    setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
+                    //amp-hours
+                    final double tripAmpHours = (tripEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
                     setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
+                    try {
+                        previousTripAmpHours = Double.parseDouble(getSavedProperty("tripAmpHours"));
+                    } catch (NumberFormatException nfe) {
+                        LOG.error("LCDProxy.LCDEventPoller(): " + nfe.getMessage());
+                        previousTripAmpHours = tripAmpHours;
+                    }
+                    final double ampHoursDelta = tripAmpHours - previousTripAmpHours;
+                    final double lifetimeAmpHours = Double.parseDouble(getSavedProperty("lifetimeAmpHours")) + ampHoursDelta;
+                    setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
+
+                    //final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();
+                    //if (kwhDelta < 0) {
+                    //final double lifetimeEnergyRegen = Double.parseDouble(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
+                    //final double tripEnergyRegen = Double.parseDouble(getSavedProperty("tripEnergyRegen")) + kwhDelta;
+                    //setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
+                    //setSavedProperty("tripEnergyRegen", String.valueOf(tripEnergyRegen));
+                    //} else if (kwhDelta > 0) {
+                    //final double lifetimeEnergyDischarge = Double.parseDouble(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
+                    //final double tripEnergyDischarge = Double.parseDouble(getSavedProperty("tripEnergyDischarge")) + kwhDelta;
+                    //setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
+                    //setSavedProperty("tripEnergyDischarge", String.valueOf(tripEnergyDischarge));
+                    //}
+
+                    //final double lifetimeEnergyConsumed = Double.parseDouble(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
+                    //final double tripEnergyConsumed = Double.parseDouble(getSavedProperty("tripEnergyConsumed")) + kwhDelta;
+                    //setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
+                    //setSavedProperty("tripEnergyConsumed", String.valueOf(tripEnergyConsumed));
+
+                    //final double lifetimeEfficiency = lifetimeDistanceTraveled / lifetimeEnergyConsumed;
+                    //final double tripEfficiency = tripDistanceTraveled / tripEnergyConsumed;
+                    //setSavedProperty("lifetimeEfficiency", String.valueOf(lifetimeEfficiency));
+                    //setSavedProperty("tripEfficiency", String.valueOf(tripEfficiency));
+
+                    //final double ampHours = (kwhDelta * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+                    //final double lifetimeAmpHours = Double.parseDouble(getSavedProperty("lifetimeAmpHours")) + ampHours;
+                    //final double tripAmpHours = Double.parseDouble(getSavedProperty("tripAmpHours")) + ampHours;
+                    ////final double lifetimeAmpHours = (lifetimeEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+                    ////final double tripAmpHours = (tripEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
+                    //setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
+                    //setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                 }
             }
             writeSavedProperties();
