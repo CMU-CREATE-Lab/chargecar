@@ -130,8 +130,8 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
     }
 
     public void cleanUp() {
-        GeneralHelper.resetCounts();
         GeneralHelper.unmountUsbDrive();
+        GeneralHelper.resetCounts();
     }
 
     public final boolean copyLogFiles() {
@@ -146,7 +146,7 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
             logFiles = GeneralHelper.listPath(new File(LCDConstants.LOG_PATH));
             //a non-mounted drive has a date of 00:00:00 GMT, January 1, 1970
             //thus the last modified time returns 0
-            if (tmpOutputPath == null) {// || tmpOutputPath[0].lastModified() != 0) {
+            if (tmpOutputPath == null || tmpOutputPath.lastModified() != 0) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
@@ -173,7 +173,7 @@ public final class CopyLogsToUsbMenuItemAction extends CharacterDisplayMenuItemA
                     outputPath.mkdir();
                 }
 
-                int filterType = LCDConstants.FILTER_NONE;
+                int filterType = LCDConstants.FILTER_SINCE_BEGINNING;
                 if (currentState == 1) {
                     filterType = LCDConstants.FILTER_TODAY;
                 } else if (currentState == 2) {

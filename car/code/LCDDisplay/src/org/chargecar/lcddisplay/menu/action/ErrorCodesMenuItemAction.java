@@ -63,8 +63,6 @@ public final class ErrorCodesMenuItemAction extends CharacterDisplayMenuItemActi
                 getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
                 getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             }
-            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
         }
     }
 }
