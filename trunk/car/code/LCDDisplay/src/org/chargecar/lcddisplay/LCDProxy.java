@@ -819,7 +819,6 @@ public final class LCDProxy implements LCD {
 
                     //regen
                     final double tripEnergyRegen = bmsData.getEnergyEquation().getKilowattHoursRegen();
-                    setSavedProperty("tripEnergyRegen", String.valueOf(tripEnergyRegen));
                     try {
                         previousTripEnergyRegen = Double.parseDouble(getSavedProperty("tripEnergyRegen"));
                     } catch (NumberFormatException nfe) {
@@ -828,11 +827,11 @@ public final class LCDProxy implements LCD {
                     }
                     kwhDelta = tripEnergyRegen - previousTripEnergyRegen;
                     final double lifetimeEnergyRegen = Double.parseDouble(getSavedProperty("lifetimeEnergyRegen")) + kwhDelta;
+                    setSavedProperty("tripEnergyRegen", String.valueOf(tripEnergyRegen));
                     setSavedProperty("lifetimeEnergyRegen", String.valueOf(lifetimeEnergyRegen));
 
                     //discharge
                     final double tripEnergyDischarge = bmsData.getEnergyEquation().getKilowattHoursUsed();
-                    setSavedProperty("tripEnergyDischarge", String.valueOf(tripEnergyDischarge));
                     try {
                         previousTripEnergyDischarge = Double.parseDouble(getSavedProperty("tripEnergyDischarge"));
                     } catch (NumberFormatException nfe) {
@@ -841,11 +840,11 @@ public final class LCDProxy implements LCD {
                     }
                     kwhDelta = tripEnergyDischarge - previousTripEnergyDischarge;
                     final double lifetimeEnergyDischarge = Double.parseDouble(getSavedProperty("lifetimeEnergyDischarge")) + kwhDelta;
+                    setSavedProperty("tripEnergyDischarge", String.valueOf(tripEnergyDischarge));
                     setSavedProperty("lifetimeEnergyDischarge", String.valueOf(lifetimeEnergyDischarge));
 
                     //total
                     final double tripEnergyConsumed = bmsData.getEnergyEquation().getKilowattHours();
-                    setSavedProperty("tripEnergyConsumed", String.valueOf(tripEnergyConsumed));
                     try {
                         previousTripEnergyConsumed = Double.parseDouble(getSavedProperty("tripEnergyConsumed"));
                     } catch (NumberFormatException nfe) {
@@ -854,6 +853,7 @@ public final class LCDProxy implements LCD {
                     }
                     kwhDelta = tripEnergyConsumed - previousTripEnergyConsumed;
                     final double lifetimeEnergyConsumed = Double.parseDouble(getSavedProperty("lifetimeEnergyConsumed")) + kwhDelta;
+                    setSavedProperty("tripEnergyConsumed", String.valueOf(tripEnergyConsumed));
                     setSavedProperty("lifetimeEnergyConsumed", String.valueOf(lifetimeEnergyConsumed));
 
                     //efficiencies
@@ -864,7 +864,6 @@ public final class LCDProxy implements LCD {
 
                     //amp-hours
                     final double tripAmpHours = (tripEnergyConsumed * 1000) / bmsData.getBmsState().getPackTotalVoltage();
-                    setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                     try {
                         previousTripAmpHours = Double.parseDouble(getSavedProperty("tripAmpHours"));
                     } catch (NumberFormatException nfe) {
@@ -873,6 +872,7 @@ public final class LCDProxy implements LCD {
                     }
                     final double ampHoursDelta = tripAmpHours - previousTripAmpHours;
                     final double lifetimeAmpHours = Double.parseDouble(getSavedProperty("lifetimeAmpHours")) + ampHoursDelta;
+                    setSavedProperty("tripAmpHours", String.valueOf(tripAmpHours));
                     setSavedProperty("lifetimeAmpHours", String.valueOf(lifetimeAmpHours));
 
                     //final double kwhDelta = bmsData.getEnergyEquation().getKilowattHoursDelta();

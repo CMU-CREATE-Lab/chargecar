@@ -71,8 +71,8 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     }
 
     public void cleanUp() {
-        GeneralHelper.resetCounts();
         GeneralHelper.unmountUsbDrive();
+        GeneralHelper.resetCounts();
     }
 
     public final void renameDirs() {
@@ -89,18 +89,26 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
     public final boolean copyLcdFiles() {
         try {
             final File outputPath = new File(LCDConstants.TMP_LOCAL_LCD_SOFTWARE_PATH);
-            final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
+            //final File[] tmpInputPath = GeneralHelper.listPath(new File(LCDConstants.USB_ROOT_PATH));
+            //NOTE: We are assuming this path will always contain the drive me want
+            //This works only if it is the first drive connected and the OS is setup using the
+            //ChargeCar configuration.
+            final File tmpInputPath = new File(LCDConstants.USB_DRIVE_PATH);
 
             //a mounted drive has a date of 00:00:00 GMT, January 1, 1970
             //thus the last modified time returns 0
-            if (tmpInputPath == null || tmpInputPath[0].lastModified() != 0) {
+            if (tmpInputPath == null || tmpInputPath.lastModified() != 0) {
                 getCharacterDisplay().setLine(0, "USB drive not found.");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
                 return false;
             }
 
-            final File inputPath = new File(tmpInputPath[0] + LCDConstants.USB_LCD_SOFTWARE_PATH);
+            //NOTE: We are assuming this path will always contain the drive me want
+            //This works only if it is the first drive connected and the OS is setup using the
+            //ChargeCar configuration.
+            final File inputPath = new File(LCDConstants.USB_DRIVE_PATH + LCDConstants.USB_LCD_SOFTWARE_PATH);
 
             if (inputPath.exists()) {
                 GeneralHelper.copyDirectory(inputPath, outputPath, LCDConstants.FILTER_NONE);
@@ -116,6 +124,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
                 getCharacterDisplay().setLine(0, "Update dir not found");
                 getCharacterDisplay().setLine(1, "No files were");
                 getCharacterDisplay().setLine(2, "transferred.");
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
                 cleanUp();
                 return false;
             }

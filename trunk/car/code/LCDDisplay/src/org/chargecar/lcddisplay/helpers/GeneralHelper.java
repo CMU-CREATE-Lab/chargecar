@@ -28,6 +28,7 @@ public class GeneralHelper {
     private static Date endDate;
     private static Date testDate = null;
     private static List<File> fileList = new ArrayList<File>();
+    private static String rootPath;
 
     private GeneralHelper() {
     }
@@ -77,6 +78,7 @@ public class GeneralHelper {
 
     public static void getFileList(final File file, final int filterType) {
         if (file.isDirectory()) {
+
             final File[] files;
 
             if (filterType == LCDConstants.FILTER_NONE || filterType == LCDConstants.FILTER_SINCE_BEGINNING) {
@@ -124,14 +126,19 @@ public class GeneralHelper {
             }
         } else {
             numFiles += 1;
+            LOG.debug("getFileList file: " + file);
             fileList.add(file);
         }
     }
 
     /* copy a file from one location to another */
     public static void copyFile(final File sourceFile, final File destFile) throws IOException {
-        if (!destFile.exists()) {
-            destFile.createNewFile();
+
+        LOG.debug("copyFile source: " + sourceFile);
+        LOG.debug("copyFile dest: " + destFile);
+
+        if (destFile.getParentFile() != null && !destFile.getParentFile().mkdirs()) {
+            LOG.error("GeneralHelper.copyFile(): Cannot create parent directories from " + destFile);
         }
 
         FileInputStream fIn = null;
@@ -166,16 +173,24 @@ public class GeneralHelper {
     /* copy files from one location to another*/
     public static void copyDirectory(final File sourceLocation, final File targetLocation, final int filterType)
             throws IOException {
+
+        LOG.debug("source: " + sourceLocation);
+        LOG.debug("target: " + targetLocation);
         if (numFiles == 0) {
             lcd.setText(0, 0, "Transfer in progress");
             lcd.setText(1, 0, LCDConstants.BLANK_LINE);
             lcd.setText(2, 4, padRight("0% complete", LCDConstants.NUM_COLS));
             lcd.setText(3, 0, LCDConstants.BLANK_LINE);
             getFileList(sourceLocation, filterType);
+            if (filterType == LCDConstants.FILTER_NONE) {
+                rootPath = LCDConstants.USB_DRIVE_PATH + LCDConstants.USB_LCD_SOFTWARE_PATH;
+            } else {
+                rootPath = LCDConstants.LOG_PATH;
+            }
         }
 
         for (int i = 0; i < fileList.size(); i++) {
-            copyFile(fileList.get(i), new File(targetLocation, fileList.get(i).getName()));
+            copyFile(fileList.get(i), new File(targetLocation, new File(rootPath).toURI().relativize(fileList.get(i).toURI()).getPath()));
             lcd.setText(2, 4, padRight(Math.round(((i + 1) / numFiles) * 100) + "% complete", LCDConstants.NUM_COLS));
         }
         if (filterType == LCDConstants.FILTER_SINCE_LAST_DOWNLOAD) {
