@@ -720,7 +720,7 @@ public final class LCDProxy implements LCD {
             final LCD lcd = LCDProxy.getInstance();
 
             if (bmsManager == null || bmsData == null) {
-                LOG.error("LCDBrakeLightPoller.performAction(): bms is null");
+                //LOG.error("LCDBrakeLightPoller.performAction(): bms is null");
                 return;
             } else if (lcd == null) {
                 LOG.error("LCDBrakeLightPoller.run(): lcd is null");
@@ -918,7 +918,7 @@ public final class LCDProxy implements LCD {
             final BMSAndEnergy data = (manager == null) ? null : manager.getData();
 
             if (manager == null || data == null) {
-                LOG.error("LCDBatteryHeaterPoller.run(): bms is null");
+                //LOG.error("LCDBatteryHeaterPoller.run(): bms is null");
                 return;
             } else if (lcd == null) {
                 LOG.error("LCDBatteryHeaterPoller.run(): lcd is null");
