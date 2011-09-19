@@ -168,7 +168,7 @@ public final class UpdateLCDSoftwareMenuItemAction extends CharacterDisplayMenuI
 
     private void sleepLong() {
         try {
-            Thread.sleep(10000);
+            Thread.sleep(12000);
             doOnce = false;
         } catch (InterruptedException e) {
             LOG.error("UpdateLCDSoftwareMenuItemAction.sleepLong(): InterruptedException while sleeping", e);
