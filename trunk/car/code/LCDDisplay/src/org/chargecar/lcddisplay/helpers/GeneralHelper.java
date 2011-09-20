@@ -126,7 +126,7 @@ public class GeneralHelper {
             }
         } else {
             numFiles += 1;
-            LOG.debug("getFileList file: " + file);
+            //LOG.debug("getFileList file: " + file);
             fileList.add(file);
         }
     }
@@ -134,8 +134,8 @@ public class GeneralHelper {
     /* copy a file from one location to another */
     public static void copyFile(final File sourceFile, final File destFile) throws IOException {
 
-        LOG.debug("copyFile source: " + sourceFile);
-        LOG.debug("copyFile dest: " + destFile);
+        //LOG.debug("copyFile source: " + sourceFile);
+        //LOG.debug("copyFile dest: " + destFile);
 
         if (destFile.getParentFile() != null && !destFile.getParentFile().mkdirs()) {
             LOG.error("GeneralHelper.copyFile(): Cannot create parent directories from " + destFile);
@@ -174,8 +174,8 @@ public class GeneralHelper {
     public static void copyDirectory(final File sourceLocation, final File targetLocation, final int filterType)
             throws IOException {
 
-        LOG.debug("source: " + sourceLocation);
-        LOG.debug("target: " + targetLocation);
+        //LOG.debug("source: " + sourceLocation);
+        //LOG.debug("target: " + targetLocation);
         if (numFiles == 0) {
             lcd.setText(0, 0, "Transfer in progress");
             lcd.setText(1, 0, LCDConstants.BLANK_LINE);

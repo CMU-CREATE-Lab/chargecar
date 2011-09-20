@@ -8,7 +8,6 @@ import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.helpers.PostgresqlConnect;
 
-import java.util.Collections;
 import java.util.SortedSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -105,7 +104,7 @@ public final class ChargeCarLCD {
     }
 
     public static SortedSet<String> getAvailableSerialPorts() {
-        return Collections.unmodifiableSortedSet(availableSerialPorts);
+        return availableSerialPorts;
     }
 
     public static void removeAvailableSerialPort(final String portName) {

@@ -1027,6 +1027,7 @@ public final class LCDProxy implements LCD {
                     return;
                 }
 
+                //LOG.debug("Raw button values: " + new Date() + " " + rawValues[1]);
                 final int numRawValues = rawValues.length;
                 final int[] tmpRawValues = new int[numRawValues];
                 boolean isSame = true;
@@ -1051,31 +1052,31 @@ public final class LCDProxy implements LCD {
                 }
 
                 if (wasUpButtonPressed(rawValues)) {
-                    LOG.trace("wasUpButtonPressed");
+                    LOG.debug("wasUpButtonPressed");
                     executeEventHandler(handleUpEventRunnable);
                 } else if (wasDownButtonPressed(rawValues)) {
-                    LOG.trace("wasDownButtonPressed");
+                    LOG.debug("wasDownButtonPressed");
                     executeEventHandler(handleDownEventRunnable);
                 } else if (wasLeftButtonPressed(rawValues)) {
-                    LOG.trace("wasLeftButtonPressed");
+                    LOG.debug("wasLeftButtonPressed");
                     executeEventHandler(handleLeftEventRunnable);
                 } else if (wasRightButtonPressed(rawValues)) {
-                    LOG.trace("wasRightButtonPressed");
+                    LOG.debug("wasRightButtonPressed");
                     executeEventHandler(handleRightEventRunnable);
                 } else if (wasSelectButtonPressed(rawValues)) {
-                    LOG.trace("wasSelectButtonPressed");
+                    LOG.debug("wasSelectButtonPressed");
                     executeEventHandler(handleOKEventRunnable);
                 } else if (wasCancelButtonPressed(rawValues)) {
-                    LOG.trace("wasCancelButtonPressed");
+                    LOG.debug("wasCancelButtonPressed");
                     executeEventHandler(handleCancelEventRunnable);
                 } else if (wasAccessoryOneButtonPressed(rawValues)) {
-                    LOG.trace("wasAccessoryOneButtonPressed");
+                    LOG.debug("wasAccessoryOneButtonPressed");
                     executeEventHandler(handleAccessoryOneEventRunnable);
                 } else if (wasAccessoryTwoButtonPressed(rawValues)) {
-                    LOG.trace("wasAccessoryTwoButtonPressed");
+                    LOG.debug("wasAccessoryTwoButtonPressed");
                     executeEventHandler(handleAccessoryTwoEventRunnable);
                 } else if (wasAccessoryThreeButtonPressed(rawValues)) {
-                    LOG.trace("wasAccessoryThreeButtonPressed");
+                    LOG.debug("wasAccessoryThreeButtonPressed");
                     executeEventHandler(handleAccessoryThreeEventRunnable);
                 }
             } catch (Exception e) {
