@@ -55,7 +55,7 @@ public final class HallEffectManager extends StreamingSerialPortDeviceManager<Ha
 
                         // sleep until we're reading...
                         int isReadingCount = 0;
-                        int getDataCount = 0;
+
                         do {
                             sleep(100);
                             isReadingCount++;
@@ -65,8 +65,7 @@ public final class HallEffectManager extends StreamingSerialPortDeviceManager<Ha
 
                         do {
                             sleep(100);
-                            getDataCount++;
-                        } while (hallEffectManager.getData() == null && getDataCount < 20);
+                        } while (hallEffectManager.getData() == null);
 
                         LOG.debug("HallEffectManager getData: " + hallEffectManager.getData());
                         if (hallEffectManager.getData() == null) {
