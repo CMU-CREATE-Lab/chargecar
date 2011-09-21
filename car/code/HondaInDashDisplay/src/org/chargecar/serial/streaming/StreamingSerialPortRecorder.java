@@ -90,7 +90,7 @@ public final class StreamingSerialPortRecorder extends BaseCommandLineApplicatio
                   return;
                   }
 
-               // prompt the user for the number of seconds to record
+               // prompt the user for the output filename
                final String outputFilename = readString("Output filename: ");
                if (outputFilename == null || outputFilename.length() <= 0)
                   {
@@ -98,7 +98,7 @@ public final class StreamingSerialPortRecorder extends BaseCommandLineApplicatio
                   return;
                   }
 
-               // prompt the user for the output filename
+               // make sure the output filename is valid and doesn't already exist
                final File outputFile = new File(outputFilename);
                if (outputFile.exists())
                   {
