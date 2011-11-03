@@ -16,6 +16,16 @@ import org.chargecar.lcddisplay.LCDProxy;
  */
 public final class ErrorCodesMenuItemAction extends CharacterDisplayMenuItemAction {
     private static final Logger LOG = Logger.getLogger(ErrorCodesMenuItemAction.class);
+    private static final String[] errorCodeLookupTable = {"Driving off while plugged in", "Interlock is tripped",
+            "Communication fault with a bank or cell", "Charge overcurrent",
+            "Discharge overcurrent", "Over-temperature",
+            "Under voltage", "Over voltage",
+            "No battery voltage", "High voltage B- leak to chassis",
+            "High voltage B+ leak to chassis", "Relay K1 is shorted",
+            "Contactor K2 is shorted", "Contactor K3 is shorted",
+            "Open K1 or K3, or shorted K2", "Open K2",
+            "Excessive precharge time", "EEPROM stack overflow"};
+
 
     public ErrorCodesMenuItemAction(final MenuItem menuItem,
                                     final MenuStatusManager menuStatusManager,
@@ -38,30 +48,25 @@ public final class ErrorCodesMenuItemAction extends CharacterDisplayMenuItemActi
             return;
         }
 
-        final int controllerErrorCode = lcd.getMotorControllerErrorCodes();
+        //final int controllerErrorCode = lcd.getMotorControllerErrorCodes();
         final int bmsErrorCode = bmsData.getBmsState().getBMSFault().getCode();
 
-        if (controllerErrorCode == 0 && bmsErrorCode == 0) {
-            getCharacterDisplay().setLine(0, "No errors reported.");
+        if (bmsErrorCode == 0) {
+            getCharacterDisplay().setLine(0, "No BMS errors");
+            getCharacterDisplay().setLine(1, "currently being");
+            getCharacterDisplay().setLine(2, "reported.");
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+        } else {
+            getCharacterDisplay().setLine(0, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-        } else {
-            if (controllerErrorCode != 0 && bmsErrorCode != 0) {
-                getCharacterDisplay().setLine(0, "Controller Error: " + controllerErrorCode);
-                getCharacterDisplay().setLine(1, "BMS Error: " + bmsErrorCode);
-                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-            } else if (controllerErrorCode != 0) {
-                getCharacterDisplay().setLine(0, "Controller Error: " + controllerErrorCode);
-                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-            } else if (bmsErrorCode != 0) {
-                getCharacterDisplay().setLine(0, "BMS Error: " + bmsErrorCode);
-                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+            try {
+                getCharacterDisplay().setText(errorCodeLookupTable[bmsErrorCode - 1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                getCharacterDisplay().setLine(0, "BMS error code");
+                getCharacterDisplay().setLine(1, "not found.");
+                LOG.error("BMS error code not found: " + e);
             }
         }
     }

@@ -7,6 +7,7 @@ import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
+import org.chargecar.honda.halleffect.HallEffectEvent;
 import org.chargecar.lcddisplay.*;
 import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.helpers.GeneralHelper;
@@ -22,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDisplayMenuItemAction {
     private static final Logger LOG = Logger.getLogger(DrivingModeMenuItemAction.class);
     private LCD lcd = null;
+    private HallEffectManager halleffectManager = null;
+    private HallEffectEvent halleffectData = null;
     private BMSManager bmsManager = null;
     private BMSAndEnergy bmsData = null;
     private GPSManager gpsManager = null;
@@ -50,18 +53,6 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         bmsManager = BMSManager.getInstance();
         bmsData = (bmsManager == null) ? null : bmsManager.getData();
 
-        if (bmsManager == null || bmsData == null) {
-            LOG.error("DrivingModeMenuItemAction.performAction(): bms is null");
-            getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-            return;
-        } else if (lcd == null) {
-            LOG.error("DrivingModeMenuItemAction.performAction(): lcd is null");
-            return;
-        }
-
         if (currentState == 2)
             performAction2();
         else if (currentState == 3)
@@ -71,6 +62,17 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         else if (currentState == 5)
             performAction5();
         else {
+            if (bmsManager == null || bmsData == null) {
+                LOG.error("DrivingModeMenuItemAction.performAction(): bms is null");
+                getCharacterDisplay().setLine(0, "No connection to BMS.");
+                getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+                getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+                return;
+            } else if (lcd == null) {
+                LOG.error("DrivingModeMenuItemAction.performAction(): lcd is null");
+                return;
+            }
             currentState = 1;
             if (printHeadings.get(0)) {
                 printHeadings.set(0, false);
@@ -96,21 +98,8 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
 
     public void performAction2() {
         currentState = 2;
-        lcd = LCDProxy.getInstance();
-        bmsManager = BMSManager.getInstance();
-        bmsData = (bmsManager == null) ? null : bmsManager.getData();
-
-        if (bmsManager == null || bmsData == null) {
-            LOG.error("DrivingModeMenuItemAction.performAction2(): bms is null");
-            getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
-            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
-            return;
-        } else if (lcd == null) {
-            LOG.error("DrivingModeMenuItemAction.performAction2(): lcd is null");
-            return;
-        }
+        halleffectManager = HallEffectManager.getInstance();
+        halleffectData = halleffectManager.getData();
 
         if (printHeadings.get(1)) {
             printHeadings.set(1, false);
@@ -120,8 +109,8 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             getCharacterDisplay().setLine(3, "v                   ");
         }
 
-        getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 8));
-        getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 13));
+        getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(GeneralHelper.round(halleffectData.getMotorTemp(), 2) + "C", LCDConstants.NUM_COLS - 8));
+        getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(GeneralHelper.round(halleffectData.getControllerTemp(), 2) + "C", LCDConstants.NUM_COLS - 13));
     }
 
     public void performAction3() {

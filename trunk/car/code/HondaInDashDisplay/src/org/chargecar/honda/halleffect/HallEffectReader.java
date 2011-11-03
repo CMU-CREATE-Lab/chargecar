@@ -14,6 +14,8 @@ import java.util.Date;
 class HallEffectReader extends StreamingSerialPortReader<HallEffectEvent> {
     private static final Logger LOG = Logger.getLogger(HallEffectReader.class);
     private static final Character SENTENCE_DELIMETER = '\n';
+    private static final String WORD_DELIMETER = ",";
+    private static final int NUM_WORDS_PER_SENTENCE = 3;
 
     HallEffectReader(final String serialPortName) {
         this(new DefaultSerialIOManager(HallEffectReader.class.getClass().getSimpleName(),
@@ -30,16 +32,30 @@ class HallEffectReader extends StreamingSerialPortReader<HallEffectEvent> {
     }
 
     protected void processSentence(final Date timestamp, final byte[] sentenceBytes) {
-      
-        if (sentenceBytes != null) {
-            final String sentence = new String(sentenceBytes).trim();
 
-            try {
-                final int value = Integer.parseInt(sentence);
-                publishDataEvent(new HallEffectEvent(timestamp, value));
-            } catch (NumberFormatException e) {
-                LOG.error("HallEffectReader.processSentence(): failed to parse string [" + sentence + "] as int.  Ignoring.");
-            }
-        }
+        final String sentence = new String(sentenceBytes);
+
+         // process the sentence and then create the SensorBoardEvent
+         final String[] words = sentence.split(WORD_DELIMETER);
+         if (words.length >= NUM_WORDS_PER_SENTENCE)
+            {
+            final Integer speed = Integer.parseInt(words[0]);
+            final Double motorTemp = Double.parseDouble(words[1]);
+            final Double controllerTemp = Double.parseDouble(words[2]);
+
+            if (speed != null &&
+                motorTemp != null &&
+                controllerTemp != null)
+               {
+               publishDataEvent(new HallEffectEvent(timestamp,
+                                                     speed,
+                                                     motorTemp,
+                                                     controllerTemp));
+               }
+            } else {
+             LOG.error("HallEffectReader.processSentence(): failed to parse string [" + sentence + "] as int.  Ignoring.");
+         }
+
+
     }
 }
