@@ -642,7 +642,7 @@ public final class LCDProxy implements LCD {
     }
 
     public void writeMarkerToFile() {
-        LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " (" + System.currentTimeMillis() + ") =============================================================");
+        DATA_LOG.info("============================================================= MARK " + markValue.getAndIncrement() + " (" + System.currentTimeMillis() + ") =============================================================");
     }
     //chargecar end
 
