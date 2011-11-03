@@ -59,13 +59,15 @@ public final class HallEffectManager extends StreamingSerialPortDeviceManager<Ha
                         do {
                             sleep(100);
                             isReadingCount++;
-                        } while (!hallEffectManager.isReading() && isReadingCount < 20);
+                        } while (!hallEffectManager.isReading() && isReadingCount < 80);
 
                         LOG.debug("HallEffectManager isReading: " + hallEffectManager.isReading());
 
+                        int getDataCount = 0;
                         do {
                             sleep(100);
-                        } while (hallEffectManager.getData() == null);
+                            getDataCount++;
+                        } while (hallEffectManager.getData() == null && getDataCount < 80);
 
                         LOG.debug("HallEffectManager getData: " + hallEffectManager.getData());
                         if (hallEffectManager.getData() == null) {
