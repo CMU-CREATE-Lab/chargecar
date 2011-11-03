@@ -11,7 +11,6 @@ import org.chargecar.honda.halleffect.HallEffectEvent;
 import org.chargecar.lcddisplay.*;
 import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.helpers.GeneralHelper;
-import org.chargecar.lcddisplay.helpers.PostgresqlConnect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,12 +29,12 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     private GPSManager gpsManager = null;
     private GPSEvent gpsData = null;
     private int currentState = 1;
-    private PostgresqlConnect postgresqlConnection = null;
-    private static final String roadTable = "pa_2010_prisecroads";
-    private static final String cityStateTable = "us_2008_uac";
-    private static final String roadTablecolumnName = "fullname";
-    private static final String cityStateTablecolumnName = "name";
-    private static final String srid = "4269";
+    //private PostgresqlConnect postgresqlConnection = null;
+    //private static final String roadTable = "pa_2010_prisecroads";
+    //private static final String cityStateTable = "us_2008_uac";
+    //private static final String roadTablecolumnName = "fullname";
+    //private static final String cityStateTablecolumnName = "name";
+    //private static final String srid = "4269";
 
     //number of performAction methods there are in this class, set all to true so that
     //the first time we enter the action we print out their headings
@@ -213,7 +212,12 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             getCharacterDisplay().setLine(3, "v                   ");
         }
 
-        if (postgresqlConnection == null || latString == null || lngString == null) {
+        /*if (postgresqlConnection == null || latString == null || lngString == null) {
+            getCharacterDisplay().setLine(2, "  Error Connecting.");
+            return;
+        }*/
+
+        if (latString == null || lngString == null) {
             getCharacterDisplay().setLine(2, "  Error Connecting.");
             return;
         }
@@ -224,7 +228,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         final double lng = latLng.get(1);
 
         //http://www.macgeekery.com/hacks/software/using_postgis_reverse_geocode
-        final List<List> road = postgresqlConnection.makeQuery(postgresqlConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.005;");
+        /*final List<List> road = postgresqlConnection.makeQuery(postgresqlConnection.getConn(), 1, "SELECT " + roadTablecolumnName + " FROM " + roadTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.005;");
         final List<List> cityState = postgresqlConnection.makeQuery(postgresqlConnection.getConn(), 1, "SELECT " + cityStateTablecolumnName + " FROM " + cityStateTable + " WHERE (the_geom && expand(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), 1) ) AND distance(setsrid(makepoint(" + lng + "," + lat + "), " + srid + "), the_geom) < 0.005;");
 
         if (road == null || road.size() == 0 || road.get(0) == null || cityState == null || cityState.size() == 0 || cityState.get(0) == null) {
@@ -234,7 +238,10 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         }
 
         getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(road.get(0).get(0)).replaceAll("\\[|\\]", ""), LCDConstants.NUM_COLS));
-        getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(cityState.get(0).get(0)), LCDConstants.NUM_COLS - 2));
+        getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(cityState.get(0).get(0)), LCDConstants.NUM_COLS - 2));*/
+
+        getCharacterDisplay().setLine(2, "Lat: " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lat,2)),LCDConstants.NUM_COLS - 5));
+        getCharacterDisplay().setLine(3, "v Lng: " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lng,2)),LCDConstants.NUM_COLS - 7));
     }
 
     public void upEvent() {
@@ -286,7 +293,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
     }
 
     protected void preActivate() {
-        postgresqlConnection = PostgresqlConnect.getInstance();
+        //postgresqlConnection = PostgresqlConnect.getInstance();
     }
 
     protected void postActivate() {

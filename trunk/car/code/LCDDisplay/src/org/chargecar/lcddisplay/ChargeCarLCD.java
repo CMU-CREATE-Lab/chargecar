@@ -6,7 +6,6 @@ import edu.cmu.ri.createlab.menu.Menu;
 import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
 import org.apache.log4j.Logger;
-import org.chargecar.lcddisplay.helpers.PostgresqlConnect;
 
 import java.util.Collections;
 import java.util.SortedSet;
@@ -101,7 +100,8 @@ public final class ChargeCarLCD {
                 TimeUnit.SECONDS);
 
         //connect to the postgreSQL database
-        PostgresqlConnect.getInstance();
+        //code left in, but we are disabling this feature
+        //PostgresqlConnect.getInstance();
     }
 
     public static SortedSet<String> getAvailableSerialPorts() {
