@@ -22,6 +22,11 @@ public class KnnPolicy implements Policy {
     private BatteryModel modelBatt;
     private String name = "Nearest Neighbor Policy";
     private int lookahead = 90;
+    private final File knnFileFolderPath;
+    
+    public KnnPolicy(String knnFileFolderPath){
+	this.knnFileFolderPath = new File(knnFileFolderPath);
+    }
     
     @Override
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
@@ -32,7 +37,7 @@ public class KnnPolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		File currentKnnTableFile = new File("C:/Users/astyler/Desktop/My Dropbox/school/ACRL/finalproject/work/knn/"+driver+".knn");
+		File currentKnnTableFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
@@ -52,8 +57,8 @@ public class KnnPolicy implements Policy {
 	double predictedFlow = getFlow(pf);
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
-	double minCapPower = modelCap.getMinPower(periodMS);
-	double maxCapPower = modelCap.getMaxPower(periodMS);
+	double minCapPower = modelCap.getMinPowerDrawable(periodMS);
+	double maxCapPower = modelCap.getMaxPowerDrawable(periodMS);
 	double capToMotorWatts = 0.0;
 	double batteryToCapWatts = 0.0;
 	double batteryToMotorWatts = 0.0;
@@ -108,7 +113,7 @@ public class KnnPolicy implements Policy {
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
 	List<Double> rates = new ArrayList<Double>(lookahead);
-	double sum = -modelCap.getMinPower(1000);
+	double sum = -modelCap.getMinPowerDrawable(1000);
 	int timesum = 0;
 	int index = 0;
 	Double powerD = knnTable.getPowers().get(powerIndex);

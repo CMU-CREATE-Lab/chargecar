@@ -31,8 +31,8 @@ public class ConsoleWriter implements Visualizer {
 		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue())+" :: "+ p.format(i2Percent) + " i2 reduction.");
 	    }	    
 
-	    for(Entry<String, Double> e : r.getTotalAmpHoursServedSums().entrySet()){
-		double ahbase = results.get(0).getTotalAmpHoursServedSums().get(e.getKey());
+	    for(Entry<String, Double> e : r.getTotalWattHoursServedSums().entrySet()){
+		double ahbase = results.get(0).getTotalWattHoursServedSums().get(e.getKey());
 		double ahPercent = 1 - (e.getValue() / ahbase);
 		System.out.println("   "+ e.getKey()+": "+d.format(e.getValue())+" :: "+ p.format(ahPercent) + " total Amp Hours served reduction");
 	    }	

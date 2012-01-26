@@ -34,6 +34,11 @@ public class KnnKdTreePolicy implements Policy {
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private final String name = "KNN ExtendedFeatures Policy";
+    private final File knnFileFolderPath;
+    
+    public KnnKdTreePolicy(String knnFileFolderPath){
+	this.knnFileFolderPath = new File(knnFileFolderPath);
+    }
     
     @Override
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
@@ -45,7 +50,7 @@ public class KnnKdTreePolicy implements Policy {
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
 		featKdTree = null;
-		File currentKnnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn2/"+driver+".knn");
+		File currentKnnTableFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);

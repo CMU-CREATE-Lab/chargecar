@@ -36,6 +36,7 @@ public class CSVWriter implements Visualizer {
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    for (SimulationResults r : results) {
 		double currentSquaredSum = 0.0;
+		
 		for (Double d : r.getBatteryCurrentSquaredIntegrals()) {
 		    currentSquaredSum += d;
 		    out.write(currentSquaredSum+",");
@@ -92,6 +93,26 @@ public class CSVWriter implements Visualizer {
     @Override
     public void visualizeDrivers(List<DriverResults> driverResults) {
 	// TODO Auto-generated method stub
+	
+    }
+
+    public void writeBatteryPowers(BatteryModel tripBattery) {
+	FileWriter fstream;
+	try {
+	    fstream = new FileWriter(filename);
+	    BufferedWriter out = new BufferedWriter(fstream);
+	    for(int i=0;i<tripBattery.getCurrentDrawHistory().size();i++){
+		double current = tripBattery.getCurrentDrawHistory().get(i);
+		double time = (double)tripBattery.getPeriodHistory().get(i) / 1000.0;
+		double power = current*tripBattery.getVoltage();
+		out.write(time+",");
+		out.write(power+"\n");		
+	    }
+	    out.close();
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	
     }
 }
