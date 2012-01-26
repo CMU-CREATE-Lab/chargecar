@@ -35,7 +35,7 @@ public class BoschConsoleWriter implements Visualizer {
 	    double chargeSpentSum = 0.0;
 	    System.out.println(r.getPolicyName() +", charge spent: ");
 			//	+ ", charge spent: " + d.format(baseChargeSpentSum));
-	    for (Double c : r.getChargeSpent()) {
+	    for (Double c : r.getWhSpent()) {
 		chargeSpentSum += c;
 		System.out.println("\t "+d.format(c));
 	    }

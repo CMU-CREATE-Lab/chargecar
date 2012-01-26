@@ -43,6 +43,7 @@ public class SimulatorTrainer {
 	}
 	
 	String gpxFolder = args[0];
+	String knnFolder = args[1];
 	File folder = new File(gpxFolder);
 	List<File> gpxFilesT = getGPXFiles(folder);
 	List<File> gpxFiles = new ArrayList<File>(gpxFilesT.size());
@@ -51,7 +52,7 @@ public class SimulatorTrainer {
 	}
 	
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
-	KnnTableTrainer policy = new KnnTableTrainer();
+	KnnTableTrainer policy = new KnnTableTrainer(knnFolder);
 	
 	int count = 0;
 	for (File tripFile : gpxFiles) {

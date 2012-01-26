@@ -20,10 +20,10 @@ public class PointFeatures implements Serializable {
     final private double longitude;
     final private double elevation;
     final private double bearing;
+    final private double planarDist;
     final private double acceleration;
     final private double speed;
-    final private double powerDemand;
-    final private double planarDist;
+    final private double powerDemand;    
     final private double totalPowerUsed;
     final private int periodMS;
     final private Calendar time;

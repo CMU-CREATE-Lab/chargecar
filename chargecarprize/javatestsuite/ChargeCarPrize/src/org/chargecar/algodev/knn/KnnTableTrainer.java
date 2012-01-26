@@ -15,6 +15,11 @@ import org.chargecar.prize.util.TripFeatures;
 public class KnnTableTrainer implements Policy {
     KnnTable table;
     String currentDriver;
+    final String knnFileFolderPath;
+    
+    public KnnTableTrainer(String knnFileFolderPath){
+	this.knnFileFolderPath = knnFileFolderPath;
+    }    
     
     public void parseTrip(Trip t){
 	updateDriverTable(t);
@@ -44,7 +49,7 @@ public class KnnTableTrainer implements Policy {
 	
 	FileOutputStream fos;
 	try {
-	    File knnTableFile = new File("C:/Users/astyler/Dropbox/school/ACRL/finalproject/work/knn2/"+currentDriver+".knn");
+	    File knnTableFile = new File(this.knnFileFolderPath+currentDriver+".knn");
 	    knnTableFile.createNewFile();
 	    fos = new FileOutputStream(knnTableFile);
 	    ObjectOutputStream oos = new ObjectOutputStream(fos);
