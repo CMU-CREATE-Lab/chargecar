@@ -26,18 +26,21 @@ public class KnnKdTreePolicy implements Policy {
     private KdTree featKdTree;
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead = 240; 
-    private final int neighbors = 7;
+    private final int lookahead; 
+    private final int neighbors;
     private int pointsTested = 0;
     
     private String currentDriver;
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private final String name = "KNN ExtendedFeatures Policy";
+    private final String shortName = "knnkd";
     private final File knnFileFolderPath;
     
-    public KnnKdTreePolicy(String knnFileFolderPath){
+    public KnnKdTreePolicy(String knnFileFolderPath, int neighbors, int lookahead){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
+	this.neighbors = neighbors;
+	this.lookahead = lookahead;
     }
     
     @Override
@@ -198,6 +201,11 @@ public class KnnKdTreePolicy implements Policy {
     public void loadState() {
 	// TODO Auto-generated method stub
 	
+    }
+
+    @Override
+    public String getShortName() {
+	return this.shortName;
     }
     
 }

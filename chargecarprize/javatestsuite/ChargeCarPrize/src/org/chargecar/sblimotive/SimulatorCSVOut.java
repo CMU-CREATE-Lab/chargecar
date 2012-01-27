@@ -1,73 +1,62 @@
-package org.chargecar.algodev;
+package org.chargecar.sblimotive;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.knn.KnnKdTreePolicy;
-import org.chargecar.algodev.knn.KnnPolicy;
-import org.chargecar.algodev.knn.KnnTableTrainer;
-import org.chargecar.prize.battery.BatteryModel;
-import org.chargecar.prize.battery.LiFePo4;
-import org.chargecar.prize.battery.SimpleCapacitor;
-import org.chargecar.prize.policies.NoCapPolicy;
-import org.chargecar.prize.policies.Policy;
-import org.chargecar.prize.util.GPXTripParser;
-import org.chargecar.prize.util.PointFeatures;
-import org.chargecar.prize.util.PowerFlowException;
-import org.chargecar.prize.util.PowerFlows;
-import org.chargecar.prize.util.SimulationResults;
-import org.chargecar.prize.util.Trip;
-import org.chargecar.prize.util.TripFeatures;
-import org.chargecar.prize.util.Vehicle;
-import org.chargecar.prize.visualization.ConsoleWriter;
-import org.chargecar.prize.visualization.Visualizer;
+import org.chargecar.algodev.*;
+import org.chargecar.algodev.knn.*;
+import org.chargecar.prize.battery.*;
+import org.chargecar.prize.policies.*;
+import org.chargecar.prize.util.*;
+import org.chargecar.prize.visualization.*;
 
 /**
- * DO NOT EDIT 
- * Simulates the car over trips, making estimates for demand based on
- * a KNN lookup over past history of driving.  History is defined by
- * the points stored in the *.knn files created using SimulatorTrainer
+ * DO NOT EDIT Runs the simulation of an electric car running over a commute
+ * defined by GPX file from real world commutes. Uses a compound energy storage
+ * Policy to decide whether to get/store power in either the capacitor or
+ * battery inside the car.
+ * 
+ * Competitors need only modify UserPolicy with their algorithm.
+ * 
  * @author Alex Styler
  * 
  */
-public class SimulatorKNN {
-    static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
+public class SimulatorCSVOut {    
+    static Vehicle civic = new Vehicle(1250, 1.988, 0.31, 0.015);
     static Visualizer visualizer = new ConsoleWriter();
-    
-    static double systemVoltage = 96;
+    static double systemVoltage = 400;
     static double batteryWhr = 50000;
-    static double capWhr = 50;
+    static double capWhr = 100;
+    static String csvFolder;
     /**
      * @param args
-     *            A pathname to a folder containing *.knn files for each driver
-     *            to be tested
-     *        	  e.g. java SimulatorKNN "C:\ccpdata\gpxdata\test" "C:\ccpdata\knnfolder" 
+     *            A pathname to a GPX file or folder containing GPX files (will
+     *            be recursively traversed)
+     *            Alternate policies to test, either in a referenced JAR file or 
+     *            within the project
+     *        	  e.g. java Simulator "C:\testdata\may" org.chargecar.policies.SpeedPolicy
+     *        	       java Simulator "C:\testdata" NaiveBufferPolicy SpeedPolicy
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	if (args == null || args.length < 2) {
-	    System.err.println("ERROR: Provide both GPX directory and KNN directory");
+	if (args == null || args.length < 3) {
+	    System.err.println("ERROR: Provide: GPX directory, KNN directory, and CSV output directory");
 	    System.exit(1);
 	}
 	
 	String gpxFolder = args[0];
 	String knnFolder = args[1];
-
+	csvFolder = args[2];
 	File folder = new File(gpxFolder);
-	List<File> gpxFiles;
-	if(folder.isDirectory()){
-	    gpxFiles = getGPXFiles(folder);
-    	}else{
-    	    gpxFiles = new ArrayList<File>();
-    	    gpxFiles.add(folder);
-    	}
-    	    
+	List<File> gpxFiles = getGPXFiles(folder);
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
+	
 	policies.add(new NoCapPolicy());
 	policies.add(new KnnKdTreePolicy(knnFolder,7,240));
+	policies.add(new OmniscientPolicy(1000000));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -75,7 +64,7 @@ public class SimulatorKNN {
 	
 	List<SimulationResults> results = simulateTrips(policies, gpxFiles);
 	visualizer.visualizeSummary(results);
-    }    
+    }
     
     private static List<SimulationResults> simulateTrips(List<Policy> policies,
 	    List<File> tripFiles) throws IOException {
@@ -83,17 +72,13 @@ public class SimulatorKNN {
 	for (Policy p : policies) {
 	    results.add(new SimulationResults(p.getName()));
 	}
-	int count = 0;
 	for (File tripFile : tripFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
-	    
 	    for (Trip t : tripsToTest) {
-		count++;
-		System.out.println("Trip "+count+": "+t.getPoints().size()+"points.");
 		for (int i = 0; i < policies.size(); i++) {
 		    try {
 			simulateTrip(policies.get(i), t, results.get(i));
-						
+			System.out.print('.');
 		    } catch (PowerFlowException e) {
 			e.printStackTrace();
 		    }
@@ -101,25 +86,29 @@ public class SimulatorKNN {
 	    }
 	}
 	System.out.println();
-	System.out.println("Trips tested: "+count);
 	return results;
     }
     
     private static void simulateTrip(Policy policy, Trip trip,
 	    SimulationResults results) throws PowerFlowException {
-	BatteryModel tripBattery = new LiFePo4(batteryWhr, batteryWhr, systemVoltage);
+	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr, systemVoltage);
 	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
 	results.addTrip(trip, tripBattery, tripCap);
+	CSVWriter writer = new CSVWriter(csvFolder+"\\"+policy.getShortName()+"\\"+trip.getFeatures().getFileName()+".csv");
+	writer.writeBatteryPowers(tripBattery);
     }
     
     private static void simulate(Policy policy, Trip trip,
 	    BatteryModel battery, BatteryModel cap) throws PowerFlowException {
 	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
 		.createClone());
+	if(policy.getName().equals("Omniscient Policy")){
+	    ((OmniscientPolicy)policy).parseTrip(trip);
+	}
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
-	   // pf.adjust(point.getPowerDemand());
+	    pf.adjust(point.getPowerDemand());
 	    battery.drawPower(pf.getBatteryToCapacitor()
 		    + pf.getBatteryToMotor(), point);
 	    cap.drawPower(pf.getCapacitorToMotor()
@@ -146,7 +135,8 @@ public class SimulatorKNN {
     
     static List<File> getGPXFiles(File gpxFolder) {
 	List<File> gpxFiles = new ArrayList<File>();
-	File[] files = gpxFolder.listFiles();
+	if(gpxFolder.isDirectory()){
+	    File[] files = gpxFolder.listFiles();	    
 	for (File f : files) {
 	    if (f.isDirectory()) {
 		gpxFiles.addAll(getGPXFiles(f));
@@ -156,6 +146,11 @@ public class SimulatorKNN {
 		gpxFiles.add(f);
 	    }
 	}
+	}
+	else{
+	    gpxFiles.add(gpxFolder);
+	}
+	
 	return gpxFiles;
     }
 }

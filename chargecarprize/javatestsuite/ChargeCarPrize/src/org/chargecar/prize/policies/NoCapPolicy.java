@@ -37,4 +37,8 @@ public class NoCapPolicy implements Policy {
 	return "No Capacitor Policy";
     }
 
+    @Override
+    public String getShortName() {
+	return "nocap";
+    }
 }

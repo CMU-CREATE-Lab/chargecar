@@ -146,7 +146,7 @@ public class SimulatorBombardier {
 	List<Trip> trips = new ArrayList<Trip>();
 	List<PointFeatures> tripPoints = CSVTripParser.parseTrips(csvFile, civic);
 	String driverName = "Bombardier";
-	TripFeatures tf = new TripFeatures(driverName, civic, tripPoints.get(0));
+	TripFeatures tf = new TripFeatures(driverName, "def", civic, tripPoints.get(0));
 	trips.add(new Trip(tf, tripPoints));
 	return trips;
     }

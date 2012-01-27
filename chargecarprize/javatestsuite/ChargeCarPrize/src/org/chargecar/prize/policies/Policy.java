@@ -27,4 +27,6 @@ public interface Policy {
     
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 	    BatteryModel capacitorClone);
+
+    public String getShortName();
 }

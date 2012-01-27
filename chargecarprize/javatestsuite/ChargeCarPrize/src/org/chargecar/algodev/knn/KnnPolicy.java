@@ -21,11 +21,16 @@ public class KnnPolicy implements Policy {
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private String name = "Nearest Neighbor Policy";
+    private String shortName = "knn";
     private int lookahead = 90;
     private final File knnFileFolderPath;
     
     public KnnPolicy(String knnFileFolderPath){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
+    }
+    @Override
+    public String getShortName() {
+	return this.shortName;
     }
     
     @Override

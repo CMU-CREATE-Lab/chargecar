@@ -1,6 +1,7 @@
 package org.chargecar.prize.visualization;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -99,7 +100,9 @@ public class CSVWriter implements Visualizer {
     public void writeBatteryPowers(BatteryModel tripBattery) {
 	FileWriter fstream;
 	try {
-	    fstream = new FileWriter(filename);
+	    File tfile = new File(filename);
+	    tfile.getParentFile().mkdirs();
+	    fstream = new FileWriter(tfile);
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    for(int i=0;i<tripBattery.getCurrentDrawHistory().size();i++){
 		double current = tripBattery.getCurrentDrawHistory().get(i);
