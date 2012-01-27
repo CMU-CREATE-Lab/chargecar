@@ -153,11 +153,11 @@ public class SimulatorOmniscient {
 	GPXTripParser gpxparser = new GPXTripParser();
 	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, civic)) {
 	    String driverName = gpxFile.getParentFile().getName();
-	    TripFeatures tf = new TripFeatures(driverName, civic, tripPoints
+	    TripFeatures tf = new TripFeatures(driverName, "",civic, tripPoints
 		    .get(0));
 	    trips.add(new Trip(tf, tripPoints));
-	    gpxparser.clear();
-	}
+	    
+	}gpxparser.clear();
 	return trips;
     }
     

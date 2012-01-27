@@ -22,9 +22,15 @@ public class NaiveBufferPolicy implements Policy {
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private String name = "Naive Buffer Policy";
+    private String shortName = "naive";
     
     public NaiveBufferPolicy() {
 	// no policy-wide-state, only per-trip state
+    }
+    
+    @Override
+    public String getShortName() {
+	return this.shortName;
     }
     
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,

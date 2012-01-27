@@ -23,18 +23,18 @@ public class OmniscientPolicy implements Policy {
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
 	optimalBatteryDraw = new ArrayList<Double>(points.size());
-	List<Double> cumulativeSum = new ArrayList<Double>(points.size());
+	List<Double> cumulativeSumJoules = new ArrayList<Double>(points.size());
 	List<Integer> timeStamps = new ArrayList<Integer>(points.size());
 	List<Double> rates = new ArrayList<Double>(points.size());
-	double sum = 0;
+	double sumJoules = 0;
 	int timesum = 0;
 	
 	for(PointFeatures pf : points){
-	    sum += pf.getPowerDemand();
+	    sumJoules += (pf.getPowerDemand()*pf.getPeriodMS())/1000.0;
 	    timesum += pf.getPeriodMS();
-	    cumulativeSum.add(sum);
+	    cumulativeSumJoules.add(sumJoules);
 	    timeStamps.add(timesum);
-	    rates.add(1000*sum/timesum);
+	    rates.add(1000*sumJoules/timesum);
 	}
 	
 	
@@ -50,23 +50,27 @@ public class OmniscientPolicy implements Policy {
 
 	    int timesub = timeStamps.get(startInd);
 	    for(int i = startInd+1;i<rates.size();i++){
-		cumulativeSum.set(i, cumulativeSum.get(i)-maxRate*timesub/1000);
+		cumulativeSumJoules.set(i, cumulativeSumJoules.get(i)-(maxRate*timesub)/1000.0);
 		timeStamps.set(i, timeStamps.get(i)-timesub);
-		rates.set(i,1000*cumulativeSum.get(i)/timeStamps.get(i));
+		rates.set(i,1000.0*cumulativeSumJoules.get(i)/timeStamps.get(i));
 	    }
 	}
 	optimalBatteryDraw = rates;
-
     }
+    
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private String name = "Omniscient Policy";
-    
+    private String shortName = "omni";
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 	    BatteryModel capacitorClone) {
 	modelCap = capacitorClone;
 	modelBatt = batteryClone;
 	currentIndex = 0;
+    }
+    @Override
+    public String getShortName() {
+	return this.shortName;
     }
     
     @Override

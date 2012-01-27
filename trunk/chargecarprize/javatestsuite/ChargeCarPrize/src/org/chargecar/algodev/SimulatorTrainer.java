@@ -68,14 +68,17 @@ public class SimulatorTrainer {
     
     private static List<Trip> parseTrips(File gpxFile) throws IOException {
 	List<Trip> trips = new ArrayList<Trip>();
+	int i=0;
 	GPXTripParser gpxparser = new GPXTripParser();
 	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, civic)) {
 	    String driverName = gpxFile.getParentFile().getName();
-	    TripFeatures tf = new TripFeatures(driverName, civic, tripPoints
+	    String fileName = driverName+gpxFile.getName().substring(0, gpxFile.getName().lastIndexOf('.'))+"_"+i;
+	    TripFeatures tf = new TripFeatures(driverName, fileName, civic, tripPoints
 		    .get(0));
-	    trips.add(new Trip(tf, tripPoints));	    
+	    trips.add(new Trip(tf, tripPoints));
+	    gpxparser.clear();
+	    i++;
 	}
-	gpxparser.clear();
 	return trips;
     }
     

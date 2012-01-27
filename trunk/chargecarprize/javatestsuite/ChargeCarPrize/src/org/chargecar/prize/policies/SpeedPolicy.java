@@ -22,6 +22,12 @@ public class SpeedPolicy implements Policy {
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private String name = "Speed Trickle Policy";
+    private String shortName = "speed";
+    
+    @Override
+    public String getShortName() {
+	return this.shortName;
+    }
     
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 	    BatteryModel capacitorClone) {

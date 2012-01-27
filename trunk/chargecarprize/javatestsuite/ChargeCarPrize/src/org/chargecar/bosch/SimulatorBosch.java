@@ -152,7 +152,7 @@ public class SimulatorBosch {
     private static Trip parseTrip(File csvFile) throws IOException {
 	List<PointFeatures> tripPoints = CSVTripParser.parseTrips(csvFile, boschSedan);
 	String driverName = "Bosch ACC";
-	TripFeatures tf = new TripFeatures(driverName, boschSedan, tripPoints.get(0));
+	TripFeatures tf = new TripFeatures(driverName, "def", boschSedan, tripPoints.get(0));
 	return new Trip(tf, tripPoints);
     }
     

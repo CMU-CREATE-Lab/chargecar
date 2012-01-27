@@ -17,9 +17,16 @@ public class KnnTableTrainer implements Policy {
     String currentDriver;
     final String knnFileFolderPath;
     
+    private final String shortName = "knntt";
+    
     public KnnTableTrainer(String knnFileFolderPath){
 	this.knnFileFolderPath = knnFileFolderPath;
     }    
+
+    @Override
+    public String getShortName() {
+	return this.shortName;
+    }
     
     public void parseTrip(Trip t){
 	updateDriverTable(t);
