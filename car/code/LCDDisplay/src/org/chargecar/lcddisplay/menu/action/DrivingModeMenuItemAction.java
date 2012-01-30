@@ -100,6 +100,18 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         halleffectManager = HallEffectManager.getInstance();
         halleffectData = halleffectManager.getData();
 
+        if (halleffectManager == null || halleffectData == null) {
+            LOG.error("DrivingModeMenuItemAction.performAction2(): halleffect is null");
+            getCharacterDisplay().setLine(0, "No connection to temperature sensor.");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+            return;
+        } else if (lcd == null) {
+            LOG.error("DrivingModeMenuItemAction.performAction3(): lcd is null");
+            return;
+        }
+
         if (printHeadings.get(1)) {
             printHeadings.set(1, false);
             getCharacterDisplay().setLine(0, "^ GENRL TEMPERATURES");
@@ -240,7 +252,7 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         getCharacterDisplay().setCharacter(2, 0, GeneralHelper.padLeft(String.valueOf(road.get(0).get(0)).replaceAll("\\[|\\]", ""), LCDConstants.NUM_COLS));
         getCharacterDisplay().setCharacter(3, 2, GeneralHelper.padLeft(String.valueOf(cityState.get(0).get(0)), LCDConstants.NUM_COLS - 2));*/
 
-        getCharacterDisplay().setLine(2, "Lat: " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lat,2)),LCDConstants.NUM_COLS - 5));
+        getCharacterDisplay().setLine(2, "  Lat: " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lat,2)),LCDConstants.NUM_COLS - 7));
         getCharacterDisplay().setLine(3, "v Lng: " + GeneralHelper.padLeft(String.valueOf(GeneralHelper.round(lng,2)),LCDConstants.NUM_COLS - 7));
     }
 
