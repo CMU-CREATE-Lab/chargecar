@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="ChargeCar" default="all">
+   <dirname property="base.directory" file="${ant.file}"/>
+   <property file="build.properties"/>
+
+   <!-- Paths -->
+   <path id="core-classpath">
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="elevation-map-generator-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="grid-float-indexer-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="gpx-elevation-converter-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="gpx-tool-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <path id="gpx-validator-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+   </path>
+
+   <path id="motionx-gps-raw-file-converter-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-user-interface.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
+   </path>
+
+   <path id="speed-calculator-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${core.build.dir}"/>
+      <pathelement path="${core-auth.build.dir}"/>
+
+      <!-- third-party jars -->
+      <pathelement path="${commons-io.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${create-lab-commons-xml.jar}"/>
+      <pathelement path="${jdom.jar}"/>
+      <pathelement path="${joda-time.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${mysql-connector.jar}"/>
+   </path>
+
+   <!-- Compiler resources -->
+   <patternset id="compiler.resources">
+      <!-- excluded files -->
+      <exclude name="**/CVS/**"/>
+      <exclude name="**/SCCS/**"/>
+      <exclude name="**/RCS/**"/>
+      <exclude name="**/rcs/**"/>
+      <exclude name="**/.DS_Store/**"/>
+      <exclude name="**/.svn/**"/>
+      <!-- included files -->
+      <include name="**/?*.properties"/>
+      <include name="**/?*.xml"/>
+      <include name="**/?*.htm"/>
+      <include name="**/?*.html"/>
+      <include name="**/?*.dtd"/>
+      <include name="**/?*.tld"/>
+      <include name="**/?*.xsd"/>
+      <include name="**/?*.xsl"/>
+      <include name="**/?*.gif"/>
+      <include name="**/?*.png"/>
+      <include name="**/?*.jpeg"/>
+      <include name="**/?*.jpg"/>
+      <include name="**/?*.dll"/>
+      <include name="**/?*.lib"/>
+      <include name="**/?*.ice"/>
+      <include name="**/?*.pem"/>
+   </patternset>
+
+   <tstamp>
+      <format property="build.timestamp" pattern="yyyy-MM-dd hh:mm:ss a z"/>
+   </tstamp>
+
+   <target name="all" depends="clean, dist" description="clean, then build everything"/>
+
+   <target name="clean" depends="clean-core,
+                                 clean-elevation-map-generator,
+                                 clean-grid-float-indexer,
+                                 clean-gpx-elevation-converter,
+                                 clean-gpx-tool,
+                                 clean-gpx-validator,
+                                 clean-motionx-gps-raw-file-converter,
+                                 clean-speed-calculator" description="clean up everything"/>
+
+   <target name="clean-core" description="clean up core">
+      <delete dir="${core.build.dir}"/>
+      <delete dir="${core-auth.build.dir}"/>
+      <delete dir="${core.dist.dir}"/>
+   </target>
+
+   <target name="clean-elevation-map-generator" description="clean up elevation-map-generator">
+      <delete dir="${elevation-map-generator.build.dir}"/>
+      <delete dir="${elevation-map-generator.dist.dir}"/>
+   </target>
+
+   <target name="clean-grid-float-indexer" description="clean up grid-float-indexer">
+      <delete dir="${grid-float-indexer.build.dir}"/>
+      <delete dir="${grid-float-indexer.dist.dir}"/>
+   </target>
+
+   <target name="clean-gpx-elevation-converter" description="clean up gpx-elevation-converter">
+      <delete dir="${gpx-elevation-converter.build.dir}"/>
+      <delete dir="${gpx-elevation-converter.dist.dir}"/>
+   </target>
+
+   <target name="clean-gpx-tool" description="clean up gpx-tool">
+      <delete dir="${gpx-tool.build.dir}"/>
+      <delete dir="${gpx-tool.dist.dir}"/>
+   </target>
+
+   <target name="clean-gpx-validator" description="clean up gpx-validator">
+      <delete dir="${gpx-validator.build.dir}"/>
+      <delete dir="${gpx-validator.dist.dir}"/>
+   </target>
+
+   <target name="clean-motionx-gps-raw-file-converter" description="clean up motionx-gps-raw-file-converter">
+      <delete dir="${motionx-gps-raw-file-converter.build.dir}"/>
+      <delete dir="${motionx-gps-raw-file-converter.dist.dir}"/>
+   </target>
+
+   <target name="clean-speed-calculator" description="clean up speed-calculator">
+      <delete dir="${speed-calculator.build.dir}"/>
+      <delete dir="${speed-calculator.dist.dir}"/>
+   </target>
+
+   <target name="build" depends="build-core,
+                                 build-elevation-map-generator,
+                                 build-grid-float-indexer,
+                                 build-gpx-elevation-converter,
+                                 build-gpx-tool,
+                                 build-gpx-validator,
+                                 build-motionx-gps-raw-file-converter,
+                                 build-speed-calculator" description="builds the source code" unless="build-is-complete">
+      <property name="build-is-complete" value="true"/>
+   </target>
+
+   <target name="build-core" description="compiles the java source for core" unless="build-core-is-complete">
+      <!-- prompt the user for the passwords required to connect to the GridFloat Index database -->
+      <input message="GridFloat Index Database Username: " addproperty="gridfloat-index.database.connection.username"/>
+      <input message="GridFloat Index Database Password: " addproperty="gridfloat-index.database.connection.password"/>
+
+      <compile-code-and-copy-resources src.dir="${core.src.dir}"
+                                       build.dir="${core.build.dir}"
+                                       classpath-ref="core-classpath">
+         <resources-filterset>
+            <filterset>
+               <filter token="gpx-xsd.directory" value="${gpx.xsd.dir}"/>
+            </filterset>
+         </resources-filterset>
+      </compile-code-and-copy-resources>
+
+      <compile-code-and-copy-resources src.dir="${core-auth.src.dir}"
+                                       build.dir="${core-auth.build.dir}"
+                                       classpath-ref="core-classpath">
+         <resources-filterset>
+            <filterset>
+               <filter token="gridfloat-index.database.connection.username" value="${gridfloat-index.database.connection.username}"/>
+               <filter token="gridfloat-index.database.connection.password" value="${gridfloat-index.database.connection.password}"/>
+            </filterset>
+         </resources-filterset>
+      </compile-code-and-copy-resources>
+
+      <property name="build-core-is-complete" value="true"/>
+   </target>
+
+   <target name="build-elevation-map-generator" depends="build-core" description="compiles the java source for elevation-map-generator" unless="build-elevation-map-generator-is-complete">
+      <compile-code-and-copy-resources src.dir="${elevation-map-generator.src.dir}"
+                                       build.dir="${elevation-map-generator.build.dir}"
+                                       classpath-ref="elevation-map-generator-classpath"/>
+
+      <property name="build-elevation-map-generator-is-complete" value="true"/>
+   </target>
+
+   <target name="build-grid-float-indexer" depends="build-core" description="compiles the java source for grid-float-indexer" unless="build-grid-float-indexer-is-complete">
+      <compile-code-and-copy-resources src.dir="${grid-float-indexer.src.dir}"
+                                       build.dir="${grid-float-indexer.build.dir}"
+                                       classpath-ref="grid-float-indexer-classpath"/>
+
+      <property name="build-grid-float-indexer-is-complete" value="true"/>
+   </target>
+
+   <target name="build-gpx-elevation-converter" depends="build-core" description="compiles the java source for gpx-elevation-converter" unless="build-gpx-elevation-converter-is-complete">
+      <compile-code-and-copy-resources src.dir="${gpx-elevation-converter.src.dir}"
+                                       build.dir="${gpx-elevation-converter.build.dir}"
+                                       classpath-ref="gpx-elevation-converter-classpath"/>
+
+      <property name="build-gpx-elevation-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="build-gpx-tool" depends="build-core" description="compiles the java source for gpx-tool" unless="build-gpx-tool-is-complete">
+      <compile-code-and-copy-resources src.dir="${gpx-tool.src.dir}"
+                                       build.dir="${gpx-tool.build.dir}"
+                                       classpath-ref="gpx-tool-classpath"/>
+
+      <property name="build-gpx-tool-is-complete" value="true"/>
+   </target>
+
+   <target name="build-gpx-validator" depends="build-core" description="compiles the java source for gpx-validator" unless="build-gpx-validator-is-complete">
+      <compile-code-and-copy-resources src.dir="${gpx-validator.src.dir}"
+                                       build.dir="${gpx-validator.build.dir}"
+                                       classpath-ref="gpx-validator-classpath"/>
+
+      <property name="build-gpx-validator-is-complete" value="true"/>
+   </target>
+
+   <target name="build-motionx-gps-raw-file-converter" depends="build-core" description="compiles the java source for motionx-gps-raw-file-converter" unless="build-motionx-gps-raw-file-converter-is-complete">
+      <compile-code-and-copy-resources src.dir="${motionx-gps-raw-file-converter.src.dir}"
+                                       build.dir="${motionx-gps-raw-file-converter.build.dir}"
+                                       classpath-ref="motionx-gps-raw-file-converter-classpath"/>
+
+      <property name="build-motionx-gps-raw-file-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="build-speed-calculator" depends="build-core" description="compiles the java source for speed-calculator" unless="build-speed-calculator-is-complete">
+      <compile-code-and-copy-resources src.dir="${speed-calculator.src.dir}"
+                                       build.dir="${speed-calculator.build.dir}"
+                                       classpath-ref="speed-calculator-classpath"/>
+
+      <property name="build-speed-calculator-is-complete" value="true"/>
+   </target>
+
+   <target name="dist" depends="dist-core,
+                                dist-elevation-map-generator,
+                                dist-grid-float-indexer,
+                                dist-gpx-elevation-converter,
+                                dist-gpx-tool,
+                                dist-gpx-validator,
+                                dist-motionx-gps-raw-file-converter,
+                                dist-speed-calculator" description="builds the project" unless="dist-is-complete">
+      <property name="dist-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-core" depends="build-core" description="builds the core" unless="dist-core-is-complete">
+      <create-dist component.name="core"/>
+      <create-dist component.name="core-auth">
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-core-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-elevation-map-generator" depends="dist-core, build-elevation-map-generator" description="builds the elevation-map-generator" unless="dist-elevation-map-generator-is-complete">
+      <create-dist component.name="elevation-map-generator">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.ElevationMapGenerator"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-elevation-map-generator-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-grid-float-indexer" depends="dist-core, build-grid-float-indexer" description="builds the grid-float-indexer" unless="dist-grid-float-indexer-is-complete">
+      <create-dist component.name="grid-float-indexer">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.GridFloatIndexer"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-grid-float-indexer-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-gpx-elevation-converter" depends="dist-core, build-gpx-elevation-converter" description="builds the gpx-elevation-converter" unless="dist-gpx-elevation-converter-is-complete">
+      <create-dist component.name="gpx-elevation-converter">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.GPXElevationConverter"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-gpx-elevation-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-gpx-tool" depends="dist-core, build-gpx-tool" description="builds the gpx-tool" unless="dist-gpx-tool-is-complete">
+      <create-dist component.name="gpx-tool">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.GPXTool"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-gpx-tool-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-gpx-validator" depends="dist-core, build-gpx-validator" description="builds the gpx-validator" unless="dist-gpx-validator-is-complete">
+      <create-dist component.name="gpx-validator">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.GPXValidator"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-gpx-validator-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-motionx-gps-raw-file-converter" depends="dist-core, build-motionx-gps-raw-file-converter" description="builds the motionx-gps-raw-file-converter" unless="dist-motionx-gps-raw-file-converter-is-complete">
+      <create-dist component.name="motionx-gps-raw-file-converter">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${create-lab-commons-user-interface.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${swing-layout.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <!-- Create the big honkin' jar containing all the jars from dist-motionx-gps-raw-file-converter. This -->
+      <!-- is merely for easy distribution. -->
+      <jar destfile="${motionx-gps-kmz-to-gpx-converter.jar}" update="yes" compress="true">
+         <zipgroupfileset dir="${motionx-gps-raw-file-converter.dist.dir}" includes="**/*.jar" excludes="${motionx-gps-kmz-to-gpx-converter.jar.filename}"/>
+         <manifest>
+            <attribute name="Built-By" value="${jar.built-by}"/>
+            <attribute name="Class-Path" value="."/>
+            <attribute name="Main-Class" value="org.chargecar.MotionXGPSRawFileConverter"/>
+         </manifest>
+      </jar>
+
+      <property name="dist-motionx-gps-raw-file-converter-is-complete" value="true"/>
+   </target>
+
+   <target name="dist-speed-calculator" depends="dist-core, build-speed-calculator" description="builds the speed-calculator" unless="dist-speed-calculator-is-complete">
+      <create-dist component.name="speed-calculator">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.SpeedCalculator"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${commons-io.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${create-lab-commons-xml.jar}"/>
+            <fileset file="${joda-time.jar}"/>
+            <fileset file="${mysql-connector.jar}"/>
+            <fileset file="${core.dist.dir}/${core.jar.filename}"/>
+            <fileset file="${core.dist.dir}/${core-auth.jar.filename}"/>
+         </additional-files-to-copy>
+      </create-dist>
+
+      <property name="dist-speed-calculator-is-complete" value="true"/>
+   </target>
+
+   <!-- ============================================================================================================ -->
+   <!-- Macro definitions -->
+   <!-- ============================================================================================================ -->
+
+   <macrodef name="compile-code-and-copy-resources">
+      <attribute name="classpath-ref"/>
+      <attribute name="build.dir"/>
+      <attribute name="src.dir"/>
+      <element name="resources-filterset" optional="true"/>
+      <sequential>
+         <!-- create the build directory -->
+         <mkdir dir="@{build.dir}"/>
+
+         <!-- compile code -->
+         <javac srcdir="@{src.dir}"
+                destdir="@{build.dir}"
+                classpathref="@{classpath-ref}"
+                debug="${java.compiler.debug}"
+                nowarn="${java.compiler.generate.no.warnings}"
+                memorymaximumsize="${java.compiler.max.memory}"
+                source="${java.compiler.source.level}"
+                target="${java.compiler.target.level}"
+                fork="true"
+                includeantruntime="false">
+            <compilerarg line="${java.compiler.args}"/>
+         </javac>
+
+         <!-- copy resources -->
+         <copy todir="@{build.dir}">
+            <fileset dir="@{src.dir}">
+               <patternset refid="compiler.resources"/>
+            </fileset>
+            <resources-filterset/>
+         </copy>
+
+      </sequential>
+   </macrodef>
+
+   <macrodef name="create-dist">
+      <attribute name="component.name"/>
+      <element name="jar-manifest-attributes" optional="true"/>
+      <element name="additional-files-to-copy" optional="true"/>
+      <sequential>
+         <!-- create the dist directory -->
+         <mkdir dir="${@{component.name}.dist.dir}"/>
+
+         <!-- copy required jar files -->
+         <copy todir="${@{component.name}.dist.dir}" flatten="true">
+            <fileset file="${jdom.jar}"/>
+            <fileset file="${log4j.jar}"/>
+            <additional-files-to-copy/>
+         </copy>
+
+         <!-- define the execution classpath for use in the scripts -->
+         <path id="@{component.name}.execution.classpath.elements">
+            <pathelement location="${@{component.name}.dist.dir}"/>
+            <fileset dir="${@{component.name}.dist.dir}">
+               <include name="**/*.jar"/>
+            </fileset>
+         </path>
+
+         <!-- Set up a path id for the dist directory so it contains the correct kind of slashes when we do the pathconvert mapping -->
+         <path id="dist-@{component.name}.dir.before-conversion" path="${@{component.name}.dist.dir}"/>
+
+         <!-- Convert the dist directory path for the target platform to ensure that all the slashes are in the right direction -->
+         <pathconvert property="dist-@{component.name}.dir.after-conversion" dirsep="/" pathsep=":" refid="dist-@{component.name}.dir.before-conversion"/>
+
+         <!-- Create the classpath -->
+         <pathconvert property="@{component.name}.execution.classpath" dirsep="/" pathsep=" " refid="@{component.name}.execution.classpath.elements">
+            <map from="${dist-@{component.name}.dir.after-conversion}" to="."/>
+         </pathconvert>
+
+         <!-- create jar of Java classes -->
+         <jar destfile="${@{component.name}.dist.dir}/${@{component.name}.jar.filename}"
+              basedir="${@{component.name}.build.dir}"
+              update="no"
+              compress="true">
+            <manifest>
+               <attribute name="Built-By" value="${jar.built-by}"/>
+               <attribute name="Build-Timestamp" value="${build.timestamp}"/>
+               <attribute name="Class-Path" value="${@{component.name}.execution.classpath}"/>
+               <jar-manifest-attributes/>
+            </manifest>
+         </jar>
+
+      </sequential>
+   </macrodef>
+
+</project>

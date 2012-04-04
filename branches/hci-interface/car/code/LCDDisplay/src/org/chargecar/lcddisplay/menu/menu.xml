@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE menu PUBLIC "-//CREATE Lab//Menu//EN" "http://www.createlab.ri.cmu.edu/dtd/terk/menu/menu.dtd">
+
+<menu welcome-text="     Welcome to          ChargeCar!">
+    <item text="[*] Driving Mode  [ ] Charging Mode [ ] Drive History [ ] Options">
+        <item text="">
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.DrivingModeMenuItemAction"/>
+        </item>
+    </item>
+    <item text="[ ] Driving Mode  [*] Charging Mode [ ] Drive History [ ] Options">
+        <item text="">
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.ChargingModeMenuItemAction"/>
+        </item>
+    </item>
+    <item text="[ ] Driving Mode  [ ] Charging Mode [*] Drive History [ ] Options">
+        <item text="">
+            <implementation-class name="org.chargecar.lcddisplay.menu.action.DriveHistoryMenuItemAction"/>
+        </item>
+    </item>
+    <item text="[ ] Driving Mode  [ ] Charging Mode [ ] Drive History [*] Options">
+        <item text="[*] Toggle Acc.   [ ] Error Codes   [ ] Settings      [ ] Version Info">
+            <item text="[*] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating  [ ] Batt Testing">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.ToggleDisplayBackLightMenuItemAction">
+                        <property key="action.prompt">Enable LCD          Backlight?</property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1">LCD backlight       enabled.</property>
+                        <property key="action.option2">LCD backlight       disabled.</property>
+                    </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] LCD Backlight [*] Batt Cooling  [ ] Batt Heating  [ ] Batt Testing">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.ToggleBatteryCoolingMenuItemAction">
+                        <property key="action.prompt">Enable Battery      Cooling?</property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1">Battery cooling     enabled.</property>
+                        <property key="action.option2">Battery cooling     disabled.</property>
+                    </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] LCD Backlight [ ] Batt Cooling  [*] Batt Heating  [ ] Batt Testing">
+                <item text="[*] Toggle Batt       Heating       [ ] Set Batt          Heater Cutoff">
+                    <item text="">
+                        <implementation-class
+                                name="org.chargecar.lcddisplay.menu.action.ToggleBatteryHeatingMenuItemAction">
+                            <property key="action.prompt">Enable Battery      Heating?</property>
+                            <property key="action.cancel">Cancelled!</property>
+                            <property key="choice.option1">Enable </property>
+                            <property key="choice.option2">Disable</property>
+                            <property key="action.option1">Battery heating     enabled.</property>
+                            <property key="action.option2">Battery heating     disabled.</property>
+                        </implementation-class>
+                    </item>
+                </item>
+                <item text="[ ] Toggle Batt       Heating       [*] Set Batt          Heater Cutoff">
+                    <item text="">
+                        <implementation-class
+                                name="org.chargecar.lcddisplay.menu.action.SetBatteryHeaterCutoffTempMenuItemAction"/>
+                    </item>
+                </item>
+            </item>
+            <item text="[ ] LCD Backlight [ ] Batt Cooling  [ ] Batt Heating  [*] Batt Testing">
+                <item text="">
+                    <implementation-class name="org.chargecar.lcddisplay.menu.action.BatteryTestMenuItemAction"/>
+                </item>
+            </item>
+        </item>
+        <item text="[ ] Toggle Acc.   [*] Error Codes   [ ] Settings      [ ] Version Info">
+            <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.ErrorCodesMenuItemAction"/>
+            </item>
+         </item>
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [*] Settings      [ ] Version Info">
+           <item text="[*] Reset Trip    [ ] Energy-Costs  [ ] Acc. Buttons  [ ] Transfer Files">
+                <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.ResetTripDataMenuItemAction">
+                            <property key="action.prompt">Reset Trip Data?</property>
+                            <property key="action.cancel">Cancelled!</property>
+                            <property key="choice.option1">Yes  </property>
+                            <property key="choice.option2">No</property>
+                            <property key="action.option1">Trip data was reset.</property>
+                            <property key="action.option2">Trip data was not   reset.</property>
+                </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] Reset Trip    [*] Energy-Costs  [ ] Acc. Buttons  [ ] Transfer Files">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.ChangeEnergyCostRatesMenuItemAction">
+                        <property key="action.prompt"> </property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1"> </property>
+                        <property key="action.option2"> </property>
+                    </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] Reset Trip    [ ] Energy-Costs  [*] Acc. Buttons  [ ] Transfer Files">
+                <item text="">
+                    <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.ChangeAccessoryButtonsMenuItemAction">
+                        <property key="action.prompt"> </property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1"> </property>
+                        <property key="action.option2"> </property>
+                    </implementation-class>
+                </item>
+            </item>
+            <item text="[ ] Reset Trip    [ ] Energy-Costs  [ ] Acc. Buttons  [*] Transfer Files">
+                <item text="[*] Download Logs [ ] Update Program">
+                  <item text="">
+                  <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.CopyLogsToUsbMenuItemAction">
+                        <property key="action.prompt"> </property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1"> </property>
+                        <property key="action.option2"> </property>
+                  </implementation-class>
+                  </item>
+                </item>
+                <item text="[ ] Download Logs [*] Update Program">
+                  <item text="">
+                  <implementation-class
+                            name="org.chargecar.lcddisplay.menu.action.UpdateLCDSoftwareMenuItemAction">
+                        <property key="action.prompt"> </property>
+                        <property key="action.cancel">Cancelled!</property>
+                        <property key="choice.option1">Enable </property>
+                        <property key="choice.option2">Disable</property>
+                        <property key="action.option1"> </property>
+                        <property key="action.option2"> </property>
+                  </implementation-class>
+                  </item>
+                </item>
+            </item>
+        </item>
+        <item text="[ ] Toggle Acc.   [ ] Error Codes   [ ] Settings      [*] Version Info">
+            <item text="">
+                <implementation-class name="org.chargecar.lcddisplay.menu.action.VersionInfoMenuItemAction"/>
+            </item>
+        </item>
+    </item>
+</menu>
