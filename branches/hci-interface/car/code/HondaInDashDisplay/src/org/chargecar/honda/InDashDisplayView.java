@@ -157,6 +157,14 @@ public final class InDashDisplayView extends JPanel
       grid.setLayout(layout);
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
+      		.add(bmsView.getStateOfChargeGauge())
+	  );
+      layout.setVerticalGroup(
+            layout.createSequentialGroup()
+      		.add(bmsView.getStateOfChargeGauge())
+		);
+      /*layout.setHorizontalGroup(
+            layout.createSequentialGroup()
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
                              .add(deadSpace)
                              .add(horizontalSpacer5)
@@ -164,6 +172,7 @@ public final class InDashDisplayView extends JPanel
                   )
                   .add(verticalSpacer1)
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
+                             .add(bmsView.getStateOfChargeGauge())
                              .add(sensorBoardView.getMotorTempGauge())
                              .add(horizontalSpacer1)
                              .add(bmsView.getMinimumCellTempGauge())
@@ -204,7 +213,6 @@ public final class InDashDisplayView extends JPanel
                              .add(bmsView.getLLIMSetGauge())
                              .add(bmsView.getCellNumWithLowestTempGauge())
                              .add(bmsView.getCellNumWithLowestVoltageGauge())
-                             .add(bmsView.getStateOfChargeGauge())
                              .add(batteryEquationPlus)
                              .add(bmsView.getDischargeOvercurrentGauge())
                   )
@@ -264,10 +272,10 @@ public final class InDashDisplayView extends JPanel
                              .add(horizontalSpacer3)
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
+                             .add(bmsView.getStateOfChargeGauge())
                              .add(bmsView.getPackTotalVoltageGauge())
                              .add(bmsView.getLoadCurrentAmpsGauge())
                              .add(bmsView.getDepthOfDischargeGauge())
-                             .add(bmsView.getStateOfChargeGauge())
                              .add(bmsView.getStateOfHealthGauge())
                   )
                   .add(layout.createParallelGroup(GroupLayout.LEADING)
@@ -295,6 +303,7 @@ public final class InDashDisplayView extends JPanel
                              .add(bmsView.getInterlockTrippedGauge())
                   )
       );
+		*/
 
       // register self as a connection state listener for the various models so we can display connection status
       bmsModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(bmsConnectionState));

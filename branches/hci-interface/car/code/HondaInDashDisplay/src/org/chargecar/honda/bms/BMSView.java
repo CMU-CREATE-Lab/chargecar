@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.chargecar.honda.Gauge;
+import org.chargecar.honda.ChargeGauge;
 import org.chargecar.honda.HondaConstants;
 import org.chargecar.honda.StreamingSerialPortDeviceView;
 
@@ -41,7 +42,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    private final Gauge<Double> loadCurrentAmpsGauge = new Gauge<Double>(RESOURCES.getString("label.load-current-amps"), "%6.2f");
    private final Gauge<Integer> depthOfDischargeGauge = new Gauge<Integer>(RESOURCES.getString("label.depth-of-discharge"), "%d");
 
-   private final Gauge<Integer> stateOfChargeGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-charge"), "%d");
+   private final ChargeGauge<Integer> stateOfChargeGauge = new ChargeGauge<Integer>(RESOURCES.getString("label.state-of-charge"), "%d");
    private final Gauge<Integer> stateOfHealthGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-health"), "%d");
 
    private final Gauge<Boolean> isInterlockTrippedGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-interlock-tripped"), "%s");
@@ -221,7 +222,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
       return depthOfDischargeGauge;
       }
 
-   public Gauge<Integer> getStateOfChargeGauge()
+   public ChargeGauge<Integer> getStateOfChargeGauge()
       {
       return stateOfChargeGauge;
       }
