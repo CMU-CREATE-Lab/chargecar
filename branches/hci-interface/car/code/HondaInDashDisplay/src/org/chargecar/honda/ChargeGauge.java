@@ -2,6 +2,8 @@ package org.chargecar.honda;
 
 import java.awt.Color;
 import java.awt.*;
+import java.awt.geom.Arc2D.*;
+import java.awt.geom.Arc2D;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -48,20 +50,23 @@ public final class ChargeGauge<T> extends JPanel
 		  DialBackground dialbackground = new DialBackground(gradientpaint);
 		  dialbackground.setGradientPaintTransformer(new StandardGradientPaintTransformer(GradientPaintTransformType.VERTICAL));
 		  dialplot.addLayer(dialbackground);
-		  StandardDialScale standarddialscale = new StandardDialScale(0.0D, 100D, 2D, 88D, 8D, 0);
+		  StandardDialScale standarddialscale = new StandardDialScale(0.0D, 100D, 2D, 86D, 0D, 0);
 		  standarddialscale.setTickRadius(0.9D);
 		  standarddialscale.setTickLabelOffset(0.060000000000000001D);
 		  standarddialscale.setMajorTickIncrement(25D);
 		  standarddialscale.setTickLabelFont(new Font("Dialog", 0, 14));
 		  dialplot.addScale(0, standarddialscale);
-		  org.jfree.chart.plot.dial.DialPointer.Pin pin = new org.jfree.chart.plot.dial.DialPointer.Pin();
-		  pin.setRadius(0.83999999999999997D);
+
+		  DialBar pin = new DialBar();
+
+		  pin.setRadius(0.78D);
+		  pin.setStroke(new BasicStroke(35F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		  dialplot.addLayer(pin);
 
 		  JFreeChart jfreechart = new JFreeChart(dialplot);
 		  ChartPanel chartpanel = new ChartPanel(jfreechart);
 		  chartpanel.setPreferredSize(new Dimension(400, 350));
-
+		  
 		  add(chartpanel);
 	  }
 
@@ -74,6 +79,7 @@ public final class ChargeGauge<T> extends JPanel
       setValue(s, Color.BLACK);
       }
 
+
    /**
     * Sets the gauge's value using the string format given to the constructor.  Assumes it is being called in the GUI
     * thread.
@@ -82,13 +88,10 @@ public final class ChargeGauge<T> extends JPanel
       {
       if (s != null)
          {
-         value.setForeground(defaultColor);
-         value.setText(String.format(stringFormat, s));
+			 dataset.setValue(Integer.parseInt(String.format(stringFormat, s)));
          }
       else
          {
-         value.setForeground(HondaConstants.RED);
-         value.setText(HondaConstants.UNKNOWN_VALUE);
          }
       }
    }
