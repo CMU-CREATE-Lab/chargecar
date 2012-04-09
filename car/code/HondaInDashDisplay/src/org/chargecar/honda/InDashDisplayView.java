@@ -2,8 +2,10 @@ package org.chargecar.honda;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.util.PropertyResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.BorderFactory;
@@ -12,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.OverlayLayout;
 import edu.cmu.ri.createlab.userinterface.GUIConstants;
 import edu.cmu.ri.createlab.userinterface.util.AbstractTimeConsumingAction;
 import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
@@ -113,7 +116,7 @@ public final class InDashDisplayView extends JPanel
 
       final JLabel batteryEquationEquals = SwingUtils.createLabel(RESOURCES.getString("label.equals"), GUIConstants.FONT_MEDIUM_LARGE);
       final JLabel batteryEquationPlus = SwingUtils.createLabel(RESOURCES.getString("label.plus"), GUIConstants.FONT_MEDIUM_LARGE);
-
+/*
       final JPanel row1 = new JPanel();
       row1.setBackground(Color.WHITE);
       row1.setLayout(new BoxLayout(row1, BoxLayout.X_AXIS));
@@ -137,6 +140,7 @@ public final class InDashDisplayView extends JPanel
       row2.add(Box.createGlue());
       row2.add(bmsView.getFaultStatusPanel());
       row2.add(Box.createGlue());
+*/
 
       final Component horizontalSpacer1 = SwingUtils.createRigidSpacer(30);
       final Component horizontalSpacer2 = SwingUtils.createRigidSpacer(30);
@@ -152,12 +156,32 @@ public final class InDashDisplayView extends JPanel
       final Component verticalSpacer5 = SwingUtils.createRigidSpacer(20);
       final Component verticalSpacer6 = SwingUtils.createRigidSpacer(20);
 
-      final JPanel grid = new JPanel();
+      final JPanel mainGauges = new JPanel();
       final GridLayout layout = new GridLayout(1,2);
-      grid.setBackground(Color.WHITE);
-      grid.setLayout(layout);
-			grid.add(motorControllerView.getRpmGauge());
-      		grid.add(bmsView.getStateOfChargeGauge());
+	  mainGauges.setOpaque(true);
+	  mainGauges.setLayout(layout);
+	  mainGauges.add(motorControllerView.getRpmGauge());
+	  mainGauges.add(bmsView.getStateOfChargeGauge());
+
+	  final JPanel secGauges = new JPanel();
+	  //secGauges.setPreferredSize(new Dimension(800,400));
+		secGauges.setOpaque(false);
+	  final BoxLayout secLayout = new BoxLayout(secGauges, BoxLayout.Y_AXIS);
+	  secGauges.setLayout(secLayout);
+
+	  secGauges.add(Box.createVerticalGlue());
+
+	final JPanel subScreen = new JPanel();
+	final FlowLayout sublayout = new FlowLayout();
+	subScreen.setOpaque(false);
+	subScreen.setLayout(sublayout);
+	subScreen.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
+	subScreen.add(Box.createRigidArea(new Dimension(190,30)));
+	//subScreen.add(bmsView.getMaximumCellVoltageGauge());
+	subScreen.add(bmsView.getLoadCurrentAmpsGauge());
+
+	secGauges.add(subScreen);
+	
 	  /*
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
@@ -317,14 +341,18 @@ public final class InDashDisplayView extends JPanel
       motorControllerModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(motorControllerConnectionState));
       sensorBoardModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(sensorBoardConnectionState));
 
-      this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-      this.add(Box.createGlue());
-      this.add(row1);
-      this.add(SwingUtils.createRigidSpacer(20));
-      this.add(row2);
-      this.add(SwingUtils.createRigidSpacer(20));
-      this.add(grid);
-      this.add(Box.createGlue());
+      //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+	  OverlayLayout mainLayout = new OverlayLayout(this);
+	  this.setLayout(mainLayout);
+      //this.add(Box.createGlue());
+//      this.add(row1);
+      //this.add(SwingUtils.createRigidSpacer(20));
+ //     this.add(row2);
+      //this.add(SwingUtils.createRigidSpacer(20));
+	  secGauges.setAlignmentY(0.0f);
+      this.add(secGauges);
+      this.add(mainGauges);
+      //this.add(Box.createGlue());
       }
 
    private abstract static class ButtonTimeConsumingAction extends AbstractTimeConsumingAction
@@ -382,4 +410,8 @@ public final class InDashDisplayView extends JPanel
          SwingUtils.runInGUIThread(isConnected ? isConnectedRunnable : isDisconnectedRunnable);
          }
       }
+   public boolean isOptimizedDrawingEnabled(){
+
+	   return false;
+   }
    }
