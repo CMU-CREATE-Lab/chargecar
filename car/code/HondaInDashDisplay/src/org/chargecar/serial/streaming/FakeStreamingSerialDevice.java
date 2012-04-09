@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import edu.cmu.ri.createlab.serial.SerialDeviceIOHelper;
+import java.util.Date;
+import java.lang.Thread;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -71,11 +73,22 @@ public abstract class FakeStreamingSerialDevice implements SerialIOManager
 
       public int read() throws IOException
          {
+			 try{
+
+			 Thread.currentThread().sleep(10);
+			 }
+			 catch(Exception e)
+			 {}
          return inputStream.read();
          }
 
       public int read(final byte[] buffer) throws IOException
          {
+			 try{
+			 Thread.currentThread().sleep(10);
+			 }
+			 catch(Exception e)
+			 {}
          return inputStream.read(buffer);
          }
 

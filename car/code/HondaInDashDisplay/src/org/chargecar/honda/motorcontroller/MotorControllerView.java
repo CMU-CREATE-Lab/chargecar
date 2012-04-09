@@ -2,6 +2,7 @@ package org.chargecar.honda.motorcontroller;
 
 import java.util.PropertyResourceBundle;
 import org.chargecar.honda.Gauge;
+import org.chargecar.honda.ChargeGauge;
 import org.chargecar.honda.HondaConstants;
 import org.chargecar.honda.StreamingSerialPortDeviceView;
 
@@ -12,9 +13,9 @@ public final class MotorControllerView extends StreamingSerialPortDeviceView<Mot
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(MotorControllerView.class.getName());
 
-   private final Gauge<String> rpmGauge = new Gauge<String>(RESOURCES.getString("label.rpm"), "%s");
+   private final ChargeGauge<Integer> rpmGauge = new ChargeGauge<Integer>(RESOURCES.getString("label.rpm"), "%s");
 
-   public Gauge<String> getRpmGauge()
+   public ChargeGauge<Integer> getRpmGauge()
       {
       return rpmGauge;
       }
@@ -25,11 +26,13 @@ public final class MotorControllerView extends StreamingSerialPortDeviceView<Mot
          {
          if (eventData.isError())
             {
-            rpmGauge.setValue(RESOURCES.getString("label.error") + " " + eventData.getErrorCode(), HondaConstants.RED);
+           // rpmGauge.setValue(RESOURCES.getString("label.error") + " " + eventData.getErrorCode(), HondaConstants.RED);
+				//rpmGauge.setValue(1);
             }
          else
             {
-            rpmGauge.setValue(eventData.getRPM() == null ? null : eventData.getRPM().toString());
+            	rpmGauge.setValue(eventData.getRPM() == null ? null : eventData.getRPM());
+				//rpmGauge.setValue(59);
             }
          }
       else
