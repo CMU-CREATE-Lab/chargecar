@@ -42,7 +42,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    private final Gauge<Double> loadCurrentAmpsGauge = new Gauge<Double>(RESOURCES.getString("label.load-current-amps"), "%6.2f");
    private final Gauge<Integer> depthOfDischargeGauge = new Gauge<Integer>(RESOURCES.getString("label.depth-of-discharge"), "%d");
 
-   private final ChargeGauge<Integer> stateOfChargeGauge = new ChargeGauge<Integer>(RESOURCES.getString("label.state-of-charge"), "%d");
+   private final ChargeGauge<Integer> stateOfChargeGauge = new ChargeGauge<Integer>(ChargeGauge.TYPE_CHARGE);
    private final Gauge<Integer> stateOfHealthGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-health"), "%d");
 
    private final Gauge<Boolean> isInterlockTrippedGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-interlock-tripped"), "%s");

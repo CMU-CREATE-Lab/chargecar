@@ -13,7 +13,7 @@ public final class MotorControllerView extends StreamingSerialPortDeviceView<Mot
    {
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(MotorControllerView.class.getName());
 
-   private final ChargeGauge<Integer> rpmGauge = new ChargeGauge<Integer>(RESOURCES.getString("label.rpm"), "%s");
+   private final ChargeGauge<Integer> rpmGauge = new ChargeGauge<Integer>(ChargeGauge.TYPE_RPM);
 
    public ChargeGauge<Integer> getRpmGauge()
       {
@@ -26,13 +26,11 @@ public final class MotorControllerView extends StreamingSerialPortDeviceView<Mot
          {
          if (eventData.isError())
             {
-           // rpmGauge.setValue(RESOURCES.getString("label.error") + " " + eventData.getErrorCode(), HondaConstants.RED);
-				//rpmGauge.setValue(1);
+				rpmGauge.setValue(1600, HondaConstants.RED);
             }
          else
             {
             	rpmGauge.setValue(eventData.getRPM() == null ? null : eventData.getRPM());
-				//rpmGauge.setValue(59);
             }
          }
       else
