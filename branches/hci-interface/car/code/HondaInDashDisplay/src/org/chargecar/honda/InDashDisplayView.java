@@ -26,6 +26,7 @@ import org.chargecar.honda.sensorboard.SensorBoardModel;
 import org.chargecar.honda.sensorboard.SensorBoardView;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
 import org.jdesktop.layout.GroupLayout;
+import java.awt.GridLayout;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -152,17 +153,23 @@ public final class InDashDisplayView extends JPanel
       final Component verticalSpacer6 = SwingUtils.createRigidSpacer(20);
 
       final JPanel grid = new JPanel();
-      final GroupLayout layout = new GroupLayout(grid);
+      final GridLayout layout = new GridLayout(1,2);
       grid.setBackground(Color.WHITE);
       grid.setLayout(layout);
+			grid.add(motorControllerView.getRpmGauge());
+      		grid.add(bmsView.getStateOfChargeGauge());
+	  /*
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
+			.add(motorControllerView.getRpmGauge())
       		.add(bmsView.getStateOfChargeGauge())
 	  );
       layout.setVerticalGroup(
             layout.createSequentialGroup()
+			.add(motorControllerView.getRpmGauge())
       		.add(bmsView.getStateOfChargeGauge())
 		);
+		*/
       /*layout.setHorizontalGroup(
             layout.createSequentialGroup()
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
@@ -172,7 +179,6 @@ public final class InDashDisplayView extends JPanel
                   )
                   .add(verticalSpacer1)
                   .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(bmsView.getStateOfChargeGauge())
                              .add(sensorBoardView.getMotorTempGauge())
                              .add(horizontalSpacer1)
                              .add(bmsView.getMinimumCellTempGauge())
