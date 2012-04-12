@@ -3,6 +3,7 @@ package org.chargecar.honda;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Dimension;
@@ -37,6 +38,8 @@ import java.awt.GridLayout;
 @SuppressWarnings({"CloneableClassWithoutClone"})
 public final class InDashDisplayView extends JPanel
    {
+	   private static String CARD_HOME = "Card for Home Screen";
+	   private static String CARD_INFO = "Card for Info Screen";
    private static final Logger LOG = Logger.getLogger(InDashDisplayView.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(InDashDisplayView.class.getName());
@@ -142,44 +145,71 @@ public final class InDashDisplayView extends JPanel
       row2.add(Box.createGlue());
 */
 
-      final Component horizontalSpacer1 = SwingUtils.createRigidSpacer(30);
-      final Component horizontalSpacer2 = SwingUtils.createRigidSpacer(30);
-      final Component horizontalSpacer3 = SwingUtils.createRigidSpacer(30);
-      final Component horizontalSpacer4 = SwingUtils.createRigidSpacer(30);
-      final Component horizontalSpacer5 = SwingUtils.createRigidSpacer(30);
-      final Component deadSpace = SwingUtils.createRigidSpacer(30);
-
-      final Component verticalSpacer1 = SwingUtils.createRigidSpacer(20);
-      final Component verticalSpacer2 = SwingUtils.createRigidSpacer(20);
-      final Component verticalSpacer3 = SwingUtils.createRigidSpacer(20);
-      final Component verticalSpacer4 = SwingUtils.createRigidSpacer(20);
-      final Component verticalSpacer5 = SwingUtils.createRigidSpacer(20);
-      final Component verticalSpacer6 = SwingUtils.createRigidSpacer(20);
-
       final JPanel mainGauges = new JPanel();
       final GridLayout layout = new GridLayout(1,2);
 	  mainGauges.setOpaque(true);
 	  mainGauges.setLayout(layout);
+	  mainGauges.setPreferredSize(new Dimension(800,420));
 	  mainGauges.add(motorControllerView.getRpmGauge());
 	  mainGauges.add(bmsView.getStateOfChargeGauge());
 
 	  final JPanel secGauges = new JPanel();
-	  //secGauges.setPreferredSize(new Dimension(800,400));
-		secGauges.setOpaque(false);
+	  secGauges.setPreferredSize(new Dimension(800,420));
+	  secGauges.setOpaque(false);
 	  final BoxLayout secLayout = new BoxLayout(secGauges, BoxLayout.Y_AXIS);
 	  secGauges.setLayout(secLayout);
 
-	  secGauges.add(Box.createVerticalGlue());
+	 //SideGauges: top bar to handle elements in top corners
+	JPanel sideGauges = new JPanel();
+	BoxLayout sidelayout = new BoxLayout(sideGauges, BoxLayout.X_AXIS);
+	sideGauges.setLayout(sidelayout);
+	sideGauges.setOpaque(false);
+	sideGauges.setPreferredSize(new Dimension(800,120));
+	sideGauges.setMaximumSize(new Dimension(800,120));
+	sideGauges.setBackground(Color.blue);
 
-	final JPanel subScreen = new JPanel();
-	final FlowLayout sublayout = new FlowLayout();
+	JPanel leftPanel = new JPanel();
+	leftPanel.setPreferredSize(new Dimension(120,120));
+	leftPanel.setMaximumSize(new Dimension(120,120));
+	//leftPanel.setBackground(Color.gray);
+	leftPanel.setOpaque(false);
+	sideGauges.add(leftPanel);
+
+	sideGauges.add(Box.createHorizontalGlue());
+
+
+	JPanel rightPanel = new JPanel();
+	rightPanel.setPreferredSize(new Dimension(120,120));
+	rightPanel.setMaximumSize(new Dimension(120,120));
+	//rightPanel.setBackground(Color.gray);
+	rightPanel.setOpaque(false);
+	sideGauges.add(rightPanel);
+
+	secGauges.add(sideGauges);
+
+	secGauges.add(Box.createGlue());
+
+	//Subscreen: carded layout for the center area
+	JPanel subScreen = new JPanel();
+	CardLayout subLayout = new CardLayout();
+	subScreen.setPreferredSize(new Dimension(450, 280));
+	subScreen.setMaximumSize(new Dimension(450, 220));
 	subScreen.setOpaque(false);
-	subScreen.setLayout(sublayout);
-	subScreen.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
-	subScreen.add(Box.createRigidArea(new Dimension(190,30)));
-	//subScreen.add(bmsView.getMaximumCellVoltageGauge());
-	subScreen.add(bmsView.getLoadCurrentAmpsGauge());
+	subScreen.setLayout(subLayout);
 
+	//subPage1: first card for subscreen
+	JPanel subPage1 = new JPanel();
+	subPage1.setMaximumSize(new Dimension(600, 200));
+	BoxLayout page1layout = new BoxLayout(subPage1, BoxLayout.X_AXIS);
+	subPage1.setLayout(page1layout);
+	subPage1.setOpaque(false);
+	//subPage1.setBackground(Color.green);
+	subPage1.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
+	subPage1.add(Box.createHorizontalGlue());
+	//subScreen.add(bmsView.getMaximumCellVoltageGauge());
+	subPage1.add(bmsView.getLoadCurrentAmpsGauge());
+
+	subScreen.add(subPage1, CARD_HOME);
 	secGauges.add(subScreen);
 	
 	  /*
@@ -342,19 +372,60 @@ public final class InDashDisplayView extends JPanel
       sensorBoardModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(sensorBoardConnectionState));
 
       //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-	  OverlayLayout mainLayout = new OverlayLayout(this);
+		JPanel displayArea = new UnoptimizedJPanel();
+		displayArea.setPreferredSize(new Dimension(800, 420));
+		displayArea.setMaximumSize(new Dimension(800, 420));
+
+	  OverlayLayout displayLayout = new OverlayLayout(displayArea);
+	  displayArea.setLayout(displayLayout);
+
+      displayArea.add(secGauges);
+      displayArea.add(mainGauges);
+
+
+	  final BoxLayout mainLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
 	  this.setLayout(mainLayout);
+
+	  this.add(displayArea);
+
+
+
+
+
+	  JPanel buttonPanel = new JPanel();
+	  BoxLayout buttonLayout = new BoxLayout(buttonPanel, BoxLayout.X_AXIS);
+	  buttonPanel.setLayout(buttonLayout);
+	  
+	  JButton b1 = new JButton("Car Info");
+	  b1.setMaximumSize(new Dimension(600,60));
+	  JButton b2 = new JButton("Home");
+	  b2.setMaximumSize(new Dimension(600,60));
+	  JButton b3 = new JButton("History");
+	  b3.setMaximumSize(new Dimension(600,60));
+	  buttonPanel.add(b1);
+	  buttonPanel.add(b2);
+	  buttonPanel.add(b3);
+	  buttonPanel.setPreferredSize(new Dimension(800,60));
+
+	  this.add(buttonPanel);
+
+
       //this.add(Box.createGlue());
 //      this.add(row1);
       //this.add(SwingUtils.createRigidSpacer(20));
  //     this.add(row2);
       //this.add(SwingUtils.createRigidSpacer(20));
-	  secGauges.setAlignmentY(0.0f);
-      this.add(secGauges);
-      this.add(mainGauges);
       //this.add(Box.createGlue());
       }
 
+   private class UnoptimizedJPanel extends JPanel 
+   {
+
+	   public boolean isOptimizedDrawingEnabled(){
+
+		   return false;
+	   }
+   }
    private abstract static class ButtonTimeConsumingAction extends AbstractTimeConsumingAction
       {
       private final JButton button;
