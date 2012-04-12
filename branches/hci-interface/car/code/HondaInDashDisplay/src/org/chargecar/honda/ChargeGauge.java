@@ -54,9 +54,14 @@ public final class ChargeGauge<T> extends JPanel
 
 		  this.stringFormat = "%d";
 		  JFreeChart jfreechart = new JFreeChart(dialplot);
+		  jfreechart.setBackgroundPaint(new Color(0,0,0,0));
 		  ChartPanel chartpanel = new ChartPanel(jfreechart);
 		  chartpanel.setOpaque(false);
+		  //chartpanel.setBackground(Color.pink);
 		  chartpanel.setPreferredSize(chartSize);
+		  this.setOpaque(false);
+		  //setBackground(Color.orange);
+		  this.setMaximumSize(chartSize);
 
 		  add(chartpanel);
 
@@ -157,26 +162,29 @@ public final class ChargeGauge<T> extends JPanel
 		  DialPlot dialplot = new DialPlot();
 		  dialplot.setView(0D, 0D, 1D, 1D);
 
-		  dataset = new DefaultValueDataset(50D);
+		  dataset = new DefaultValueDataset(1D);
 		  dialplot.setDataset(dataset);
 
-		  ArcDialFrame arcdialframe = new ArcDialFrame(130, 280D);
-		  arcdialframe.setInnerRadius(0.1D);
+		  ArcDialFrame arcdialframe = new ArcDialFrame(90, 360D);
+		  arcdialframe.setInnerRadius(0.4D);
 		  arcdialframe.setOuterRadius(0.9D);
 		  arcdialframe.setForegroundPaint(Color.darkGray);
 		  arcdialframe.setStroke(new BasicStroke(0F));
 		  dialplot.setDialFrame(arcdialframe);
 
 		  DialBar pin = new DialBar();
-		  pin.setRadius(0.78D);
-		  pin.setStroke(new BasicStroke(35F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+		  pin.setRadius(0.68D);
+		  pin.setStroke(new BasicStroke(90F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		  dialplot.addLayer(pin);
 
 		  StandardDialScale standarddialscale =
-			  new StandardDialScale(0D, 5D, 45D, -270D, 0D, 0);
+			  new StandardDialScale(0D, 5D, 90D, -360D, 0D, 0);
 		  standarddialscale.setTickRadius(0.9D);
+		  standarddialscale.setMajorTickLength(.5D);
 		  standarddialscale.setTickLabelOffset(0.06D);
+		  standarddialscale.setTickLabelsVisible(false);
 		  standarddialscale.setMajorTickIncrement(1D);
+		  standarddialscale.setMajorTickStroke(new BasicStroke(15F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		  standarddialscale.setTickLabelFont(new Font("Dialog", 0, 14));
 		  dialplot.addScale(0, standarddialscale);
 		  return dialplot;
