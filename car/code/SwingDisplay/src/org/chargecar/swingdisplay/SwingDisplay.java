@@ -1,4 +1,4 @@
-package org.chargecar.honda;
+package org.chargecar.swingdisplay;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -19,6 +19,7 @@ import edu.cmu.ri.createlab.userinterface.util.SwingWorker;
 import edu.cmu.ri.createlab.util.runtime.LifecycleManager;
 import edu.cmu.ri.createlab.util.thread.DaemonThreadFactory;
 import org.apache.log4j.Logger;
+import org.chargecar.honda.*;
 import org.chargecar.honda.bms.BMSController;
 import org.chargecar.honda.bms.BMSModel;
 import org.chargecar.honda.bms.BMSView;
@@ -41,10 +42,10 @@ import org.jdesktop.layout.GroupLayout;
  * @author Chris Bartley (bartley@cmu.edu)
  */
 @SuppressWarnings({"UseOfSystemOutOrSystemErr"})
-public final class InDashDisplay
+public final class SwingDisplay
    {
-   private static final Logger LOG = Logger.getLogger(InDashDisplay.class);
-   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(InDashDisplay.class.getName());
+   private static final Logger LOG = Logger.getLogger(SwingDisplay.class);
+   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(SwingDisplay.class.getName());
    private static final String APPLICATION_NAME = RESOURCES.getString("application.name");
 
    public static void main(final String[] args)
@@ -70,12 +71,12 @@ public final class InDashDisplay
             {
             public void run()
                {
-               new InDashDisplay(deviceToSerialPortNameMap);
+               new SwingDisplay(deviceToSerialPortNameMap);
                }
             });
       }
 
-   private InDashDisplay(final Map<String, String> deviceToSerialPortNameMap)
+   private SwingDisplay(final Map<String, String> deviceToSerialPortNameMap)
       {
       // create and configure the GUI
       final JPanel panel = new JPanel();
@@ -101,7 +102,7 @@ public final class InDashDisplay
                                                                        motorControllerController,
                                                                        sensorBoardController);
 
-      final InDashDisplayController inDashDisplayController = new InDashDisplayController(lifecycleManager);
+      final SwingDisplayController inDashDisplayController = new SwingDisplayController(lifecycleManager);
 
       // create the views
       final BMSView bmsView = new BMSView();
@@ -110,7 +111,7 @@ public final class InDashDisplay
       final SensorBoardView sensorBoardView = new SensorBoardView();
 	  //final LCDConnectivityManager lcdCM = new LCDConnectivityManager();
 	  
-      final InDashDisplayView inDashDisplayView = new InDashDisplayView(inDashDisplayController,
+      final SwingDisplayView swingDisplayView = new SwingDisplayView(inDashDisplayController,
                                                                         bmsController,
                                                                         bmsModel,
                                                                         gpsModel,
@@ -192,13 +193,13 @@ public final class InDashDisplay
       layout.setHorizontalGroup(
             layout.createSequentialGroup()
                   .add(leftGlue)
-                  .add(inDashDisplayView)
+                  .add(swingDisplayView)
                   .add(rightGlue)
       );
       layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.CENTER)
                   .add(leftGlue)
-                  .add(inDashDisplayView)
+                  .add(swingDisplayView)
                   .add(rightGlue)
       );
       jFrame.pack();
@@ -212,7 +213,7 @@ public final class InDashDisplay
             {
             public void windowOpened(final WindowEvent e)
                {
-               LOG.debug("InDashDisplay.windowOpened()");
+               LOG.debug("SwingDisplay.windowOpened()");
                lifecycleManager.startup();
                }
 
@@ -246,7 +247,7 @@ public final class InDashDisplay
                   {
                   if (controller == null)
                      {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Controller for the " + deviceName + " given to the LifecycleManager constructor was null, so data won't be read.");
+                     LOG.info("SwingDisplay$MyLifecycleManager.run(): Controller for the " + deviceName + " given to the LifecycleManager constructor was null, so data won't be read.");
                      }
                   else
                      {
@@ -255,7 +256,7 @@ public final class InDashDisplay
                            {
                            public void run()
                               {
-                              LOG.info("InDashDisplay$MyLifecycleManager.run(): Attempting to establish a connection to the " + deviceName + "...");
+                              LOG.info("SwingDisplay$MyLifecycleManager.run(): Attempting to establish a connection to the " + deviceName + "...");
                               controller.connect();
                               }
                            });
@@ -278,7 +279,7 @@ public final class InDashDisplay
                   {
                   if (controller == null)
                      {
-                     LOG.info("InDashDisplay$MyLifecycleManager.run(): Controller for the " + deviceName + " given to the LifecycleManager constructor was null, so we won't try to shut it down.");
+                     LOG.info("SwingDisplay$MyLifecycleManager.run(): Controller for the " + deviceName + " given to the LifecycleManager constructor was null, so we won't try to shut it down.");
                      }
                   else
                      {
@@ -287,7 +288,7 @@ public final class InDashDisplay
                            {
                            public void run()
                               {
-                              LOG.info("InDashDisplay$MyLifecycleManager.run(): Disconnecting from the " + deviceName + "...");
+                              LOG.info("SwingDisplay$MyLifecycleManager.run(): Disconnecting from the " + deviceName + "...");
                               controller.disconnect();
                               }
                            });
