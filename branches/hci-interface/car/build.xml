@@ -19,7 +19,25 @@
       <pathelement path="${swing-layout.jar}"/>
       <pathelement path="${postgresql-jdbc.jar}"/>
    </path>
+   
+   <!-- Paths -->
+   <path id="swing-display-classpath">
+      <!-- other classes within this project -->
+      <pathelement path="${honda-in-dash-display.build.dir}"/>
+      <pathelement path="${lcd-display.build.dir}"/>
 
+      <!-- third-party jars -->
+      <pathelement path="${create-lab-commons-serial.jar}"/>
+      <pathelement path="${create-lab-commons-user-interface.jar}"/>
+      <pathelement path="${create-lab-commons-util.jar}"/>
+      <pathelement path="${jfreechart1.jar}"/>
+      <pathelement path="${jfreechart2.jar}"/>
+      <pathelement path="${log4j.jar}"/>
+      <pathelement path="${log4j-extras.jar}"/>
+      <pathelement path="${rxtx.jar}"/>
+      <pathelement path="${swing-layout.jar}"/>
+      <pathelement path="${postgresql-jdbc.jar}"/>
+   </path>
    <path id="lcd-display-classpath">
       <!-- other classes within this project -->
       <pathelement path="${honda-in-dash-display.build.dir}"/>
@@ -116,6 +134,7 @@
    <target name="all" depends="clean, dist" description="clean, then build everything"/>
 
    <target name="clean" depends="clean-honda-in-dash-display,
+								 clean-swing-display,
                                  clean-lcd-display,
                                  clean-in-dash-display,
                                  clean-sensor-board-reader" description="clean up everything"/>
@@ -124,7 +143,12 @@
       <delete dir="${honda-in-dash-display.build.dir}"/>
       <delete dir="${honda-in-dash-display.dist.dir}"/>
    </target>
-
+   
+   <target name="clean-swing-display" description="clean up swing-display">
+      <delete dir="${swing-display.build.dir}"/>
+      <delete dir="${swing-display.dist.dir}"/>
+   </target>
+   
    <target name="clean-lcd-display" description="clean up lcd-display">
       <delete dir="${lcd-display.build.dir}"/>
       <delete dir="${lcd-display.dist.dir}"/>
@@ -142,6 +166,7 @@
    </target>
 
    <target name="build" depends="build-honda-in-dash-display,
+								 build-swing-display,
                                  build-lcd-display,
                                  build-sensor-board-reader,
                                  build-in-dash-display" description="builds the source code" unless="build-is-complete">
@@ -156,6 +181,14 @@
       <property name="build-honda-in-dash-display-is-complete" value="true"/>
    </target>
 
+   <target name="build-swing-display" depends="build-honda-in-dash-display, build-lcd-display" description="compiles the java source for swing-display" unless="build-swing-display-is-complete">
+      <compile-code-and-copy-resources src.dir="${swing-display.src.dir}"
+                                       build.dir="${swing-display.build.dir}"
+                                       classpath-ref="swing-display-classpath"/>
+
+      <property name="build-swing-display-is-complete" value="true"/>
+   </target>
+   
     <target name="build-chargecar-core" description="builds chargecar.org core" unless="build-chargecar-core-is-complete">
         <ant dir="${chargecar-org.dir}" antfile="${chargecar-org.dir}/build.xml" target="clean-core" inheritall="false"/>
         <ant dir="${chargecar-org.dir}" antfile="${chargecar-org.dir}/build.xml" target="dist-core" inheritall="false">
@@ -219,6 +252,7 @@
    </target>
 
    <target name="dist" depends="dist-honda-in-dash-display,
+								dist-swing-display,
                                 dist-lcd-display,
                                 dist-sensor-board-reader,
                                 dist-in-dash-display" description="builds the project" unless="dist-is-complete">
@@ -241,6 +275,26 @@
       </car-create-dist>
 
       <property name="dist-honda-in-dash-display-is-complete" value="true"/>
+   </target>
+   
+      <target name="dist-swing-display" depends="build-swing-display" description="builds the swing-display" unless="dist-swing-display-is-complete">
+      <car-create-dist component.name="swing-display">
+         <jar-manifest-attributes>
+            <attribute name="Main-Class" value="org.chargecar.swingdisplay.SwingDisplay"/>
+         </jar-manifest-attributes>
+         <additional-files-to-copy>
+            <fileset file="${honda-in-dash-display.dist.dir}/${honda-in-dash-display.jar.filename}"/>
+            <fileset file="${lcd-display.dist.dir}/${lcd-display.jar.filename}"/>
+            <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-user-interface.jar}"/>
+            <fileset file="${create-lab-commons-util.jar}"/>
+            <fileset file="${jfreechart1.jar}"/>
+            <fileset file="${jfreechart2.jar}"/>
+            <fileset file="${swing-layout.jar}"/>
+         </additional-files-to-copy>
+      </car-create-dist>
+
+      <property name="dist-swing-display-is-complete" value="true"/>
    </target>
 
    <target name="dist-lcd-display" depends="dist-honda-in-dash-display, build-lcd-display" description="builds the lcd-display" unless="dist-lcd-display-is-complete">
