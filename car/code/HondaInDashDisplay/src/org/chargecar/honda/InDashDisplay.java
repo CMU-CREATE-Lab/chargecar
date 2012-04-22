@@ -34,9 +34,6 @@ import org.chargecar.honda.sensorboard.SensorBoardView;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
 import org.jdesktop.layout.GroupLayout;
 
-//import org.chargecar.lcddisplay.LCDConnectivityManager;
-//import org.chargecar.lcddisplay.*;
-
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
@@ -108,8 +105,6 @@ public final class InDashDisplay
       final GPSView gpsView = new GPSView();
       final MotorControllerView motorControllerView = new MotorControllerView();
       final SensorBoardView sensorBoardView = new SensorBoardView();
-	  //final LCDConnectivityManager lcdCM = new LCDConnectivityManager();
-	  
       final InDashDisplayView inDashDisplayView = new InDashDisplayView(inDashDisplayController,
                                                                         bmsController,
                                                                         bmsModel,

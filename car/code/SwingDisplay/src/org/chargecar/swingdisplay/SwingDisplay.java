@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.chargecar.honda.*;
 import org.chargecar.honda.bms.BMSController;
 import org.chargecar.honda.bms.BMSModel;
-import org.chargecar.honda.bms.BMSView;
+import org.chargecar.swingdisplay.views.BMSView;
 import org.chargecar.honda.gps.GPSController;
 import org.chargecar.honda.gps.GPSModel;
 import org.chargecar.honda.gps.GPSView;

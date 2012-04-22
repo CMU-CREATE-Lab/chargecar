@@ -277,7 +277,7 @@
       <property name="dist-honda-in-dash-display-is-complete" value="true"/>
    </target>
    
-      <target name="dist-swing-display" depends="build-swing-display" description="builds the swing-display" unless="dist-swing-display-is-complete">
+      <target name="dist-swing-display" depends="dist-honda-in-dash-display, dist-lcd-display, build-swing-display" description="builds the swing-display" unless="dist-swing-display-is-complete">
       <car-create-dist component.name="swing-display">
          <jar-manifest-attributes>
             <attribute name="Main-Class" value="org.chargecar.swingdisplay.SwingDisplay"/>

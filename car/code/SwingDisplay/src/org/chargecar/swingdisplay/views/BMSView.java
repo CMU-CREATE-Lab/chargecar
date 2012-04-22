@@ -1,4 +1,4 @@
-package org.chargecar.honda.bms;
+package org.chargecar.swingdisplay.views;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -12,6 +12,10 @@ import edu.cmu.ri.createlab.userinterface.util.SwingUtils;
 import org.chargecar.honda.Gauge;
 import org.chargecar.honda.HondaConstants;
 import org.chargecar.honda.StreamingSerialPortDeviceView;
+import org.chargecar.honda.bms.BMSAndEnergy;
+import org.chargecar.honda.bms.BMSFault;
+import org.chargecar.honda.bms.BMSEvent;
+import org.chargecar.swingdisplay.ChargeGauge;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -41,7 +45,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    private final Gauge<Double> loadCurrentAmpsGauge = new Gauge<Double>(RESOURCES.getString("label.load-current-amps"), "%6.2f");
    private final Gauge<Integer> depthOfDischargeGauge = new Gauge<Integer>(RESOURCES.getString("label.depth-of-discharge"), "%d");
 
-   private final Gauge<Integer> stateOfChargeGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-charge"), "%d");
+   private final ChargeGauge<Integer> stateOfChargeGauge = new ChargeGauge<Integer>(ChargeGauge.TYPE_CHARGE);
    private final Gauge<Integer> stateOfHealthGauge = new Gauge<Integer>(RESOURCES.getString("label.state-of-health"), "%d");
 
    private final Gauge<Boolean> isInterlockTrippedGauge = new Gauge<Boolean>(RESOURCES.getString("label.is-interlock-tripped"), "%s");
@@ -221,7 +225,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
       return depthOfDischargeGauge;
       }
 
-   public Gauge<Integer> getStateOfChargeGauge()
+   public ChargeGauge<Integer> getStateOfChargeGauge()
       {
       return stateOfChargeGauge;
       }
