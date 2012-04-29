@@ -27,6 +27,8 @@
       <pathelement path="${lcd-display.build.dir}"/>
 
       <!-- third-party jars -->
+      <pathelement path="${chargecar-core.jar}/"/>
+      <pathelement path="${create-lab-commons-device.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
       <pathelement path="${create-lab-commons-util.jar}"/>
@@ -181,7 +183,7 @@
       <property name="build-honda-in-dash-display-is-complete" value="true"/>
    </target>
 
-   <target name="build-swing-display" depends="build-honda-in-dash-display, build-lcd-display" description="compiles the java source for swing-display" unless="build-swing-display-is-complete">
+   <target name="build-swing-display" depends="build-honda-in-dash-display, build-lcd-display, build-in-dash-display, build-sensor-board-reader" description="compiles the java source for swing-display" unless="build-swing-display-is-complete">
       <compile-code-and-copy-resources src.dir="${swing-display.src.dir}"
                                        build.dir="${swing-display.build.dir}"
                                        classpath-ref="swing-display-classpath"/>
@@ -285,6 +287,9 @@
          <additional-files-to-copy>
             <fileset file="${honda-in-dash-display.dist.dir}/${honda-in-dash-display.jar.filename}"/>
             <fileset file="${lcd-display.dist.dir}/${lcd-display.jar.filename}"/>
+
+            <fileset file="${chargecar-core.jar}"/>
+            <fileset file="${create-lab-commons-device.jar}"/>
             <fileset file="${create-lab-commons-serial.jar}"/>
             <fileset file="${create-lab-commons-user-interface.jar}"/>
             <fileset file="${create-lab-commons-util.jar}"/>

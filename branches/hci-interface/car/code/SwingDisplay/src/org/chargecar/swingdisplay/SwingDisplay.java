@@ -28,7 +28,8 @@ import org.chargecar.honda.gps.GPSModel;
 import org.chargecar.honda.gps.GPSView;
 import org.chargecar.honda.motorcontroller.MotorControllerController;
 import org.chargecar.honda.motorcontroller.MotorControllerModel;
-import org.chargecar.honda.motorcontroller.MotorControllerView;
+//import org.chargecar.honda.motorcontroller.MotorControllerView;
+import org.chargecar.swingdisplay.views.MotorControllerView;
 import org.chargecar.honda.sensorboard.SensorBoardController;
 import org.chargecar.honda.sensorboard.SensorBoardModel;
 import org.chargecar.honda.sensorboard.SensorBoardView;
@@ -36,7 +37,7 @@ import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateLi
 import org.jdesktop.layout.GroupLayout;
 
 //import org.chargecar.lcddisplay.LCDConnectivityManager;
-//import org.chargecar.lcddisplay.*;
+import org.chargecar.lcddisplay.*;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -104,12 +105,14 @@ public final class SwingDisplay
 
       final SwingDisplayController inDashDisplayController = new SwingDisplayController(lifecycleManager);
 
+	  final LCD lcd = LCDProxy.getInstance();
+
+	  lcd.setText(1,1,"hello");
       // create the views
       final BMSView bmsView = new BMSView();
       final GPSView gpsView = new GPSView();
       final MotorControllerView motorControllerView = new MotorControllerView();
       final SensorBoardView sensorBoardView = new SensorBoardView();
-	  //final LCDConnectivityManager lcdCM = new LCDConnectivityManager();
 	  
       final SwingDisplayView swingDisplayView = new SwingDisplayView(inDashDisplayController,
                                                                         bmsController,

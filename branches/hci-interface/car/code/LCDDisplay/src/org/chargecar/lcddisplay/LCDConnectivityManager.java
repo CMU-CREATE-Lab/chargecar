@@ -4,6 +4,10 @@ import edu.cmu.ri.createlab.device.CreateLabDeviceProxy;
 import edu.cmu.ri.createlab.device.connectivity.BaseCreateLabDeviceConnectivityManager;
 import org.apache.log4j.Logger;
 
+import edu.cmu.ri.createlab.serial.SerialPortEnumerator;
+import java.util.Collections;
+import java.util.SortedSet;
+
 /**
  * @author Chris Bartley (bartley@cmu.edu)
  */
@@ -16,7 +20,7 @@ final class LCDConnectivityManager extends BaseCreateLabDeviceConnectivityManage
         // If the user specified one or more serial ports, then just start trying to connect to it/them.  Otherwise,
         // check each available serial port for the target serial device, and connect to the first one found.  This
         // makes connection time much faster for when you know the name of the serial port.
-        /*final SortedSet<String> availableSerialPorts;
+        final SortedSet<String> availableSerialPorts;
      if (SerialPortEnumerator.didUserDefineSetOfSerialPorts())
         {
         availableSerialPorts = SerialPortEnumerator.getSerialPorts();
@@ -24,11 +28,10 @@ final class LCDConnectivityManager extends BaseCreateLabDeviceConnectivityManage
      else
         {
         availableSerialPorts = SerialPortEnumerator.getAvailableSerialPorts();
-        }*/
-
+        }
         // try the serial ports
-        if ((ChargeCarLCD.getAvailableSerialPorts() != null) && (!ChargeCarLCD.getAvailableSerialPorts().isEmpty())) {
-            for (final String portName : ChargeCarLCD.getAvailableSerialPorts()) {
+        if (availableSerialPorts != null && !(availableSerialPorts.isEmpty())) {
+            for (final String portName : availableSerialPorts) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("LCDConnectivityManager.scanForDeviceAndCreateProxy(): checking serial port [" + portName + "]");
                 }
@@ -39,7 +42,7 @@ final class LCDConnectivityManager extends BaseCreateLabDeviceConnectivityManage
                     LOG.debug("LCDConnectivityManager.scanForDeviceAndCreateProxy(): connection failed, maybe it's not the device we're looking for?");
                 } else {
                     LOG.debug("LCDConnectivityManager.scanForDeviceAndCreateProxy(): connection established, returning proxy!");
-                    ChargeCarLCD.removeAvailableSerialPort(portName);
+                    availableSerialPorts.remove(portName);
                     return proxy;
                 }
             }

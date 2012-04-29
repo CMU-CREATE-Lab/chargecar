@@ -23,10 +23,10 @@ import org.apache.log4j.Logger;
 import org.chargecar.honda.*;
 import org.chargecar.honda.bms.BMSController;
 import org.chargecar.honda.bms.BMSModel;
-import org.chargecar.swingdisplay.views.BMSView;
 import org.chargecar.honda.gps.GPSModel;
 import org.chargecar.honda.motorcontroller.MotorControllerModel;
-import org.chargecar.honda.motorcontroller.MotorControllerView;
+import org.chargecar.swingdisplay.views.MotorControllerView;
+import org.chargecar.swingdisplay.views.BMSView;
 import org.chargecar.honda.sensorboard.SensorBoardModel;
 import org.chargecar.honda.sensorboard.SensorBoardView;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
@@ -151,7 +151,8 @@ public final class SwingDisplayView extends JPanel
 	  mainGauges.setOpaque(true);
 	  mainGauges.setLayout(layout);
 	  mainGauges.setPreferredSize(new Dimension(800,420));
-	  mainGauges.add(motorControllerView.getRpmGauge());
+	  //mainGauges.add(motorControllerView.getRpmGauge());
+	  mainGauges.add(bmsView.getDeltaGauge());
 	  mainGauges.add(bmsView.getStateOfChargeGauge());
 
 	  final JPanel secGauges = new JPanel();
@@ -161,7 +162,7 @@ public final class SwingDisplayView extends JPanel
 	  secGauges.setLayout(secLayout);
 
 	 //SideGauges: top bar to handle elements in top corners
-	JPanel sideGauges = new JPanel();
+	final JPanel sideGauges = new JPanel();
 	BoxLayout sidelayout = new BoxLayout(sideGauges, BoxLayout.X_AXIS);
 	sideGauges.setLayout(sidelayout);
 	sideGauges.setOpaque(false);
@@ -191,15 +192,15 @@ public final class SwingDisplayView extends JPanel
 	secGauges.add(Box.createGlue());
 
 	//Subscreen: carded layout for the center area
-	JPanel subScreen = new JPanel();
-	CardLayout subLayout = new CardLayout();
+	final JPanel subScreen = new JPanel();
+	final CardLayout subLayout = new CardLayout();
 	subScreen.setPreferredSize(new Dimension(450, 280));
 	subScreen.setMaximumSize(new Dimension(450, 220));
 	subScreen.setOpaque(false);
 	subScreen.setLayout(subLayout);
 
 	//subPage1: first card for subscreen
-	JPanel subPage1 = new JPanel();
+	final JPanel subPage1 = new JPanel();
 	subPage1.setMaximumSize(new Dimension(600, 200));
 	BoxLayout page1layout = new BoxLayout(subPage1, BoxLayout.X_AXIS);
 	subPage1.setLayout(page1layout);
@@ -207,10 +208,24 @@ public final class SwingDisplayView extends JPanel
 	//subPage1.setBackground(Color.green);
 	subPage1.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
 	subPage1.add(Box.createHorizontalGlue());
-	//subScreen.add(bmsView.getMaximumCellVoltageGauge());
 	subPage1.add(bmsView.getLoadCurrentAmpsGauge());
 
+
+	//subPage2: second card for subscreen
+	final JPanel subPage2 = new JPanel();
+	subPage2.setMaximumSize(new Dimension(600, 200));
+	BoxLayout page2layout = new BoxLayout(subPage2, BoxLayout.X_AXIS);
+	subPage2.setLayout(page2layout);
+	subPage2.setOpaque(false);
+	//subPage2.setBackground(Color.green);
+	//subPage2.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
+	subPage2.add(new VoltageGauge(2));
+	subPage2.add(Box.createHorizontalGlue());
+	subPage2.add(bmsView.getVoltageGauge());
+
 	subScreen.add(subPage1, CARD_HOME);
+	subScreen.add(subPage2, CARD_INFO);
+
 	secGauges.add(subScreen);
 	
 	  /*
@@ -396,7 +411,7 @@ public final class SwingDisplayView extends JPanel
 	  JPanel buttonPanel = new JPanel();
 	  BoxLayout buttonLayout = new BoxLayout(buttonPanel, BoxLayout.X_AXIS);
 	  buttonPanel.setLayout(buttonLayout);
-	  
+
 	  JButton b1 = new JButton("Car Info");
 	  b1.setMaximumSize(new Dimension(600,60));
 	  JButton b2 = new JButton("Home");
@@ -406,6 +421,29 @@ public final class SwingDisplayView extends JPanel
 	  buttonPanel.add(b1);
 	  buttonPanel.add(b2);
 	  buttonPanel.add(b3);
+
+	  ActionListener btnListener = new ActionListener() {
+
+		  public void actionPerformed(ActionEvent e) {
+			  //if(CARD_HOME.equals(e.getActionCommand()))
+			  // {
+			  subLayout.show(subScreen, e.getActionCommand());
+			  if(e.getActionCommand().equals(CARD_HOME)){
+				  sideGauges.setVisible(false);
+			  }
+			  else {
+				  sideGauges.setVisible(true);
+			  }
+			  //}
+		  }
+	  };
+
+	  b1.addActionListener(btnListener);
+	  b1.setActionCommand(CARD_INFO);
+	  b2.addActionListener(btnListener);
+	  b2.setActionCommand(CARD_HOME);
+	  b3.addActionListener(btnListener);
+
 	  buttonPanel.setPreferredSize(new Dimension(800,60));
 
 	  this.add(buttonPanel);

@@ -16,6 +16,7 @@ import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.bms.BMSFault;
 import org.chargecar.honda.bms.BMSEvent;
 import org.chargecar.swingdisplay.ChargeGauge;
+import org.chargecar.swingdisplay.VoltageGauge;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -30,6 +31,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    private final Gauge<Double> minimumCellVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.minimum-cell-voltage"), "%6.2f");
    private final Gauge<Double> maximumCellVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.maximum-cell-voltage"), "%6.2f");
    private final Gauge<Double> averageCellVoltageGauge = new Gauge<Double>(RESOURCES.getString("label.average-cell-voltage"), "%6.2f");
+
    private final Gauge<Integer> cellNumWithLowestVoltageGauge = new Gauge<Integer>(RESOURCES.getString("label.cell-num-with-lowest-voltage"), "%2d");
    private final Gauge<Integer> cellNumWithHighestVoltageGauge = new Gauge<Integer>(RESOURCES.getString("label.cell-num-with-highest-voltage"), "%2d");
 
@@ -60,6 +62,11 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    private final Gauge<Double> batteryEnergyUsedGauge = new Gauge<Double>(RESOURCES.getString("label.used"), "%07.3f");
    private final Gauge<Double> batteryEnergyRegenGauge = new Gauge<Double>(RESOURCES.getString("label.regen"), "%07.3f");
 
+   private final ChargeGauge<Double> voltageGauge = new ChargeGauge(ChargeGauge.TYPE_VOLTAGE);
+
+   private final ChargeGauge<Integer> powerGauge = new ChargeGauge(ChargeGauge.TYPE_RPM);
+   private final ChargeGauge<Double> deltaGauge = new ChargeGauge(ChargeGauge.TYPE_RPM);
+
    public BMSView()
       {
       }
@@ -70,6 +77,11 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
          {
          final BMSEvent eventData = bmsAndEnergy.getBmsState();
          faultStatusPanel.setValue(eventData.getBMSFault());
+
+		 System.out.println("\n========================TRYING TO DO BMS==============\n");
+		 voltageGauge.setValue(eventData.getPackTotalVoltage());
+		 powerGauge.setValue(eventData.getPower());
+		 deltaGauge.setValue(bmsAndEnergy.getEnergyEquation().getKilowattHoursDelta());
 
          packTotalVoltageGauge.setValue(eventData.getPackTotalVoltage());
          minimumCellVoltageGauge.setValue(eventData.getMinimumCellVoltage());
@@ -148,6 +160,21 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    public JPanel getFaultStatusPanel()
       {
       return faultStatusPanel;
+      }
+
+   public ChargeGauge<Double> getVoltageGauge()
+      {
+      return voltageGauge;
+      }
+
+   public ChargeGauge<Integer> getPowerGauge()
+      {
+      return powerGauge;
+      }
+
+   public ChargeGauge<Double> getDeltaGauge()
+      {
+      return deltaGauge;
       }
 
    public Gauge<Double> getPackTotalVoltageGauge()
