@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.*;
 import java.awt.geom.Arc2D.*;
 import java.awt.geom.Arc2D;
+import java.text.NumberFormat;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -26,7 +27,10 @@ public final class ChargeGauge<T> extends JPanel
 	public static final int TYPE_CHARGE = 0;
 	public static final int TYPE_RPM = 1;
 	public static final int TYPE_ECO = 2;
+	public static final int TYPE_ECO_SMALL = 3;
+	public static final int TYPE_VOLTAGE = 4;
    private final String stringFormat;
+   private int type;
 
    DefaultValueDataset dataset;
    public ChargeGauge(final int type)
@@ -34,25 +38,40 @@ public final class ChargeGauge<T> extends JPanel
 		  //TODO: use 'side' to flip things left and right
 		  //TODO: figure out how to make a bar instead of friggen pin
 
+		  this.type = type;
 		  DialPlot dialplot;
 		  Dimension chartSize;
 		  if(type == TYPE_CHARGE)
 		  {
 			  dialplot = getChargeDial();
 			  chartSize = new Dimension(400, 400);
+			  this.stringFormat = "%d";
 		  }
 		  else if (type == TYPE_RPM)
 		  {
 			  dialplot = getRPMDial();
 			  chartSize = new Dimension(400, 400);
+			  this.stringFormat = "%d";
+		  }
+		  else if (type == TYPE_ECO)
+		  {
+			  dialplot = getEcoDial();
+			  chartSize = new Dimension(230, 230);
+			  this.stringFormat = "%d";
+		  }
+		  else if (type == TYPE_ECO_SMALL)
+		  {
+			  dialplot = getEcoDial();
+			  chartSize = new Dimension(110, 110);
+			  this.stringFormat = "%d";
 		  }
 		  else
 		  {
-			  dialplot = getEcoDial();
-			  chartSize = new Dimension(150, 150);
+			  dialplot = getVoltageDial();
+			  chartSize = new Dimension(230, 230);
+			  this.stringFormat = "%f";
 		  }
 
-		  this.stringFormat = "%d";
 		  JFreeChart jfreechart = new JFreeChart(dialplot);
 		  jfreechart.setBackgroundPaint(new Color(0,0,0,0));
 		  ChartPanel chartpanel = new ChartPanel(jfreechart);
@@ -77,6 +96,11 @@ public final class ChargeGauge<T> extends JPanel
     */
    public void setValue(final T s)
       {
+		  if(type == TYPE_VOLTAGE)
+			  System.out.println("voltage: vlaue = " + s);
+
+		  if(type == TYPE_RPM)
+			  System.out.println("RPM: vlaue = " + s);
       setValue(s, Color.BLACK);
       }
 
@@ -89,14 +113,11 @@ public final class ChargeGauge<T> extends JPanel
       {
       if (s != null)
          {
-			 dataset.setValue(Integer.parseInt(String.format(stringFormat, s)));
+			 dataset.setValue((Number)s);
          }
       else
          {
          }
-	  getParent().invalidate();
-	  getParent().getParent().invalidate();
-	  revalidate();
 	  }
 
    private DialPlot getChargeDial() {
@@ -167,7 +188,7 @@ public final class ChargeGauge<T> extends JPanel
 
 		  ArcDialFrame arcdialframe = new ArcDialFrame(90, 360D);
 		  arcdialframe.setInnerRadius(0.4D);
-		  arcdialframe.setOuterRadius(0.9D);
+		  arcdialframe.setOuterRadius(0.8D);
 		  arcdialframe.setForegroundPaint(Color.darkGray);
 		  arcdialframe.setStroke(new BasicStroke(0F));
 		  dialplot.setDialFrame(arcdialframe);
@@ -187,6 +208,42 @@ public final class ChargeGauge<T> extends JPanel
 		  standarddialscale.setMajorTickStroke(new BasicStroke(15F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		  standarddialscale.setTickLabelFont(new Font("Dialog", 0, 14));
 		  dialplot.addScale(0, standarddialscale);
+		  return dialplot;
+   }
+
+
+   private DialPlot getVoltageDial() {
+		  DialPlot dialplot = new DialPlot();
+		  dialplot.setView(0.4D, 0D, 0.62D, 0.62D);
+
+		  dataset = new DefaultValueDataset(4D);
+		  dialplot.setDataset(dataset);
+
+		  ArcDialFrame arcdialframe = new ArcDialFrame(0D, 90D);
+		  arcdialframe.setInnerRadius(0.7D);
+		  arcdialframe.setOuterRadius(0.9D);
+		  arcdialframe.setForegroundPaint(Color.darkGray);
+		  arcdialframe.setStroke(new BasicStroke(0F));
+		  dialplot.setDialFrame(arcdialframe);
+
+		  DialPointer.Pin minPin = new DialPointer.Pin();
+		  minPin.setRadius(0.78D);
+		  minPin.setStroke(new BasicStroke(2F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+		  dialplot.addLayer(minPin);
+
+//		  DialBar pin = new DialBar();
+//		  pin.setRadius(0.78D);
+//		  pin.setStroke(new BasicStroke(35F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+//		  dialplot.addLayer(pin);
+//
+		  StandardDialScale standarddialscale =
+			  new StandardDialScale(80D, 140D, 2D, 86D, 0D, 0);
+		  standarddialscale.setTickRadius(0.9D);
+		  standarddialscale.setTickLabelOffset(0.06D);
+		  standarddialscale.setMajorTickIncrement(10D);
+		  standarddialscale.setTickLabelFont(new Font("Dialog", 0, 14));
+		  dialplot.addScale(0, standarddialscale);
+
 		  return dialplot;
    }
 }
