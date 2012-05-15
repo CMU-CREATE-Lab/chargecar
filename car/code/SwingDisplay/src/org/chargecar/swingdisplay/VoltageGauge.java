@@ -44,9 +44,10 @@ public final class VoltageGauge extends JPanel
 		  chartSize = new Dimension(200, 200);
 
 		  this.stringFormat = "%f"; JFreeChart jfreechart = new JFreeChart(dialplot);
-		  jfreechart.setBackgroundPaint(new Color(0,0,0,0));
+		  jfreechart.setBackgroundPaint(ChargeGauge.backgroundColor);
 		  ChartPanel chartpanel = new ChartPanel(jfreechart);
 		  chartpanel.setOpaque(false);
+		  this.setBackground(ChargeGauge.backgroundColor);
 		  //chartpanel.setBackground(Color.pink);
 		  chartpanel.setPreferredSize(chartSize);
 		  this.setOpaque(false);
@@ -97,10 +98,10 @@ public final class VoltageGauge extends JPanel
 		  dialplot.setDataset(DATA_MAX, maxData);
 		  dialplot.setDataset(DATA_AVG, avgData);
 
-		  ArcDialFrame arcdialframe = new ArcDialFrame(90D, 90D);
+		  ChargeDialFrame arcdialframe = new ChargeDialFrame(90D, 90D);
 		  arcdialframe.setInnerRadius(0.7D);
 		  arcdialframe.setOuterRadius(0.9D);
-		  arcdialframe.setForegroundPaint(Color.darkGray);
+		  arcdialframe.setForegroundPaint(ChargeGauge.gaugeBorderColor);
 		  arcdialframe.setStroke(new BasicStroke(0F));
 		  dialplot.setDialFrame(arcdialframe);
 
@@ -131,6 +132,8 @@ public final class VoltageGauge extends JPanel
 		  standarddialscale.setTickLabelOffset(0.06D);
 		  standarddialscale.setMajorTickIncrement(.5D);
 		  standarddialscale.setTickLabelFont(new Font("Dialog", 0, 14));
+		  standarddialscale.setTickLabelsVisible(false);
+		  standarddialscale.setMajorTickPaint(ChargeGauge.tickColor);
 		  dialplot.addScale(0, standarddialscale);
 
 		  return dialplot;

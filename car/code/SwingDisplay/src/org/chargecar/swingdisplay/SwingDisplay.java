@@ -103,7 +103,11 @@ public final class SwingDisplay
                                                                        motorControllerController,
                                                                        sensorBoardController);
 
+	  System.out.println("done with livecycle stuff. gonna try LCD");
       final SwingDisplayController inDashDisplayController = new SwingDisplayController(lifecycleManager);
+
+
+	  BMSManager.getInstance();
 
 	  final LCD lcd = LCDProxy.getInstance();
 

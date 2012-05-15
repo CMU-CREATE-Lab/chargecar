@@ -27,6 +27,7 @@ import org.chargecar.honda.gps.GPSModel;
 import org.chargecar.honda.motorcontroller.MotorControllerModel;
 import org.chargecar.swingdisplay.views.MotorControllerView;
 import org.chargecar.swingdisplay.views.BMSView;
+import org.chargecar.swingdisplay.views.HistoryView;
 import org.chargecar.honda.sensorboard.SensorBoardModel;
 import org.chargecar.honda.sensorboard.SensorBoardView;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
@@ -40,7 +41,9 @@ import java.awt.GridLayout;
 public final class SwingDisplayView extends JPanel
    {
 	   private static String CARD_HOME = "Card for Home Screen";
+	   private static String CARD_HISTORY = "Card for History Screen";
 	   private static String CARD_INFO = "Card for Info Screen";
+
    private static final Logger LOG = Logger.getLogger(SwingDisplayView.class);
 
    private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(SwingDisplayView.class.getName());
@@ -61,7 +64,6 @@ public final class SwingDisplayView extends JPanel
       final JButton markButton = SwingUtils.createButton(RESOURCES.getString("label.mark") + " " + markValue.get(), true);
       final JButton resetBatteryEnergyButton = SwingUtils.createButton(RESOURCES.getString("label.reset"), true);
 
-      this.setBackground(Color.WHITE);
 
       quitButton.addActionListener(
             new ButtonTimeConsumingAction(this, quitButton)
@@ -139,7 +141,7 @@ public final class SwingDisplayView extends JPanel
       row1.add(Box.createGlue());
 
       final JPanel row2 = new JPanel();
-      row2.setBackground(Color.WHITE);
+      row2.setBackground(Color.WHITE)2,
       row2.setLayout(new BoxLayout(row2, BoxLayout.X_AXIS));
       row2.add(Box.createGlue());
       row2.add(bmsView.getFaultStatusPanel());
@@ -148,85 +150,171 @@ public final class SwingDisplayView extends JPanel
 
       final JPanel mainGauges = new JPanel();
       final GridLayout layout = new GridLayout(1,2);
-	  mainGauges.setOpaque(true);
+	  mainGauges.setOpaque(false);
 	  mainGauges.setLayout(layout);
-	  mainGauges.setPreferredSize(new Dimension(800,420));
-	  //mainGauges.add(motorControllerView.getRpmGauge());
-	  mainGauges.add(bmsView.getDeltaGauge());
+	  mainGauges.setPreferredSize(new Dimension(798,420));
+	  mainGauges.add(motorControllerView.getRpmGauge());
+	  //mainGauges.add(bmsView.getPowerGauge());
 	  mainGauges.add(bmsView.getStateOfChargeGauge());
 
 	  final JPanel secGauges = new JPanel();
-	  secGauges.setPreferredSize(new Dimension(800,420));
+	  secGauges.setPreferredSize(new Dimension(798,420));
 	  secGauges.setOpaque(false);
-	  final BoxLayout secLayout = new BoxLayout(secGauges, BoxLayout.Y_AXIS);
+	  final BoxLayout secLayout = new BoxLayout(secGauges, BoxLayout.X_AXIS);
 	  secGauges.setLayout(secLayout);
 
-	 //SideGauges: top bar to handle elements in top corners
-	final JPanel sideGauges = new JPanel();
-	BoxLayout sidelayout = new BoxLayout(sideGauges, BoxLayout.X_AXIS);
-	sideGauges.setLayout(sidelayout);
-	sideGauges.setOpaque(false);
-	sideGauges.setPreferredSize(new Dimension(800,120));
-	sideGauges.setMaximumSize(new Dimension(800,120));
-	sideGauges.setBackground(Color.blue);
 
-	JPanel leftPanel = new JPanel();
-	leftPanel.setPreferredSize(new Dimension(120,120));
-	leftPanel.setMaximumSize(new Dimension(120,120));
+	final JPanel leftPanel = new JPanel();
+	leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+	leftPanel.setPreferredSize(new Dimension(125,420));
+	leftPanel.setMaximumSize(new Dimension(125,420));
 	//leftPanel.setBackground(Color.gray);
 	leftPanel.setOpaque(false);
-	sideGauges.add(leftPanel);
+	leftPanel.setVisible(false);
+	leftPanel.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO_SMALL));
+	leftPanel.add(Box.createGlue());
 
-	sideGauges.add(Box.createHorizontalGlue());
-
-
-	JPanel rightPanel = new JPanel();
-	rightPanel.setPreferredSize(new Dimension(120,120));
-	rightPanel.setMaximumSize(new Dimension(120,120));
+	final JPanel rightPanel = new JPanel();
+	rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+	rightPanel.setPreferredSize(new Dimension(125,420));
+	rightPanel.setMaximumSize(new Dimension(125,420));
 	//rightPanel.setBackground(Color.gray);
 	rightPanel.setOpaque(false);
-	sideGauges.add(rightPanel);
+	rightPanel.setVisible(false);
+	rightPanel.add(bmsView.getSmallRangeGauge());
+	rightPanel.add(Box.createGlue());
 
-	secGauges.add(sideGauges);
 
-	secGauges.add(Box.createGlue());
-
+	Dimension pageDim = new Dimension(450,200);
 	//Subscreen: carded layout for the center area
 	final JPanel subScreen = new JPanel();
 	final CardLayout subLayout = new CardLayout();
-	subScreen.setPreferredSize(new Dimension(450, 280));
-	subScreen.setMaximumSize(new Dimension(450, 220));
+	subScreen.setPreferredSize(new Dimension(450, 420));
+	subScreen.setMaximumSize(new Dimension(450, 420));
 	subScreen.setOpaque(false);
 	subScreen.setLayout(subLayout);
 
 	//subPage1: first card for subscreen
 	final JPanel subPage1 = new JPanel();
-	subPage1.setMaximumSize(new Dimension(600, 200));
-	BoxLayout page1layout = new BoxLayout(subPage1, BoxLayout.X_AXIS);
-	subPage1.setLayout(page1layout);
+	subPage1.setMaximumSize(pageDim);
+	subPage1.setLayout(new BoxLayout(subPage1, BoxLayout.X_AXIS));
 	subPage1.setOpaque(false);
 	//subPage1.setBackground(Color.green);
-	subPage1.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
-	subPage1.add(Box.createHorizontalGlue());
-	subPage1.add(bmsView.getLoadCurrentAmpsGauge());
+	JPanel leftSubGauge = new JPanel();
+	leftSubGauge.setOpaque(false);
+	leftSubGauge.setLayout(new BoxLayout(leftSubGauge, BoxLayout.Y_AXIS));
+	leftSubGauge.add(Box.createVerticalGlue());
+	leftSubGauge.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
+	leftSubGauge.add(Box.createVerticalStrut(40));
+
+	JPanel rightSubGauge = new JPanel();
+	rightSubGauge.setOpaque(false);
+	rightSubGauge.setLayout(new BoxLayout(rightSubGauge, BoxLayout.Y_AXIS));
+	rightSubGauge.add(Box.createVerticalGlue());
+	rightSubGauge.add(bmsView.getRangeGauge());
+	rightSubGauge.add(Box.createVerticalStrut(120));
+
+	subPage1.add(leftSubGauge);
+	subPage1.add(Box.createGlue());
+	subPage1.add(rightSubGauge);
+	//subPage1.add(bmsView.getLoadCurrentAmpsGauge());
 
 
 	//subPage2: second card for subscreen
 	final JPanel subPage2 = new JPanel();
-	subPage2.setMaximumSize(new Dimension(600, 200));
+	subPage2.setMaximumSize(pageDim);
 	BoxLayout page2layout = new BoxLayout(subPage2, BoxLayout.X_AXIS);
 	subPage2.setLayout(page2layout);
 	subPage2.setOpaque(false);
 	//subPage2.setBackground(Color.green);
 	//subPage2.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
-	subPage2.add(new VoltageGauge(2));
-	subPage2.add(Box.createHorizontalGlue());
-	subPage2.add(bmsView.getVoltageGauge());
+
+	JPanel leftSubGauge2 = new JPanel();
+	leftSubGauge2.setOpaque(false);
+	leftSubGauge2.setLayout(new BoxLayout(leftSubGauge2, BoxLayout.Y_AXIS));
+	leftSubGauge2.add(Box.createVerticalGlue());
+	leftSubGauge2.add(new VoltageGauge(2));
+	leftSubGauge2.add(Box.createVerticalStrut(40));
+
+	JPanel middleGauge2 = new JPanel();
+	middleGauge2.setOpaque(false);
+	//middleGauge2.setOpaque(false);
+	middleGauge2.setLayout(new BoxLayout(middleGauge2, BoxLayout.Y_AXIS));
+	middleGauge2.add(Box.createVerticalStrut(40));
+	middleGauge2.add(bmsView.getAverageCellTempGauge());	
+	middleGauge2.add(Box.createVerticalStrut(10));
+	middleGauge2.add(sensorBoardView.getMotorTempGauge());
+	middleGauge2.add(Box.createVerticalStrut(10));
+	middleGauge2.add(sensorBoardView.getMotorControllerTempGauge());
+	middleGauge2.add(Box.createVerticalStrut(60));
+	middleGauge2.add(bmsView.getAverageGauge());
+	middleGauge2.add(Box.createVerticalGlue());
+
+	JPanel rightSubGauge2 = new JPanel();
+	rightSubGauge2.setOpaque(false);
+	rightSubGauge2.setLayout(new BoxLayout(rightSubGauge2, BoxLayout.Y_AXIS));
+	rightSubGauge2.add(Box.createVerticalGlue());
+	rightSubGauge2.add(bmsView.getVoltageGauge());
+	rightSubGauge2.add(Box.createVerticalStrut(40));
+
+	subPage2.add(leftSubGauge2);
+	subPage2.add(middleGauge2);
+	subPage2.add(rightSubGauge2);
+
+
+	
+	//subPage3: second card for subscreen
+	final JPanel subPage3 = new JPanel();
+	subPage3.setMaximumSize(pageDim);
+	BoxLayout page3layout = new BoxLayout(subPage3, BoxLayout.X_AXIS);
+	subPage3.setLayout(page3layout);
+	subPage3.setOpaque(false);
+	//subPage3.setBackground(Color.green);
+	//subPage3.add(new ChargeGauge<Integer>(ChargeGauge.TYPE_ECO));
+
+	JPanel leftSubGauge3 = new JPanel();
+	leftSubGauge3.setOpaque(false);
+	HistoryView hView = new HistoryView();
+	leftSubGauge3.setLayout(new BoxLayout(leftSubGauge3, BoxLayout.Y_AXIS));
+	leftSubGauge3.add(Box.createVerticalGlue());
+	leftSubGauge3.add(hView.getHistoryGraph());
+	leftSubGauge3.add(Box.createVerticalStrut(40));
+
+	JPanel middleGauge3 = new JPanel();
+	middleGauge3.setOpaque(false);
+	middleGauge3.setLayout(new BoxLayout(middleGauge3, BoxLayout.Y_AXIS));
+	middleGauge3.add(Box.createVerticalStrut(40));
+	//middleGauge3.add(bmsView.getAverageCellTempGauge());	
+	middleGauge3.add(Box.createVerticalStrut(10));
+	//middleGauge3.add(sensorBoardView.getMotorTempGauge());
+	middleGauge3.add(Box.createVerticalStrut(10));
+	//middleGauge3.add(sensorBoardView.getMotorControllerTempGauge());
+	middleGauge3.add(Box.createVerticalGlue());
+
+	JPanel rightSubGauge3 = new JPanel();
+	rightSubGauge3.setOpaque(false);
+	rightSubGauge3.setLayout(new BoxLayout(rightSubGauge3, BoxLayout.Y_AXIS));
+	rightSubGauge3.add(Box.createVerticalGlue());
+	rightSubGauge3.add(hView.getHighScores());
+	rightSubGauge3.add(Box.createVerticalStrut(40));
+
+	subPage3.add(leftSubGauge3);
+	subPage3.add(middleGauge3);
+	subPage3.add(rightSubGauge3);
+
+
+
 
 	subScreen.add(subPage1, CARD_HOME);
 	subScreen.add(subPage2, CARD_INFO);
+	subScreen.add(subPage3, CARD_HISTORY);
 
+	secGauges.add(leftPanel);
+	secGauges.add(Box.createGlue());
 	secGauges.add(subScreen);
+	secGauges.add(Box.createGlue());
+	secGauges.add(rightPanel);
+
 	
 	  /*
       layout.setHorizontalGroup(
@@ -397,6 +485,8 @@ public final class SwingDisplayView extends JPanel
 
       displayArea.add(secGauges);
       displayArea.add(mainGauges);
+      displayArea.setBackground(ChargeGauge.backgroundColor);
+      this.setBackground(ChargeGauge.backgroundColor);
 
 
 	  final BoxLayout mainLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
@@ -429,10 +519,12 @@ public final class SwingDisplayView extends JPanel
 			  // {
 			  subLayout.show(subScreen, e.getActionCommand());
 			  if(e.getActionCommand().equals(CARD_HOME)){
-				  sideGauges.setVisible(false);
+				  leftPanel.setVisible(false);
+				  rightPanel.setVisible(false);
 			  }
 			  else {
-				  sideGauges.setVisible(true);
+				  leftPanel.setVisible(true);
+				  rightPanel.setVisible(true);
 			  }
 			  //}
 		  }
@@ -443,6 +535,7 @@ public final class SwingDisplayView extends JPanel
 	  b2.addActionListener(btnListener);
 	  b2.setActionCommand(CARD_HOME);
 	  b3.addActionListener(btnListener);
+	  b3.setActionCommand(CARD_HISTORY);
 
 	  buttonPanel.setPreferredSize(new Dimension(800,60));
 

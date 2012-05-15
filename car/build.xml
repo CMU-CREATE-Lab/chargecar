@@ -29,6 +29,7 @@
       <!-- third-party jars -->
       <pathelement path="${chargecar-core.jar}/"/>
       <pathelement path="${create-lab-commons-device.jar}"/>
+      <pathelement path="${create-lab-commons-menu.jar}"/>
       <pathelement path="${create-lab-commons-serial.jar}"/>
       <pathelement path="${create-lab-commons-user-interface.jar}"/>
       <pathelement path="${create-lab-commons-util.jar}"/>
@@ -291,6 +292,7 @@
             <fileset file="${chargecar-core.jar}"/>
             <fileset file="${create-lab-commons-device.jar}"/>
             <fileset file="${create-lab-commons-serial.jar}"/>
+            <fileset file="${create-lab-commons-menu.jar}"/>
             <fileset file="${create-lab-commons-user-interface.jar}"/>
             <fileset file="${create-lab-commons-util.jar}"/>
             <fileset file="${jfreechart1.jar}"/>
