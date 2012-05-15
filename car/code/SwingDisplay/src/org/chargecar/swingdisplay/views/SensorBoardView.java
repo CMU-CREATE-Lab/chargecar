@@ -1,7 +1,11 @@
-package org.chargecar.honda.sensorboard;
+package org.chargecar.swingdisplay.views;
 
 import java.util.PropertyResourceBundle;
 import org.chargecar.honda.Gauge;
+import org.chargecar.honda.sensorboard.SensorBoardEvent;
+import org.chargecar.swingdisplay.TextGauge;
+import org.chargecar.swingdisplay.ChargeGauge;
+import org.chargecar.swingdisplay.AbstractGauge;
 import org.chargecar.honda.StreamingSerialPortDeviceView;
 
 /**
@@ -9,17 +13,15 @@ import org.chargecar.honda.StreamingSerialPortDeviceView;
  */
 public final class SensorBoardView extends StreamingSerialPortDeviceView<SensorBoardEvent>
    {
-   private static final PropertyResourceBundle RESOURCES = (PropertyResourceBundle)PropertyResourceBundle.getBundle(SensorBoardView.class.getName());
+   private final TextGauge<Double> motorTempGauge = new TextGauge<Double>("Motor Temp (C)", "%6.2f");
+   private final TextGauge<Double> motorControllerTempGauge = new TextGauge<Double>("Motor Controller (C)", "%6.2f");
 
-   private final Gauge<Double> motorTempGauge = new Gauge<Double>(RESOURCES.getString("label.motor-temp"), "%6.2f");
-   private final Gauge<Double> motorControllerTempGauge = new Gauge<Double>(RESOURCES.getString("label.motor-controller-temp"), "%6.2f");
-
-   public Gauge<Double> getMotorTempGauge()
+   public AbstractGauge<Double> getMotorTempGauge()
       {
       return motorTempGauge;
       }
 
-   public Gauge<Double> getMotorControllerTempGauge()
+   public AbstractGauge<Double> getMotorControllerTempGauge()
       {
       return motorControllerTempGauge;
       }
@@ -28,8 +30,8 @@ public final class SensorBoardView extends StreamingSerialPortDeviceView<SensorB
       {
       if (eventData != null)
          {
-         motorTempGauge.setValue(eventData.getMotorTemperature());
-         motorControllerTempGauge.setValue(eventData.getControllerTemperature());
+         motorTempGauge.setValue(eventData.getMotorTemperature(), ChargeGauge.textColor);
+         motorControllerTempGauge.setValue(eventData.getControllerTemperature(), ChargeGauge.textColor);
          }
       else
          {

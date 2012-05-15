@@ -23,7 +23,6 @@ public final class Gauge<T> extends JPanel
       final GroupLayout layout = new GroupLayout(this);
       this.setLayout(layout);
       this.setBackground(Color.WHITE);
-	  this.setOpaque(false);
 
       layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.CENTER)

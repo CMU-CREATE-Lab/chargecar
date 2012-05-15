@@ -60,11 +60,18 @@ public final class HistoryView {
 	}
 
 	public JPanel getHistoryGraph() {
-		final XYItemRenderer renderer1 = new XYBarRenderer(0.20);
+		final XYBarRenderer renderer1 = new XYBarRenderer(0.20);
+		renderer1.setBaseFillPaint(ChargeGauge.gaugeBorderColor);
+		renderer1.setBasePaint(ChargeGauge.gaugeBorderColor);
+		renderer1.setSeriesPaint(0, ChargeGauge.gaugeBorderColor);
 		final DateAxis domainAxis = new DateAxis();
 		final ValueAxis rangeAxis = new NumberAxis();
+		domainAxis.setTickLabelPaint(ChargeGauge.textColor);
+		rangeAxis.setTickLabelPaint(ChargeGauge.textColor);
+
 		final XYPlot plot = new XYPlot(data, domainAxis, rangeAxis, renderer1);
 		plot.setFixedLegendItems(null);
+
 
 		JFreeChart jfreechart = new JFreeChart(plot);
 		jfreechart.setBackgroundPaint(null);
@@ -73,6 +80,8 @@ public final class HistoryView {
 		chartpanel.setOpaque(false);
 
 		
+		jfreechart.removeLegend();
+
 		Dimension chartSize = new Dimension(200,200);
 		chartpanel.setBackground(ChargeGauge.backgroundColor);
 		chartpanel.setPreferredSize(chartSize);
@@ -91,10 +100,23 @@ public final class HistoryView {
 		ret.setPreferredSize(chartSize);
 		ret.setMaximumSize(chartSize);
 
-		ret.add(new JLabel("High Scores:"));
-		ret.add(new JLabel("1: 50 MPC Mike"));
-		ret.add(new JLabel("2: 48 MPC Dan"));
-		ret.add(new JLabel("3: 44 MPC Ashley"));
+		String[] textArray = {"High Scores:",
+							   "____________",
+							   "1: 50 MPC Mike",
+							   "2: 48 MPC Dan",
+							   "3: 44 MPC Ashley",
+		};
+
+		for(int x = 0; x < 5; x++)
+		{
+			JLabel lbl = new JLabel(textArray[x]);
+			lbl.setForeground(ChargeGauge.textColor);
+			int fontSize = 14;
+			if(x == 0) fontSize = 20;
+			lbl.setFont(new Font("SansSerif", Font.PLAIN, fontSize));
+
+			ret.add(lbl);
+		}
 
 		return ret;
 	}

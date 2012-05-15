@@ -28,8 +28,9 @@ import org.chargecar.honda.motorcontroller.MotorControllerModel;
 import org.chargecar.swingdisplay.views.MotorControllerView;
 import org.chargecar.swingdisplay.views.BMSView;
 import org.chargecar.swingdisplay.views.HistoryView;
+import org.chargecar.swingdisplay.views.SensorBoardView;
 import org.chargecar.honda.sensorboard.SensorBoardModel;
-import org.chargecar.honda.sensorboard.SensorBoardView;
+//import org.chargecar.honda.sensorboard.SensorBoardView;
 import org.chargecar.serial.streaming.StreamingSerialPortDeviceConnectionStateListener;
 import org.jdesktop.layout.GroupLayout;
 import java.awt.GridLayout;
@@ -303,8 +304,6 @@ public final class SwingDisplayView extends JPanel
 	subPage3.add(rightSubGauge3);
 
 
-
-
 	subScreen.add(subPage1, CARD_HOME);
 	subScreen.add(subPage2, CARD_INFO);
 	subScreen.add(subPage3, CARD_HISTORY);
@@ -316,159 +315,6 @@ public final class SwingDisplayView extends JPanel
 	secGauges.add(rightPanel);
 
 	
-	  /*
-      layout.setHorizontalGroup(
-            layout.createSequentialGroup()
-			.add(motorControllerView.getRpmGauge())
-      		.add(bmsView.getStateOfChargeGauge())
-	  );
-      layout.setVerticalGroup(
-            layout.createSequentialGroup()
-			.add(motorControllerView.getRpmGauge())
-      		.add(bmsView.getStateOfChargeGauge())
-		);
-		*/
-      /*layout.setHorizontalGroup(
-            layout.createSequentialGroup()
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(deadSpace)
-                             .add(horizontalSpacer5)
-                             .add(bmsView.getOverTemperatureGauge())
-                  )
-                  .add(verticalSpacer1)
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(sensorBoardView.getMotorTempGauge())
-                             .add(horizontalSpacer1)
-                             .add(bmsView.getMinimumCellTempGauge())
-                             .add(horizontalSpacer2)
-                             .add(bmsView.getMinimumCellVoltageGauge())
-                             .add(horizontalSpacer3)
-                             .add(bmsView.getPackTotalVoltageGauge())
-                             .add(horizontalSpacer4)
-                             .add(bmsView.getBatteryEnergyTotalGauge())
-                             .add(bmsView.getUnderVoltageGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(verticalSpacer2)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(sensorBoardView.getMotorControllerTempGauge())
-                             .add(bmsView.getMaximumCellTempGauge())
-                             .add(bmsView.getMaximumCellVoltageGauge())
-                             .add(bmsView.getLoadCurrentAmpsGauge())
-                             .add(batteryEquationEquals)
-                             .add(bmsView.getOverVoltageGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(verticalSpacer3)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(motorControllerView.getRpmGauge())
-                             .add(bmsView.getAverageCellTempGauge())
-                             .add(bmsView.getAverageCellVoltageGauge())
-                             .add(bmsView.getDepthOfDischargeGauge())
-                             .add(bmsView.getBatteryEnergyUsedGauge())
-                             .add(bmsView.getChargeOvercurrentGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(verticalSpacer4)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(bmsView.getLLIMSetGauge())
-                             .add(bmsView.getCellNumWithLowestTempGauge())
-                             .add(bmsView.getCellNumWithLowestVoltageGauge())
-                             .add(batteryEquationPlus)
-                             .add(bmsView.getDischargeOvercurrentGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(verticalSpacer5)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(bmsView.getHLIMSetGauge())
-                             .add(bmsView.getCellNumWithHighestTempGauge())
-                             .add(bmsView.getCellNumWithHighestVoltageGauge())
-                             .add(bmsView.getStateOfHealthGauge())
-                             .add(bmsView.getBatteryEnergyRegenGauge())
-                             .add(bmsView.getCommunicationFaultWithBankOrCellGauge())
-                  )
-                  .add(verticalSpacer6)
-                  .add(layout.createParallelGroup(GroupLayout.CENTER)
-                             .add(resetBatteryEnergyButton)
-                             .add(bmsView.getInterlockTrippedGauge())
-                  )
-      );
-      layout.setVerticalGroup(
-            layout.createSequentialGroup()
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(verticalSpacer1)
-                             .add(sensorBoardView.getMotorTempGauge())
-                             .add(verticalSpacer2)
-                             .add(sensorBoardView.getMotorControllerTempGauge())
-                             .add(verticalSpacer3)
-                             .add(motorControllerView.getRpmGauge())
-                             .add(verticalSpacer4)
-                             .add(bmsView.getLLIMSetGauge())
-                             .add(verticalSpacer5)
-                             .add(bmsView.getHLIMSetGauge())
-                             .add(verticalSpacer6)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(horizontalSpacer1)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(bmsView.getMinimumCellTempGauge())
-                             .add(bmsView.getMaximumCellTempGauge())
-                             .add(bmsView.getAverageCellTempGauge())
-                             .add(bmsView.getCellNumWithLowestTempGauge())
-                             .add(bmsView.getCellNumWithHighestTempGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(horizontalSpacer2)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(bmsView.getMinimumCellVoltageGauge())
-                             .add(bmsView.getMaximumCellVoltageGauge())
-                             .add(bmsView.getAverageCellVoltageGauge())
-                             .add(bmsView.getCellNumWithLowestVoltageGauge())
-                             .add(bmsView.getCellNumWithHighestVoltageGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(horizontalSpacer3)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(bmsView.getStateOfChargeGauge())
-                             .add(bmsView.getPackTotalVoltageGauge())
-                             .add(bmsView.getLoadCurrentAmpsGauge())
-                             .add(bmsView.getDepthOfDischargeGauge())
-                             .add(bmsView.getStateOfHealthGauge())
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(horizontalSpacer4)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(deadSpace)
-                             .add(bmsView.getBatteryEnergyTotalGauge())
-                             .add(batteryEquationEquals)
-                             .add(bmsView.getBatteryEnergyUsedGauge())
-                             .add(batteryEquationPlus)
-                             .add(bmsView.getBatteryEnergyRegenGauge())
-                             .add(resetBatteryEnergyButton)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(horizontalSpacer5)
-                  )
-                  .add(layout.createParallelGroup(GroupLayout.LEADING)
-                             .add(bmsView.getOverTemperatureGauge())
-                             .add(bmsView.getUnderVoltageGauge())
-                             .add(bmsView.getOverVoltageGauge())
-                             .add(bmsView.getChargeOvercurrentGauge())
-                             .add(bmsView.getDischargeOvercurrentGauge())
-                             .add(bmsView.getCommunicationFaultWithBankOrCellGauge())
-                             .add(bmsView.getInterlockTrippedGauge())
-                  )
-      );
-		*/
-
       // register self as a connection state listener for the various models so we can display connection status
       bmsModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(bmsConnectionState));
       gpsModel.addStreamingSerialPortDeviceConnectionStateListener(new DeviceConnectionStateListener(gpsConnectionState));
@@ -502,15 +348,30 @@ public final class SwingDisplayView extends JPanel
 	  BoxLayout buttonLayout = new BoxLayout(buttonPanel, BoxLayout.X_AXIS);
 	  buttonPanel.setLayout(buttonLayout);
 
-	  JButton b1 = new JButton("Car Info");
+	  final JButton b1 = new JButton("Car Info");
 	  b1.setMaximumSize(new Dimension(600,60));
-	  JButton b2 = new JButton("Home");
+	  final JButton b2 = new JButton("Home");
 	  b2.setMaximumSize(new Dimension(600,60));
-	  JButton b3 = new JButton("History");
+	  final JButton b3 = new JButton("History");
 	  b3.setMaximumSize(new Dimension(600,60));
 	  buttonPanel.add(b1);
 	  buttonPanel.add(b2);
 	  buttonPanel.add(b3);
+
+	  final Color btnBackgroundColor = new Color(.4f, .4f, .4f);
+	  b1.setBackground(btnBackgroundColor);
+	  b2.setBackground(ChargeGauge.backgroundColor);
+	  b3.setBackground(btnBackgroundColor);
+
+	  b1.setForeground(ChargeGauge.textColor);
+	  b2.setForeground(ChargeGauge.textColor);
+	  b3.setForeground(ChargeGauge.textColor);
+
+	  b1.setFocusPainted(false);
+	  b2.setFocusPainted(false);
+	  b3.setFocusPainted(false);
+
+	  b2.grabFocus();
 
 	  ActionListener btnListener = new ActionListener() {
 
@@ -519,10 +380,23 @@ public final class SwingDisplayView extends JPanel
 			  // {
 			  subLayout.show(subScreen, e.getActionCommand());
 			  if(e.getActionCommand().equals(CARD_HOME)){
+				  b1.setBackground(btnBackgroundColor);
+				  b2.setBackground(ChargeGauge.backgroundColor);
+				  b3.setBackground(btnBackgroundColor);
 				  leftPanel.setVisible(false);
 				  rightPanel.setVisible(false);
 			  }
 			  else {
+				  if(e.getActionCommand().equals(CARD_INFO)){
+					  b1.setBackground(ChargeGauge.backgroundColor);
+					  b3.setBackground(btnBackgroundColor);
+				  }
+				  else {
+					  b1.setBackground(btnBackgroundColor);
+					  b3.setBackground(ChargeGauge.backgroundColor);
+				  }
+				  b2.setBackground(btnBackgroundColor);
+
 				  leftPanel.setVisible(true);
 				  rightPanel.setVisible(true);
 			  }
