@@ -20,22 +20,64 @@ public final class TextGauge<T> extends AbstractGauge<T> {
 	private int type;
 
 	private T data;
+	private final Color defaultColor = new Color(.9f, .9f, .9f);
 	private JLabel first, second, third;
 	private int editable;
+	private String stringFormat;
+
+	public TextGauge(String label, String stringFormat)
+	{
+		//Dimension chartSize = new Dimension(230, 230);
+
+		this.stringFormat = stringFormat;
+
+		first = new JLabel("?");
+		first.setFont(new Font("SansSerif", Font.PLAIN, 16));
+		first.setForeground(defaultColor);
+
+		second = new JLabel(label);
+		second.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		second.setForeground(defaultColor);
+
+		third = new JLabel("");
+
+		final GroupLayout layout = new GroupLayout(this);
+		this.setLayout(layout);
+
+		layout.setHorizontalGroup(
+				layout.createParallelGroup(GroupLayout.CENTER)
+				.add(first)
+				.add(second));
+		layout.setVerticalGroup(
+				layout.createSequentialGroup()
+				.add(first)
+				.add(second));
+
+		first.setOpaque(false);
+		second.setOpaque(false);
+
+		first.setFocusable(false);
+		second.setFocusable(false);
+
+		this.setOpaque(false);
+	}
 	public TextGauge(final int type)
 	{
 		this.setOpaque(false);
 		if(type == TYPE_RANGE)
 		{
+			this.stringFormat = "%d";
 
 			makeRangeGauge();
 		}
 		else if(type == TYPE_AVERAGE)
 		{
+			this.stringFormat = "%d";
 			makeAverageRangeGauge();	
 		}
 		else
 		{
+			this.stringFormat = "%d";
 			makeSmallRangeGauge();
 		}
 	}
@@ -56,21 +98,39 @@ public final class TextGauge<T> extends AbstractGauge<T> {
 	 */
 	public void setValue(final T s, final Color defaultColor)
 	{
-		data = s;
-		first.setText(data.toString());
+		if(s != null)
+		{
+			data = s;
+			first.setText(String.format(stringFormat, data));
+			first.setForeground(defaultColor);
+			second.setForeground(defaultColor);
+			third.setForeground(defaultColor);
+		}
+		else
+		{
+			first.setText("?");
+			first.setForeground(defaultColor);
+			second.setForeground(defaultColor);
+			third.setForeground(defaultColor);
+
+		}
 	}
+
 	public void makeRangeGauge(){
 		Dimension chartSize = new Dimension(230, 230);
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		first = new JLabel();
-		first.setFont(new Font("SansSerif", Font.PLAIN, 36));
+		first.setFont(new Font("San)sSerif", Font.PLAIN, 36));
+		first.setForeground(defaultColor);
 		first.setMaximumSize(new Dimension(230,70));
 
 		second = new JLabel("MILES REMAINING");
-		second.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		second.setFont(new Font("SansSerif", Font.PLAIN, 20));
+		second.setForeground(defaultColor);
+		third = new JLabel("");
 
-		first.setText("hoi world");
+		first.setText("0");
 		first.setOpaque(false);
 		second.setOpaque(false);
 		first.setFocusable(false);
@@ -93,12 +153,16 @@ public final class TextGauge<T> extends AbstractGauge<T> {
 
 		first = new JLabel();
 		first.setFont(new Font("SansSerif", Font.PLAIN, 20));
+		first.setForeground(defaultColor);
 		first.setMaximumSize(new Dimension(230,70));
 
 		second = new JLabel("MILES REMAINING");
-		second.setFont(new Font("SansSerif", Font.ITALIC, 14));
+		second.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		second.setForeground(defaultColor);
 
-		first.setText("hoi world");
+		third = new JLabel("");
+
+		first.setText("0");
 		first.setOpaque(false);
 		second.setOpaque(false);
 		first.setFocusable(false);
@@ -123,14 +187,18 @@ public final class TextGauge<T> extends AbstractGauge<T> {
 
 		first = new JLabel();
 		first.setFont(new Font("SansSerif", Font.PLAIN, 20));
+		first.setForeground(defaultColor);
 		//first.setMaximumSize(new Dimension(80,60));
 
 		second = new JLabel("AVERAGE MILES");
+		second.setForeground(defaultColor);
+
 		third = new JLabel("PER CHARGE");
+		third.setForeground(defaultColor);
 		//third.setMaximumSize(chartSize);
 
-		second.setFont(new Font("SansSerif", Font.ITALIC, 14));
-		third.setFont(new Font("SansSerif", Font.ITALIC, 14));
+		second.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		third.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
 		first.setText("0");
 		first.setOpaque(false);
@@ -142,7 +210,6 @@ public final class TextGauge<T> extends AbstractGauge<T> {
 
       final GroupLayout layout = new GroupLayout(this);
       this.setLayout(layout);
-      this.setBackground(Color.WHITE);
 
       layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.CENTER)

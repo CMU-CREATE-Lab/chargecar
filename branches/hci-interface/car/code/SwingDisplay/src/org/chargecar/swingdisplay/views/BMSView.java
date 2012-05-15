@@ -18,6 +18,7 @@ import org.chargecar.honda.bms.BMSEvent;
 import org.chargecar.swingdisplay.ChargeGauge;
 import org.chargecar.swingdisplay.VoltageGauge;
 import org.chargecar.swingdisplay.TextGauge;
+import org.chargecar.swingdisplay.AbstractGauge;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -38,7 +39,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
 
    private final Gauge<Integer> minimumCellTempGauge = new Gauge<Integer>(RESOURCES.getString("label.minimum-cell-temp"), "%3d");
    private final Gauge<Integer> maximumCellTempGauge = new Gauge<Integer>(RESOURCES.getString("label.maximum-cell-temp"), "%3d");
-   private final Gauge<Integer> averageCellTempGauge = new Gauge<Integer>(RESOURCES.getString("label.average-cell-temp"), "%3d");
+   private final TextGauge<Integer> averageCellTempGauge = new TextGauge<Integer>(RESOURCES.getString("label.average-cell-temp"), "%3d");
    private final Gauge<Integer> cellNumWithLowestTempGauge = new Gauge<Integer>(RESOURCES.getString("label.cell-num-with-lowest-temp"), "%2d");
    private final Gauge<Integer> cellNumWithHighestTempGauge = new Gauge<Integer>(RESOURCES.getString("label.cell-num-with-highest-temp"), "%2d");
 
@@ -84,12 +85,12 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
          faultStatusPanel.setValue(eventData.getBMSFault());
 
 		 System.out.println("\n========================TRYING TO DO BMS==============\n");
-		 voltageGauge.setValue(eventData.getPackTotalVoltage());
-		 powerGauge.setValue(eventData.getPower());
+		 voltageGauge.setValue(eventData.getPackTotalVoltage(), ChargeGauge.textColor);
+		 powerGauge.setValue(eventData.getPower(), ChargeGauge.textColor);
 		 deltaGauge.setValue(bmsAndEnergy.getEnergyEquation().getKilowattHoursDelta());
-		 rangeGauge.setValue(eventData.getTimeSincePowerUpInSecs());
-		 smallRangeGauge.setValue(eventData.getTimeSincePowerUpInSecs());
-		 averageGauge.setValue(eventData.getTimeSincePowerUpInSecs());
+		 rangeGauge.setValue(eventData.getTimeSincePowerUpInSecs(), ChargeGauge.textColor);
+		 smallRangeGauge.setValue(eventData.getTimeSincePowerUpInSecs(), ChargeGauge.textColor);
+		 averageGauge.setValue(eventData.getTimeSincePowerUpInSecs(), ChargeGauge.textColor);
 
          packTotalVoltageGauge.setValue(eventData.getPackTotalVoltage());
          minimumCellVoltageGauge.setValue(eventData.getMinimumCellVoltage());
@@ -100,7 +101,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
 
          minimumCellTempGauge.setValue(eventData.getMinimumCellBoardTemp());
          maximumCellTempGauge.setValue(eventData.getMaximumCellBoardTemp());
-         averageCellTempGauge.setValue(eventData.getAverageCellBoardTemp());
+         averageCellTempGauge.setValue(eventData.getAverageCellBoardTemp(), ChargeGauge.textColor);
          cellNumWithLowestTempGauge.setValue(eventData.getCellBoardNumWithLowestTemp());
          cellNumWithHighestTempGauge.setValue(eventData.getCellBoardNumWithHighestTemp());
 
@@ -237,7 +238,7 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
       return maximumCellTempGauge;
       }
 
-   public Gauge<Integer> getAverageCellTempGauge()
+   public AbstractGauge<Integer> getAverageCellTempGauge()
       {
       return averageCellTempGauge;
       }

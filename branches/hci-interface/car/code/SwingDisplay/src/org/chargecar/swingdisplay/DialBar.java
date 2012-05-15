@@ -48,7 +48,7 @@ import org.jfree.chart.plot.dial.*;
          */
         public DialBar(int datasetIndex) {
             super(datasetIndex);
-            this.paint = new Color(.1f, .4f, .6f);
+            this.paint = new Color(.7f, .7f, .7f);
 
             this.stroke = new BasicStroke(20.0f, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_BEVEL);

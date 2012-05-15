@@ -30,10 +30,11 @@ public final class ChargeGauge<T> extends AbstractGauge<T> {
 	public static final int TYPE_ECO = 2;
 	public static final int TYPE_ECO_SMALL = 3;
 	public static final int TYPE_VOLTAGE = 4;
-	public static final Color backgroundColor = new Color(.3f, .3f, .3f);
+	public static final Color backgroundColor = new Color(.2f, .2f, .2f);
 	public static final Color gaugeBorderColor = new Color(.1f, .5f, .9f);
-	public static final Color gaugePinColor = new Color(.1f, .4f, .6f);
-	public static final Color tickColor = new Color(.1f, .5f, .9f);
+	public static final Color gaugePinColor = new Color(.9f, .9f, .9f);
+	public static final Color tickColor = gaugeBorderColor;
+	public static final Color textColor = gaugePinColor;
    private final String stringFormat;
    private int type;
 
@@ -84,13 +85,13 @@ public final class ChargeGauge<T> extends AbstractGauge<T> {
 		  }
 
 		  dialplot.setBackgroundPaint(backgroundColor);
-		  //dialplot.serBackgroundImageAlpha(0.0f);
+
 		  JFreeChart jfreechart = new JFreeChart(dialplot);
 		  jfreechart.setBackgroundPaint(backgroundColor);
-		  //jfreechart.serBackgroundImageAlpha(0.0f);
+
 		  ChartPanel chartpanel = new ChartPanel(jfreechart);
 		  chartpanel.setOpaque(false);
-		  //chartpanel.setBackground(Color.pink);
+
 		  chartpanel.setPreferredSize(chartSize);
 		  this.setOpaque(false);
 		  setBackground(backgroundColor);
@@ -163,6 +164,8 @@ public final class ChargeGauge<T> extends AbstractGauge<T> {
 		  dialplot.addScale(0, standarddialscale);
 
 		  return dialplot;
+
+
    }
 
    private DialPlot getRPMDial() {
@@ -207,7 +210,8 @@ public final class ChargeGauge<T> extends AbstractGauge<T> {
 		  arcdialframe.setForegroundPaint(gaugeBorderColor);
 		  dialplot.setDialFrame(arcdialframe);
 
-		  pin.setRadius(0.68D);
+		  pin.setRadius(0.48D);
+		  pin.setPaint(gaugePinColor);
 		  pin.setStroke(new BasicStroke(90F, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		  dialplot.addLayer(pin);
 
