@@ -17,6 +17,7 @@ import org.chargecar.honda.bms.BMSFault;
 import org.chargecar.honda.bms.BMSEvent;
 import org.chargecar.swingdisplay.ChargeGauge;
 import org.chargecar.swingdisplay.VoltageGauge;
+import org.chargecar.swingdisplay.TextGauge;
 
 /**
  * @author Chris Bartley (bartley@cmu.edu)
@@ -66,6 +67,10 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
 
    private final ChargeGauge<Integer> powerGauge = new ChargeGauge(ChargeGauge.TYPE_RPM);
    private final ChargeGauge<Double> deltaGauge = new ChargeGauge(ChargeGauge.TYPE_RPM);
+   private final TextGauge<Integer> rangeGauge = new TextGauge(TextGauge.TYPE_RANGE);
+   private final TextGauge<Integer> smallRangeGauge = new TextGauge(TextGauge.TYPE_RANGE_SMALL);
+   private final TextGauge<Integer> averageGauge = new TextGauge(TextGauge.TYPE_AVERAGE);
+   //private final Gauge<Integer> rangeGauge = new Gauge<Integer>("time", "%0d");
 
    public BMSView()
       {
@@ -82,6 +87,9 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
 		 voltageGauge.setValue(eventData.getPackTotalVoltage());
 		 powerGauge.setValue(eventData.getPower());
 		 deltaGauge.setValue(bmsAndEnergy.getEnergyEquation().getKilowattHoursDelta());
+		 rangeGauge.setValue(eventData.getTimeSincePowerUpInSecs());
+		 smallRangeGauge.setValue(eventData.getTimeSincePowerUpInSecs());
+		 averageGauge.setValue(eventData.getTimeSincePowerUpInSecs());
 
          packTotalVoltageGauge.setValue(eventData.getPackTotalVoltage());
          minimumCellVoltageGauge.setValue(eventData.getMinimumCellVoltage());
@@ -175,6 +183,18 @@ public final class BMSView extends StreamingSerialPortDeviceView<BMSAndEnergy>
    public ChargeGauge<Double> getDeltaGauge()
       {
       return deltaGauge;
+      }
+   public TextGauge<Integer> getRangeGauge()
+      {
+      return rangeGauge;
+      }
+   public TextGauge<Integer> getSmallRangeGauge()
+      {
+      return smallRangeGauge;
+      }
+   public TextGauge<Integer> getAverageGauge()
+      {
+      return averageGauge;
       }
 
    public Gauge<Double> getPackTotalVoltageGauge()
