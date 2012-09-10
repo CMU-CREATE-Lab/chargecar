@@ -1,8 +1,9 @@
-package org.chargecar.algodev.knn;
+package org.chargecar.algodev.predictors;
 
 import java.util.Collection;
 import java.util.List;
 
+import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.TripBuilder;
 

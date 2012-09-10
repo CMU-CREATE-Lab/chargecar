@@ -1,17 +1,28 @@
-package org.chargecar.algodev.knn;
+package org.chargecar.algodev.predictors;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {
     private final int featureCount = 8;
-    private final double MAXGPSDIST = 3e-5;
-    private final double[] weights = new double[] { 4e5, 4e5, 1, 5, 1, 1, 10,
-	    5, 0, 0 };
+    private final double MAXGPSDIST = 3e-4;
+    private final double[] weights = new double[] { 
+	    4e5, //lat 
+	    4e5, //lon
+	    1, //speed
+	    5,  //ele
+	    1, //bearing
+	    1, //inst power
+	    10, //total power
+	    0.0001, //time
+	    1, //day
+	    .01 } //acceleration
+    ;
     
     public int getFeatureCount() {
 	return featureCount;
@@ -35,7 +46,8 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	    return point.getTotalPowerUsed();
 	case 7:
 	    return (point.getTime().get(Calendar.HOUR_OF_DAY) * 60
-		    + point.getTime().get(Calendar.MINUTE))/480;
+		    + point.getTime().get(Calendar.MINUTE));
+	    //gets total minutes of time.  4:30am=270minutes
 	case 8:
 	    return point.getTime().get(Calendar.DAY_OF_WEEK)%7;
 	case 9:
@@ -62,22 +74,21 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	
 	if (split == 0 || split == 1)
 	    dist = dist > MAXGPSDIST ? MAXGPSDIST : dist;
-//	else if(split == 8)
-//	    dist = calculateTimeDist(point1,point2);
-//	else if(split == 9)
-//	    dist = calculateDayDist(point1,point2);
-	
+	else if(split == 7)
+	    dist = calculateTimeDist(point1,point2);
+	else if(split == 8)
+	    dist = calculateDayDist(point1,point2);
+
 	return dist * weights[split];
     }
     
 
     private double calculateTimeDist(PointFeatures point1, PointFeatures point2) {
-	double timeDist = getValue(point1, 8) - getValue(point2, 8);
-//	while (timeDist > 720)
-//	    timeDist = timeDist - 1440;
-//	while (timeDist < -720)
-//	    timeDist = timeDist + 1440;
-	timeDist = timeDist / 480.0;
+	double timeDist = getValue(point1, 7) - getValue(point2, 7);
+	while (timeDist > 720)
+	    timeDist = timeDist - 720;
+	while (timeDist < -720)
+	    timeDist = timeDist + 720;
 	return Math.pow(timeDist,2.0);
     }
 
@@ -92,8 +103,8 @@ public class FullFeatureSet extends KdTreeFeatureSet {
     private double calculateDayDist(PointFeatures point1,
 	    PointFeatures point2) {
 	double dayDist;
-	double v1 = getValue(point1,9);
-	double v2 = getValue(point2,9);
+	double v1 = getValue(point1,8);
+	double v2 = getValue(point2,8);
 	if(v1 == Calendar.SATURDAY % 7) v1 = Calendar.SATURDAY;
 	if(v2 == Calendar.SATURDAY % 7) v2 = Calendar.SATURDAY;
 	

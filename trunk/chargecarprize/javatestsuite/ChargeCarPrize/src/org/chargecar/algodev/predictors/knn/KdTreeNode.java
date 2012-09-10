@@ -1,4 +1,5 @@
-package org.chargecar.algodev.knn;
+package org.chargecar.algodev.predictors.knn;
+
 
 public class KdTreeNode {
     private final KnnPoint value;

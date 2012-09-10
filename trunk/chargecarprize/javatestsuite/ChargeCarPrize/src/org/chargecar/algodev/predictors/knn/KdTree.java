@@ -1,4 +1,4 @@
-package org.chargecar.algodev.knn;
+package org.chargecar.algodev.predictors.knn;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
+import org.chargecar.algodev.predictors.KdTreeFeatureSet;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KdTree {

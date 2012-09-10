@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.chargecar.algodev.*;
 import org.chargecar.algodev.knn.*;
+import org.chargecar.algodev.policies.KnnKdTreePolicy;
 import org.chargecar.prize.battery.*;
 import org.chargecar.prize.policies.*;
 import org.chargecar.prize.util.*;

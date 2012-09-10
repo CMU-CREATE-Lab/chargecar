@@ -1,4 +1,4 @@
-package org.chargecar.algodev.knn;
+package org.chargecar.algodev.predictors.knn;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,7 +20,7 @@ public class KnnTableTrainer implements Policy {
     private final String shortName = "knntt";
     
     public KnnTableTrainer(String knnFileFolderPath){
-	this.knnFileFolderPath = knnFileFolderPath;
+	this.knnFileFolderPath = knnFileFolderPath+"\\";
     }    
 
     @Override
@@ -56,6 +56,7 @@ public class KnnTableTrainer implements Policy {
 	
 	FileOutputStream fos;
 	try {
+	    
 	    File knnTableFile = new File(this.knnFileFolderPath+currentDriver+".knn");
 	    knnTableFile.createNewFile();
 	    fos = new FileOutputStream(knnTableFile);
