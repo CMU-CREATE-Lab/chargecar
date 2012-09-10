@@ -1,23 +1,23 @@
-package org.chargecar.algodev.knn;
+package org.chargecar.algodev.policies;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+import org.chargecar.algodev.predictors.FullFeatureSet;
+import org.chargecar.algodev.predictors.knn.KdTree;
+import org.chargecar.algodev.predictors.knn.KnnTable;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
 import org.chargecar.prize.util.PowerFlows;
-import org.chargecar.prize.util.SimulationResults;
-import org.chargecar.prize.util.TripBuilder;
+
 import org.chargecar.prize.util.TripFeatures;
 
 public class KnnKdTreePolicy implements Policy {
@@ -33,8 +33,8 @@ public class KnnKdTreePolicy implements Policy {
     private String currentDriver;
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
-    private final String name = "KNN ExtendedFeatures Policy";
-    private final String shortName = "knnkd";
+    private final String name = "KNN Average Prediction Policy";
+    private final String shortName = "knnmean";
     private final File knnFileFolderPath;
     
     public KnnKdTreePolicy(String knnFileFolderPath, int neighbors, int lookahead){
@@ -124,13 +124,14 @@ public class KnnKdTreePolicy implements Policy {
     
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
+	
 	List<Double> powers = featKdTree.getBestEstimate(spf, neighbors, lookahead);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
 	List<Double> rates = new ArrayList<Double>(lookahead);
 	
 	//double sum = -modelCap.getMinPowerDrawable(pf.getPeriodMS());
-	double sum = -modelCap.getMaxPowerDrawable(pf.getPeriodMS());
+	double sum = -modelCap.getMaxPowerDrawable(spf.getPeriodMS());
 	int timesum = 0;
 
 	for(int i=0;i<lookahead;i++){	    

@@ -1,7 +1,10 @@
 package org.chargecar.algodev;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
@@ -19,8 +22,51 @@ public class OmniscientPolicy implements Policy {
     }
     int currentIndex;
     final int lookAheadSeconds;
+    private List<Double> powers;
+    private List<Integer> periods;
+    private Map<Calendar,Integer> map;
     
     public void parseTrip(Trip t){
+	List<PointFeatures> points = t.getPoints();
+	powers = new ArrayList<Double>(points.size());
+	periods = new ArrayList<Integer>(points.size());
+	map = new HashMap<Calendar,Integer>(points.size());
+	int index = 0;
+	for(PointFeatures pf : points){
+	    powers.add(pf.getPowerDemand());
+	    periods.add(pf.getPeriodMS());
+	    map.put(pf.getTime(), index);
+	    index++;
+	} 
+    }
+    
+    public double getFlow(PointFeatures pf){
+	int index = map.get(pf.getTime());
+	List<Double> joulesCumuSum = new ArrayList<Double>();
+	List<Double> rates = new ArrayList<Double>();
+	
+	double sum = -modelCap.getMaxPowerDrawable(pf.getPeriodMS());
+	//double sum=0;
+	int timesum = 0;
+
+	for(int i=index;timesum<lookAheadSeconds*1000 && i<powers.size();i++){	    
+	    sum += powers.get(i)*(periods.get(i)/1000.0);
+	    timesum += periods.get(i);
+	    joulesCumuSum.add(sum);
+	    rates.add(1000*sum/timesum);
+	}
+	
+	double maxRate = 0;//Double.NEGATIVE_INFINITY;
+	for(int i = 0;i<rates.size();i++){
+	    if(rates.get(i) > maxRate){
+		maxRate = rates.get(i);
+	    }
+	}
+	
+	return maxRate;
+    }
+    
+  /*  public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
 	optimalBatteryDraw = new ArrayList<Double>(points.size());
 	List<Double> cumulativeSumJoules = new ArrayList<Double>(points.size());
@@ -57,11 +103,13 @@ public class OmniscientPolicy implements Policy {
 	}
 	optimalBatteryDraw = rates;
     }
+    */
     
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     private String name = "Omniscient Policy";
     private String shortName = "omni";
+    
     public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone,
 	    BatteryModel capacitorClone) {
 	modelCap = capacitorClone;
@@ -73,7 +121,7 @@ public class OmniscientPolicy implements Policy {
 	return this.shortName;
     }
     
-    @Override
+   /* @Override
     public PowerFlows calculatePowerFlows(PointFeatures pf) {
 	double wattsDemanded = pf.getPowerDemand();
 	int periodMS = pf.getPeriodMS();
@@ -99,6 +147,36 @@ public class OmniscientPolicy implements Policy {
 	} catch (PowerFlowException e) {
 	}
 	currentIndex ++;
+	return new PowerFlows(batteryToMotorWatts, capToMotorWatts,
+		batteryToCapWatts);
+    }*/
+    
+    @Override
+    public PowerFlows calculatePowerFlows(PointFeatures pf) {
+	double idealFlow = getFlow(pf);	
+	double wattsDemanded = pf.getPowerDemand();
+	int periodMS = pf.getPeriodMS();
+	double minCapPower = modelCap.getMinPowerDrawable(periodMS);
+	double maxCapPower = modelCap.getMaxPowerDrawable(periodMS);	
+	
+	double capToMotorWatts = wattsDemanded > maxCapPower ? maxCapPower : wattsDemanded;
+	capToMotorWatts = capToMotorWatts < minCapPower ? minCapPower : capToMotorWatts;
+	double batteryToMotorWatts = wattsDemanded - capToMotorWatts;
+	double batteryToCapWatts = idealFlow - batteryToMotorWatts;	
+	batteryToCapWatts = batteryToCapWatts  < 0 ? 0 : batteryToCapWatts;	
+	
+	if (capToMotorWatts - batteryToCapWatts < minCapPower) {
+		batteryToCapWatts = capToMotorWatts - minCapPower;
+	    } else if(capToMotorWatts - batteryToCapWatts > maxCapPower){
+		batteryToCapWatts = capToMotorWatts - maxCapPower;
+	    }
+
+	try {
+	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
+	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, pf);
+	} catch (PowerFlowException e) {
+	}
+	
 	return new PowerFlows(batteryToMotorWatts, capToMotorWatts,
 		batteryToCapWatts);
     }

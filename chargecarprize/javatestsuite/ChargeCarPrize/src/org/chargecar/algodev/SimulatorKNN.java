@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.knn.KnnKdTreePolicy;
-import org.chargecar.algodev.knn.KnnPolicy;
-import org.chargecar.algodev.knn.KnnTableTrainer;
+import org.chargecar.algodev.policies.KnnKdTreePolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -35,8 +33,7 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static Visualizer visualizer = new ConsoleWriter();
-    
-    static double systemVoltage = 96;
+    static double systemVoltage = 400;
     static double batteryWhr = 50000;
     static double capWhr = 50;
     /**
