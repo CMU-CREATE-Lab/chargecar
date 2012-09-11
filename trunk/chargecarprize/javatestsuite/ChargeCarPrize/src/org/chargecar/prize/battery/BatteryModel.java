@@ -39,14 +39,14 @@ public abstract class BatteryModel {
     public abstract double calculateEfficiency(double current, int periodMS);
     public abstract double calculateVoltage(double current, int periodMS);
     
-    public void drawPower(double power, PointFeatures point) throws PowerFlowException{
+    public void drawPower(double power, int periodMS) throws PowerFlowException{
 	//positive means power is being drawn from this source
 	//negative means powe4 is being recharged to this source
 	this.current = powerToCurrent(power);
-	this.periodMS = point.getPeriodMS();
+	this.periodMS = periodMS;
 	this.efficiency = calculateEfficiency(power, this.periodMS);
 	// record this current as starting at the current time
-	recordHistory(point);
+	recordHistory();
 	// after the period is up, update charge & temp
 	this.temperature = calculateTemperature(power, this.periodMS);
 	this.voltage = calculateVoltage(power, this.periodMS);
@@ -107,7 +107,7 @@ public abstract class BatteryModel {
 	return this.periodHistory;
     }
     
-    protected void recordHistory(PointFeatures point) {
+    protected void recordHistory() {
 	this.temperatureHistory.add(temperature);
 	this.wattHoursHistory.add(wattHours);
 	this.efficiencyHistory.add(efficiency);

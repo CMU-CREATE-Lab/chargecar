@@ -99,8 +99,8 @@ public class KnnKdTreePolicy implements Policy {
 	    }
 
 	try {
-	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
-	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, pf);
+	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, periodMS);
+	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, periodMS);
 	} catch (PowerFlowException e) {
 	}
 	
@@ -110,12 +110,8 @@ public class KnnKdTreePolicy implements Policy {
     
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
-	double charge = modelCap.getMaxPowerDrawable(spf.getPeriodMS());
 	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
-	return appController.getControl(predictedDuty, charge);
-	
-	
-	
+	return appController.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
     }
     
     public void writePowers(List<Double> powers) {

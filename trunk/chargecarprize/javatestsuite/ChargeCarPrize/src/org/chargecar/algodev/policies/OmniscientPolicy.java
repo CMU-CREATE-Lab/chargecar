@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.chargecar.algodev.controllers.ApproximateAnalytic;
+import org.chargecar.algodev.controllers.Controller;
+import org.chargecar.algodev.controllers.ReceedingConstant;
+import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
@@ -16,6 +20,7 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class OmniscientPolicy implements Policy {
     List<Double> optimalBatteryDraw;
+    
     public OmniscientPolicy(int lookAheadSeconds) {
 	super();
 	this.lookAheadSeconds = lookAheadSeconds;
@@ -25,6 +30,7 @@ public class OmniscientPolicy implements Policy {
     private List<Double> powers;
     private List<Integer> periods;
     private Map<Calendar,Integer> map;
+    private Controller appController = new ReceedingConstant();
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
@@ -41,29 +47,34 @@ public class OmniscientPolicy implements Policy {
     }
     
     public double getFlow(PointFeatures pf){
+	
 	int index = map.get(pf.getTime());
-	List<Double> joulesCumuSum = new ArrayList<Double>();
-	List<Double> rates = new ArrayList<Double>();
-	
-	double sum = -modelCap.getMaxPowerDrawable(pf.getPeriodMS());
-	//double sum=0;
-	int timesum = 0;
-
-	for(int i=index;timesum<lookAheadSeconds*1000 && i<powers.size();i++){	    
-	    sum += powers.get(i)*(periods.get(i)/1000.0);
-	    timesum += periods.get(i);
-	    joulesCumuSum.add(sum);
-	    rates.add(1000*sum/timesum);
-	}
-	
-	double maxRate = 0;//Double.NEGATIVE_INFINITY;
-	for(int i = 0;i<rates.size();i++){
-	    if(rates.get(i) > maxRate){
-		maxRate = rates.get(i);
-	    }
-	}
-	
-	return maxRate;
+	Prediction p = new Prediction(1.0,powers.subList(index, Math.min(powers.size(),index+lookAheadSeconds)));
+	List<Prediction> ps = new ArrayList<Prediction>();
+	ps.add(p);
+	return appController.getControl(ps, modelBatt, modelCap, pf.getPeriodMS());
+//	List<Double> joulesCumuSum = new ArrayList<Double>();
+//	List<Double> rates = new ArrayList<Double>();
+//	
+//	double sum = -modelCap.getMaxPowerDrawable(pf.getPeriodMS());
+//	//double sum=0;
+//	int timesum = 0;
+//
+//	for(int i=index;timesum<lookAheadSeconds*1000 && i<powers.size();i++){	    
+//	    sum += powers.get(i)*(periods.get(i)/1000.0);
+//	    timesum += periods.get(i);
+//	    joulesCumuSum.add(sum);
+//	    rates.add(1000*sum/timesum);
+//	}
+//	
+//	double maxRate = 0;//Double.NEGATIVE_INFINITY;
+//	for(int i = 0;i<rates.size();i++){
+//	    if(rates.get(i) > maxRate){
+//		maxRate = rates.get(i);
+//	    }
+//	}
+//	
+//	return maxRate;
     }
     
   /*  public void parseTrip(Trip t){
@@ -172,8 +183,8 @@ public class OmniscientPolicy implements Policy {
 	    }
 
 	try {
-	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
-	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, pf);
+	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, periodMS);
+	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, periodMS);
 	} catch (PowerFlowException e) {
 	}
 	
