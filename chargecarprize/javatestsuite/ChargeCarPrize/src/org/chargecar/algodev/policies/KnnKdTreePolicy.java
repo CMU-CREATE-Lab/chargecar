@@ -125,7 +125,7 @@ public class KnnKdTreePolicy implements Policy {
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
 	
-	List<Double> powers = featKdTree.getBestEstimate(spf, neighbors, lookahead);
+	List<Double> powers = featKdTree.getAverageEstimate(spf, neighbors, lookahead);
 	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
 	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
 	List<Double> rates = new ArrayList<Double>(lookahead);
