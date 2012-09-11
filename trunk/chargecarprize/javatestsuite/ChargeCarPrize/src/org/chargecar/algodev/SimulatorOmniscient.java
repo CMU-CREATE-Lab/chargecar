@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.chargecar.algodev.policies.OmniscientPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LeadAcidBattery;
 import org.chargecar.prize.battery.LiFePo4;
@@ -42,9 +43,9 @@ public class SimulatorOmniscient {
     //static CSVWriter visualizer = new CSVWriter("C:/finalopt.csv");
     static Visualizer visualizer = new ConsoleWriter();
     static Vehicle civic = new Vehicle(1250, 1.988, 0.31, 0.015);
-    static double systemVoltage = 400;
+    static double systemVoltage = 120;
     static double batteryWhr = 50000;
-    static double capWhr = 50;
+    static double capWhr = 200;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will

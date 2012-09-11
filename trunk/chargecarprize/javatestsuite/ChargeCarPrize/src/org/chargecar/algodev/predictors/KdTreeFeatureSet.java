@@ -1,13 +1,10 @@
 package org.chargecar.algodev.predictors;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
 
 public abstract class KdTreeFeatureSet {
-    public abstract List<Double> estimate(PointFeatures epf, Collection<KnnPoint> neighbors, List<Double> powers, int lookahead);
+ 
     public abstract int getFeatureCount();
     public abstract double getValue(PointFeatures point, int splitType);
     public abstract double getWeight(int splitType);
