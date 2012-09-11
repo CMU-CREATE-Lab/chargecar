@@ -22,9 +22,9 @@ public class SimpleCapacitor extends BatteryModel {
     }
     
     @Override
-    public void drawPower(double current, PointFeatures point)
+    public void drawPower(double current, int periodMS)
 	    throws PowerFlowException {
-	super.drawPower(current, point);
+	super.drawPower(current, periodMS);
 	
 	if (this.wattHours < -1E-6) {
 	    throw new PowerFlowException("Capacitor overdrawn: " + this.wattHours);

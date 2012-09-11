@@ -61,8 +61,8 @@ public class SpeedPolicy implements Policy {
 	    }
 	
 	try {
-	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, pf);
-	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, pf);
+	    modelCap.drawPower(capToMotorWatts - batteryToCapWatts, periodMS);
+	    modelBatt.drawPower(batteryToMotorWatts + batteryToCapWatts, periodMS);
 	} catch (PowerFlowException e) {
 	}
 	

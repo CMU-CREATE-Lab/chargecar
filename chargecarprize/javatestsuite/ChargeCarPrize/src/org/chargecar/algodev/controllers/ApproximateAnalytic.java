@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.algodev.predictors.Prediction;
+import org.chargecar.prize.battery.BatteryModel;
 
 public class ApproximateAnalytic extends Controller {
-    public double getControl(List<Prediction> duties, double capCharge){
+    public double getControl(List<Prediction> duties, BatteryModel battery, BatteryModel cap, int periodMS){
 	List<Double> powers = duties.get(0).getPowers();
 	
 	List<Double> cumulativeSum = new ArrayList<Double>();
@@ -14,7 +15,7 @@ public class ApproximateAnalytic extends Controller {
 	List<Double> rates = new ArrayList<Double>();
 	
 	//double sum = -modelCap.getMinPowerDrawable(pf.getPeriodMS());
-	double sum = -capCharge;
+	double sum = -cap.getMaxPowerDrawable(periodMS);
 	int timesum = 0;
 
 	for(int i=0;i<powers.size();i++){	    

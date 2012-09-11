@@ -57,8 +57,8 @@ public class NaiveBufferPolicy implements Policy {
 
 	// record what we're sending to the car with our local models
 	try {
-	    modelCap.drawPower(capToMotorWatts, pf);
-	    modelBatt.drawPower(batteryToMotorWatts, pf);
+	    modelCap.drawPower(capToMotorWatts, periodMS);
+	    modelBatt.drawPower(batteryToMotorWatts, periodMS);
 	} catch (PowerFlowException e) {
 	}
 	

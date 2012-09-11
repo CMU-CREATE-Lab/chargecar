@@ -85,12 +85,12 @@ public class SimulatorOmniscient {
 //	policies.add(new OmniscientPolicy(300));
 //	policies.add(new OmniscientPolicy(360));
 //	policies.add(new OmniscientPolicy(420));
-	policies.add(new OmniscientPolicy(480));
+//	policies.add(new OmniscientPolicy(480));
 //	policies.add(new OmniscientPolicy(540));
 //	policies.add(new OmniscientPolicy(600));
 //	policies.add(new OmniscientPolicy(900));
 //	policies.add(new OmniscientPolicy(1200));
-//	policies.add(new OmniscientPolicy(1000000));
+	policies.add(new OmniscientPolicy(1000000));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -144,9 +144,9 @@ public class SimulatorOmniscient {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
 	    //pf.adjust(point.getPowerDemand());
 	    battery.drawPower(pf.getBatteryToCapacitor()
-		    + pf.getBatteryToMotor(), point);
+		    + pf.getBatteryToMotor(), point.getPeriodMS());
 	    cap.drawPower(pf.getCapacitorToMotor()
-		    - pf.getBatteryToCapacitor(), point);
+		    - pf.getBatteryToCapacitor(), point.getPeriodMS());
 	}
 	policy.endTrip();
     }

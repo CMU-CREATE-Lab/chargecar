@@ -118,9 +118,9 @@ public class SimulatorKNN {
 	    PowerFlows pf = policy.calculatePowerFlows(point);
 	   // pf.adjust(point.getPowerDemand());
 	    battery.drawPower(pf.getBatteryToCapacitor()
-		    + pf.getBatteryToMotor(), point);
+		    + pf.getBatteryToMotor(), point.getPeriodMS());
 	    cap.drawPower(pf.getCapacitorToMotor()
-		    - pf.getBatteryToCapacitor(), point);
+		    - pf.getBatteryToCapacitor(), point.getPeriodMS());
 	}
 	policy.endTrip();
     }
