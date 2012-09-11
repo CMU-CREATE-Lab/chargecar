@@ -19,7 +19,7 @@ public class KdTreeTester {
 	List<KnnPoint> points = new ArrayList<KnnPoint>();
 	System.out.print("Creating "+N+" random Points...");
 	for(int i=0;i<N;i++){
-	    points.add(new KnnPoint(getRandomPoint(), 0));
+	    points.add(new KnnPoint(getRandomPoint(), 0,0));
 	}
 	System.out.print("complete.\n");
 	System.out.print("Building tree...");

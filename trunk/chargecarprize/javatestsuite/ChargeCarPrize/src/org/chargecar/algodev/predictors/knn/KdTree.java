@@ -44,7 +44,7 @@ public class KdTree {
 	return root.countNodes();
     }
     
-    public List<Double> getBestEstimate(PointFeatures point, int k, int lookahead){
+    public List<Double> getAverageEstimate(PointFeatures point, int k, int lookahead){
 	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
 	kBestDist = Double.MAX_VALUE;
@@ -54,6 +54,7 @@ public class KdTree {
     
     private List<Double> estimate(PointFeatures pf, Collection<KnnPoint> neighbors,
 	    List<Double> powers, int lookahead) {
+	
 	List<Double> powerSums = new ArrayList<Double>();
 	double weightSum = 0;
 	for (int i = 0; i < lookahead; i++) {
@@ -62,7 +63,7 @@ public class KdTree {
 	
 	for(KnnPoint neighbor : neighbors){
 	    double dist = distance(pf, neighbor.getFeatures());
-	    double weight = 1.0 / (dist + 1e-9);
+	    double weight = 1.0;// / (dist + 1e-9);
 	    weightSum += weight;
 	    int powerInd = neighbor.getGroundTruthIndex();	    
 	    for (int j = 0; j < lookahead; j++) {
@@ -81,18 +82,38 @@ public class KdTree {
 	return powerSums;
     }
     
+    private void addNeighbor(PriorityQueue<KnnPoint> bestKNeighbors, KnnPoint neighbor, int k){
+	int tripID = neighbor.getTripID();	
+	
+	for(KnnPoint kp:bestKNeighbors){
+	    if(kp.getTripID() == tripID){
+		if(kp.getDistance() >= neighbor.getDistance()){
+		    bestKNeighbors.remove(kp);
+		    bestKNeighbors.add(neighbor);
+		    return;
+		}		
+		else
+		    return;
+	    }
+	}
+	    	
+	bestKNeighbors.add(neighbor);
+	
+	while(bestKNeighbors.size() > k)
+	    bestKNeighbors.poll();    
+    }
    
     private void searchTree(KdTreeNode node, PointFeatures point, PriorityQueue<KnnPoint> bestKNeighbors, int k, double[] distSoFar){	 
 	if(node == null) return;
 	
 	double dist = featureSet.distance(node.getValue().getFeatures(),point);
+	node.getValue().setDistance(dist);
+	
 	if(dist < kBestDist){    
-	    bestKNeighbors.add(node.getValue());
-	    while(bestKNeighbors.size() > k)
-		bestKNeighbors.poll();
+	    addNeighbor(bestKNeighbors, node.getValue(),k);
 	    if(bestKNeighbors.size() == k )
-		kBestDist = featureSet.distance(bestKNeighbors.peek().getFeatures(), point);	    
-	}	
+		kBestDist = bestKNeighbors.peek().getDistance();
+	}
 	    
 	double pointAxisValue = getValue(point, node.getSplitType());
 	double nodeAxisValue = getValue(node.getValue().getFeatures(), node.getSplitType());

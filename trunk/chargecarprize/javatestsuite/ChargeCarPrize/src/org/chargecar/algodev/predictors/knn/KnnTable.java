@@ -23,10 +23,10 @@ public class KnnTable implements Serializable{
 	this.powers = new ArrayList<Double>(inpPowers);	
     }
     
-    public void addPoint(PointFeatures pf, double powerDemand){
+    public void addPoint(PointFeatures pf, double powerDemand, int tripID){
 	powers.add(powerDemand);
 	int index = powers.size()-1;
-	points.add(new KnnPoint(pf,index));	
+	points.add(new KnnPoint(pf,index,tripID));
     }
     
     public List<KnnPoint> getKnnPoints(){

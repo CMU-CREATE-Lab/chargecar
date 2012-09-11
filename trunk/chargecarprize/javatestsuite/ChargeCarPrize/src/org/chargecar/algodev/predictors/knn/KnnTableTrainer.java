@@ -42,10 +42,11 @@ public class KnnTableTrainer implements Policy {
 	    currentDriver = driver;
 	    table = new KnnTable();	    
 	}
+
 	
 	if(table.getKnnPoints().size() < 200000){	
 	    for(PointFeatures pf : trip.getPoints()){	
-		table.addPoint(pf, pf.getPowerDemand());
+		table.addPoint(pf, pf.getPowerDemand(),trip.hashCode());
 	    }
 	    table.endTrip();
 	}
@@ -128,8 +129,8 @@ public class KnnTableTrainer implements Policy {
 	PointFeatures means = new PointFeatures(latMean,lonMean,eleMean,bearingMean,0,accMean,speedMean,powerMean, powerSumMean,0, null);
 	PointFeatures sdevs = new PointFeatures(latSD,lonSD,eleSD,bearingSD,0,accSD,speedSD,powerSD, powerSumSD, 0, null);
 	
-	table.getKnnPoints().add(0, new KnnPoint(sdevs,0));
-	table.getKnnPoints().add(0, new KnnPoint(means,0));
+	table.getKnnPoints().add(0, new KnnPoint(sdevs,0,0));
+	table.getKnnPoints().add(0, new KnnPoint(means,0,0));
 
 	for(int i = 2;i<table.getKnnPoints().size();i++){
 	    KnnPoint rawPoint = table.getKnnPoints().get(i);
@@ -147,7 +148,7 @@ public class KnnTableTrainer implements Policy {
 		    scale(rawFeatures.getPowerDemand(),powerMean,powerSD),
 		    scale(rawFeatures.getTotalPowerUsed(), powerSumMean, powerSumSD),
 		    rawFeatures.getPeriodMS(),	rawFeatures.getTime());
-	    table.getKnnPoints().set(i, new KnnPoint(scaledFeatures, rawPoint.getGroundTruthIndex()));
+	    table.getKnnPoints().set(i, new KnnPoint(scaledFeatures, rawPoint.getGroundTruthIndex(), rawPoint.getTripID()));
 	}
     }
     
