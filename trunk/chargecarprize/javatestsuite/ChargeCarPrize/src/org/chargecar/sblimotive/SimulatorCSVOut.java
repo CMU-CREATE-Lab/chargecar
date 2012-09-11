@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.chargecar.algodev.*;
 import org.chargecar.algodev.knn.*;
-import org.chargecar.algodev.policies.KnnKdTreePolicy;
+import org.chargecar.algodev.policies.KnnMeanPolicy;
 import org.chargecar.algodev.policies.OmniscientPolicy;
 import org.chargecar.prize.battery.*;
 import org.chargecar.prize.policies.*;
@@ -57,7 +57,7 @@ public class SimulatorCSVOut {
 	List<Policy> policies = new ArrayList<Policy>();
 	
 	policies.add(new NoCapPolicy());
-	policies.add(new KnnKdTreePolicy(knnFolder,7,240));
+	policies.add(new KnnMeanPolicy(knnFolder,7,240));
 	policies.add(new OmniscientPolicy(1000000));
 	
 	for (Policy p : policies) {

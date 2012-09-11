@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.policies.KnnKdTreePolicy;
+import org.chargecar.algodev.policies.KnnMeanPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -64,7 +64,7 @@ public class SimulatorKNN {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new KnnKdTreePolicy(knnFolder,7,240));
+	policies.add(new KnnMeanPolicy(knnFolder,7,240));
 	
 	for (Policy p : policies) {
 	    p.loadState();
