@@ -8,6 +8,7 @@ import java.util.PriorityQueue;
 //import java.util.Random;
 
 import org.chargecar.algodev.predictors.KdTreeFeatureSet;
+import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KdTree {
@@ -44,43 +45,20 @@ public class KdTree {
 	return root.countNodes();
     }
     
-    public List<Double> getAverageEstimate(PointFeatures point, int k, int lookahead){
+    public List<Prediction> getNeighbors(PointFeatures point, int k, int lookahead){
 	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
 	kBestDist = Double.MAX_VALUE;
-	searchTree(root, point, neighbors, k, new double[featureSet.getFeatureCount()]);	
-	return estimate(point, neighbors, powers, lookahead);
+	searchTree(root, point, neighbors, k, new double[featureSet.getFeatureCount()]);
+	List<Prediction> predictions = new ArrayList<Prediction>();
+	for(KnnPoint kp : neighbors){
+	    List<Double> pointPowers = this.powers.subList(kp.getGroundTruthIndex(), Math.min(kp.getGroundTruthIndex()+lookahead, this.powers.size()));
+	    predictions.add(new Prediction(1/(kp.getDistance()+1e-9),pointPowers));
+	}
+	return predictions;
     }
     
-    private List<Double> estimate(PointFeatures pf, Collection<KnnPoint> neighbors,
-	    List<Double> powers, int lookahead) {
-	
-	List<Double> powerSums = new ArrayList<Double>();
-	double weightSum = 0;
-	for (int i = 0; i < lookahead; i++) {
-	    powerSums.add(0.0);
-	}
-	
-	for(KnnPoint neighbor : neighbors){
-	    double dist = distance(pf, neighbor.getFeatures());
-	    double weight = 1.0;// / (dist + 1e-9);
-	    weightSum += weight;
-	    int powerInd = neighbor.getGroundTruthIndex();	    
-	    for (int j = 0; j < lookahead; j++) {
-		Double powerD = powers.get(powerInd + j);
-		if (powerD == null) {
-		    break;
-		}
-		powerSums.set(j, powerSums.get(j) + powerD * weight);	    }
-	}
-	
-	for (int i = 0; i < lookahead; i++) {
-	    if (weightSum == 0.0)
-		powerSums.set(i, 0.0);
-	    else powerSums.set(i, powerSums.get(i) / weightSum);
-	}
-	return powerSums;
-    }
+   
     
     private void addNeighbor(PriorityQueue<KnnPoint> bestKNeighbors, KnnPoint neighbor, int k){
 	int tripID = neighbor.getTripID();	

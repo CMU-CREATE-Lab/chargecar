@@ -6,11 +6,14 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.chargecar.algodev.controllers.ApproximateAnalytic;
+import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.predictors.FullFeatureSet;
-import org.chargecar.algodev.predictors.knn.KdTree;
+import org.chargecar.algodev.predictors.Prediction;
+import org.chargecar.algodev.predictors.Predictor;
+import org.chargecar.algodev.predictors.knn.KnnMeanPredictor;
 import org.chargecar.algodev.predictors.knn.KnnTable;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
@@ -22,8 +25,9 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class KnnKdTreePolicy implements Policy {
     
-    //private KdTree gpsKdTree;
-    private KdTree featKdTree;
+    private Predictor knnPredictor;
+    private Controller appController;
+    
     private PointFeatures means;
     private PointFeatures sdevs;    
     private final int lookahead; 
@@ -41,6 +45,7 @@ public class KnnKdTreePolicy implements Policy {
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.neighbors = neighbors;
 	this.lookahead = lookahead;
+	this.appController = new ApproximateAnalytic();
     }
     
     @Override
@@ -52,7 +57,6 @@ public class KnnKdTreePolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
-		featKdTree = null;
 		File currentKnnTableFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
@@ -64,8 +68,8 @@ public class KnnKdTreePolicy implements Policy {
 		sdevs = knnTable.getKnnPoints().get(1).getFeatures();
 		knnTable.getKnnPoints().remove(1);
 		knnTable.getKnnPoints().remove(0);
-		featKdTree = new KdTree(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet());
-		System.out.println("Trees built.. "+featKdTree.countNodes()+" nodes.");
+		knnPredictor = new KnnMeanPredictor(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet(),neighbors,lookahead);
+		System.out.println("Trees built.");
 	    } catch (Exception e) {		
 		e.printStackTrace();
 	    }
@@ -104,52 +108,14 @@ public class KnnKdTreePolicy implements Policy {
 		batteryToCapWatts);
     }
     
-    @SuppressWarnings("unused")
-    private double calculateVariance(List<Double> list){
-	double sum = 0.0;
-	for(int i = 0;i<list.size();i++)
-	    sum += list.get(i);
-	
-	double mean = sum / list.size();
-	
-	sum = 0.0;
-	
-	for(int i = 0;i<list.size();i++){
-	    double diff = (list.get(i) - mean); 
-	    sum += diff*diff;
-	}
-	
-	return sum/(list.size());	
-    }
-    
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
+	double charge = modelCap.getMaxPowerDrawable(spf.getPeriodMS());
+	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
+	return appController.getControl(predictedDuty, charge);
 	
-	List<Double> powers = featKdTree.getAverageEstimate(spf, neighbors, lookahead);
-	List<Double> cumulativeSum = new ArrayList<Double>(lookahead);
-	List<Integer> timeStamps = new ArrayList<Integer>(lookahead);
-	List<Double> rates = new ArrayList<Double>(lookahead);
 	
-	//double sum = -modelCap.getMinPowerDrawable(pf.getPeriodMS());
-	double sum = -modelCap.getMaxPowerDrawable(spf.getPeriodMS());
-	int timesum = 0;
-
-	for(int i=0;i<lookahead;i++){	    
-	    sum += powers.get(i);
-	    timesum += 1000;
-	    cumulativeSum.add(sum);
-	    timeStamps.add(timesum);
-	    rates.add(1000*sum/timesum);
-	}
 	
-	double maxRate = Double.NEGATIVE_INFINITY;
-	for(int i = 0;i<rates.size();i++){
-	    if(rates.get(i) > maxRate){
-		maxRate = rates.get(i);
-	    }
-	}
-	
-	return maxRate;
     }
     
     public void writePowers(List<Double> powers) {
