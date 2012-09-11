@@ -10,9 +10,11 @@ import java.util.List;
 
 import org.chargecar.algodev.controllers.ApproximateAnalytic;
 import org.chargecar.algodev.controllers.Controller;
+import org.chargecar.algodev.controllers.ReceedingConstant;
 import org.chargecar.algodev.predictors.FullFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
+import org.chargecar.algodev.predictors.knn.KnnDistPredictor;
 import org.chargecar.algodev.predictors.knn.KnnMeanPredictor;
 import org.chargecar.algodev.predictors.knn.KnnTable;
 import org.chargecar.prize.battery.BatteryModel;
@@ -26,7 +28,7 @@ import org.chargecar.prize.util.TripFeatures;
 public class KnnDistributionPolicy implements Policy {
     
     private Predictor knnPredictor;
-    private Controller appController;
+    private Controller rhController;
     
     private PointFeatures means;
     private PointFeatures sdevs;    
@@ -37,15 +39,15 @@ public class KnnDistributionPolicy implements Policy {
     private String currentDriver;
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
-    private final String name = "KNN Mean Prediction Policy";
-    private final String shortName = "knnmean";
+    private final String name = "KNN Distribution Policy";
+    private final String shortName = "knndist";
     private final File knnFileFolderPath;
     
     public KnnDistributionPolicy(String knnFileFolderPath, int neighbors, int lookahead){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.neighbors = neighbors;
 	this.lookahead = lookahead;
-	this.appController = new ApproximateAnalytic();
+	this.rhController = new ReceedingConstant();
     }
     
     @Override
@@ -68,7 +70,7 @@ public class KnnDistributionPolicy implements Policy {
 		sdevs = knnTable.getKnnPoints().get(1).getFeatures();
 		knnTable.getKnnPoints().remove(1);
 		knnTable.getKnnPoints().remove(0);
-		knnPredictor = new KnnMeanPredictor(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet(),neighbors,lookahead);
+		knnPredictor = new KnnDistPredictor(knnTable.getKnnPoints(), knnTable.getPowers(), new FullFeatureSet(),neighbors,lookahead);
 		System.out.println("Trees built.");
 	    } catch (Exception e) {		
 		e.printStackTrace();
@@ -111,7 +113,7 @@ public class KnnDistributionPolicy implements Policy {
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
 	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
-	return appController.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
+	return rhController.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
     }
     
     public void writePowers(List<Double> powers) {
