@@ -23,7 +23,7 @@ import org.chargecar.prize.util.PowerFlows;
 
 import org.chargecar.prize.util.TripFeatures;
 
-public class KnnKdTreePolicy implements Policy {
+public class KnnMeanPolicy implements Policy {
     
     private Predictor knnPredictor;
     private Controller appController;
@@ -37,11 +37,11 @@ public class KnnKdTreePolicy implements Policy {
     private String currentDriver;
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
-    private final String name = "KNN Average Prediction Policy";
+    private final String name = "KNN Mean Prediction Policy";
     private final String shortName = "knnmean";
     private final File knnFileFolderPath;
     
-    public KnnKdTreePolicy(String knnFileFolderPath, int neighbors, int lookahead){
+    public KnnMeanPolicy(String knnFileFolderPath, int neighbors, int lookahead){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.neighbors = neighbors;
 	this.lookahead = lookahead;
