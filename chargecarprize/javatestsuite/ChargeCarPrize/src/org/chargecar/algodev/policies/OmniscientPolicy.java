@@ -1,4 +1,4 @@
-package org.chargecar.algodev;
+package org.chargecar.algodev.policies;
 
 import java.util.ArrayList;
 import java.util.Calendar;

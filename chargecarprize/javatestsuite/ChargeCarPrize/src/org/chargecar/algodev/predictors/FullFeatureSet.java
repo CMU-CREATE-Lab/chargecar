@@ -132,37 +132,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	else dayDist = 2;
 	return Math.pow(dayDist,2.0);
     }
-    
-    public List<Double> estimate(PointFeatures pf, Collection<KnnPoint> neighbors,
-	    List<Double> powers, int lookahead) {
-	List<Double> powerSums = new ArrayList<Double>();
-	List<Double> pointScales = new ArrayList<Double>();
-	for (int i = 0; i < lookahead; i++) {
-	    powerSums.add(0.0);
-	    pointScales.add(0.0);
-	}
-	for(KnnPoint neighbor : neighbors){
-	    double dist = distance(pf, neighbor.getFeatures());
-	    double distScaler = 1.0 / (dist + 1e-9);
-	    int powerInd = neighbor.getGroundTruthIndex();
-	    for (int j = 0; j < lookahead; j++) {
-		Double powerD = powers.get(powerInd + j);
-		if (powerD == null) {
-		    break;
-		}
-		powerSums.set(j, powerSums.get(j) + powerD * distScaler);
-		pointScales.set(j, pointScales.get(j) + distScaler);
-	    }
-	}
-	
-	for (int i = 0; i < lookahead; i++) {
-	    if (pointScales.get(i) == 0.0)
-		powerSums.set(i, 0.0);
-	    else powerSums.set(i, powerSums.get(i) / pointScales.get(i));
-	}
-	return powerSums;
-    }
-    
+
     public double getWeight(int splitType) {
 	return weights[splitType];
     }

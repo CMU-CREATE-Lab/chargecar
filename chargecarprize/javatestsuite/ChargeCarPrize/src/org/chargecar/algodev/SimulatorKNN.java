@@ -33,9 +33,9 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static Visualizer visualizer = new ConsoleWriter();
-    static double systemVoltage = 400;
+    static double systemVoltage = 120;
     static double batteryWhr = 50000;
-    static double capWhr = 50;
+    static double capWhr = 200;
     /**
      * @param args
      *            A pathname to a folder containing *.knn files for each driver
@@ -64,7 +64,7 @@ public class SimulatorKNN {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new KnnKdTreePolicy(knnFolder,7,240));
+	policies.add(new KnnKdTreePolicy(knnFolder,15,240));
 	
 	for (Policy p : policies) {
 	    p.loadState();

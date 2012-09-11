@@ -59,13 +59,6 @@ public class GPSFeatureSet extends KdTreeFeatureSet {
     }
 
     @Override
-    public List<Double> estimate(PointFeatures epf,
-	    Collection<KnnPoint> neighbors, List<Double> powers, int lookahead) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
     public double getWeight(int splitType) {
 	// TODO Auto-generated method stub
 	return 0;
