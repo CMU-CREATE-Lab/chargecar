@@ -34,8 +34,15 @@ public class ReceedingConstant extends Controller {
     private double testControl(double control, Prediction dutyPrediction, BatteryModel batt, BatteryModel cap){
 	BatteryModel modelBatt = new SimpleBattery(batt.getMaxWattHours(),batt.getWattHours(),batt.getVoltage());
 	BatteryModel modelCap = new SimpleCapacitor(cap.getMaxWattHours(), cap.getWattHours(), cap.getVoltage());
-	for(double powerDemand : dutyPrediction.getPowers())
-	    processFlows(control, powerDemand, modelBatt, modelCap);
+	for(int i=0;i<dutyPrediction.getPowers().size();i++){
+	    Double powerDemand = dutyPrediction.getPowers().get(i);
+	    if(powerDemand == null)
+		break;
+	    else
+		processFlows(control, powerDemand, modelBatt, modelCap);
+	}
+    	
+	    
 	
 	double cost = 0.0;
 	double discount = 0.99;

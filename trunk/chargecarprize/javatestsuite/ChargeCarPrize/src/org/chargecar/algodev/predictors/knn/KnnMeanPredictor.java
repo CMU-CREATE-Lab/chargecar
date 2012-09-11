@@ -36,7 +36,7 @@ public class KnnMeanPredictor extends Predictor {
 	}
 	
 	for(Prediction neighbor : neighbors){
-	    double weight = 1.0;// neighbor.getWeight();
+	    double weight = 1.0;//neighbor.getWeight();
   
 	    for (int j = 0; j < lookahead; j++) {
 		Double powerD = neighbor.getPowers().get(j);
