@@ -199,5 +199,11 @@ public class KnnTableTrainer implements Policy {
 	 
 	 return sum/(list.size());	
    }
+
+    @Override
+    public void clearState() {
+	// TODO Auto-generated method stub
+	
+    }
     
 }

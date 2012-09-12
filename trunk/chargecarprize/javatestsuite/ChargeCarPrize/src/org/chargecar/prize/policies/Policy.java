@@ -21,6 +21,8 @@ public interface Policy {
     
     public void loadState();
     
+    public void clearState();
+    
     public void endTrip();
     
     public PowerFlows calculatePowerFlows(PointFeatures pointFeatures);

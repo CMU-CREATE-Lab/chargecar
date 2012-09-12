@@ -41,4 +41,10 @@ public class NoCapPolicy implements Policy {
     public String getShortName() {
 	return "nocap";
     }
+
+    @Override
+    public void clearState() {
+	// TODO Auto-generated method stub
+	
+    }
 }

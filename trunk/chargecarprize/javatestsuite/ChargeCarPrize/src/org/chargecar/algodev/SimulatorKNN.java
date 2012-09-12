@@ -65,9 +65,17 @@ public class SimulatorKNN {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	//policies.add(new KnnDistributionPolicy(knnFolder,7,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,15,240));
-	//policies.add(new KnnDistributionPolicy(knnFolder,25,240));
+	policies.add(new KnnDistributionPolicy(knnFolder,1,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,2,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,3,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,4,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,5,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,7,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,9,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,11,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,15,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,20,90));
+	policies.add(new KnnDistributionPolicy(knnFolder,25,240));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -84,24 +92,23 @@ public class SimulatorKNN {
 	    results.add(new SimulationResults(p.getName()));
 	}
 	int count = 0;
+	List<Trip> tripsToTest = new ArrayList<Trip>();
 	for (File tripFile : tripFiles) {
-	    List<Trip> tripsToTest = parseTrips(tripFile);
-	    
+	    tripsToTest.addAll(parseTrips(tripFile));
+	}	
+	for (int i = 0; i < policies.size(); i++) {	    
 	    for (Trip t : tripsToTest) {
-		count++;
-		System.out.println("Trip "+count+": "+t.getPoints().size()+"points.");
-		for (int i = 0; i < policies.size(); i++) {
-		    try {
-			simulateTrip(policies.get(i), t, results.get(i));
-						
-		    } catch (PowerFlowException e) {
-			e.printStackTrace();
-		    }
+		System.out.println("Trip "+t.getPoints().size()+"points.");		
+		try {
+		    simulateTrip(policies.get(i), t, results.get(i));
+		} catch (PowerFlowException e) {
+		    e.printStackTrace();
 		}
-	    }
+	    }	    
+	    policies.get(i).clearState();
 	}
 	System.out.println();
-	System.out.println("Trips tested: "+count);
+	System.out.println("Trips tested: "+tripsToTest.size());
 	return results;
     }
     

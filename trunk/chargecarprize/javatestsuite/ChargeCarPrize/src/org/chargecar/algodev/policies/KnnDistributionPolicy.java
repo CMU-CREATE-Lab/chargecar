@@ -172,5 +172,14 @@ public class KnnDistributionPolicy implements Policy {
     public String getShortName() {
 	return this.shortName;
     }
+
+    @Override
+    public void clearState() {
+	this.currentDriver = null;
+	this.knnPredictor = null;
+	this.pointsTested = 0;
+	this.means = null;
+	this.sdevs = null;
+    }
     
 }
