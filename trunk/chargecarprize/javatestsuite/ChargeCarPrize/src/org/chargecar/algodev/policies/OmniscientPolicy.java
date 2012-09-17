@@ -208,5 +208,11 @@ public class OmniscientPolicy implements Policy {
 	// TODO Auto-generated method stub
 	
     }
+
+    @Override
+    public void clearState() {
+	// TODO Auto-generated method stub
+	
+    }
     
 }

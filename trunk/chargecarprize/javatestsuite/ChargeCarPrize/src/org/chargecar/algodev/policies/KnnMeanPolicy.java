@@ -26,18 +26,18 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class KnnMeanPolicy implements Policy {
     
-    private Predictor knnPredictor;
-    private Controller controller;
+    protected Predictor knnPredictor;
+    protected Controller controller;
     
     private PointFeatures means;
     private PointFeatures sdevs;    
-    private final int lookahead; 
+    protected final int lookahead; 
     private final int neighbors;
     private int pointsTested = 0;
     
     private String currentDriver;
-    private BatteryModel modelCap;
-    private BatteryModel modelBatt;
+    protected BatteryModel modelCap;
+    protected BatteryModel modelBatt;
     private final String name = "KNN Mean Prediction Policy";
     private final String shortName = "knnmean";
     private final File knnFileFolderPath;
@@ -131,7 +131,7 @@ public class KnnMeanPolicy implements Policy {
 	    e.printStackTrace();
 	}
     }
-    private PointFeatures scaleFeatures(PointFeatures pf){
+    protected PointFeatures scaleFeatures(PointFeatures pf){
 	return new PointFeatures(
 		//scale(pf.getLatitude(),means.getLatitude(),sdevs.getLatitude()),
 		//scale(pf.getLongitude(),means.getLongitude(),sdevs.getLongitude()),
@@ -171,6 +171,12 @@ public class KnnMeanPolicy implements Policy {
     @Override
     public String getShortName() {
 	return this.shortName;
+    }
+
+    @Override
+    public void clearState() {
+	// TODO Auto-generated method stub
+	
     }
     
 }
