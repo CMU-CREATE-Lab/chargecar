@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.chargecar.algodev.policies.AccuracyTesterPolicy;
 import org.chargecar.algodev.policies.KnnDistributionPolicy;
 import org.chargecar.algodev.policies.KnnMeanPolicy;
 import org.chargecar.prize.battery.BatteryModel;
@@ -31,7 +32,7 @@ import org.chargecar.prize.visualization.Visualizer;
  * @author Alex Styler
  * 
  */
-public class SimulatorKNN {
+public class SimulatorFigureGen {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static Visualizer visualizer = new ConsoleWriter();
     static double systemVoltage = 120;
@@ -63,19 +64,8 @@ public class SimulatorKNN {
     	}
     	    
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
-	List<Policy> policies = new ArrayList<Policy>();
-	policies.add(new NoCapPolicy());
-	policies.add(new KnnDistributionPolicy(knnFolder,1,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,2,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,3,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,4,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,5,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,7,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,9,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,11,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,15,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,20,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,25,240));
+	List<AccuracyTesterPolicy> policies = new ArrayList<AccuracyTesterPolicy>();
+	policies.add(new AccuracyTesterPolicy(knnFolder, 1, 240));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -85,7 +75,7 @@ public class SimulatorKNN {
 	visualizer.visualizeSummary(results);
     }    
     
-    private static List<SimulationResults> simulateTrips(List<Policy> policies,
+    private static List<SimulationResults> simulateTrips(List<AccuracyTesterPolicy> policies,
 	    List<File> tripFiles) throws IOException {
 	List<SimulationResults> results = new ArrayList<SimulationResults>();
 	for (Policy p : policies) {
@@ -100,12 +90,13 @@ public class SimulatorKNN {
 	    for (Trip t : tripsToTest) {
 		System.out.println("Trip "+t.getPoints().size()+"points.");		
 		try {
+		    policies.get(i).parseTrip(t);
 		    simulateTrip(policies.get(i), t, results.get(i));
 		} catch (PowerFlowException e) {
 		    e.printStackTrace();
 		}
 	    }	    
-	    policies.get(i).clearState();
+	    policies.get(i).writeAccuracy();
 	}
 	System.out.println();
 	System.out.println("Trips tested: "+tripsToTest.size());
@@ -166,3 +157,4 @@ public class SimulatorKNN {
 	return gpxFiles;
     }
 }
+
