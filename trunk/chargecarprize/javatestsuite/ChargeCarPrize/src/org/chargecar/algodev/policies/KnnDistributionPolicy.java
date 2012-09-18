@@ -62,6 +62,7 @@ public class KnnDistributionPolicy implements Policy {
 		File currentKnnTableFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
+		knnPredictor = null;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		KnnTable knnTable = (KnnTable)ois.readObject();

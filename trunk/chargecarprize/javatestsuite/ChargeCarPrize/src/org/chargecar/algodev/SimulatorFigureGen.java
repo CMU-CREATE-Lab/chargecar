@@ -8,6 +8,7 @@ import java.util.List;
 import org.chargecar.algodev.policies.AccuracyTesterPolicy;
 import org.chargecar.algodev.policies.KnnDistributionPolicy;
 import org.chargecar.algodev.policies.KnnMeanPolicy;
+import org.chargecar.algodev.policies.PowerCountPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -64,8 +65,8 @@ public class SimulatorFigureGen {
     	}
     	    
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
-	List<AccuracyTesterPolicy> policies = new ArrayList<AccuracyTesterPolicy>();
-	policies.add(new AccuracyTesterPolicy(knnFolder, 1, 240));
+	List<PowerCountPolicy> policies = new ArrayList<PowerCountPolicy>();
+	policies.add(new PowerCountPolicy(knnFolder, 1, 240));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -75,7 +76,7 @@ public class SimulatorFigureGen {
 	visualizer.visualizeSummary(results);
     }    
     
-    private static List<SimulationResults> simulateTrips(List<AccuracyTesterPolicy> policies,
+    private static List<SimulationResults> simulateTrips(List<PowerCountPolicy> policies,
 	    List<File> tripFiles) throws IOException {
 	List<SimulationResults> results = new ArrayList<SimulationResults>();
 	for (Policy p : policies) {
@@ -90,13 +91,12 @@ public class SimulatorFigureGen {
 	    for (Trip t : tripsToTest) {
 		System.out.println("Trip "+t.getPoints().size()+"points.");		
 		try {
-		    policies.get(i).parseTrip(t);
 		    simulateTrip(policies.get(i), t, results.get(i));
 		} catch (PowerFlowException e) {
 		    e.printStackTrace();
 		}
 	    }	    
-	    policies.get(i).writeAccuracy();
+	    policies.get(i).writeControls();
 	}
 	System.out.println();
 	System.out.println("Trips tested: "+tripsToTest.size());

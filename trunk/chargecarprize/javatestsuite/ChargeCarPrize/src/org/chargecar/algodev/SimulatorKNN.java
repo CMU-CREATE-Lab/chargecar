@@ -1,6 +1,8 @@
 package org.chargecar.algodev;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,23 +67,16 @@ public class SimulatorKNN {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new KnnDistributionPolicy(knnFolder,1,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,2,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,3,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,4,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,5,240));
+	policies.add(new KnnMeanPolicy(knnFolder,7,240));
 	policies.add(new KnnDistributionPolicy(knnFolder,7,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,9,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,11,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,15,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,20,240));
-	policies.add(new KnnDistributionPolicy(knnFolder,25,240));
+
 	
 	for (Policy p : policies) {
 	    p.loadState();
 	}
 	
 	List<SimulationResults> results = simulateTrips(policies, gpxFiles);
+//	writeResults(results);
 	visualizer.visualizeSummary(results);
     }    
     
@@ -109,6 +104,7 @@ public class SimulatorKNN {
 	}
 	System.out.println();
 	System.out.println("Trips tested: "+tripsToTest.size());
+	
 	return results;
     }
     
@@ -151,6 +147,26 @@ public class SimulatorKNN {
 	return trips;
     }
     
+    public static void writeResults(List<SimulationResults> results){
+	FileWriter fstream;
+	try {
+	    List<Double> base = results.get(0).getBatteryCurrentSquaredIntegrals();
+	    List<Double> policy = results.get(1).getBatteryCurrentSquaredIntegrals();
+	    fstream = new FileWriter("C:/dknnres.csv",false);
+	    BufferedWriter out = new BufferedWriter(fstream);
+	    boolean end = false;
+	    for(int i=0; i<base.size();i++){
+		double percentof = policy.get(i) / base.get(i);
+		out.write(percentof+",");
+	    }
+	    
+	    out.write("0.0\n");	   
+	    out.close();
+	} catch (IOException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+    }
     static List<File> getGPXFiles(File gpxFolder) {
 	List<File> gpxFiles = new ArrayList<File>();
 	File[] files = gpxFolder.listFiles();

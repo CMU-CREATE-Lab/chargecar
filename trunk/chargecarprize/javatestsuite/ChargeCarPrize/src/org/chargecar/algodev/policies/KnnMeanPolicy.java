@@ -61,6 +61,7 @@ public class KnnMeanPolicy implements Policy {
 	    try {
 		File currentKnnTableFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
+		knnPredictor = null;
 		currentDriver = driver;
 		FileInputStream fis = new FileInputStream(currentKnnTableFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
@@ -175,8 +176,11 @@ public class KnnMeanPolicy implements Policy {
 
     @Override
     public void clearState() {
-	// TODO Auto-generated method stub
-	
+	this.currentDriver = null;
+	this.knnPredictor = null;
+	this.pointsTested = 0;
+	this.means = null;
+	this.sdevs = null;
     }
     
 }

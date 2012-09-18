@@ -8,6 +8,7 @@ import java.util.List;
 import org.chargecar.algodev.policies.AccuracyTesterPolicy;
 import org.chargecar.algodev.policies.KnnDistributionPolicy;
 import org.chargecar.algodev.policies.KnnMeanPolicy;
+import org.chargecar.algodev.policies.OmniPowerFig;
 import org.chargecar.algodev.policies.PredictionFigurePolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
@@ -38,7 +39,7 @@ public class SimulatorFigureGen2 {
     static Visualizer visualizer = new ConsoleWriter();
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
-    static double capWhr = 200;
+    static double capWhr = 2000;
     /**
      * @param args
      *            A pathname to a folder containing *.knn files for each driver
@@ -65,8 +66,8 @@ public class SimulatorFigureGen2 {
     	}
     	    
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
-	List<PredictionFigurePolicy> policies = new ArrayList<PredictionFigurePolicy>();
-	policies.add(new PredictionFigurePolicy(knnFolder, 7, 240));
+	List<OmniPowerFig> policies = new ArrayList<OmniPowerFig>();
+	policies.add(new OmniPowerFig(2400));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -76,7 +77,7 @@ public class SimulatorFigureGen2 {
 	visualizer.visualizeSummary(results);
     }    
     
-    private static List<SimulationResults> simulateTrips(List<PredictionFigurePolicy> policies,
+    private static List<SimulationResults> simulateTrips(List<OmniPowerFig> policies,
 	    List<File> tripFiles) throws IOException {
 	List<SimulationResults> results = new ArrayList<SimulationResults>();
 	for (Policy p : policies) {
@@ -97,6 +98,7 @@ public class SimulatorFigureGen2 {
 		    e.printStackTrace();
 		}
 	    }	    
+	    policies.get(i).writeControls();
 	}
 	System.out.println();
 	System.out.println("Trips tested: "+tripsToTest.size());
