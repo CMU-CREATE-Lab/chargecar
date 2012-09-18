@@ -30,7 +30,7 @@ public class OmniscientPolicy implements Policy {
     private List<Double> powers;
     private List<Integer> periods;
     private Map<Calendar,Integer> map;
-    private Controller appController = new ApproximateAnalytic();//new ReceedingConstant();
+    private Controller appController = new ReceedingConstant();
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();

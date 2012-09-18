@@ -78,10 +78,10 @@ public class SimulatorOmniscient {
 //	policies.add(new OmniscientPolicy(30));
 //	policies.add(new OmniscientPolicy(45));
 //	policies.add(new OmniscientPolicy(60));
-	policies.add(new OmniscientPolicy(90));
+//	policies.add(new OmniscientPolicy(90));
 //	policies.add(new OmniscientPolicy(120));
 //	policies.add(new OmniscientPolicy(180));
-	policies.add(new OmniscientPolicy(240));
+//	policies.add(new OmniscientPolicy(240));
 //	policies.add(new OmniscientPolicy(300));
 //	policies.add(new OmniscientPolicy(360));
 //	policies.add(new OmniscientPolicy(420));
@@ -89,8 +89,8 @@ public class SimulatorOmniscient {
 //	policies.add(new OmniscientPolicy(540));
 //	policies.add(new OmniscientPolicy(600));
 //	policies.add(new OmniscientPolicy(900));
-//	policies.add(new OmniscientPolicy(1200));
-	policies.add(new OmniscientPolicy(1000000));
+	policies.add(new OmniscientPolicy(1200));
+// 	policies.add(new OmniscientPolicy(1000000));
 	
 	for (Policy p : policies) {
 	    p.loadState();
