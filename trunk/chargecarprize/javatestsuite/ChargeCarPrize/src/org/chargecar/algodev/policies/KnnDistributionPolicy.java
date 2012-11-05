@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.chargecar.algodev.controllers.ApproximateAnalytic;
 import org.chargecar.algodev.controllers.Controller;
+import org.chargecar.algodev.controllers.MultipleModelDP;
 import org.chargecar.algodev.controllers.ReceedingConstant;
 import org.chargecar.algodev.predictors.FullFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
@@ -28,7 +29,7 @@ import org.chargecar.prize.util.TripFeatures;
 public class KnnDistributionPolicy implements Policy {
     
     protected Predictor knnPredictor;
-    protected Controller rhController;
+    protected Controller controller;
     
     private PointFeatures means;
     private PointFeatures sdevs;    
@@ -47,7 +48,9 @@ public class KnnDistributionPolicy implements Policy {
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.neighbors = neighbors;
 	this.lookahead = lookahead;
-	this.rhController = new ReceedingConstant();
+	//this.controller = new ReceedingConstant();
+	this.controller = new MultipleModelDP(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000}, 400, 1);
+	   
     }
     
     @Override
@@ -114,7 +117,7 @@ public class KnnDistributionPolicy implements Policy {
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
 	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
-	return rhController.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
+	return controller.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
     }
     
     public void writePowers(List<Double> powers) {

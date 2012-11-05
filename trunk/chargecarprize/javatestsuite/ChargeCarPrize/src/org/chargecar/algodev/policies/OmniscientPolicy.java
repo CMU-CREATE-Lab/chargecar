@@ -9,7 +9,7 @@ import java.util.Map;
 import org.chargecar.algodev.controllers.ApproximateAnalytic;
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.ReceedingConstant;
-import org.chargecar.algodev.controllers.SingleModelDP;
+import org.chargecar.algodev.controllers.MultipleModelDP;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
@@ -31,9 +31,16 @@ public class OmniscientPolicy implements Policy {
     private List<Double> powers;
     private List<Integer> periods;
     private Map<Calendar,Integer> map;
-    //private Controller appController = new SingleModelDP();
+    
+    //private Controller appController = new MultipleModelDP(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000}, 400, 1);
+    //81.609%
+    
     //private Controller appController = new ReceedingConstant();
-    private Controller appController = new ApproximateAnalytic();
+    //74.580%
+    
+    //private Controller appController = new ApproximateAnalytic();
+    //81.785%
+    
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
