@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.chargecar.algodev.controllers.ApproximateAnalytic;
 import org.chargecar.algodev.controllers.Controller;
+import org.chargecar.algodev.controllers.MultipleModelDP;
 import org.chargecar.algodev.controllers.ReceedingConstant;
-import org.chargecar.algodev.controllers.SingleModelDP;
 import org.chargecar.algodev.predictors.FullFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
@@ -49,7 +49,7 @@ public class KnnMeanPolicy implements Policy {
 	this.lookahead = lookahead;
 	//this.controller = new ApproximateAnalytic();
 	//this.controller = new ReceedingConstant();
-	this.controller = new SingleModelDP();
+	this.controller = new MultipleModelDP(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000}, 400, 1);
     }
     
     @Override

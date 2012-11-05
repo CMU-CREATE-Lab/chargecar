@@ -37,11 +37,11 @@ public class MultipleModelDP extends Controller {
 	for(Prediction p : duties){
 	    //may need to normalize due to T
 	    double[][] valueFunction = getValues(p,cap);
-	    for(int u=0;u<U.length;u++){
-		int control = U[u];
+	    for(int i=0;i<U.length;i++){
+		int control = U[i];
 		ControlResult result = testControl(cap, p.getPowers().get(0), control);
 		double value = result.cost + lambda*valueFunction[result.index][1];
-		uValues[u] += p.getWeight()*value;
+		uValues[i] += p.getWeight()*value;
 	    }
 	    
 	}
@@ -83,7 +83,12 @@ public class MultipleModelDP extends Controller {
 	//djikstra shortest path search
 	//TODO change to A*?
 	for(int t=T-2;t>=1;t--){
-	    double power = powers.get(t);
+	    double power = 0;
+	    try{
+	    power = powers.get(t);
+	    }catch(NullPointerException n){
+		System.out.println(n);
+	    }
 	    for(int x=0;x<X;x++){
 		BatteryModel state = xstates[x];
 		double minValue = Double.MAX_VALUE;
