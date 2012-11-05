@@ -89,7 +89,7 @@ public class SimulatorOmniscient {
 //	policies.add(new OmniscientPolicy(540));
 //	policies.add(new OmniscientPolicy(600));
 //	policies.add(new OmniscientPolicy(900));
-	policies.add(new OmniscientPolicy(1200));
+	policies.add(new OmniscientPolicy(90));
 // 	policies.add(new OmniscientPolicy(1000000));
 	
 	for (Policy p : policies) {

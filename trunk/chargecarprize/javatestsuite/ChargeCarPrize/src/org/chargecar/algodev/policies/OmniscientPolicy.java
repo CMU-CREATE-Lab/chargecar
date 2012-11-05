@@ -9,6 +9,7 @@ import java.util.Map;
 import org.chargecar.algodev.controllers.ApproximateAnalytic;
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.ReceedingConstant;
+import org.chargecar.algodev.controllers.SingleModelDP;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
@@ -30,7 +31,9 @@ public class OmniscientPolicy implements Policy {
     private List<Double> powers;
     private List<Integer> periods;
     private Map<Calendar,Integer> map;
-    private Controller appController = new ReceedingConstant();
+    //private Controller appController = new SingleModelDP();
+    //private Controller appController = new ReceedingConstant();
+    private Controller appController = new ApproximateAnalytic();
     
     public void parseTrip(Trip t){
 	List<PointFeatures> points = t.getPoints();
@@ -173,7 +176,7 @@ public class OmniscientPolicy implements Policy {
 	double capToMotorWatts = wattsDemanded > maxCapPower ? maxCapPower : wattsDemanded;
 	capToMotorWatts = capToMotorWatts < minCapPower ? minCapPower : capToMotorWatts;
 	double batteryToMotorWatts = wattsDemanded - capToMotorWatts;
-	double batteryToCapWatts = idealFlow - batteryToMotorWatts;	
+	double batteryToCapWatts = idealFlow;// - batteryToMotorWatts;	
 	batteryToCapWatts = batteryToCapWatts  < 0 ? 0 : batteryToCapWatts;	
 	
 	if (capToMotorWatts - batteryToCapWatts < minCapPower) {
