@@ -11,6 +11,7 @@ import java.util.List;
 import org.chargecar.algodev.controllers.ApproximateAnalytic;
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.ReceedingConstant;
+import org.chargecar.algodev.controllers.SingleModelDP;
 import org.chargecar.algodev.predictors.FullFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
@@ -46,8 +47,9 @@ public class KnnMeanPolicy implements Policy {
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.neighbors = neighbors;
 	this.lookahead = lookahead;
-	this.controller = new ApproximateAnalytic();
+	//this.controller = new ApproximateAnalytic();
 	//this.controller = new ReceedingConstant();
+	this.controller = new SingleModelDP();
     }
     
     @Override
