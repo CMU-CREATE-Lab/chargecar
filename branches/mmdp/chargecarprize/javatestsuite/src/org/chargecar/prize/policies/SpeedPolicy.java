@@ -82,4 +82,10 @@ public class SpeedPolicy implements Policy {
     public String getName() {
 	return name;
     }
+
+    @Override
+    public void clearState() {
+	// TODO Auto-generated method stub
+	
+    }
 }

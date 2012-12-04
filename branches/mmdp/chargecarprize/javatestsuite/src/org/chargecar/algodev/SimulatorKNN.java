@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.algodev.policies.KnnDistributionPolicy;
-import org.chargecar.algodev.policies.KnnMeanPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -69,7 +68,7 @@ public class SimulatorKNN {
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
-	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,7));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,1));
 
 	
 	for (Policy p : policies) {
