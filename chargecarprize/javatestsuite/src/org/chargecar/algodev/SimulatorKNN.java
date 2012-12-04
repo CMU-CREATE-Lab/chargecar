@@ -47,13 +47,14 @@ public class SimulatorKNN {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	if (args == null || args.length < 2) {
-	    System.err.println("ERROR: Provide both GPX directory and KNN directory");
+	if (args == null || args.length < 3) {
+	    System.err.println("ERROR: Provide both GPX, KNN, and OPT directory");
 	    System.exit(1);
 	}
 	
 	String gpxFolder = args[0];
 	String knnFolder = args[1];
+	String optFolder = args[2];
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -68,7 +69,7 @@ public class SimulatorKNN {
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
-	policies.add(new KnnDistributionPolicy(knnFolder,3,60));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,7));
 
 	
 	for (Policy p : policies) {

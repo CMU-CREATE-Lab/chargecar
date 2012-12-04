@@ -17,7 +17,7 @@ public class KdTree {
     private final KdTreeFeatureSet featureSet;
     private double kBestDist = Double.MAX_VALUE;
     
-    public KdTree(List<KnnPoint> points, List<Double> powers, KdTreeFeatureSet featureSet){
+    public KdTree(List<KnnPoint> points, KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
 	this.root = buildTree(points, 0);
     }
@@ -43,7 +43,7 @@ public class KdTree {
 	return root.countNodes();
     }
     
-    public List<Prediction> getNeighbors(PointFeatures point, int k, int lookahead){
+    public List<Prediction> getNeighbors(PointFeatures point, int k){//, int lookahead){
 	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
 	kBestDist = Double.MAX_VALUE;

@@ -90,4 +90,9 @@ public class Trip {
 	return "Driver:" + this.getFeatures().getDriver() + " Time:"
 		+ sdf.format(pfs.get(0).getTime().getTime());
     }
+    
+    public int hashCode(){
+	return this.toString().hashCode();
+	
+    }
 }
