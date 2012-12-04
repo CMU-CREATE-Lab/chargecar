@@ -5,10 +5,9 @@ import java.util.List;
 
 public class Prediction {
     private final double weight;
-    private final List<Double> powers = new ArrayList<Double>();
  //   private final String driver;
     private final int tripID;
-    private final int time;
+    private final int timeIndex;
     
    
 //    public String getDriver() {
@@ -19,28 +18,21 @@ public class Prediction {
         return tripID;
     }
 
-    public int getTime() {
-        return time;
+    public int getTimeIndex() {
+        return timeIndex;
     }
 
     public double getWeight(){
 	return weight;
     }
     
-    public List<Double> getPowers(){
-	return this.powers;
-    }
-    
-    public void setPowers(List<Double> powers){
-	this.powers.addAll(powers);
-    }
 
-    public Prediction(double weight, int tripID, int time) {
+    public Prediction(double weight, int tripID, int timeIndex) {
 	super();
 	this.weight = weight;
 //	this.driver = driver;
 	this.tripID = tripID;
-	this.time = time;
+	this.timeIndex = timeIndex;
     }
     
     

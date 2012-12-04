@@ -3,6 +3,7 @@ package org.chargecar.algodev.predictors.knn;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.prize.battery.BatteryModel;
@@ -13,14 +14,14 @@ import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 
 public class KnnTableTrainer implements Policy {
-    KnnTable table;
+    List<KnnPoint> table;
     String currentDriver;
     final String knnFileFolderPath;
     
     private final String shortName = "knntt";
     
     public KnnTableTrainer(String knnFileFolderPath){
-	this.knnFileFolderPath = knnFileFolderPath+"\\";
+	this.knnFileFolderPath = knnFileFolderPath+"/";
     }    
 
     @Override
@@ -30,7 +31,7 @@ public class KnnTableTrainer implements Policy {
     
     public void parseTrip(Trip t){
 	updateDriverTable(t);
-	System.out.println(table.getKnnPoints().size());
+	System.out.println(table.size());
     }
     
     private void updateDriverTable(Trip trip){
@@ -40,15 +41,16 @@ public class KnnTableTrainer implements Policy {
 	    if(currentDriver != null) finishTraining();
 	    System.out.println("New driver: "+driver);	    
 	    currentDriver = driver;
-	    table = new KnnTable();	    
+	    table = new ArrayList<KnnPoint>();
 	}
 
 	
-	if(table.getKnnPoints().size() < 200000){	
-	    for(PointFeatures pf : trip.getPoints()){	
-		table.addPoint(pf, pf.getPowerDemand(),trip.hashCode());
+	if(table.size() < 200000){	
+	    for(int i = 0; i<trip.getPoints().size();i++){
+		PointFeatures pf = trip.getPoints().get(i);
+		KnnPoint p = new KnnPoint(pf,i, trip.hashCode());
+		table.add(p);
 	    }
-	    table.endTrip();
 	}
     }
     
@@ -86,8 +88,8 @@ public class KnnTableTrainer implements Policy {
 	double powerSD = 0;
 	double powerSumSD = 0;
 	
-	int size = table.getKnnPoints().size();
-	for(KnnPoint kp : table.getKnnPoints()){
+	int size = table.size();
+	for(KnnPoint kp : table){
 	    accMean += kp.getFeatures().getAcceleration();
 	    speedMean += kp.getFeatures().getSpeed();
 	    powerMean += kp.getFeatures().getPowerDemand();
@@ -106,7 +108,7 @@ public class KnnTableTrainer implements Policy {
 	bearingMean /= size;
 	powerSumMean /= size;
 	
-	for(KnnPoint kp : table.getKnnPoints()){
+	for(KnnPoint kp : table){
 	    accSD += Math.pow(kp.getFeatures().getAcceleration() - accMean, 2.0);
 	    speedSD += Math.pow(kp.getFeatures().getSpeed() - speedMean, 2.0);
 	    powerSD += Math.pow(kp.getFeatures().getPowerDemand() - powerMean, 2.0);
@@ -129,11 +131,11 @@ public class KnnTableTrainer implements Policy {
 	PointFeatures means = new PointFeatures(latMean,lonMean,eleMean,bearingMean,0,accMean,speedMean,powerMean, powerSumMean,0, null);
 	PointFeatures sdevs = new PointFeatures(latSD,lonSD,eleSD,bearingSD,0,accSD,speedSD,powerSD, powerSumSD, 0, null);
 	
-	table.getKnnPoints().add(0, new KnnPoint(sdevs,0,0));
-	table.getKnnPoints().add(0, new KnnPoint(means,0,0));
+	table.add(0, new KnnPoint(sdevs,0,0));
+	table.add(0, new KnnPoint(means,0,0));
 
-	for(int i = 2;i<table.getKnnPoints().size();i++){
-	    KnnPoint rawPoint = table.getKnnPoints().get(i);
+	for(int i = 2;i<table.size();i++){
+	    KnnPoint rawPoint = table.get(i);
 	    PointFeatures rawFeatures = rawPoint.getFeatures();
 	    PointFeatures scaledFeatures = new PointFeatures(
 		    //scale(rawFeatures.getLatitude(),latMean,latSD),
@@ -148,7 +150,7 @@ public class KnnTableTrainer implements Policy {
 		    scale(rawFeatures.getPowerDemand(),powerMean,powerSD),
 		    scale(rawFeatures.getTotalPowerUsed(), powerSumMean, powerSumSD),
 		    rawFeatures.getPeriodMS(),	rawFeatures.getTime());
-	    table.getKnnPoints().set(i, new KnnPoint(scaledFeatures, rawPoint.getGroundTruthIndex(), rawPoint.getTripID()));
+	    table.get(i).setFeatures(scaledFeatures);
 	}
     }
     
