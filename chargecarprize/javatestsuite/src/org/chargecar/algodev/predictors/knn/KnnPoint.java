@@ -5,21 +5,24 @@ import java.io.Serializable;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KnnPoint implements Serializable{
-    private final PointFeatures features;
-    private final int truthIndex;
+    private PointFeatures features;
+    private final int timeIndex;
     private final int tripID;
     private double distance;
-    
   
-    public KnnPoint(PointFeatures features, int truthIndex, int tripID, double dist){
+    public KnnPoint(PointFeatures features, int timeIndex, int tripID, double dist){
 	this.features = features;
-	this.truthIndex = truthIndex;
+	this.timeIndex = timeIndex;
 	this.tripID = tripID;
 	this.distance = dist;	
     }
     
     public KnnPoint(PointFeatures features, int truthIndex, int tripID){
-	this(features,truthIndex,tripID,Double.MAX_VALUE);
+	this(features,truthIndex,tripID, Double.MAX_VALUE);
+    }
+    
+    public void setFeatures(PointFeatures features) {
+        this.features = features;
     }
     
     public double getDistance(){
@@ -33,8 +36,8 @@ public class KnnPoint implements Serializable{
 	return features;
     }
     
-    public int getGroundTruthIndex(){
-	return truthIndex;
+    public int getTimeIndex(){
+	return timeIndex;
     }
     
     public int getTripID(){

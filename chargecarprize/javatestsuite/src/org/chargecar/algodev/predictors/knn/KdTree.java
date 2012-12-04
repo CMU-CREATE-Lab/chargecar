@@ -12,7 +12,6 @@ import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KdTree {
-    private final List<Double> powers;
     private final KdTreeNode root;
     //private final Random randomGenerator = new Random();
     private final KdTreeFeatureSet featureSet;
@@ -21,7 +20,6 @@ public class KdTree {
     public KdTree(List<KnnPoint> points, List<Double> powers, KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
 	this.root = buildTree(points, 0);
-	this.powers = powers;
     }
     
     private KdTreeNode buildTree(List<KnnPoint> points, int splitType){
@@ -52,19 +50,12 @@ public class KdTree {
 	searchTree(root, point, neighbors, k, new double[featureSet.getFeatureCount()]);
 	List<Prediction> predictions = new ArrayList<Prediction>();
 	for(KnnPoint kp : neighbors){
-	    List<Double> pointPowers = this.powers.subList(kp.getGroundTruthIndex(), Math.min(kp.getGroundTruthIndex()+lookahead, this.powers.size()));
-	    if(pointPowers != null & pointPowers.size() > 0){
-		Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),0);
-		p.setPowers(pointPowers);
-		predictions.add(p);
-		
-	    }
+	    Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),kp.getTimeIndex());
+	    predictions.add(p);
 	}
 	return predictions;
     }
-    
-   
-    
+        
     private void addNeighbor(PriorityQueue<KnnPoint> bestKNeighbors, KnnPoint neighbor, int k){
 	int tripID = neighbor.getTripID();	
 	
