@@ -54,7 +54,10 @@ public class KdTree {
 	for(KnnPoint kp : neighbors){
 	    List<Double> pointPowers = this.powers.subList(kp.getGroundTruthIndex(), Math.min(kp.getGroundTruthIndex()+lookahead, this.powers.size()));
 	    if(pointPowers != null & pointPowers.size() > 0){
-		predictions.add(new Prediction(1/(kp.getDistance()+1e-12),pointPowers));
+		Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),0);
+		p.setPowers(pointPowers);
+		predictions.add(p);
+		
 	    }
 	}
 	return predictions;
