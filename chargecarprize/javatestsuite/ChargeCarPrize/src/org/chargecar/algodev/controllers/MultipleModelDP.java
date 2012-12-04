@@ -63,7 +63,18 @@ public class MultipleModelDP extends Controller {
     public double[][] getValues(Prediction p, BatteryModel cap){
 	final List<Double> powers = p.getPowers();
 	//TODO
-	final int T = powers.size()+1; //how many Time States we have
+	int T = powers.size()+1; //how many Time States we have
+	
+	//look for null in case data overlaps new trip
+	//there will be a null in the power set to signify a trip
+	//break
+	for(int t=0;t<powers.size();t++){
+	    if(powers.get(t) == null){
+		T = t+1;
+		break;
+	    }
+	}
+	
 	//can decrease time resolution as t -> T
 	
 	
@@ -87,7 +98,7 @@ public class MultipleModelDP extends Controller {
 	    try{
 	    power = powers.get(t);
 	    }catch(NullPointerException n){
-		System.out.println(n);
+		System.out.println(powers.size());
 	    }
 	    for(int x=0;x<X;x++){
 		BatteryModel state = xstates[x];
