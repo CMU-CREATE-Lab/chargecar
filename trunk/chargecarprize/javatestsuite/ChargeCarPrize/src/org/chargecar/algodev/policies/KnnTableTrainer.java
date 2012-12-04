@@ -1,10 +1,12 @@
-package org.chargecar.algodev.predictors.knn;
+package org.chargecar.algodev.policies;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import org.chargecar.algodev.predictors.knn.KnnPoint;
+import org.chargecar.algodev.predictors.knn.KnnTable;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;

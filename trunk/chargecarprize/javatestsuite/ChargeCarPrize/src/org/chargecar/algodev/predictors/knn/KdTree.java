@@ -67,7 +67,7 @@ public class KdTree {
 	
 	for(KnnPoint kp:bestKNeighbors){
 	    if(kp.getTripID() == tripID){
-		if(kp.getDistance() >= neighbor.getDistance()){
+		if(kp.getDistance() > neighbor.getDistance()){
 		    bestKNeighbors.remove(kp);
 		    bestKNeighbors.add(neighbor);
 		    return;
