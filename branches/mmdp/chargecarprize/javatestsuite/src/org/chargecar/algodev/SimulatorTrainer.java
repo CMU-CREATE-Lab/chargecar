@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.chargecar.algodev.controllers.DPGraphTrainer;
 import org.chargecar.algodev.predictors.knn.KnnTableTrainer;
+import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.util.GPXTripParser;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.Trip;
@@ -25,7 +27,8 @@ import org.chargecar.prize.util.Vehicle;
  */
 public class SimulatorTrainer {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    
+    static double systemVoltage = 120;
+    static double capWhr = 200;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -52,7 +55,8 @@ public class SimulatorTrainer {
 	}
 	
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
-	KnnTableTrainer policy = new KnnTableTrainer(knnFolder);
+	//KnnTableTrainer policy = new KnnTableTrainer(knnFolder);
+	DPGraphTrainer policy = new DPGraphTrainer(knnFolder, new SimpleCapacitor(capWhr, 0, systemVoltage));
 	
 	int count = 0;
 	for (File tripFile : gpxFiles) {
