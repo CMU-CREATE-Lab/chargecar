@@ -117,6 +117,7 @@ public class KnnDistributionPolicy implements Policy {
     public double getFlow(PointFeatures pf){
 	PointFeatures spf = scaleFeatures(pf);
 	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
+	//System.out.println(predictedDuty.size());
 	return controller.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
     }
     
