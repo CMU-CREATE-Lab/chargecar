@@ -112,6 +112,7 @@ public class MultipleModelDP{
     
 	double percentCharge = modelCap.getWattHours() / modelCap.getMaxWattHours();
 	int index = (int)(percentCharge*chargeStates);
+	
 	if(index == chargeStates) index = chargeStates-1;
 	if(index < 0) index = 0;
 	

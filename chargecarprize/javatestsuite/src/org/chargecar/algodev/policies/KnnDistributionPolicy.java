@@ -12,13 +12,11 @@ import java.util.Map;
 
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.DPOptController;
-import org.chargecar.algodev.controllers.MultipleModelDP;
 import org.chargecar.algodev.predictors.FullFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
 import org.chargecar.algodev.predictors.knn.KnnDistPredictor;
 import org.chargecar.algodev.predictors.knn.KnnPoint;
-import org.chargecar.algodev.predictors.knn.KnnTable;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
@@ -31,11 +29,10 @@ public class KnnDistributionPolicy implements Policy {
     
     protected Predictor knnPredictor;
     protected Controller controller;
-    private final int[] controlsSet = new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000};
+    private final int[] controlsSet = new int[]{0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000};
     
     private PointFeatures means;
     private PointFeatures sdevs;    
- //   protected final int lookahead; 
     private final int neighbors;
     
     private String currentDriver;
@@ -46,12 +43,10 @@ public class KnnDistributionPolicy implements Policy {
     private final File knnFileFolderPath;
     private final File optFileFolderPath;
     
-    public KnnDistributionPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors){//, int lookahead){
+    public KnnDistributionPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.optFileFolderPath = new File(optFileFolderPath);
 	this.neighbors = neighbors;
-	//this.lookahead = lookahead;
-	//this.controller = new ReceedingConstant();
     }
     
     @Override
@@ -76,7 +71,7 @@ public class KnnDistributionPolicy implements Policy {
 		sdevs = knnList.get(1).getFeatures();
 		knnList.remove(1);
 		knnList.remove(0);
-		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors);//,lookahead);
+		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors);
 		System.out.println("Trees built.");
 		ois.close();
 		fis.close();
@@ -133,7 +128,7 @@ public class KnnDistributionPolicy implements Policy {
 	PointFeatures spf = scaleFeatures(pf);
 	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
 	//System.out.println(predictedDuty.size());
-	return controller.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS(), pf.getPowerDemand());	
+	return controller.getControl(predictedDuty, modelBatt,modelCap, pf.getPeriodMS(), pf.getPowerDemand());	
     }
     
     public void writePowers(List<Double> powers) {
@@ -152,9 +147,7 @@ public class KnnDistributionPolicy implements Policy {
 	}
     }
     protected PointFeatures scaleFeatures(PointFeatures pf){
-	return new PointFeatures(
-		//scale(pf.getLatitude(),means.getLatitude(),sdevs.getLatitude()),
-		//scale(pf.getLongitude(),means.getLongitude(),sdevs.getLongitude()),
+	return new PointFeatures(		
 		pf.getLatitude(),
 		pf.getLongitude(),
 		scale(pf.getElevation(),means.getElevation(),sdevs.getElevation()),
