@@ -68,7 +68,7 @@ public class SimulatorKNN {
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
-	policies.add(new KnnDistributionPolicy(knnFolder,3,60));
+	policies.add(new KnnDistributionPolicy(knnFolder,7,640));
 
 	
 	for (Policy p : policies) {

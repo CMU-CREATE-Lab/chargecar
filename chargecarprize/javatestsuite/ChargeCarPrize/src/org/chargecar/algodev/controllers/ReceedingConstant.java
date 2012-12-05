@@ -10,7 +10,14 @@ import org.chargecar.prize.util.PowerFlowException;
 
 
 public class ReceedingConstant extends Controller {   
-    final double[] controls = new double[]{0,64,512,1024,1536,2048,3072,4096,6134,8192};
+    final int[] controls;// = new double[]{0,64,512,1024,1536,2048,3072,4096,6134,8192};
+    
+    
+    public ReceedingConstant(int[] controls) {
+	super();
+	this.controls = controls;
+    }
+
     @Override
     public double getControl(List<Prediction> predictions,
 	    BatteryModel battery, BatteryModel cap, int periodMS) {
