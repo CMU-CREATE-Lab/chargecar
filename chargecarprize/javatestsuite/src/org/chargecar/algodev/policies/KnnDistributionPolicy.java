@@ -29,8 +29,8 @@ public class KnnDistributionPolicy implements Policy {
     
     protected Predictor knnPredictor;
     protected Controller controller;
-    private final int[] controlsSet = new int[]{0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000};
-    
+    private final int[] controlsSet = new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000};
+        
     private PointFeatures means;
     private PointFeatures sdevs;    
     private final int neighbors;
