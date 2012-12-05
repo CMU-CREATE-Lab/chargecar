@@ -40,7 +40,7 @@ public class DPOptController extends Controller {
 		int control = U[i];
 		ControlResult result = MultipleModelDP.testControl(cap, powerDemand, control, X);
 		//doesnt know lambda for first step... OK
-		double value = result.cost + valueFunction[result.index][1];		
+		double value = result.cost + valueFunction[result.index][p.getTimeIndex()+1];		
 		uValues[i] += p.getWeight()*value;
 	    }
 	    

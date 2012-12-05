@@ -1,19 +1,14 @@
 package org.chargecar.algodev.predictors;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-
-import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {
-    private final int featureCount = 8;
+    private final int featureCount = 7;
     private final double MAXGPSDIST = 3e-4;
     private final double[] weights = new double[] { 
-	    4e5, //lat 
-	    4e5, //lon
+	    4e4, //lat 
+	    4e4, //lon
 	    1, //speed
 	    5,  //ele
 	    1, //bearing
@@ -61,7 +56,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
     
     public double distance(PointFeatures point1, PointFeatures point2) {
 	double dist = 0;
-	for (int i = 0; i < featureCount; i++) {
+	for (int i = 0; i < 9; i++) {
 	    dist += axialDistance(point1,point2,i);
 	}
 	return dist;
@@ -109,7 +104,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	if(v2 == Calendar.SATURDAY % 7) v2 = Calendar.SATURDAY;
 	
 	if (v1 == v2)
-	    dayDist = 0;
+	    dayDist = 1;
 	else if ((
 		(v1 == Calendar.MONDAY)
 		|| (v1 == Calendar.TUESDAY)
