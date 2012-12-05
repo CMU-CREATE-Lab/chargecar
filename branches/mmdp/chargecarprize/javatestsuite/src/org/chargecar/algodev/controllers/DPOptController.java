@@ -29,9 +29,10 @@ public class DPOptController extends Controller {
 	
 	for(Prediction p : predictedDuties){
 	    double[][] valueFunction = tripMap.get(p.getTripID());
-	    int times = valueFunction[0].length;
-	    int X = valueFunction.length / times;
 	    
+	    //notes, 2D array.  .length gives only first dimension (chargeStates in this case).
+	    int X = valueFunction.length;
+	    	    
 	    int index = (int)(percentCharge*X);
 	    if(index == X) index = X-1;		    
  
