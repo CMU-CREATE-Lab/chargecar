@@ -67,8 +67,8 @@ public class SimulatorKNN {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-//	policies.add(new KnnMeanPolicy(knnFolder,5,60));
-	policies.add(new KnnDistributionPolicy(knnFolder,7,640));
+	policies.add(new KnnMeanPolicy(knnFolder,7,60));
+//	policies.add(new KnnDistributionPolicy(knnFolder,7,640));
 
 	
 	for (Policy p : policies) {

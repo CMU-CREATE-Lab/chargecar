@@ -48,8 +48,8 @@ public class KnnMeanPolicy implements Policy {
 	this.neighbors = neighbors;
 	this.lookahead = lookahead;
 	//this.controller = new ApproximateAnalytic();
-	this.controller = new ReceedingConstant(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000});
-	//this.controller = new MultipleModelDP(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000}, 400, 1);
+	//this.controller = new ReceedingConstant(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000});
+	this.controller = new MultipleModelDP(new int[]{0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000}, 400, 1);
     }
     
     @Override

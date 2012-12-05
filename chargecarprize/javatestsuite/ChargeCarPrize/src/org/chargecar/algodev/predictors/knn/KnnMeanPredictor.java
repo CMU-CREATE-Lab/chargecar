@@ -53,7 +53,9 @@ public class KnnMeanPredictor extends Predictor {
 		powerSums.set(i, 0.0);
 	    else powerSums.set(i, powerSums.get(i) / weightSums.get(i));
 	}
-	return new Prediction(1,powerSums);
+	Prediction p = new Prediction(1,0,0);
+	p.setPowers(powerSums);
+	return p;
     }
     
 }
