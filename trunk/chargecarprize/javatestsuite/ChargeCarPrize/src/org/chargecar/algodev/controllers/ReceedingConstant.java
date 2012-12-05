@@ -10,7 +10,7 @@ import org.chargecar.prize.util.PowerFlowException;
 
 
 public class ReceedingConstant extends Controller {   
-    final int[] controls;// = new double[]{0,64,512,1024,1536,2048,3072,4096,6134,8192};
+    final int[] controls;
     
     
     public ReceedingConstant(int[] controls) {
