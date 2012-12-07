@@ -48,13 +48,13 @@ public class SimulatorFigureGen2 {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	if (args == null || args.length < 2) {
-	    System.err.println("ERROR: Provide both GPX directory and KNN directory");
+	if (args == null || args.length < 1) {
+	    System.err.println("ERROR: Provide GPX directory");
 	    System.exit(1);
 	}
 	
 	String gpxFolder = args[0];
-	String knnFolder = args[1];
+	//String knnFolder = args[1];
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -88,17 +88,13 @@ public class SimulatorFigureGen2 {
 	for (File tripFile : tripFiles) {
 	    tripsToTest.addAll(parseTrips(tripFile));
 	}	
-	for (int i = 0; i < policies.size(); i++) {	    
+	for (int i = 0; i < 1; i++) {	    
 	    for (Trip t : tripsToTest) {
 		System.out.println("Trip "+t.getPoints().size()+"points.");		
-		try {
 		    policies.get(i).parseTrip(t);
-		    simulateTrip(policies.get(i), t, results.get(i));
-		} catch (PowerFlowException e) {
-		    e.printStackTrace();
-		}
+		    policies.get(i).writeActual();
 	    }	    
-	    policies.get(i).writeControls();
+	    
 	}
 	System.out.println();
 	System.out.println("Trips tested: "+tripsToTest.size());

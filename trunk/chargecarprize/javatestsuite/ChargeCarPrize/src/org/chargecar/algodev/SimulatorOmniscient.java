@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.chargecar.algodev.policies.OmniPowerFig;
 import org.chargecar.algodev.policies.OmniscientPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LeadAcidBattery;
@@ -89,7 +90,7 @@ public class SimulatorOmniscient {
 //	policies.add(new OmniscientPolicy(540));
 //	policies.add(new OmniscientPolicy(600));
 //	policies.add(new OmniscientPolicy(900));
-	policies.add(new OmniscientPolicy(90));
+	policies.add(new OmniPowerFig(240));
 // 	policies.add(new OmniscientPolicy(1000000));
 	
 	for (Policy p : policies) {

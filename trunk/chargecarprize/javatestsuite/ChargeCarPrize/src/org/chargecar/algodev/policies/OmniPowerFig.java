@@ -24,12 +24,12 @@ public class OmniPowerFig implements Policy{
     private final List<Double> powers;
     private final int lookahead;
     private int index;
-    private final Controller rhController;
+   // private final Controller rhController;
     private BatteryModel modelCap;
     private BatteryModel modelBatt;
     
     public OmniPowerFig(int lookahead) {
-	this.rhController = new ReceedingConstant();
+	//this.rhController = new ReceedingConstant();
 	this.flows = new ArrayList<Double>();
 	this.powers = new ArrayList<Double>();
 	this.lookahead = lookahead;
@@ -43,9 +43,11 @@ public class OmniPowerFig implements Policy{
 	else
 	    powerPred = powers.subList(index, powers.size());
 	
-	Prediction actual = new Prediction(1.0, powerPred);
+	Prediction actual = new Prediction(1.0, 1, 0);
+	actual.setPowers(powerPred);
+	
 	predictedDuty.add(actual);
-	double control = rhController.getControl(predictedDuty, modelBatt,modelCap,1000);
+	double control = 0;//rhController.getControl(predictedDuty, modelBatt,modelCap,1000);
 	flows.add(control);
 	index++;
 	return control;
@@ -60,7 +62,7 @@ public class OmniPowerFig implements Policy{
 	writeActual();
 	FileWriter fstream;
 	try {
-	    fstream = new FileWriter("C:/controls.csv",false);
+	    fstream = new FileWriter("~/controls.csv",false);
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    for(Double p : flows){
 		out.write(p+",");
@@ -77,7 +79,7 @@ public class OmniPowerFig implements Policy{
     public void writeActual(){
 	FileWriter fstream;
 	try {
-	    fstream = new FileWriter("C:/actual.csv",false);
+	    fstream = new FileWriter("/home/astyler/actual.csv",false);
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    boolean end = false;
 	    for(Double d : powers){
