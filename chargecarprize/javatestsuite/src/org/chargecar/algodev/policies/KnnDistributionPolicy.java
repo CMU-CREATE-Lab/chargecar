@@ -58,11 +58,13 @@ public class KnnDistributionPolicy implements Policy {
 	
 	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
+		this.controller = null;
+		this.knnPredictor = null;
 		//load knn tree
 		File currentFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
-		knnPredictor = null;
+		
 		FileInputStream fis = new FileInputStream(currentFile);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		List<KnnPoint> knnList = (ArrayList<KnnPoint>)ois.readObject();
