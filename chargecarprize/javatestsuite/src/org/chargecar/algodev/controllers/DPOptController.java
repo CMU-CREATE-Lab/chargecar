@@ -23,6 +23,13 @@ public class DPOptController extends Controller {
 	double[] uValues = new double[U.length];
 	double percentCharge = cap.getWattHours() / cap.getMaxWattHours();
 	
+	ControlResult[] cResults = new ControlResult[U.length];
+	
+	 for(int i=0;i<U.length;i++){
+		int control = U[i];
+		cResults[i] = MultipleModelDP.testControl(cap, powerDemand, control);
+	 }
+	
 	for(int i = 0;i<uValues.length;i++){
 	    uValues[i]=0;
 	}
@@ -37,10 +44,25 @@ public class DPOptController extends Controller {
 	    if(index == X) index = X-1;		    
  
 	    for(int i=0;i<U.length;i++){
-		int control = U[i];
-		ControlResult result = MultipleModelDP.testControl(cap, powerDemand, control, X);
 		//doesnt know lambda for first step... OK
-		double value = result.cost + valueFunction[result.index][p.getTimeIndex()+1];		
+		double value = cResults[i].cost;
+                double chargeState = cResults[i].pCharge*X;
+                
+                int floor = (int)Math.floor(chargeState);
+                floor = Math.min(Math.max(floor,0),X-1);
+                int ceil = (int)Math.ceil(chargeState);
+                ceil = Math.max(Math.min(ceil,X-1),0);
+
+                double fVal = valueFunction[floor][p.getTimeIndex()+1];
+
+                if(floor==ceil){
+                    value += fVal;
+                }
+                else{
+                    double cVal = valueFunction[ceil][p.getTimeIndex()+1];
+                    value += (fVal + ((cVal - fVal)*(chargeState - floor)/(ceil-floor) ));
+                }
+		
 		uValues[i] += p.getWeight()*value;
 	    }
 	    

@@ -25,7 +25,7 @@ public class KdTreeTester {
 	System.out.print("complete.\n");
 	System.out.println("Matching "+M+" points with "+k+" neighbors each...");
 	for(int i=0;i<M;i++){
-	    tree.getNeighbors(getRandomPoint(), k);
+	    tree.getNeighbors(getRandomPoint(), k, null);
 	    if(i%1000 == 0){
 		System.out.println(i+"...");
 	    }

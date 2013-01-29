@@ -43,14 +43,28 @@ public class KdTree {
 	return root.countNodes();
     }
     
-    public List<Prediction> getNeighbors(PointFeatures point, int k){//, int lookahead){
+    public List<Prediction> getNeighbors(PointFeatures point, int k, List<Prediction> previousNeighbors){//, int lookahead){
 	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
 	kBestDist = Double.MAX_VALUE;
+	
+	if(previousNeighbors != null){
+	    for(Prediction p: previousNeighbors){
+		double dist = featureSet.distance(p.getPoint().getFeatures(),point);
+		p.getPoint().setDistance(dist);
+		if(dist < kBestDist){    
+		    addNeighbor(neighbors, p.getPoint(), k);
+		    if(neighbors.size() == k )
+			kBestDist = neighbors.peek().getDistance();
+		}		 
+	    }
+	}
+	
 	searchTree(root, point, neighbors, k, new double[featureSet.getFeatureCount()]);
+
 	List<Prediction> predictions = new ArrayList<Prediction>();
 	for(KnnPoint kp : neighbors){
-	    Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),kp.getTimeIndex());
+	    Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),kp.getTimeIndex(),kp);
 	    predictions.add(p);
 	}
 	return predictions;
@@ -74,7 +88,7 @@ public class KdTree {
 	bestKNeighbors.add(neighbor);
 	
 	while(bestKNeighbors.size() > k)
-	    bestKNeighbors.poll();    
+	    bestKNeighbors.poll();   
     }
    
     private void searchTree(KdTreeNode node, PointFeatures point, PriorityQueue<KnnPoint> bestKNeighbors, int k, double[] distSoFar){	 
@@ -92,16 +106,19 @@ public class KdTree {
 	double pointAxisValue = getValue(point, node.getSplitType());
 	double nodeAxisValue = getValue(node.getValue().getFeatures(), node.getSplitType());
 	boolean leftBranch = pointAxisValue < nodeAxisValue;
-	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();	
-	searchTree(branch, point, bestKNeighbors, k, distSoFar);
+	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();
+	
+	searchTree(branch, point, bestKNeighbors, k, distSoFar.clone());
 	
 	double axialDist = featureSet.axialDistance(node.getValue().getFeatures(),point, node.getSplitType());
 	distSoFar[node.getSplitType()] = axialDist;
-	double distToSpace = distSoFar[0];
-	for(int i=1;i<distSoFar.length;i++)
+	
+	double distToSpace = 0;
+	for(int i=0;i<distSoFar.length;i++)
 	    distToSpace+=distSoFar[i];
 	
 	if(distToSpace <= kBestDist){
+
 	    branch = leftBranch ?  node.getRightSubtree() : node.getLeftSubtree();
 	    searchTree(branch, point, bestKNeighbors, k, distSoFar.clone());
 	}
@@ -162,8 +179,8 @@ class KnnComparator implements Comparator<KnnPoint>{
     }
     @Override
     public int compare(KnnPoint p1, KnnPoint p2) {
-	double d1 = featureSet.distance(point, p1.getFeatures());
-	double d2 = featureSet.distance(point, p2.getFeatures());
+	double d1 = p1.getDistance();//featureSet.distance(point, p1.getFeatures());
+	double d2 = p2.getDistance();//featureSet.distance(point, p2.getFeatures());
 	
 	return Double.compare(d2, d1);
     }
