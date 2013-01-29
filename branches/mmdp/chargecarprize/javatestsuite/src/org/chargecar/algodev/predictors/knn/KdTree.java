@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Random;
 //import java.util.Random;
 
 import org.chargecar.algodev.predictors.KdTreeFeatureSet;
@@ -13,7 +14,7 @@ import org.chargecar.prize.util.PointFeatures;
 
 public class KdTree {
     private final KdTreeNode root;
-    //private final Random randomGenerator = new Random();
+    private final Random randomGenerator = new Random();
     private final KdTreeFeatureSet featureSet;
     private double kBestDist = Double.MAX_VALUE;
     
@@ -126,7 +127,8 @@ public class KdTree {
     
     private int select(List<KnnPoint> points, int left, int right, int k, int splitType) {
 	while(true){	    
-	    int pivotIndex = (left+right)/2;//randomGenerator.nextInt(right-left+1)+left;
+	    //int pivotIndex = (left+right)/2;
+	    int pivotIndex = randomGenerator.nextInt(right-left+1)+left;
 	    int pivotNewIndex = partition(points, left, right, pivotIndex, splitType);
 	    if (k == pivotNewIndex)
 		return k;
