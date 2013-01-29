@@ -29,7 +29,7 @@ public class DPGraphTrainer implements Policy {
 	tripMap = new HashMap<Integer,double[][]>();
 	this.optFileFolderPath = optFileFolderPath+"/";
 	this.cap = cap.createClone();
-	mmdpOpt = new MultipleModelDP(controlsSet, 400, discountFactor);
+	mmdpOpt = new MultipleModelDP(controlsSet, 20, discountFactor);
     }    
 
     @Override

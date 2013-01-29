@@ -60,11 +60,29 @@ public class MultipleModelDP{
 		double minValue = Double.MAX_VALUE;
 		for(int u=0;u<U.length;u++){
 		    int control = U[u];
-		    ControlResult result = testControl(state, power, control, X);
-		    double value = result.cost + lambda*valueFunction[result.index][t+1];
+		    ControlResult result = testControl(state, power, control);
+		    
+		    double value = result.cost;
+
+                    double chargeState = result.pCharge*X;
+                    int floor = (int)Math.floor(chargeState);
+                    floor = Math.min(Math.max(floor,0),X-1);
+                    int ceil = (int)Math.ceil(chargeState);
+                    ceil = Math.max(Math.min(ceil,X-1),0);
+
+                    double fVal = valueFunction[floor][t+1];
+
+
+                    if(floor==ceil){
+                        value += lambda*fVal;
+                    }
+                    else{
+                        double cVal = valueFunction[ceil][t+1];
+                        value += lambda*(fVal + ((cVal - fVal)*(chargeState - floor)/(ceil-floor) ));
+                    }		    
+		    
 		    if(value < minValue){
 			minValue = value;
-			//controls[x][t] = control;
 		    }
 		}
 		valueFunction[x][t] = minValue;
@@ -81,7 +99,7 @@ public class MultipleModelDP{
 */
 	}
     
-    public static ControlResult testControl(BatteryModel capacitorState, double powerDraw, double control, int chargeStates){
+    public static ControlResult testControl(BatteryModel capacitorState, double powerDraw, double control){
 	BatteryModel modelCap = capacitorState.createClone();
 	
 	double cost = 0.0;
@@ -111,22 +129,18 @@ public class MultipleModelDP{
 	}
     
 	double percentCharge = modelCap.getWattHours() / modelCap.getMaxWattHours();
-	int index = (int)(percentCharge*chargeStates);
-	
-	if(index == chargeStates) index = chargeStates-1;
-	if(index < 0) index = 0;
-	
+
 	cost = (batteryToCapWatts + batteryToMotorWatts);
 	cost = cost*cost;
 	
-	return new ControlResult(index,cost);
+	return new ControlResult(percentCharge,cost);
     }
     
     static class ControlResult {
-	public final int index;
+	public final double pCharge;
 	public final double cost;
-	public ControlResult(int i,double c){
-	    index=i;
+	public ControlResult(double pc,double c){
+	    pCharge = pc;
 	    cost=c;
 	}
     }
