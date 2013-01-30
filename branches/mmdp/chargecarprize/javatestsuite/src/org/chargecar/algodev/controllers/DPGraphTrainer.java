@@ -25,11 +25,11 @@ public class DPGraphTrainer implements Policy {
     private final String shortName = "dpgtt";
     private final BatteryModel cap;
     
-    public DPGraphTrainer(String optFileFolderPath, BatteryModel cap){
+    public DPGraphTrainer(String optFileFolderPath, BatteryModel cap, int stateCount){
 	tripMap = new HashMap<Integer,double[][]>();
 	this.optFileFolderPath = optFileFolderPath+"/";
 	this.cap = cap.createClone();
-	mmdpOpt = new MultipleModelDP(controlsSet, 20, discountFactor);
+	mmdpOpt = new MultipleModelDP(controlsSet, stateCount, discountFactor);
     }    
 
     @Override

@@ -46,7 +46,7 @@ public class SimulatorTrainer {
 	}
 	
 	String gpxFolder = args[0];
-	String knnFolder = args[1];
+	String optFolder = args[1];
 	File folder = new File(gpxFolder);
 	List<File> gpxFilesT = getGPXFiles(folder);
 	List<File> gpxFiles = new ArrayList<File>(gpxFilesT.size());
@@ -55,8 +55,7 @@ public class SimulatorTrainer {
 	}
 	
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
-	//KnnTableTrainer policy = new KnnTableTrainer(knnFolder);
-	DPGraphTrainer policy = new DPGraphTrainer(knnFolder, new SimpleCapacitor(capWhr, 0, systemVoltage));
+	DPGraphTrainer policy = new DPGraphTrainer(optFolder, new SimpleCapacitor(capWhr, 0, systemVoltage), 5);
 	
 	int count = 0;
 	for (File tripFile : gpxFiles) {
