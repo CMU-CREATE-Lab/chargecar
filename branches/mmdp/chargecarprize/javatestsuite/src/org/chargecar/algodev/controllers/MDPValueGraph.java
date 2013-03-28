@@ -10,13 +10,13 @@ import org.chargecar.prize.util.PowerFlowException;
 
 //TODO TABULATE DYNAMICS!!!!!
 
-public class MultipleModelDP{
+public class MDPValueGraph{
     
     final int[] U;
     final int X; //how many charge states 
     final double lambda;//discount factor
     
-    public MultipleModelDP(int[] controls, int stateBuckets, double discountRate){
+    public MDPValueGraph(int[] controls, int stateBuckets, double discountRate){
 	this.U = controls;
 	this.X = stateBuckets;
 	this.lambda = discountRate;

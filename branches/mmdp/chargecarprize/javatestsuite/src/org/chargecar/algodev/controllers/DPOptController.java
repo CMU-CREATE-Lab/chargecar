@@ -3,7 +3,7 @@ package org.chargecar.algodev.controllers;
 import java.util.List;
 import java.util.Map;
 
-import org.chargecar.algodev.controllers.MultipleModelDP.ControlResult;
+import org.chargecar.algodev.controllers.MDPValueGraph.ControlResult;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
 
@@ -27,7 +27,7 @@ public class DPOptController extends Controller {
 	
 	 for(int i=0;i<U.length;i++){
 		int control = U[i];
-		cResults[i] = MultipleModelDP.testControl(cap, powerDemand, control);
+		cResults[i] = MDPValueGraph.testControl(cap, powerDemand, control);
 	 }
 	
 	for(int i = 0;i<uValues.length;i++){

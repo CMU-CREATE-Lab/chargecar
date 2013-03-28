@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.controllers.DPGraphTrainer;
+import org.chargecar.algodev.controllers.MDPTrainer;
 import org.chargecar.algodev.predictors.knn.KnnTableTrainer;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.util.GPXTripParser;
@@ -55,7 +55,7 @@ public class SimulatorTrainer {
 	}
 	
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
-	DPGraphTrainer policy = new DPGraphTrainer(optFolder, new SimpleCapacitor(capWhr, 0, systemVoltage), 5);
+	MDPTrainer policy = new MDPTrainer(optFolder, new SimpleCapacitor(capWhr, 0, systemVoltage), 2);
 	
 	int count = 0;
 	for (File tripFile : gpxFiles) {

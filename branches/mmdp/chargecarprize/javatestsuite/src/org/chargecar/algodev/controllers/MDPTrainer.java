@@ -15,21 +15,21 @@ import org.chargecar.prize.util.PowerFlows;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 
-public class DPGraphTrainer implements Policy {
+public class MDPTrainer implements Policy {
     private String currentDriver;
     private final String optFileFolderPath;
     private final double discountFactor = 0.99;
     private final int[] controlsSet = new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000};
-    private final MultipleModelDP mmdpOpt;
+    private final MDPValueGraph mmdpOpt;
     private Map<Integer, double[][]> tripMap;
     private final String shortName = "dpgtt";
     private final BatteryModel cap;
     
-    public DPGraphTrainer(String optFileFolderPath, BatteryModel cap, int stateCount){
+    public MDPTrainer(String optFileFolderPath, BatteryModel cap, int stateCount){
 	tripMap = new HashMap<Integer,double[][]>();
 	this.optFileFolderPath = optFileFolderPath+"/";
 	this.cap = cap.createClone();
-	mmdpOpt = new MultipleModelDP(controlsSet, stateCount, discountFactor);
+	mmdpOpt = new MDPValueGraph(controlsSet, stateCount, discountFactor);
     }    
 
     @Override
