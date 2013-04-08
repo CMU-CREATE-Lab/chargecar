@@ -90,7 +90,7 @@ public class MDPPolynomial{
     
     private double[] regression(double[] values) {
 	Matrix coeff = stateMatrix.times(new Matrix(values, values.length));
-	return coeff.getColumnPackedCopy(); 
+	return coeff.getColumnPackedCopy();
     }
 
     private double calculateValue(double[] coeffs, double pCharge) {
