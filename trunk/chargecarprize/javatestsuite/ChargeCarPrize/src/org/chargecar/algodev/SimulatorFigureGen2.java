@@ -54,7 +54,7 @@ public class SimulatorFigureGen2 {
 	}
 	
 	String gpxFolder = args[0];
-	//String knnFolder = args[1];
+	String knnFolder = args[1];
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -66,8 +66,8 @@ public class SimulatorFigureGen2 {
     	}
     	    
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
-	List<OmniPowerFig> policies = new ArrayList<OmniPowerFig>();
-	policies.add(new OmniPowerFig(2400));
+	List<PredictionFigurePolicy> policies = new ArrayList<PredictionFigurePolicy>();
+	policies.add(new PredictionFigurePolicy(knnFolder, 7, 240));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -77,7 +77,7 @@ public class SimulatorFigureGen2 {
 	visualizer.visualizeSummary(results);
     }    
     
-    private static List<SimulationResults> simulateTrips(List<OmniPowerFig> policies,
+    private static List<SimulationResults> simulateTrips(List<PredictionFigurePolicy> policies,
 	    List<File> tripFiles) throws IOException {
 	List<SimulationResults> results = new ArrayList<SimulationResults>();
 	for (Policy p : policies) {
@@ -92,7 +92,11 @@ public class SimulatorFigureGen2 {
 	    for (Trip t : tripsToTest) {
 		System.out.println("Trip "+t.getPoints().size()+"points.");		
 		    policies.get(i).parseTrip(t);
-		    policies.get(i).writeActual();
+			try {
+			    simulateTrip(policies.get(i), t, results.get(i));
+			} catch (PowerFlowException e) {
+			    e.printStackTrace();
+			}
 	    }	    
 	    
 	}

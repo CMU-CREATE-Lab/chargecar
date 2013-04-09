@@ -35,7 +35,7 @@ public class PredictionFigurePolicy extends KnnDistributionPolicy {
 	if(index == 100){
 	    writePredictions(predictedDuty);
 	}
-	return rhController.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
+	return controller.getControl(predictedDuty, modelBatt,modelCap,spf.getPeriodMS());	
     }
     
     @Override
@@ -47,7 +47,7 @@ public class PredictionFigurePolicy extends KnnDistributionPolicy {
 	FileWriter fstream;
 	writeActual();
 	try {
-	    fstream = new FileWriter("C:/predictions.csv",false);
+	    fstream = new FileWriter("/home/astyler/predictions.csv",false);
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    for(Prediction p : preds){
 		System.out.println(p.getWeight());
@@ -71,7 +71,8 @@ public class PredictionFigurePolicy extends KnnDistributionPolicy {
     public void writeActual(){
 	FileWriter fstream;
 	try {
-	    fstream = new FileWriter("C:/actual.csv",false);
+	    
+	    fstream = new FileWriter("/home/astyler/actual.csv",false);
 	    BufferedWriter out = new BufferedWriter(fstream);
 	    boolean end = false;
 	    for(Double d : powers){

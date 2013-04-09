@@ -54,11 +54,13 @@ public class KdTree {
     
     public List<Prediction> getNeighbors(PointFeatures point, int k, int lookahead){
 	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
-	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
+	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+2,comp);
 	kBestDist = Double.MAX_VALUE;
 	searchTree(root, point, neighbors, k+1, new double[featureSet.getFeatureCount()]);
 	List<Prediction> predictions = new ArrayList<Prediction>();
-	for(KnnPoint kp : neighbors){
+	KnnPoint kp = neighbors.poll();
+	while(kp != null){
+	//	for(KnnPoint kp : neighbors){
 	    List<Double> pointPowers = this.powers.subList(kp.getGroundTruthIndex(), Math.min(kp.getGroundTruthIndex()+lookahead, this.powers.size()));
 	    if(pointPowers != null & pointPowers.size() > 0){
 		Prediction p = new Prediction(1/(kp.getDistance()+0.1),kp.getTripID(),0);
@@ -66,6 +68,7 @@ public class KdTree {
 		predictions.add(p);
 		
 	    }
+	    kp = neighbors.poll();
 	}
 	return predictions.subList(0, predictions.size() - 1);
     }
@@ -179,10 +182,11 @@ class KnnComparator implements Comparator<KnnPoint>{
     }
     @Override
     public int compare(KnnPoint p1, KnnPoint p2) {
-	double d1 = featureSet.distance(point, p1.getFeatures());
-	double d2 = featureSet.distance(point, p2.getFeatures());
+	//double d1 = featureSet.distance(point, p1.getFeatures());
+	//double d2 = featureSet.distance(point, p2.getFeatures());
 	
-	return Double.compare(d2, d1);
+	//return  Double.compare(d2, d1);
+	return -Double.compare(p1.getDistance(), p2.getDistance());
     }
     
 }
