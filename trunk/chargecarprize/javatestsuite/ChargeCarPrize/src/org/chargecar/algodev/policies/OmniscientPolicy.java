@@ -35,7 +35,7 @@ public class OmniscientPolicy implements Policy {
     //private Controller appController = new MultipleModelDP(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000}, 400, 1);
     //81.609%
     
-    //private Controller appController = new ReceedingConstant();
+    private Controller appController = new ReceedingConstant(new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000});
     //74.580%
     
     //private Controller appController = new ApproximateAnalytic();
@@ -59,7 +59,8 @@ public class OmniscientPolicy implements Policy {
     public double getFlow(PointFeatures pf){
 	
 	int index = map.get(pf.getTime());
-	Prediction p = new Prediction(1.0,powers.subList(index, Math.min(powers.size(),index+lookAheadSeconds)));
+	Prediction p = new Prediction(1.0,0,0);
+	p.setPowers(powers.subList(index, Math.min(powers.size(),index+lookAheadSeconds)));
 	List<Prediction> ps = new ArrayList<Prediction>();
 	ps.add(p);
 	return appController.getControl(ps, modelBatt, modelCap, pf.getPeriodMS());

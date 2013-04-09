@@ -32,6 +32,12 @@ public class Prediction {
     }
     
     public void setPowers(List<Double> powers){
+	/*boolean over = false;
+	for(Double d : powers){
+	    if(d == null) over = true;
+	    if(over) this.powers.add(0.0);
+	    else this.powers.add(d);
+	    }*/
 	this.powers.addAll(powers);
     }
 

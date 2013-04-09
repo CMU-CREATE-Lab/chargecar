@@ -67,8 +67,8 @@ public class SimulatorKNN {
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
-	policies.add(new KnnMeanPolicy(knnFolder,7,60));
-//	policies.add(new KnnDistributionPolicy(knnFolder,7,640));
+	policies.add(new KnnMeanPolicy(knnFolder,7,240));
+	policies.add(new KnnDistributionPolicy(knnFolder,7,240));
 
 	
 	for (Policy p : policies) {
@@ -138,8 +138,7 @@ public class SimulatorKNN {
 	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, civic)) {
 	    String driverName = gpxFile.getParentFile().getName();
 	    String fileName = driverName+gpxFile.getName().substring(0, gpxFile.getName().lastIndexOf('.'))+"_"+i;
-	    TripFeatures tf = new TripFeatures(driverName, fileName, civic, tripPoints
-		    .get(0));
+	    TripFeatures tf = new TripFeatures(driverName, fileName, civic, tripPoints.get(0));
 	    trips.add(new Trip(tf, tripPoints));
 	    gpxparser.clear();
 	    i++;

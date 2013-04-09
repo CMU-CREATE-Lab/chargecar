@@ -30,13 +30,20 @@ public class KdTree {
 	if(points.size() == 0) return null;
 	else if(points.size() == 1){	    
 	    KnnPoint point = points.get(0);
+	    points.set(0, null);
 	    node = new KdTreeNode(point, null, null, splitType);	    
 	}
 	else{ 
 	    int pivot = select(points, 0, points.size()-1, (int)(points.size()/2), splitType);
-	    KdTreeNode leftSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(0, pivot)), splitType+1);
-	    KdTreeNode rightSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(pivot+1, points.size())), splitType+1);
-	    node = new KdTreeNode(points.get(pivot), leftSubtree, rightSubtree, splitType);
+	    List<KnnPoint> leftList = new ArrayList<KnnPoint>(points.subList(0, pivot));
+	    List<KnnPoint> rightList = new ArrayList<KnnPoint>(points.subList(pivot+1, points.size()));
+	    KnnPoint point = points.get(pivot);
+	    points.set(pivot, null); 
+	    KdTreeNode leftSubtree = buildTree(leftList, splitType+1);
+	    leftList = null;
+	    KdTreeNode rightSubtree = buildTree(rightList, splitType+1);
+	    rightList = null;
+	    node = new KdTreeNode(point, leftSubtree, rightSubtree, splitType);
 	}
 	return node;
     }
@@ -49,18 +56,18 @@ public class KdTree {
 	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
 	kBestDist = Double.MAX_VALUE;
-	searchTree(root, point, neighbors, k, new double[featureSet.getFeatureCount()]);
+	searchTree(root, point, neighbors, k+1, new double[featureSet.getFeatureCount()]);
 	List<Prediction> predictions = new ArrayList<Prediction>();
 	for(KnnPoint kp : neighbors){
 	    List<Double> pointPowers = this.powers.subList(kp.getGroundTruthIndex(), Math.min(kp.getGroundTruthIndex()+lookahead, this.powers.size()));
 	    if(pointPowers != null & pointPowers.size() > 0){
-		Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),0);
+		Prediction p = new Prediction(1/(kp.getDistance()+0.1),kp.getTripID(),0);
 		p.setPowers(pointPowers);
 		predictions.add(p);
 		
 	    }
 	}
-	return predictions;
+	return predictions.subList(0, predictions.size() - 1);
     }
     
    
@@ -102,12 +109,13 @@ public class KdTree {
 	double nodeAxisValue = getValue(node.getValue().getFeatures(), node.getSplitType());
 	boolean leftBranch = pointAxisValue < nodeAxisValue;
 	KdTreeNode branch = leftBranch ? node.getLeftSubtree() : node.getRightSubtree();	
-	searchTree(branch, point, bestKNeighbors, k, distSoFar);
+	searchTree(branch, point, bestKNeighbors, k, distSoFar.clone());
 	
 	double axialDist = featureSet.axialDistance(node.getValue().getFeatures(),point, node.getSplitType());
 	distSoFar[node.getSplitType()] = axialDist;
-	double distToSpace = distSoFar[0];
-	for(int i=1;i<distSoFar.length;i++)
+	
+	double distToSpace = 0;
+	for(int i=0;i<distSoFar.length;i++)
 	    distToSpace+=distSoFar[i];
 	
 	if(distToSpace <= kBestDist){

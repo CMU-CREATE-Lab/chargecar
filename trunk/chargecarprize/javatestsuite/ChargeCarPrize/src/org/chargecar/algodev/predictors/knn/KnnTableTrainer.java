@@ -20,7 +20,7 @@ public class KnnTableTrainer implements Policy {
     private final String shortName = "knntt";
     
     public KnnTableTrainer(String knnFileFolderPath){
-	this.knnFileFolderPath = knnFileFolderPath+"\\";
+	this.knnFileFolderPath = knnFileFolderPath+"/";
     }    
 
     @Override
@@ -44,7 +44,7 @@ public class KnnTableTrainer implements Policy {
 	}
 
 	
-	if(table.getKnnPoints().size() < 200000){	
+	if(table.getKnnPoints().size() < 400000){	
 	    for(PointFeatures pf : trip.getPoints()){	
 		table.addPoint(pf, pf.getPowerDemand(),trip.hashCode());
 	    }
