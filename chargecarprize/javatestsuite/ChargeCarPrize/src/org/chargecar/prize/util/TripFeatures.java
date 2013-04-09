@@ -20,7 +20,7 @@ public class TripFeatures {
     private Calendar startTime;
     private double startLat;
     private double startLon;
-    
+
     public TripFeatures(String driver, String fileName, Vehicle vehicle, PointFeatures startPoint) {
 	super();
 	this.fileName = fileName;
@@ -54,5 +54,6 @@ public class TripFeatures {
     public double getStartLon() {
 	return startLon;
     }
+    
     
 }
