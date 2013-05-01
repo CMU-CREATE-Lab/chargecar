@@ -17,8 +17,7 @@ public class MDPPolynomial{
     final int X; //how many charge states 
     final int O; 
     final double lambda;//discount factor
-    Matrix stateMatrix; 
-    
+        
     public MDPPolynomial(int[] controls, int stateBuckets, int order, double discountRate){
 	this.U = controls;
 	this.X = stateBuckets;
@@ -38,14 +37,20 @@ public class MDPPolynomial{
 	
 	for(int x=0;x<X;x++){
 	    xstates[x]=new SimpleCapacitor(cap.getMaxWattHours(),(double)x*cap.getMaxWattHours()/X,cap.getVoltage());
-	    for(int o=0;o<O-1;o++){
-		states[x][o] = Math.pow((double)x / X,o);
+	    double pCharge = (double) x / (double) X;
+	    for(int o=0;o<O;o++){
+		states[x][o] = Math.pow(pCharge,o);
 	    }
 	    
 	}
 	
-	stateMatrix = new Matrix(states);
+	Matrix stateMatrix = new Matrix(states);
+//	Matrix smT = stateMatrix.transpose(); 
+//	Matrix x2 = smT.times(stateMatrix);
+//	x2 = x2.inverse();
+//	x2 = x2.times(stateMatrix.transpose());
 	stateMatrix = stateMatrix.transpose().times(stateMatrix).inverse().times(stateMatrix.transpose());
+
 
 	for(int o=0;o<O;o++){
 	    coefficients[T-1][o] = 0; //0 value at final timestep
@@ -75,7 +80,7 @@ public class MDPPolynomial{
 		values[x] = minValue;
 	    }
 	    
-	    coefficients[t] = regression(values);
+	    coefficients[t] = regression(stateMatrix, values);
 	}
 	
 	return coefficients;
@@ -88,14 +93,14 @@ public class MDPPolynomial{
 */
 	}
     
-    private double[] regression(double[] values) {
-	Matrix coeff = stateMatrix.times(new Matrix(values, values.length));
+    private double[] regression(Matrix x2, double[] values) {
+	Matrix coeff = x2.times(new Matrix(values, values.length));
 	return coeff.getColumnPackedCopy();
     }
 
-    private double calculateValue(double[] coeffs, double pCharge) {
+    public static double calculateValue(double[] coeffs, double pCharge) {
 	double value = 0;
-	for(int o=0;o<O;o++){
+	for(int o=0;o<coeffs.length;o++){
 	    value += coeffs[o]*Math.pow(pCharge, o);
 	}
 	return value;
