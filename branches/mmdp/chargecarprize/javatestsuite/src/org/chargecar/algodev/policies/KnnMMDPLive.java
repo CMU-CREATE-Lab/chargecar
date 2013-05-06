@@ -6,12 +6,14 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.DPOptController;
+import org.chargecar.algodev.controllers.MDPValueGraph;
 import org.chargecar.algodev.predictors.FullFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
@@ -26,28 +28,27 @@ import org.chargecar.prize.util.Trip;
 
 import org.chargecar.prize.util.TripFeatures;
 
-public class KnnDistributionPolicy implements Policy {
+public class KnnMMDPLive implements Policy {
     
     protected Predictor knnPredictor;
     protected Controller controller;
     private final int[] controlsSet = new int[]{-512,-1024,0,512,1024,1536,2048,2516,3072,3524,4096,5122,5500,6134,6600,7124,7600,8192,9122,10020,12000};
-        
-    private PointFeatures means;
-    private PointFeatures sdevs;    
+    
     private final int neighbors;
+    private final int stateCount;
+    private final double discountFactor;
     
     private String currentDriver;
     protected BatteryModel modelCap;
     protected BatteryModel modelBatt;
-    private final String name = "KNN Distribution Policy";
-    private final String shortName = "knndist";
-    private final File knnFileFolderPath;
-    private final File optFileFolderPath;
+    private final String name = "KNN MMDP Live";
+    private final String shortName = "KnnMMDPLive";
     
-    public KnnDistributionPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors){
-	this.knnFileFolderPath = new File(knnFileFolderPath);
-	this.optFileFolderPath = new File(optFileFolderPath);
+    public KnnMMDPLive(int neighbors, int stateCount, double discountFactor){
 	this.neighbors = neighbors;
+	this.stateCount = stateCount;
+	this.discountFactor = discountFactor;
+	
     }
     
     @Override
@@ -61,40 +62,18 @@ public class KnnDistributionPolicy implements Policy {
 	    try {
 		this.controller = null;
 		this.knnPredictor = null;
-		//load knn tree
-		File currentFile = new File(this.knnFileFolderPath,driver+".knn");
+		
 		System.out.println("New driver: "+driver);
-		currentDriver = driver;
-		
-		FileInputStream fis = new FileInputStream(currentFile);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-		List<KnnPoint> knnList = (ArrayList<KnnPoint>)ois.readObject();
-		System.out.println("Table loaded. "+knnList.size()+" points. Building trees... ");
-		means = knnList.get(0).getFeatures();
-		sdevs = knnList.get(1).getFeatures();
-		knnList.remove(1);
-		knnList.remove(0);
-		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors);
-		System.out.println("Trees built.");
-		ois.close();
-		fis.close();
-		
+		currentDriver = driver;		
+		knnPredictor = new KnnDistPredictor(null, new FullFeatureSet(),neighbors);
 		
 		//load controller map		
-		currentFile = new File(this.optFileFolderPath,driver+".opt");
-		currentDriver = driver;
-		this.controller = null;
-		fis = new FileInputStream(currentFile);
-		ois = new ObjectInputStream(fis);
-		Map<Integer, double[][]> optMap = (Map<Integer, double[][]>)ois.readObject();
-		System.out.println("Graph loaded. "+optMap.size()+" trips.");
-		controller = new DPOptController(controlsSet, optMap, null); 
-		System.out.println("Controller loaded.");		
+		Map<Integer, double[][]> optMap = new HashMap<Integer, double[][]>();
+		controller = new DPOptController(controlsSet, optMap, new MDPValueGraph(controlsSet, stateCount, discountFactor, modelCap));	
 	    } catch (Exception e) {		
 		e.printStackTrace();
 	    }
-	}
-	
+	}	
     }
     
     @Override
@@ -128,9 +107,8 @@ public class KnnDistributionPolicy implements Policy {
     }
     
     public double getFlow(PointFeatures pf){
-	PointFeatures spf = scaleFeatures(pf);
-	List<Prediction> predictedDuty = knnPredictor.predictDuty(spf);
-	//System.out.println(predictedDuty.size());
+//	PointFeatures spf = scaleFeatures(pf);
+	List<Prediction> predictedDuty = knnPredictor.predictDuty(pf);	
 	return controller.getControl(predictedDuty, modelBatt,modelCap, pf.getPeriodMS(), pf.getPowerDemand());	
     }
     
@@ -149,7 +127,8 @@ public class KnnDistributionPolicy implements Policy {
 	    e.printStackTrace();
 	}
     }
-    protected PointFeatures scaleFeatures(PointFeatures pf){
+ 
+/*    protected PointFeatures scaleFeatures(PointFeatures pf){
 	return new PointFeatures(		
 		pf.getLatitude(),
 		pf.getLongitude(),
@@ -166,12 +145,7 @@ public class KnnDistributionPolicy implements Policy {
     
     private double scale(double feature, double mean, double sdev){
 	return (feature-mean)/sdev;
-    }
-    
-    @Override
-    public void endTrip(Trip t) {
-	// TODO Auto-generated method stub
-    }    
+    }    */
     
     @Override
     public String getName() {
@@ -194,8 +168,13 @@ public class KnnDistributionPolicy implements Policy {
 	this.currentDriver = null;
 	this.knnPredictor = null;
 	this.controller = null;
-	this.means = null;
-	this.sdevs = null;
+    }
+
+    @Override
+    public void endTrip(Trip t) {
+	this.knnPredictor.addTrip(t);
+	this.controller.addTrip(t);
+	
     }
     
 }

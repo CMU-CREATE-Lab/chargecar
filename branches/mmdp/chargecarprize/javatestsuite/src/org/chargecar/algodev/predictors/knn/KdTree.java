@@ -1,32 +1,67 @@
 package org.chargecar.algodev.predictors.knn;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
-//import java.util.Random;
 
 import org.chargecar.algodev.predictors.KdTreeFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KdTree {
-    private final KdTreeNode root;
+    private KdTreeNode root;
     private final Random randomGenerator = new Random();
     private final KdTreeFeatureSet featureSet;
     private double kBestDist = Double.MAX_VALUE;
+    private int treeSize;
+    private int balancedSize;
+    private List<KnnPoint> pointList;
     
     public KdTree(List<KnnPoint> points, KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
+	
+	pointList = new ArrayList<KnnPoint>();
+	if(points != null) pointList.addAll(points);
+	
 	this.root = buildTree(points, 0);
+	if(root == null) treeSize = 0;
+	else treeSize = root.countNodes();
+	balancedSize = treeSize;
     }
+    
+    public void addNode(KnnPoint point){
+	if(this.root == null){	    
+	    this.root = new KdTreeNode(point, null, null, 0);	    
+	}
+	else{
+	    this.root.addChild(point, featureSet);
+	}
+	pointList.add(point);
+	if(pointList.size() > (balancedSize*2) && pointList.size() > 1000){
+	    System.out.println("Rebalancing tree of size "+pointList.size());
+	//    clearTree(root);
+	    this.root = null;
+	    this.root = buildTree(pointList, 0);
+	    this.balancedSize = pointList.size();
+	    System.out.println("Complete.");
+	}
+    }    
+    
+    /*private void clearTree(KdTreeNode node){
+	if(node == null) return;
+	else{
+	    clearTree(node.getLeftSubtree());
+	    clearTree(node.getRightSubtree());
+	    node.
+	}
+    }*/
     
     private KdTreeNode buildTree(List<KnnPoint> points, int splitType){
 	splitType = splitType % featureSet.getFeatureCount();
 	KdTreeNode node;
-	if(points.size() == 0) return null;
+	if(points == null || points.size() == 0) return null;
 	else if(points.size() == 1){	    
 	    KnnPoint point = points.get(0);
 	    node = new KdTreeNode(point, null, null, splitType);	    

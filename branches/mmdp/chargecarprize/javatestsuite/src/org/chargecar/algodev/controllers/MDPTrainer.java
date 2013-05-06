@@ -29,7 +29,7 @@ public class MDPTrainer implements Policy {
 	tripMap = new HashMap<Integer,double[][]>();
 	this.optFileFolderPath = optFileFolderPath+"/";
 	this.cap = cap.createClone();
-	mmdpOpt = new MDPValueGraph(controlsSet, stateCount, discountFactor);
+	mmdpOpt = new MDPValueGraph(controlsSet, stateCount, discountFactor, cap);
     }    
 
     @Override
@@ -52,7 +52,7 @@ public class MDPTrainer implements Policy {
 	    tripMap = new HashMap<Integer,double[][]>();
 	}
 	
-	double[][] valueGraph = mmdpOpt.getValues(trip.getPoints(), this.cap);
+	double[][] valueGraph = mmdpOpt.getValues(trip.getPoints());
 	tripMap.put(trip.hashCode(), valueGraph);
 	
 	
@@ -92,7 +92,7 @@ public class MDPTrainer implements Policy {
     }
     
     @Override
-    public void endTrip() {}
+    public void endTrip(Trip t) {}
     
     @Override
     public String getName() {

@@ -15,14 +15,16 @@ public class MDPValueGraph{
     final int[] U;
     final int X; //how many charge states 
     final double lambda;//discount factor
+    final BatteryModel cap;
     
-    public MDPValueGraph(int[] controls, int stateBuckets, double discountRate){
+    public MDPValueGraph(int[] controls, int stateBuckets, double discountRate, BatteryModel cap){
 	this.U = controls;
 	this.X = stateBuckets;
 	this.lambda = discountRate;
+	this.cap = cap;
     }
     
-    public double[][] getValues(List<PointFeatures> points, BatteryModel cap){
+    public double[][] getValues(List<PointFeatures> points){
 	int T = points.size()+1; //how many Time States we have
 	
 	//look for null in case data overlaps new trip

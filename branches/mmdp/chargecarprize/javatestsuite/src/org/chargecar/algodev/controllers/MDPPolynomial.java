@@ -2,6 +2,7 @@ package org.chargecar.algodev.controllers;
 
 import java.util.List;
 
+import org.chargecar.algodev.controllers.MDPValueGraph.ControlResult;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -28,6 +29,8 @@ public class MDPPolynomial{
     
     public double[][] getCoefficients(List<PointFeatures> points, BatteryModel cap){
 	int T = points.size()+1; //how many Time States we have
+		
+	final double[][] valueFunction = new double[T][X];
 	
 	final double[][] coefficients = new double[T][O];
 	
@@ -38,31 +41,21 @@ public class MDPPolynomial{
 	for(int x=0;x<X;x++){
 	    xstates[x]=new SimpleCapacitor(cap.getMaxWattHours(),(double)x*cap.getMaxWattHours()/X,cap.getVoltage());
 	    double pCharge = (double) x / (double) X;
+	
 	    for(int o=0;o<O;o++){
 		states[x][o] = Math.pow(pCharge,o);
 	    }
 	    
-	}
-	
-	Matrix stateMatrix = new Matrix(states);
-//	Matrix smT = stateMatrix.transpose(); 
-//	Matrix x2 = smT.times(stateMatrix);
-//	x2 = x2.inverse();
-//	x2 = x2.times(stateMatrix.transpose());
-	stateMatrix = stateMatrix.transpose().times(stateMatrix).inverse().times(stateMatrix.transpose());
-
-
-	for(int o=0;o<O;o++){
-	    coefficients[T-1][o] = 0; //0 value at final timestep
+	    for(int t=0;t<T-1;t++){
+		valueFunction[t][x] = Double.MAX_VALUE;
+	    }
+		
+	    valueFunction[T-1][x] = 0;	    
 	}
 	
 	//djikstra shortest path search
-	//TODO change to A*?
 	for(int t=T-2;t>=1;t--){
 	    double power = 0;
-	    
-	    double[] values = new double[X]; //values for each sampled state at this timestep
-	    
 	    power = points.get(t).getPowerDemand();
 	    for(int x=0;x<X;x++){
 		BatteryModel state = xstates[x];
@@ -71,27 +64,45 @@ public class MDPPolynomial{
 		    int control = U[u];
 		    ControlResult result = testControl(state, power, control);
 		    
-		    double value = result.cost + calculateValue(coefficients[t+1],result.pCharge);                    
+		    double value = result.cost;
+
+                    double chargeState = result.pCharge*X;
+                    int floor = (int)Math.floor(chargeState);
+                    floor = Math.min(Math.max(floor,0),X-1);
+                    int ceil = (int)Math.ceil(chargeState);
+                    ceil = Math.max(Math.min(ceil,X-1),0);
+
+                    double fVal = valueFunction[t+1][floor];
+
+                    if(floor==ceil){
+                        value += lambda*fVal;
+                    }
+                    else{
+                        double cVal = valueFunction[t+1][ceil];
+                        value += lambda*(fVal + ((cVal - fVal)*(chargeState - floor)/(ceil-floor) ));
+                    }		    
 		    
 		    if(value < minValue){
 			minValue = value;
 		    }
 		}
-		values[x] = minValue;
+		valueFunction[t][x] = minValue;
 	    }
-	    
+	}
+	
+	Matrix stateMatrix = new Matrix(states);
+	stateMatrix = stateMatrix.transpose().times(stateMatrix).inverse().times(stateMatrix.transpose());
+
+
+	//djikstra shortest path search
+	//TODO change to A*?
+	for(int t=0;t<T;t++){
+	    double[] values = valueFunction[t]; //values for each sampled state at this timestep
 	    coefficients[t] = regression(stateMatrix, values);
 	}
 	
 	return coefficients;
-	/*
-	double percentCharge = cap.getWattHours() / cap.getMaxWattHours();
-	int index = (int)(percentCharge*X);
-	if(index == X) index = X-1;
-	
-	return controls[index][0];
-*/
-	}
+    }
     
     private double[] regression(Matrix x2, double[] values) {
 	Matrix coeff = x2.times(new Matrix(values, values.length));

@@ -40,6 +40,21 @@ public class ConsoleWriter implements Visualizer {
 	
     }
     
+    public void visualizeTrips(List<SimulationResults> results) {
+	int numTrips = results.get(0).getBatteryCurrentSquaredIntegrals().size();
+	
+	for(int i=0;i<numTrips;i++){
+	    double baseline = results.get(0).getBatteryCurrentSquaredIntegrals().get(i);
+	    System.out.println("Trip "+i+":");
+	    for(int j=1;j<results.size();j++){
+		double i2used = results.get(j).getBatteryCurrentSquaredIntegrals().get(i);
+		double i2Percent = (i2used / baseline);
+		System.out.println("\t "+results.get(j).getPolicyName()+": "+p.format(i2Percent));		
+	    }
+	}
+	
+    }
+    
     public void visualizeSummary(List<SimulationResults> results) {
 	int tripsTested = 0;
 	List<Double> currentSquaredSums = new ArrayList<Double>();

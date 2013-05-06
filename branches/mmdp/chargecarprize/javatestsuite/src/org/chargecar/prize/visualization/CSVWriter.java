@@ -38,9 +38,10 @@ public class CSVWriter implements Visualizer {
 	    for (SimulationResults r : results) {
 		double currentSquaredSum = 0.0;
 		
-		for (Double d : r.getBatteryCurrentSquaredIntegrals()) {
-		    currentSquaredSum += d;
-		    out.write(currentSquaredSum+",");
+		for (Double i2 : r.getBatteryCurrentSquaredIntegrals()) {
+		   // currentSquaredSum += d;
+		    //out.write(currentSquaredSum+",");
+		    out.write(d.format(i2)+",");
 		}
 		out.write("0.0\n");
 		double chargeSpentSum = 0.0;
@@ -116,6 +117,12 @@ public class CSVWriter implements Visualizer {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
+	
+    }
+
+    @Override
+    public void visualizeTrips(List<SimulationResults> results) {
+	// TODO Auto-generated method stub
 	
     }
 }

@@ -6,8 +6,9 @@ import java.util.Map;
 import org.chargecar.algodev.controllers.MDPPolynomial.ControlResult;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.Trip;
 
-public class DPPolyController extends Controller {
+public class DPPolyController implements Controller {
 
     private final int[] U;
     private final Map<Integer, double[][]> tripMap;
@@ -56,5 +57,11 @@ public class DPPolyController extends Controller {
 	    }
 	}
 	return control;
+    }
+
+    @Override
+    public void addTrip(Trip t) {
+	// TODO Auto-generated method stub
+	
     }    
 }
