@@ -1,16 +1,32 @@
 package org.chargecar.algodev.predictors.knn;
 
+import org.chargecar.algodev.predictors.KdTreeFeatureSet;
+
 
 public class KdTreeNode {
     private final KnnPoint value;
-    private final KdTreeNode leftSubtree;
-    private final KdTreeNode rightSubtree;
+    private KdTreeNode leftSubtree;
+    private KdTreeNode rightSubtree;
     private final int splitType;
     
     public KnnPoint getValue() {
         return value;
     }
 
+    public void addChild(KnnPoint point, KdTreeFeatureSet featureSet){
+	double pointAxisValue = featureSet.getValue(point.getFeatures(), getSplitType());	
+	double nodeAxisValue = featureSet.getValue(value.getFeatures(), getSplitType());
+	boolean leftBranch = pointAxisValue < nodeAxisValue;
+	if(leftBranch){
+	    if(leftSubtree == null) leftSubtree = new KdTreeNode(point, null, null, (splitType+1)%featureSet.getFeatureCount());		    
+	    else leftSubtree.addChild(point, featureSet);		
+	}
+	else{
+	    if(rightSubtree == null) rightSubtree = new KdTreeNode(point, null, null, (splitType+1)%featureSet.getFeatureCount());		    
+	    else rightSubtree.addChild(point, featureSet);		
+	}	
+    }
+    
     public KdTreeNode getLeftSubtree() {
         return leftSubtree;
     }

@@ -45,7 +45,7 @@ public class KnnTableTrainer implements Policy {
 	}
 
 	
-	if(table.size() < 200000){	
+	if(table.size() < 400000){	
 	    for(int i = 0; i<trip.getPoints().size();i++){
 		PointFeatures pf = trip.getPoints().get(i);
 		KnnPoint p = new KnnPoint(pf,i, trip.hashCode());
@@ -175,7 +175,7 @@ public class KnnTableTrainer implements Policy {
     }
     
     @Override
-    public void endTrip() {}
+    public void endTrip(Trip t) {}
     
     @Override
     public String getName() {

@@ -20,7 +20,7 @@ public class NoCapPolicy implements Policy {
 	// battery
     }
     
-    public void endTrip() {
+    public void endTrip(Trip t) {
 	// no trip-state
     }
     

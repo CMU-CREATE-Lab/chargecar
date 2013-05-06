@@ -30,4 +30,6 @@ public interface Visualizer {
     public void visualizeSummary(List<SimulationResults> simResults);
     
     public void visualizeDrivers(List<DriverResults> driverResults);
+    
+    public void visualizeTrips(List<SimulationResults> results);
 }

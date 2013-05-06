@@ -6,6 +6,7 @@ package org.chargecar.prize.policies;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlows;
+import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 
 /**
@@ -23,7 +24,7 @@ public interface Policy {
     
     public void clearState();
     
-    public void endTrip();
+    public void endTrip(Trip t);
     
     public PowerFlows calculatePowerFlows(PointFeatures pointFeatures);
     

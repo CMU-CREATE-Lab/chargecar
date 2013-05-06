@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.chargecar.algodev.policies.KnnDistPolyPolicy;
 import org.chargecar.algodev.policies.KnnDistributionPolicy;
+import org.chargecar.algodev.policies.KnnMMDPLive;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleCapacitor;
@@ -22,6 +23,7 @@ import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 import org.chargecar.prize.util.Vehicle;
+import org.chargecar.prize.visualization.CSVWriter;
 import org.chargecar.prize.visualization.ConsoleWriter;
 import org.chargecar.prize.visualization.Visualizer;
 
@@ -35,7 +37,8 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    static Visualizer visualizer = new ConsoleWriter();
+    //static Visualizer visualizer = new ConsoleWriter();
+    static Visualizer visualizer = new CSVWriter("/home/astyler/Dropbox/res.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
     static double capWhr = 200;
@@ -47,14 +50,15 @@ public class SimulatorKNN {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	if (args == null || args.length < 3) {
-	    System.err.println("ERROR: Provide both GPX, KNN, and OPT directory");
+	if (args == null || args.length < 1) {
+	    //System.err.println("ERROR: Provide GPX, KNN, and OPT directory");
+	    System.err.println("ERROR: Provide GPX directory");
 	    System.exit(1);
 	}
 	
 	String gpxFolder = args[0];
-	String knnFolder = args[1];
-	String optFolder = args[2];
+//	String knnFolder = args[1];
+//	String optFolder = args[2];
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -69,8 +73,8 @@ public class SimulatorKNN {
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
-	policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
-
+//	policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
+	policies.add(new KnnMMDPLive(7, 50, 0.99));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -78,6 +82,7 @@ public class SimulatorKNN {
 	
 	List<SimulationResults> results = simulateTrips(policies, gpxFiles);
 //	writeResults(results);
+//	visualizer.visualizeTrips(results);
 	visualizer.visualizeSummary(results);
     }    
     
@@ -104,7 +109,7 @@ public class SimulatorKNN {
 	    policies.get(i).clearState();
 	}
 	System.out.println();
-	System.out.println("Trips tested: "+tripsToTest.size());
+	//System.out.println("Trips tested: "+tripsToTest.size());
 	
 	return results;
     }
@@ -129,7 +134,7 @@ public class SimulatorKNN {
 	    cap.drawPower(pf.getCapacitorToMotor()
 		    - pf.getBatteryToCapacitor(), point.getPeriodMS());
 	}
-	policy.endTrip();
+	policy.endTrip(trip);
     }
     
     private static List<Trip> parseTrips(File gpxFile) throws IOException {

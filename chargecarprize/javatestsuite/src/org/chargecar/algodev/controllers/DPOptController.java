@@ -6,18 +6,23 @@ import java.util.Map;
 import org.chargecar.algodev.controllers.MDPValueGraph.ControlResult;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.battery.BatteryModel;
+import org.chargecar.prize.util.Trip;
 
-public class DPOptController extends Controller {
+public class DPOptController implements Controller {
 
     private final int[] U;
     private final Map<Integer, double[][]> tripMap;
+    private final MDPValueGraph mmdpOpt;
     
-    public DPOptController(int[] controls, Map<Integer, double[][]> tripMap){
+    public DPOptController(int[] controls, Map<Integer, double[][]> tripMap, MDPValueGraph mvg){
 	this.U = controls;
-	this.tripMap = tripMap;
+	this.tripMap = tripMap;	
+	this.mmdpOpt = mvg;
+    }
+    public void addTrip(Trip t){	
+	this.tripMap.put(t.hashCode(), mmdpOpt.getValues(t.getPoints()));
     }
     
-    @Override
     public double getControl(List<Prediction> predictedDuties,
 	    BatteryModel battery, BatteryModel cap, int periodMS, double powerDemand) {
 	double[] uValues = new double[U.length];
