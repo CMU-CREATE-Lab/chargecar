@@ -22,6 +22,7 @@ import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
 import org.chargecar.prize.util.PowerFlows;
+import org.chargecar.prize.util.Trip;
 
 import org.chargecar.prize.util.TripFeatures;
 
@@ -73,7 +74,7 @@ public class KnnDistPolyPolicy implements Policy {
 		sdevs = knnList.get(1).getFeatures();
 		knnList.remove(1);
 		knnList.remove(0);
-		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors);
+		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors, true);
 		System.out.println("Trees built.");
 		ois.close();
 		fis.close();
@@ -168,11 +169,6 @@ public class KnnDistPolyPolicy implements Policy {
     }
     
     @Override
-    public void endTrip() {
-	// TODO Auto-generated method stub
-    }    
-    
-    @Override
     public String getName() {
 	return this.name;
     }
@@ -195,6 +191,12 @@ public class KnnDistPolyPolicy implements Policy {
 	this.controller = null;
 	this.means = null;
 	this.sdevs = null;
+    }
+
+    @Override
+    public void endTrip(Trip t) {
+	// TODO Auto-generated method stub
+	
     }
     
 }

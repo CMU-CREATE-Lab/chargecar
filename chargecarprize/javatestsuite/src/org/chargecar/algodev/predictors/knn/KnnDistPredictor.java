@@ -12,17 +12,19 @@ public class KnnDistPredictor implements Predictor {
     private final KdTree featTree;
     private final int k;
     private List<Prediction> neighbors;
+    private final boolean trained;
 //    private final int lookahead;
     
-    public KnnDistPredictor(List<KnnPoint> points, KdTreeFeatureSet featureSet, int neighbors){//, int lookahead){
+    public KnnDistPredictor(List<KnnPoint> points, KdTreeFeatureSet featureSet, int neighbors, boolean trainedOnTestData){//, int lookahead){
 	this.featTree = new KdTree(points, featureSet);
 	this.k = neighbors;
 	this.neighbors = null;
+	this.trained = trainedOnTestData;
 	//this.lookahead = lookahead;
     }
     @Override
     public List<Prediction> predictDuty(PointFeatures state) {
-	this.neighbors = featTree.getNeighbors(state, k, this.neighbors);//, lookahead);
+	this.neighbors = featTree.getNeighbors(state, k, this.neighbors, this.trained);
 	return this.neighbors;
     }
     
