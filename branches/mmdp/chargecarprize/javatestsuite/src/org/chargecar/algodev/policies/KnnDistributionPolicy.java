@@ -74,7 +74,7 @@ public class KnnDistributionPolicy implements Policy {
 		sdevs = knnList.get(1).getFeatures();
 		knnList.remove(1);
 		knnList.remove(0);
-		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors);
+		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors, true);
 		System.out.println("Trees built.");
 		ois.close();
 		fis.close();

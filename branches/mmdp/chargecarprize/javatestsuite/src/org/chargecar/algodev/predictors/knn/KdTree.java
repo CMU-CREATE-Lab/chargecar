@@ -61,17 +61,23 @@ public class KdTree {
     private KdTreeNode buildTree(List<KnnPoint> points, int splitType){
 	splitType = splitType % featureSet.getFeatureCount();
 	KdTreeNode node;
+	KnnPoint point;
+	KdTreeNode leftSubtree = null;
+	KdTreeNode rightSubtree = null;
 	if(points == null || points.size() == 0) return null;
 	else if(points.size() == 1){	    
-	    KnnPoint point = points.get(0);
-	    node = new KdTreeNode(point, null, null, splitType);	    
+	    point = points.get(0);
+	    points.set(0, null);
 	}
 	else{ 
 	    int pivot = select(points, 0, points.size()-1, (int)(points.size()/2), splitType);
-	    KdTreeNode leftSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(0, pivot)), splitType+1);
-	    KdTreeNode rightSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(pivot+1, points.size())), splitType+1);
-	    node = new KdTreeNode(points.get(pivot), leftSubtree, rightSubtree, splitType);
+	    point = points.get(pivot);
+	    points.set(pivot, null);
+	    leftSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(0, pivot)), splitType+1);
+	    rightSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(pivot+1, points.size())), splitType+1);
+	    
 	}
+	node = new KdTreeNode(point, leftSubtree, rightSubtree, splitType);
 	return node;
     }
     
@@ -79,31 +85,42 @@ public class KdTree {
 	return root.countNodes();
     }
     
-    public List<Prediction> getNeighbors(PointFeatures point, int k, List<Prediction> previousNeighbors){//, int lookahead){
-	Comparator<KnnPoint> comp = new KnnComparator(point,featureSet);
-	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+1,comp);
+    public List<Prediction> getNeighbors(PointFeatures searchPoint, int k, List<Prediction> previousNeighbors, boolean trained){//, int lookahead){
+	Comparator<KnnPoint> comp = new KnnComparator(searchPoint,featureSet);
+	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+2,comp);
 	kBestDist = Double.MAX_VALUE;
 	
 	if(previousNeighbors != null){
 	    for(Prediction p: previousNeighbors){
-		double dist = featureSet.distance(p.getPoint().getFeatures(),point);
-		p.getPoint().setDistance(dist);
+		KnnPoint kp = p.getPoint();
+		double dist = featureSet.distance(kp.getFeatures(),searchPoint);
+		kp.setDistance(dist);
 		if(dist < kBestDist){    
-		    addNeighbor(neighbors, p.getPoint(), k);
+		    addNeighbor(neighbors, kp, k);
 		    if(neighbors.size() == k )
 			kBestDist = neighbors.peek().getDistance();
 		}		 
 	    }
 	}
 	
-	searchTree(root, point, neighbors, k, new double[featureSet.getFeatureCount()]);
+	searchTree(root, searchPoint, neighbors, k+1, new double[featureSet.getFeatureCount()]);
 
 	List<Prediction> predictions = new ArrayList<Prediction>();
-	for(KnnPoint kp : neighbors){
-	    Prediction p = new Prediction(1/(kp.getDistance()+1e-12),kp.getTripID(),kp.getTimeIndex(),kp);
+	
+	KnnPoint kp = neighbors.poll();
+	
+	while(kp != null){
+	    Prediction p = new Prediction(1/(kp.getDistance()+0.01),kp.getTripID(),kp.getTimeIndex(),kp);
 	    predictions.add(p);
+	    kp = neighbors.poll();
 	}
-	return predictions;
+	
+	
+	if(trained) //Remove best match -- perfect match of the search point
+	    return predictions.subList(0, predictions.size() - 1);
+	else //remove worst match, only want K predictions
+	    return predictions.subList(1, predictions.size());
+	
     }
         
     private void addNeighbor(PriorityQueue<KnnPoint> bestKNeighbors, KnnPoint neighbor, int k){

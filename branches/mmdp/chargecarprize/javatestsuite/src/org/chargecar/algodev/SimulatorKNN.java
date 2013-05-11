@@ -38,7 +38,7 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     //static Visualizer visualizer = new ConsoleWriter();
-    static Visualizer visualizer = new CSVWriter("/home/astyler/Dropbox/res.csv");
+    static Visualizer visualizer = new CSVWriter("/home/astyler/Dropbox/res2.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
     static double capWhr = 200;
@@ -51,14 +51,14 @@ public class SimulatorKNN {
      */
     public static void main(String[] args) throws IOException {
 	if (args == null || args.length < 1) {
-	    //System.err.println("ERROR: Provide GPX, KNN, and OPT directory");
-	    System.err.println("ERROR: Provide GPX directory");
+	    System.err.println("ERROR: Provide GPX, KNN, and OPT directory");
+	    //System.err.println("ERROR: Provide GPX directory");
 	    System.exit(1);
 	}
 	
 	String gpxFolder = args[0];
-//	String knnFolder = args[1];
-//	String optFolder = args[2];
+	String knnFolder = args[1];
+	String optFolder = args[2];
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -73,8 +73,9 @@ public class SimulatorKNN {
 	List<Policy> policies = new ArrayList<Policy>();
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
-//	policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
-	policies.add(new KnnMMDPLive(7, 50, 0.99));
+	//policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,7));
+//	policies.add(new KnnMMDPLive(7, 50, 0.99));
 	
 	for (Policy p : policies) {
 	    p.loadState();

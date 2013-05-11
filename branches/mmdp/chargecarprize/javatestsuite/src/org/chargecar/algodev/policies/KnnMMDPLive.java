@@ -65,7 +65,7 @@ public class KnnMMDPLive implements Policy {
 		
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;		
-		knnPredictor = new KnnDistPredictor(null, new FullFeatureSet(),neighbors);
+		knnPredictor = new KnnDistPredictor(null, new FullFeatureSet(),neighbors, false);
 		
 		//load controller map		
 		Map<Integer, double[][]> optMap = new HashMap<Integer, double[][]>();

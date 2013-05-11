@@ -56,8 +56,9 @@ public class SimulatorTrainer {
 	}
 	
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
-	MDPPolyTrainer policy = new MDPPolyTrainer(optFolder, new SimpleCapacitor(capWhr, 0, systemVoltage), 4, 100);
-	
+	//MDPPolyTrainer policy = new MDPPolyTrainer(optFolder, new SimpleCapacitor(capWhr, 0, systemVoltage), 4, 100);
+	//MDPTrainer policy = new MDPTrainer(optFolder, new SimpleCapacitor(capWhr, 0, systemVoltage), 20);
+	KnnTableTrainer policy = new KnnTableTrainer(optFolder);
 	int count = 0;
 	for (File tripFile : gpxFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
