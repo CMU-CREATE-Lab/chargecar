@@ -43,11 +43,13 @@ public class KnnDistributionPolicy implements Policy {
     private final String shortName = "knndist";
     private final File knnFileFolderPath;
     private final File optFileFolderPath;
+    private final boolean trained;
     
-    public KnnDistributionPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors){
+    public KnnDistributionPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors, boolean trained){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.optFileFolderPath = new File(optFileFolderPath);
 	this.neighbors = neighbors;
+	this.trained = trained;
     }
     
     @Override
@@ -57,7 +59,7 @@ public class KnnDistributionPolicy implements Policy {
 	modelCap = capacitorClone;
 	modelBatt = batteryClone;
 	//TODO FIX BACK
-	if(currentDriver == null){//|| driver.compareTo(currentDriver) != 0){
+	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
 	    try {
 		this.controller = null;
 		this.knnPredictor = null;
@@ -75,7 +77,7 @@ public class KnnDistributionPolicy implements Policy {
 		knnList.remove(1);
 		knnList.remove(0);
 		//TODO Change back to TRUE
-		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors, true);
+		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors, trained);
 		System.out.println("Trees built.");
 		ois.close();
 		fis.close();

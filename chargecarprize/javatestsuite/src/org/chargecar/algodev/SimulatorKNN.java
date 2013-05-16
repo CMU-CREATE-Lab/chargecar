@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import org.chargecar.algodev.policies.KnnDistPolyPolicy;
 import org.chargecar.algodev.policies.KnnDistributionPolicy;
@@ -38,7 +40,7 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     //static Visualizer visualizer = new ConsoleWriter();
-    static Visualizer visualizer = new CSVWriter("C:/users/astyler/Dropbox/res5.csv");
+    static Visualizer visualizer = new CSVWriter("/home/astyler/Dropbox/resomni.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
     static double capWhr = 200;
@@ -74,7 +76,8 @@ public class SimulatorKNN {
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
 	//policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
-	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,9));
+	//policies.add(new KnnDistributionPolicy(knnFolder,optFolder,9, true));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,1, false));//omniscient
 //	policies.add(new KnnMMDPLive(7, 50, 0.99));
 	
 	for (Policy p : policies) {
@@ -178,7 +181,12 @@ public class SimulatorKNN {
     }
     static List<File> getGPXFiles(File gpxFolder) {
 	List<File> gpxFiles = new ArrayList<File>();
-	File[] files = gpxFolder.listFiles();
+	List<File> files = new ArrayList<File>();
+	for(File f  : gpxFolder.listFiles()){
+	    files.add(f);
+	}	
+	Collections.sort(files);
+	
 	for (File f : files) {
 	    if (f.isDirectory()) {
 		gpxFiles.addAll(getGPXFiles(f));
@@ -188,6 +196,7 @@ public class SimulatorKNN {
 		gpxFiles.add(f);
 	    }
 	}
+
 	return gpxFiles;
     }
 }
