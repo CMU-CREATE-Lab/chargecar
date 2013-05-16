@@ -38,7 +38,7 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     //static Visualizer visualizer = new ConsoleWriter();
-    static Visualizer visualizer = new CSVWriter("/home/astyler/Dropbox/res2.csv");
+    static Visualizer visualizer = new CSVWriter("C:/users/astyler/Dropbox/res5.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
     static double capWhr = 200;
@@ -74,7 +74,7 @@ public class SimulatorKNN {
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
 	//policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
-	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,7));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,9));
 //	policies.add(new KnnMMDPLive(7, 50, 0.99));
 	
 	for (Policy p : policies) {
@@ -100,8 +100,10 @@ public class SimulatorKNN {
 	}	
 	for (int i = 0; i < policies.size(); i++) {	    
 	    for (Trip t : tripsToTest) {
+		if(t.getPoints().size() > 3600) continue;
 		System.out.println("Trip "+t.getPoints().size()+"points.");		
 		try {
+		    double tripID = t.hashCode();
 		    simulateTrip(policies.get(i), t, results.get(i));
 		} catch (PowerFlowException e) {
 		    e.printStackTrace();

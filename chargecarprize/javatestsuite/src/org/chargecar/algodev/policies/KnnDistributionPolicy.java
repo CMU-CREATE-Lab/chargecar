@@ -56,8 +56,8 @@ public class KnnDistributionPolicy implements Policy {
 	String driver = tripFeatures.getDriver();
 	modelCap = capacitorClone;
 	modelBatt = batteryClone;
-	
-	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
+	//TODO FIX BACK
+	if(currentDriver == null){//|| driver.compareTo(currentDriver) != 0){
 	    try {
 		this.controller = null;
 		this.knnPredictor = null;
@@ -74,6 +74,7 @@ public class KnnDistributionPolicy implements Policy {
 		sdevs = knnList.get(1).getFeatures();
 		knnList.remove(1);
 		knnList.remove(0);
+		//TODO Change back to TRUE
 		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors, true);
 		System.out.println("Trees built.");
 		ois.close();

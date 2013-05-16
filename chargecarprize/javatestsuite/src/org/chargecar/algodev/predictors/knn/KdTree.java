@@ -77,6 +77,7 @@ public class KdTree {
 	    rightSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(pivot+1, points.size())), splitType+1);
 	    
 	}
+	point.setDistance(-1);
 	node = new KdTreeNode(point, leftSubtree, rightSubtree, splitType);
 	return node;
     }
@@ -90,7 +91,7 @@ public class KdTree {
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+2,comp);
 	kBestDist = Double.MAX_VALUE;
 	
-	if(previousNeighbors != null){
+	/*if(previousNeighbors != null){
 	    for(Prediction p: previousNeighbors){
 		KnnPoint kp = p.getPoint();
 		double dist = featureSet.distance(kp.getFeatures(),searchPoint);
@@ -101,7 +102,7 @@ public class KdTree {
 			kBestDist = neighbors.peek().getDistance();
 		}		 
 	    }
-	}
+	}*/
 	
 	searchTree(root, searchPoint, neighbors, k+1, new double[featureSet.getFeatureCount()]);
 
@@ -115,8 +116,9 @@ public class KdTree {
 	    kp = neighbors.poll();
 	}
 	
+	double weight = predictions.get(predictions.size()-1).getWeight();
 	
-	if(trained) //Remove best match -- perfect match of the search point
+	if(trained && weight > 99) //Remove best match -- perfect match of the search point
 	    return predictions.subList(0, predictions.size() - 1);
 	else //remove worst match, only want K predictions
 	    return predictions.subList(1, predictions.size());

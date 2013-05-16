@@ -104,7 +104,7 @@ public class FullFeatureSet extends KdTreeFeatureSet {
 	if(v2 == Calendar.SATURDAY % 7) v2 = Calendar.SATURDAY;
 	
 	if (v1 == v2)
-	    dayDist = 1;
+	    dayDist = 0;
 	else if ((
 		(v1 == Calendar.MONDAY)
 		|| (v1 == Calendar.TUESDAY)
