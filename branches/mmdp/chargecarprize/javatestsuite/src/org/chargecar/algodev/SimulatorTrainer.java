@@ -29,7 +29,7 @@ import org.chargecar.prize.util.Vehicle;
 public class SimulatorTrainer {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 120;
-    static double capWhr = 200;
+    static double capWhr = 50;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will

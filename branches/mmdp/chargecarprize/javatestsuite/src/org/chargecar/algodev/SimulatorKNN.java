@@ -39,11 +39,11 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    //static Visualizer visualizer = new ConsoleWriter();
-    static Visualizer visualizer = new CSVWriter("/home/astyler/Dropbox/resomni.csv");
+    static Visualizer visualizer = new ConsoleWriter();
+    static Visualizer visualizer2 = new CSVWriter("/home/astyler/Dropbox/illahasthor50whr.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
-    static double capWhr = 200;
+    static double capWhr = 50;
     /**
      * @param args
      *            A pathname to a folder containing *.knn files for each driver
@@ -76,9 +76,9 @@ public class SimulatorKNN {
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
 	//policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
-	//policies.add(new KnnDistributionPolicy(knnFolder,optFolder,9, true));
-	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,1, false));//omniscient
-//	policies.add(new KnnMMDPLive(7, 50, 0.99));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,9, true));
+//	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,1, false));//omniscient
+//	policies.add(new KnnMMDPLive(9, 20, 0.99));
 	
 	for (Policy p : policies) {
 	    p.loadState();
@@ -88,6 +88,7 @@ public class SimulatorKNN {
 //	writeResults(results);
 //	visualizer.visualizeTrips(results);
 	visualizer.visualizeSummary(results);
+	visualizer2.visualizeTrips(results);
     }    
     
     private static List<SimulationResults> simulateTrips(List<Policy> policies,

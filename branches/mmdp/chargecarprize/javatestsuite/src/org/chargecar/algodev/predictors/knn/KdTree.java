@@ -24,8 +24,8 @@ public class KdTree {
 	
 	pointList = new ArrayList<KnnPoint>();
 	if(points != null) pointList.addAll(points);
-	
-	this.root = buildTree(points, 0);
+	points = null;
+	this.root = buildTree(pointList, 0);
 	if(root == null) treeSize = 0;
 	else treeSize = root.countNodes();
 	balancedSize = treeSize;
@@ -39,7 +39,7 @@ public class KdTree {
 	    this.root.addChild(point, featureSet);
 	}
 	pointList.add(point);
-	if(pointList.size() > (balancedSize*2) && pointList.size() > 1000){
+	if(pointList.size() > (balancedSize+2000)){// && pointList.size() > 1000){
 	    System.out.println("Rebalancing tree of size "+pointList.size());
 	//    clearTree(root);
 	    this.root = null;
@@ -67,12 +67,12 @@ public class KdTree {
 	if(points == null || points.size() == 0) return null;
 	else if(points.size() == 1){	    
 	    point = points.get(0);
-	    points.set(0, null);
+	    //points.set(0, null);
 	}
 	else{ 
 	    int pivot = select(points, 0, points.size()-1, (int)(points.size()/2), splitType);
 	    point = points.get(pivot);
-	    points.set(pivot, null);
+	    //points.set(pivot, null);
 	    leftSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(0, pivot)), splitType+1);
 	    rightSubtree = buildTree(new ArrayList<KnnPoint>(points.subList(pivot+1, points.size())), splitType+1);
 	    
@@ -115,6 +115,8 @@ public class KdTree {
 	    predictions.add(p);
 	    kp = neighbors.poll();
 	}
+	
+	if(predictions.size() == 0) return predictions;
 	
 	double weight = predictions.get(predictions.size()-1).getWeight();
 	
