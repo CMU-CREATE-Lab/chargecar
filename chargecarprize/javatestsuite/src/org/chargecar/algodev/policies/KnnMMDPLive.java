@@ -58,7 +58,8 @@ public class KnnMMDPLive implements Policy {
 	modelCap = capacitorClone;
 	modelBatt = batteryClone;
 	
-	if(currentDriver == null || driver.compareTo(currentDriver) != 0){
+	//TODO CHANGE BACK, RIGHT NOW ACT AS IF DRIVERS ARE THE SAME
+	if(currentDriver == null){// || driver.compareTo(currentDriver) != 0){
 	    try {
 		this.controller = null;
 		this.knnPredictor = null;
