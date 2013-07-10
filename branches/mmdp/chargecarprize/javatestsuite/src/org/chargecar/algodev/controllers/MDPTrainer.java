@@ -3,9 +3,7 @@ package org.chargecar.algodev.controllers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.chargecar.prize.battery.BatteryModel;
