@@ -186,6 +186,7 @@
     </orderEntry>
     <orderEntry type="module" module-name="ChargeCar.org" />
     <orderEntry type="library" name="PostgreSQL" level="project" />
+    <orderEntry type="library" name="apache-commons-io" level="project" />
   </component>
 </module>
 

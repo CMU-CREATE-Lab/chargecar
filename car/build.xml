@@ -36,6 +36,7 @@
       <pathelement path="${log4j-extras.jar}"/>
       <pathelement path="${rxtx.jar}"/>
       <pathelement path="${swing-layout.jar}"/>
+      <pathelement path="${apache-commons-io.jar}"/>
    </path>
 
    <path id="in-dash-display-classpath">
@@ -265,6 +266,7 @@
             <fileset file="${rxtx-windows.native2}"/>
             <fileset file="${swing-layout.jar}"/>
             <fileset file="${postgresql-jdbc.jar}"/>
+            <fileset file="${apache-commons-io.jar}"/>
          </additional-files-to-copy>
       </car-create-dist>
 

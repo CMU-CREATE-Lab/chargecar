@@ -41,7 +41,10 @@ public final class ErrorCodesMenuItemAction extends CharacterDisplayMenuItemActi
         if (bmsManager == null || bmsData == null) {
             LOG.error("ErrorCodesMenuItemAction.performAction(): bms is null");
             getCharacterDisplay().setLine(0, "No connection to BMS.");
-            getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            //getCharacterDisplay().setCharacter(LCDConstants.NUM_ROWS - 1, 0, " ");
+            getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
+            getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
             return;
         } else if (lcd == null) {
             LOG.error("ErrorCodesMenuItemAction.activate(): lcd is null");

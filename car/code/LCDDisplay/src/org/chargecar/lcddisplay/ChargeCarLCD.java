@@ -38,7 +38,7 @@ public final class ChargeCarLCD {
 
         LOG.debug("ChargeCarLCD(): about to connect to the BMS and GPS...");
         // call .getInstance() on the various managers to kick off connection establishment to them
-        HallEffectManager.getInstance();
+        //HallEffectManager.getInstance();
         BMSManager.getInstance();
         GPSManager.getInstance();
 

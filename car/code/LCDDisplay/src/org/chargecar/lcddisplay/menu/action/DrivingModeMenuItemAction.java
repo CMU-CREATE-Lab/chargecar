@@ -7,7 +7,7 @@ import edu.cmu.ri.createlab.menu.MenuStatusManager;
 import org.apache.log4j.Logger;
 import org.chargecar.honda.bms.BMSAndEnergy;
 import org.chargecar.honda.gps.GPSEvent;
-import org.chargecar.honda.halleffect.HallEffectEvent;
+//import org.chargecar.honda.halleffect.HallEffectEvent;
 import org.chargecar.lcddisplay.*;
 import org.chargecar.lcddisplay.helpers.GPSHelper;
 import org.chargecar.lcddisplay.helpers.GeneralHelper;
@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDisplayMenuItemAction {
     private static final Logger LOG = Logger.getLogger(DrivingModeMenuItemAction.class);
     private LCD lcd = null;
-    private HallEffectManager halleffectManager = null;
-    private HallEffectEvent halleffectData = null;
+    //private HallEffectManager halleffectManager = null;
+    //private HallEffectEvent halleffectData = null;
     private BMSManager bmsManager = null;
     private BMSAndEnergy bmsData = null;
     private GPSManager gpsManager = null;
@@ -97,12 +97,15 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
 
     public void performAction2() {
         currentState = 2;
-        halleffectManager = HallEffectManager.getInstance();
-        halleffectData = halleffectManager.getData();
+        //halleffectManager = HallEffectManager.getInstance();
+        //halleffectData = halleffectManager.getData();
 
-        if (halleffectManager == null || halleffectData == null) {
-            LOG.error("DrivingModeMenuItemAction.performAction2(): halleffect is null");
-            getCharacterDisplay().setLine(0, "No connection to temperature sensor.");
+        //if (halleffectManager == null || halleffectData == null) {
+        if (bmsManager == null || bmsData == null) {
+            LOG.error("DrivingModeMenuItemAction.performAction2(): bms is null");
+            getCharacterDisplay().setLine(0, "No connection to BMS.");
+            //LOG.error("DrivingModeMenuItemAction.performAction2(): halleffect is null");
+            //getCharacterDisplay().setLine(0, "No connection to temperature sensor.");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
@@ -119,9 +122,10 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             getCharacterDisplay().setLine(2, "  Controller ");
             getCharacterDisplay().setLine(3, "v                   ");
         }
-
-        getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(GeneralHelper.round(halleffectData.getMotorTemp(), 2) + "C", LCDConstants.NUM_COLS - 8));
-        getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(GeneralHelper.round(halleffectData.getControllerTemp(), 2) + "C", LCDConstants.NUM_COLS - 13));
+        getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getMotorTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 8));
+        getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(GeneralHelper.round(lcd.getTemperatureInCelsius(lcd.getControllerTemperatureInKelvin()), 2) + "C", LCDConstants.NUM_COLS - 13));
+        //getCharacterDisplay().setCharacter(1, 8, GeneralHelper.padLeft(GeneralHelper.round(halleffectData.getMotorTemp(), 2) + "C", LCDConstants.NUM_COLS - 8));
+        //getCharacterDisplay().setCharacter(2, 13, GeneralHelper.padLeft(GeneralHelper.round(halleffectData.getControllerTemp(), 2) + "C", LCDConstants.NUM_COLS - 13));
     }
 
     public void performAction3() {
