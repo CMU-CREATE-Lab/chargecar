@@ -1,5 +1,6 @@
 package org.chargecar.lcddisplay.helpers;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.chargecar.lcddisplay.LCD;
 import org.chargecar.lcddisplay.LCDConstants;
@@ -137,7 +138,9 @@ public class GeneralHelper {
         //LOG.debug("copyFile source: " + sourceFile);
         //LOG.debug("copyFile dest: " + destFile);
 
-        if (destFile.getParentFile() != null && !destFile.getParentFile().mkdirs()) {
+        FileUtils.copyFile(sourceFile, destFile);
+
+        /*if (destFile.getParentFile() != null && !destFile.getParentFile().mkdirs()) {
             LOG.error("GeneralHelper.copyFile(): Cannot create parent directories from " + destFile);
         }
 
@@ -167,7 +170,7 @@ public class GeneralHelper {
             } else if (fOut != null) {
                 fOut.close();
             }
-        }
+        }*/
     }
 
     /* copy files from one location to another*/

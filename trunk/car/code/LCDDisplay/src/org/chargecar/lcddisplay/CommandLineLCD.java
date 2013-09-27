@@ -2,11 +2,16 @@ package org.chargecar.lcddisplay;
 
 import edu.cmu.ri.createlab.device.CreateLabDevicePingFailureEventListener;
 import edu.cmu.ri.createlab.serial.commandline.SerialDeviceCommandLineApplication;
+import edu.cmu.ri.createlab.util.VersionNumberReader;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.SortedMap;
+
+import org.chargecar.lcddisplay.helpers.GeneralHelper;
 
 /**
  * @author Paul Dille (pdille@andrew.cmu.edu)
@@ -400,6 +405,32 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication {
                 }
             };
 
+    private final Runnable testDirectoryCopy =
+            new Runnable() {
+                public void run() {
+                    final File inputPath = new File("C:\\Users\\Paul\\Documents\\CREATE Lab\\Projects\\chargecar\\a");
+                    final File outputPath = new File("C:\\Users\\Paul\\Documents\\CREATE Lab\\Projects\\chargecar\\b");
+                    try {
+                        println("Copying...");
+                        GeneralHelper.copyDirectory(inputPath, outputPath, LCDConstants.FILTER_NONE);
+                        println("All copied!");
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+
+                }
+            };
+
+    private final Runnable printVersion =
+            new Runnable() {
+                public void run() {
+                    final VersionNumberReader.VersionDetails versionDetails = VersionNumberReader.getVersionDetails();
+                    println(versionDetails);
+                }
+            };
+
+
+
     private void setLine(final int lineNumber, final String text) {
         if (isValidRow(lineNumber)) {
             if (text != null && text.length() > 0) {
@@ -431,7 +462,7 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication {
     private final Runnable displayHelloWorld =
             new Runnable() {
                 public void run() {
-                    final String text = "HHHHHA";
+                    final String text = "Hello World";
                     setLine(2, text);
                 }
             };
@@ -492,6 +523,10 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication {
 
         registerAction("e", getMotorControllerErrorCodes);
 
+        registerAction("tcd", testDirectoryCopy);
+
+        registerAction("pv", printVersion);
+
         //registerAction("r", resetDisplay);
 
         registerAction(QUIT_COMMAND, quitAction);
@@ -541,6 +576,8 @@ public class CommandLineLCD extends SerialDeviceCommandLineApplication {
         println("ca2         Turn off accessory 2 LED");
         println("sa3         Turn on accessory 3 LED");
         println("ca3         Turn off accessory 3 LED");
+        println("tcd         Copies a directory that is hardcoded");
+        println("pv          Print app version");
         println("");
         println("q           Quit");
         println("");

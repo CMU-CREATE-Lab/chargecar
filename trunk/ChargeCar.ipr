@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AntConfiguration">
-    <defaultAnt bundledAnt="true" />
-  </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
@@ -62,7 +59,11 @@
       <entry name="?*.flt" />
       <entry name="?*.bin" />
     </wildcardResourcePatterns>
-    <annotationProcessing enabled="false" useClasspath="true" />
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="true" />
+      </profile>
+    </annotationProcessing>
   </component>
   <component name="CopyrightManager" default="">
     <module2copyright />
@@ -215,6 +216,7 @@
         <inspection_tool class="NakedNotify" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NegatedIfElse" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_ignoreNegatedNullComparison" value="true" />
+          <option name="m_ignoreNegatedZeroComparison" value="false" />
         </inspection_tool>
         <inspection_tool class="NestedSwitchStatement" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NestedSynchronizedStatement" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -317,6 +319,9 @@
         <inspection_tool class="UtilityClassWithPublicConstructor" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="UtilityClassWithoutPrivateConstructor" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreClassesWithOnlyMain" value="false" />
+          <option name="ignorableAnnotations">
+            <value />
+          </option>
         </inspection_tool>
         <inspection_tool class="VolatileArrayField" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="VolatileLongOrDoubleField" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -501,7 +506,7 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="JDK_1_6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/../IDEA_build_output" />
   </component>
   <component name="SvnBranchConfigurationManager">
@@ -815,6 +820,19 @@
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
+    <library name="apache-commons-io">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/car/lib/apache-commons-io" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="file://$PROJECT_DIR$/car/lib/apache-commons-io/docs" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/car/lib/apache-commons-io" />
+      </SOURCES>
+      <jarDirectory url="file://$PROJECT_DIR$/car/lib/apache-commons-io" recursive="false" />
+      <jarDirectory url="file://$PROJECT_DIR$/car/lib/apache-commons-io" recursive="false" type="SOURCES" />
+    </library>
     <library name="CREATE Lab Commons Device">
       <CLASSES>
         <root url="file://$PROJECT_DIR$/car/lib/create-lab-commons-device" />

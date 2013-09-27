@@ -35,6 +35,9 @@ public final class VersionInfoMenuItemAction extends CharacterDisplayMenuItemAct
             getCharacterDisplay().setLine(1, "Version: " + versionDetails.getMajorMinorRevision());
             getCharacterDisplay().setLine(2, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
+        } else {
+            LOG.error("VersionInfoMenuItemAction.activate(): versionDetails is null");
+            return;
         }
     }
 }
