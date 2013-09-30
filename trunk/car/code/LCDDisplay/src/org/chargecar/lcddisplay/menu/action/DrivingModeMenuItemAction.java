@@ -198,12 +198,9 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
         gpsManager = GPSManager.getInstance();
         gpsData = (gpsManager == null) ? null : gpsManager.getData();
 
-        final String latString = gpsData.getLatitude();
-        final String lngString = gpsData.getLongitude();
-
         if (gpsManager == null || gpsData == null) {
             LOG.error("DrivingModeMenuItemAction.performAction5(): gps is null");
-            getCharacterDisplay().setLine(0, "^    MY LOCATION    ");
+            getCharacterDisplay().setLine(0, "    MY LOCATION    ");
             getCharacterDisplay().setLine(1, LCDConstants.BLANK_LINE);
             getCharacterDisplay().setLine(2, "No connection to GPS.");
             getCharacterDisplay().setLine(3, LCDConstants.BLANK_LINE);
@@ -219,6 +216,9 @@ public final class DrivingModeMenuItemAction extends RepeatingActionCharacterDis
             LOG.error("DrivingModeMenuItemAction.performAction5(): lcd is null");
             return;
         }
+
+        final String latString = gpsData.getLatitude();
+        final String lngString = gpsData.getLongitude();
 
         if (printHeadings.get(4)) {
             printHeadings.set(4, false);
