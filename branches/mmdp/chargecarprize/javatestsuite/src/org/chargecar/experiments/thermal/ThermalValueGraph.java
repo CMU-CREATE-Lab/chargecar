@@ -114,8 +114,8 @@ public class ThermalValueGraph
 	
 	double cost = 0.0;
 	
-	//cost = Math.pow(control,2); 
-	cost = control;//penalize control linearly
+	//cost = 10000000*Math.pow(control,3); 
+	//cost = control;//penalize control linearly
 	
 	//penalize excess of 35C
 	double temp = batt.temp;

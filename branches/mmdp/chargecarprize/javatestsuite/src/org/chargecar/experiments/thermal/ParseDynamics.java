@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class ParseDynamics {
-    static double[] temps = new double[]{30,31,32,33,34,35,36,37,38,39,40,41}; 
+    //static double[] temps = new double[]{30,31,32,33,34,35,36,37,38,39,40,41}; 
     static double[] powers = new double[51];;
     static double[] massFlows = new double[]{0,0.001,0.0015,0.002,0.0025,0.003,0.0035,0.0042};
     
@@ -16,6 +16,11 @@ public class ParseDynamics {
    	if (args == null || args.length < 1) {
    	    System.err.println("ERROR: No GPX directory path provided.");
    	    System.exit(1);
+   	}
+   	
+   	double[] temps = new double[111];
+   	for(int i = 0;i<111;i++){
+   	    temps[i] = 30+i*0.1;
    	}
    	
    	String csvMatlab = args[0];	
