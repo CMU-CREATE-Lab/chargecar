@@ -29,7 +29,7 @@ import org.chargecar.prize.util.Vehicle;
 public class SimulatorTrainer {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 120;
-    static double capWhr = 50;
+  //  static double capWhr = 50;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -48,6 +48,8 @@ public class SimulatorTrainer {
 	
 	String gpxFolder = args[0];
 	String optFolder = args[1];
+	int capWhr = Integer.parseInt(args[2]);
+	
 	File folder = new File(gpxFolder);
 	List<File> gpxFilesT = getGPXFiles(folder);
 	List<File> gpxFiles = new ArrayList<File>(gpxFilesT.size());
