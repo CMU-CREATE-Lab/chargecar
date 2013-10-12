@@ -40,10 +40,10 @@ import org.chargecar.prize.visualization.Visualizer;
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static Visualizer visualizer = new ConsoleWriter();
-    static Visualizer visualizer2 = new CSVWriter("/home/astyler/Dropbox/illahasthor50whr.csv");
+  //  static Visualizer visualizer2 = new CSVWriter("/home/astyler/Dropbox/illahasthor50whr.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
-    static double capWhr = 50;
+//    static double capWhr = 50;
     /**
      * @param args
      *            A pathname to a folder containing *.knn files for each driver
@@ -52,8 +52,8 @@ public class SimulatorKNN {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	if (args == null || args.length < 1) {
-	    System.err.println("ERROR: Provide GPX, KNN, and OPT directory");
+	if (args == null || args.length < 5) {
+	    System.err.println("ERROR: Provide GPX, KNN, and OPT, cap Wh, and k");
 	    //System.err.println("ERROR: Provide GPX directory");
 	    System.exit(1);
 	}
@@ -61,6 +61,8 @@ public class SimulatorKNN {
 	String gpxFolder = args[0];
 	String knnFolder = args[1];
 	String optFolder = args[2];
+	int capWh = Integer.parseInt(args[3]);
+	int k = Integer.parseInt(args[4]);
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -76,7 +78,7 @@ public class SimulatorKNN {
 	policies.add(new NoCapPolicy());
 //	policies.add(new KnnMeanPolicy(knnFolder,5,60));
 	//policies.add(new KnnDistPolyPolicy(knnFolder,optFolder,7));
-	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,9, true));
+	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,k,true));
 //	policies.add(new KnnDistributionPolicy(knnFolder,optFolder,1, false));//omniscient
 //	policies.add(new KnnMMDPLive(9, 20, 0.99));
 	
@@ -84,15 +86,15 @@ public class SimulatorKNN {
 	    p.loadState();
 	}
 	
-	List<SimulationResults> results = simulateTrips(policies, gpxFiles);
+	List<SimulationResults> results = simulateTrips(policies, gpxFiles, capWh);
 //	writeResults(results);
 //	visualizer.visualizeTrips(results);
 	visualizer.visualizeSummary(results);
-	visualizer2.visualizeTrips(results);
+//	visualizer2.visualizeTrips(results);
     }    
     
     private static List<SimulationResults> simulateTrips(List<Policy> policies,
-	    List<File> tripFiles) throws IOException {
+	    List<File> tripFiles, int capWhr) throws IOException {
 	List<SimulationResults> results = new ArrayList<SimulationResults>();
 	for (Policy p : policies) {
 	    results.add(new SimulationResults(p.getName()));
@@ -108,7 +110,7 @@ public class SimulatorKNN {
 		System.out.println("Trip "+t.getPoints().size()+"points.");		
 		try {
 		    double tripID = t.hashCode();
-		    simulateTrip(policies.get(i), t, results.get(i));
+		    simulateTrip(policies.get(i), t, results.get(i), capWhr);
 		} catch (PowerFlowException e) {
 		    e.printStackTrace();
 		}
@@ -122,7 +124,7 @@ public class SimulatorKNN {
     }
     
     private static void simulateTrip(Policy policy, Trip trip,
-	    SimulationResults results) throws PowerFlowException {
+	    SimulationResults results, int capWhr) throws PowerFlowException {
 	BatteryModel tripBattery = new LiFePo4(batteryWhr, batteryWhr, systemVoltage);
 	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
 	simulate(policy, trip, tripBattery, tripCap);
