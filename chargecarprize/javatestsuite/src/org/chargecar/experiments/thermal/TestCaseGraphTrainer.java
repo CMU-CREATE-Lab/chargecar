@@ -5,24 +5,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.controllers.MDPPolyTrainer;
-import org.chargecar.algodev.controllers.MDPTrainer;
-import org.chargecar.algodev.predictors.knn.KnnPoint;
-import org.chargecar.algodev.predictors.knn.KnnTableTrainer;
-import org.chargecar.prize.battery.SimpleCapacitor;
-import org.chargecar.prize.util.GPXTripParser;
-import org.chargecar.prize.util.PointFeatures;
-import org.chargecar.prize.util.Trip;
-import org.chargecar.prize.util.TripFeatures;
 import org.chargecar.prize.util.Vehicle;
 
 /**
@@ -36,7 +25,7 @@ import org.chargecar.prize.util.Vehicle;
  * @author Alex Styler
  * 
  */
-public class ThermGraphTrainer {
+public class TestCaseGraphTrainer {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 120;
     
@@ -57,7 +46,7 @@ public class ThermGraphTrainer {
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 	if (args == null || args.length < 1) {
-	    System.err.println("ERROR: No GPX directory path provided.");
+	    System.err.println("Provide .POW directory, Output Folder, Dynamics File");
 	    System.exit(1);
 	}
 	
@@ -90,57 +79,39 @@ public class ThermGraphTrainer {
 	ois.close();
 	ThermalBattery theBatt = new ThermalBattery(30, temps,powers,massFlows, dynamics);
 	
-	String gpxFolder = args[0];	
-	String optFolder = args[1];
-	File folder = new File(gpxFolder);
-	List<File> gpxFilesT = getGPXFiles(folder);
-	List<File> gpxFiles = new ArrayList<File>(gpxFilesT.size());
-	for(int i = gpxFilesT.size() - 1; i >= 0; i--){
-	    gpxFiles.add(gpxFilesT.get(i));
+	String powFolder = args[0];	
+	String outFolder = args[1];
+	File folder = new File(powFolder);
+	List<File> powFilesT = getPOWFiles(folder);
+	List<File> powFiles = new ArrayList<File>(powFilesT.size());
+	for(int i = powFilesT.size() - 1; i >= 0; i--){
+	    powFiles.add(powFilesT.get(i));
 	}
 	
-	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
+	System.out.println("Training on "+powFiles.size()+" POW files.");
 	
 	
 	int count = 0;
-	for (File tripFile : gpxFiles) {
-	    List<Trip> tripsToTest = parseTrips(tripFile);
-	    for (Trip t : tripsToTest) {
-		ThermalValueGraph tvg = new ThermalValueGraph(temps, massFlows, 0.99, theBatt); 		
-		double[][] values = tvg.getValuesP(t.getPoints());		
-		writeTrip(t,values,optFolder,count);
-		count++;
-	    }
-	}
+	for (File powFile : powFiles) {
+	    List<Double> powers = parsePow(powFile);
+	    ThermalValueGraph tvg = new ThermalValueGraph(temps, massFlows, 0.99, theBatt); 		
+	    double[][] values = tvg.getValues(powers);	
+	    String name = powFile.getName().split("\\.")[0];
+	    System.out.println("Testing Trip: "+name);
+	    writeTrip(values,outFolder,name);
+	    count++;
+	    
+	}	
 	
 	System.out.println("Complete. Trips trained on: "+count);
     }    
     
-    public static void writeTrip(Trip t, double[][] vg, String optFolder, int num){  	
-	File powerFile = new File(optFolder+"/trip"+num+".pow");
-	File vgFile = new File(optFolder+"/trip"+num+".tvg");
-	writeTripPowers(t.getPoints(),powerFile);
+    public static void writeTrip(double[][] vg, String optFolder, String name){  	
+	File vgFile = new File(optFolder+"/"+name+".tvg");	
 	writeValueGraph(vg,vgFile);	
       }
       
-    public static void writeTripPowers(List<PointFeatures> pfs, File powerFile) {
-   	FileWriter fstream;
-   	try {
-   	    powerFile.getParentFile().mkdirs();
-   	    //powerFile.createNewFile();
-   	    fstream = new FileWriter(powerFile);
-   	    BufferedWriter out = new BufferedWriter(fstream);
-   	    for(PointFeatures pf : pfs){
-   		out.write(pf.getTime().getTimeInMillis()/1000+",");   		
-   		out.write(pf.getPowerDemand()+"\n");
-   	    }
-   	    out.close();
-   	} catch (IOException e) {
-   	    // TODO Auto-generated catch block
-   	    e.printStackTrace();
-   	}
-    }
-    
+
     public static void writeValueGraph(double[][] vg, File vgFile) {
 	FileWriter fstream;
    	try {
@@ -163,35 +134,49 @@ public class ThermGraphTrainer {
     }     
 
     
-    private static List<Trip> parseTrips(File gpxFile) throws IOException {
-	List<Trip> trips = new ArrayList<Trip>();
-	int i=0;
-	GPXTripParser gpxparser = new GPXTripParser();
-	for (List<PointFeatures> tripPoints : gpxparser.read(gpxFile, civic)) {
-	    String driverName = gpxFile.getParentFile().getName();
-	    String fileName = driverName+gpxFile.getName().substring(0, gpxFile.getName().lastIndexOf('.'))+"_"+i;
-	    TripFeatures tf = new TripFeatures(driverName, fileName, civic, tripPoints
-		    .get(0));
-	    trips.add(new Trip(tf, tripPoints));
-	    gpxparser.clear();
-	    i++;
+    private static List<Double> parsePow(File powFile) throws IOException {
+	List<Double> powers = new ArrayList<Double>();
+	FileReader fstream;
+	BufferedReader in = null;
+   	try {
+   	    fstream = new FileReader(powFile);
+   	    in = new BufferedReader(fstream);
+   	    String line;
+   	    while((line = in.readLine()) != null){
+   		String power = line.split(",")[1];
+   		powers.add(Double.parseDouble(power));   		
+   	    }
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	} finally {
+		if (in != null) {
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	return trips;
+   	
+   	return powers;
+
     }
     
-    static List<File> getGPXFiles(File gpxFolder) {
-	List<File> gpxFiles = new ArrayList<File>();
-	File[] files = gpxFolder.listFiles();
+    static List<File> getPOWFiles(File powFolder) {
+	List<File> powFiles = new ArrayList<File>();
+	File[] files = powFolder.listFiles();
 	for (File f : files) {
 	    if (f.isDirectory()) {
-		gpxFiles.addAll(getGPXFiles(f));
+		powFiles.addAll(getPOWFiles(f));
 	    } else if (f.isFile()
-		    && (f.getAbsolutePath().endsWith("gpx") || f
-			    .getAbsolutePath().endsWith("GPX"))) {
-		gpxFiles.add(f);
+		    && (f.getAbsolutePath().endsWith("pow") || f
+			    .getAbsolutePath().endsWith("POW"))) {
+		powFiles.add(f);
 	    }
 	}
-	return gpxFiles;
+	return powFiles;
     }
 
     

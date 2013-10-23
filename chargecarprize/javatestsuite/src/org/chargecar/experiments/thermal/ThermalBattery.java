@@ -87,7 +87,13 @@ import org.chargecar.prize.util.PowerFlowException;
     		else{
     		    interpV = ((powers[pIndexHigh] - powerInit)/powerScale)*f1 + ((powerInit - powers[pIndexLow])/powerScale)*f2;    
     		}
-    		
+//    		if(powerInit < 1 && tempInit > 34){
+//    		System.out.println("Battery Temp: "+tempInit+" between ("+temps[tempIndexLow]+", "+temps[tempIndexHigh]+")");
+//    		System.out.println("Power: "+powerInit+" between ("+powers[pIndexLow]+", "+powers[pIndexHigh]+")");
+//    		System.out.println("Temp. scale: " + tempScale+ "  Power scale: "+ powerScale);
+//    		System.out.println("Mass Flow: "+massFlow);
+//    		System.out.println("Resulting interpolated temp: "+interpV);
+//    		}
     		return interpV;
         }
     
