@@ -1,5 +1,6 @@
 package org.chargecar.experiments.thermal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.chargecar.algodev.predictors.Prediction;
@@ -24,8 +25,8 @@ public class ThermalValueGraph
 	this.batt = batt;
     }
     
-    public double[][] getValues(List<PointFeatures> points){
-	int T = points.size()+1; //how many Time States we have
+    public double[][] getValues(List<Double> powers){
+	int T = powers.size()+1; //how many Time States we have
 	int X = temps.length;
 	//look for null in case data overlaps new trip
 	//there will be a null in the power set to signify a trip
@@ -57,7 +58,7 @@ public class ThermalValueGraph
 	//TODO change to A*?
 	for(int t=T-2;t>=1;t--){
 	    double power = 0;
-	    power = points.get(t).getPowerDemand();
+	    power = powers.get(t);
 	    for(int x=0;x<X;x++){
 		ThermalBattery state = xstates[x];
 		double minValue = Double.MAX_VALUE;
@@ -69,16 +70,18 @@ public class ThermalValueGraph
 		    
 		    int floor = 0;
 		    int ceil = 0;			
-	    		for(int i=0;i < temps.length; i++){
-	    		    if(result.temp >= temps[i]){
-	    			floor = i;
-	    			ceil = i+1;
+	    	    for(int i=0;i < temps.length; i++){
+	    		if(result.temp < temps[i]){
+	    			floor = i-1;
+	    			ceil = i;
 	    			break;
 	    		    }
 	    		}
-	    		if(ceil >= temps.length){
-	    		    ceil = floor;;
-	    		}		    
+	    		if(floor < 0){
+	    		    ceil = floor = 0;
+	    		}	
+	    		
+	    		System.out.println("Resulting temp: "+result.temp+" between ("+temps[floor]+", "+temps[ceil]+").");
                     
                     double fVal = valueFunction[floor][t+1];
 
@@ -106,6 +109,14 @@ public class ThermalValueGraph
 	
 	return controls[index][0];
 */
+	
+    }
+    
+    public double[][] getValuesP(List<PointFeatures> points){
+	List<Double> powers = new ArrayList<Double>(points.size());
+	for(PointFeatures pf : points)
+	    powers.add(pf.getPowerDemand());
+	return getValues(powers);    
 	}
     
     public static ControlResult testControl(ThermalBattery batteryState, double powerDraw, double control){
@@ -115,7 +126,7 @@ public class ThermalValueGraph
 	double cost = 0.0;
 	
 	//cost = 10000000*Math.pow(control,3); 
-	//cost = control;//penalize control linearly
+	cost = 100*control;//penalize control linearly
 	
 	//penalize excess of 35C
 	double temp = batt.temp;
