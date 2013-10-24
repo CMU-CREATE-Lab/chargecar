@@ -68,8 +68,8 @@ public class ThermalValueGraph
 		    
 		    double value = result.cost;
 		    
-		    int floor = 0;
-		    int ceil = 0;			
+		    int floor = temps.length-1;
+		    int ceil = floor;			
 	    	    for(int i=0;i < temps.length; i++){
 	    		if(result.temp < temps[i]){
 	    			floor = i-1;
@@ -81,7 +81,7 @@ public class ThermalValueGraph
 	    		    ceil = floor = 0;
 	    		}	
 	    		
-	    		System.out.println("Resulting temp: "+result.temp+" between ("+temps[floor]+", "+temps[ceil]+").");
+	    		//System.out.println("Resulting temp: "+result.temp+" between ("+temps[floor]+", "+temps[ceil]+").");
                     
                     double fVal = valueFunction[floor][t+1];
 
