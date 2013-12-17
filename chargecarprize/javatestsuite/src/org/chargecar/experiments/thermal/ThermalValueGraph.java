@@ -17,12 +17,16 @@ public class ThermalValueGraph
     final double[] temps;
     final double lambda;//discount factor
     final ThermalBattery batt;  
+    final int MULTIPLIER;
     
-    public ThermalValueGraph(double[] temps, double[] massFlows, double discountRate, ThermalBattery batt){
+    public ThermalValueGraph(double[] temps, double[] massFlows, double discountRate, ThermalBattery batt, int multi){
 	this.U = massFlows;
 	this.temps = temps;
 	this.lambda = discountRate;
 	this.batt = batt;
+	this.MULTIPLIER = multi;
+	
+	
     }
     
     public double[][] getValues(List<Double> powers){
@@ -56,7 +60,7 @@ public class ThermalValueGraph
 	
 	//djikstra shortest path search
 	//TODO change to A*?
-	for(int t=T-2;t>=1;t--){
+	for(int t=T-2;t>=0;t--){
 	    double power = 0;
 	    power = powers.get(t);
 	    for(int x=0;x<X;x++){
@@ -115,7 +119,7 @@ public class ThermalValueGraph
     public double[][] getValuesP(List<PointFeatures> points){
 	List<Double> powers = new ArrayList<Double>(points.size());
 	for(PointFeatures pf : points)
-	    powers.add(pf.getPowerDemand());
+	    powers.add(this.MULTIPLIER*pf.getPowerDemand());
 	return getValues(powers);    
 	}
     

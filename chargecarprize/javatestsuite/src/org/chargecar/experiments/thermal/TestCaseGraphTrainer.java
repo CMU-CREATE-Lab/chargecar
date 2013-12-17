@@ -94,7 +94,7 @@ public class TestCaseGraphTrainer {
 	int count = 0;
 	for (File powFile : powFiles) {
 	    List<Double> powers = parsePow(powFile);
-	    ThermalValueGraph tvg = new ThermalValueGraph(temps, massFlows, 0.99, theBatt); 		
+	    ThermalValueGraph tvg = new ThermalValueGraph(temps, massFlows, 0.99, theBatt,1); 		
 	    double[][] values = tvg.getValues(powers);	
 	    String name = powFile.getName().split("\\.")[0];
 	    System.out.println("Testing Trip: "+name);
