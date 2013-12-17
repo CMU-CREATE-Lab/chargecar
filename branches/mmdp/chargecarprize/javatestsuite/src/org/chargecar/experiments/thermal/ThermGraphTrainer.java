@@ -43,7 +43,7 @@ public class ThermGraphTrainer {
    // static double[] temps = new double[]{30,31,32,33,34,35,36,37,38,39,40,41}; 
     static double[] powers = new double[51];;
     static double[] massFlows = new double[]{0,0.001,0.0015,0.002,0.0025,0.003,0.0035,0.0042};
-    
+    static int multi = 3;
     /**
      * @param args
      *            A pathname to a GPX file or folder containing GPX files (will
@@ -106,7 +106,7 @@ public class ThermGraphTrainer {
 	for (File tripFile : gpxFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
 	    for (Trip t : tripsToTest) {
-		ThermalValueGraph tvg = new ThermalValueGraph(temps, massFlows, 0.99, theBatt); 		
+		ThermalValueGraph tvg = new ThermalValueGraph(temps, massFlows, 0.99, theBatt,multi); 		
 		double[][] values = tvg.getValuesP(t.getPoints());		
 		writeTrip(t,values,optFolder,count);
 		count++;
@@ -132,7 +132,7 @@ public class ThermGraphTrainer {
    	    BufferedWriter out = new BufferedWriter(fstream);
    	    for(PointFeatures pf : pfs){
    		out.write(pf.getTime().getTimeInMillis()/1000+",");   		
-   		out.write(pf.getPowerDemand()+"\n");
+   		out.write(multi*pf.getPowerDemand()+"\n");
    	    }
    	    out.close();
    	} catch (IOException e) {
