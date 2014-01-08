@@ -8,4 +8,5 @@ import org.chargecar.prize.util.Trip;
 public interface Predictor {
     public List<Prediction> predictDuty(PointFeatures state);
     public void addTrip(Trip t);
+    public void endTrip();
 }

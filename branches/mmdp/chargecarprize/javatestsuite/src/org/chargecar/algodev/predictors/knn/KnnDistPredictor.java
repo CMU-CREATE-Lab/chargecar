@@ -2,6 +2,9 @@ package org.chargecar.algodev.predictors.knn;
 
 import java.util.List;
 
+import org.chargecar.algodev.knn.KdTree;
+import org.chargecar.algodev.knn.KdTreeFeatureSet;
+import org.chargecar.algodev.knn.KnnPoint;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
 import org.chargecar.prize.util.PointFeatures;
@@ -12,7 +15,6 @@ public class KnnDistPredictor implements Predictor {
     private final int k;
     private List<Prediction> neighbors;
     private final boolean trained;
-//    private final int lookahead;
     
     public KnnDistPredictor(List<KnnPoint> points, KdTreeFeatureSet featureSet, int neighbors, boolean trainedOnTestData){//, int lookahead){
 	this.featTree = new KdTree(points, featureSet);
@@ -34,5 +36,9 @@ public class KnnDistPredictor implements Predictor {
 		featTree.addNode(kp);
 	    }
 	
+    }
+    @Override
+    public void endTrip() {
+	this.neighbors = null;
     }
 }

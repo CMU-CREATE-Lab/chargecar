@@ -39,10 +39,12 @@ import org.chargecar.prize.visualization.Visualizer;
  */
 public class SimulatorKNN {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
+      
     static Visualizer visualizer = new ConsoleWriter();
   //  static Visualizer visualizer2 = new CSVWriter("/home/astyler/Dropbox/illahasthor50whr.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 50000;
+    
 //    static double capWhr = 50;
     /**
      * @param args

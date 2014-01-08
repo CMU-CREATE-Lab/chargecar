@@ -12,11 +12,12 @@ import java.util.Map;
 
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.DPOptController;
+import org.chargecar.algodev.knn.FullFeatureSet;
+import org.chargecar.algodev.knn.KnnPoint;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
-import org.chargecar.algodev.predictors.knn.FullFeatureSet;
 import org.chargecar.algodev.predictors.knn.KnnDistPredictor;
-import org.chargecar.algodev.predictors.knn.KnnPoint;
+import org.chargecar.algodev.predictors.knn.KnnForestPredictor;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;
@@ -39,8 +40,8 @@ public class KnnForestMMDPPolicy implements Policy {
     private String currentDriver;
     protected BatteryModel modelCap;
     protected BatteryModel modelBatt;
-    private final String name = "KNN Distribution Policy";
-    private final String shortName = "knndist";
+    private final String name = "KNN Forest MMDP Policy";
+    private final String shortName = "forestMMDP";
     private final File knnFileFolderPath;
     private File optFileFolderPath;
     private final boolean trained;
@@ -73,7 +74,7 @@ public class KnnForestMMDPPolicy implements Policy {
 	    try {
 		this.controller = null;
 		this.knnPredictor = null;
-		//load knn tree
+		//load knn forest
 		File currentFile = new File(this.knnFileFolderPath,driver+".knn");
 		System.out.println("New driver: "+driver);
 		currentDriver = driver;
@@ -86,8 +87,7 @@ public class KnnForestMMDPPolicy implements Policy {
 		sdevs = knnList.get(1).getFeatures();
 		knnList.remove(1);
 		knnList.remove(0);
-		//TODO Change back to TRUE
-		knnPredictor = new KnnDistPredictor(knnList, new FullFeatureSet(),neighbors, trained);
+		knnPredictor = new KnnForestPredictor(knnList, new FullFeatureSet(), trained);
 		System.out.println("Trees built.");
 		ois.close();
 		fis.close();
@@ -183,7 +183,7 @@ public class KnnForestMMDPPolicy implements Policy {
     
     @Override
     public void endTrip(Trip t) {
-	// TODO Auto-generated method stub
+	knnPredictor.endTrip();
     }    
     
     @Override

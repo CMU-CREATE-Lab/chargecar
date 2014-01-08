@@ -1,7 +1,8 @@
-package org.chargecar.algodev.predictors.knn;
+package org.chargecar.algodev.knn;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.util.PointFeatures;
 
@@ -35,7 +36,7 @@ public class KdForest {
 	    return this.tree;
 	}
 	
-    }
+    }    
     
     public KdForest(KdTreeFeatureSet featureSet){
 	this.featureSet = featureSet;
@@ -55,6 +56,13 @@ public class KdForest {
 	return experts.size();
     }    
 
+    public void resetWeights(){
+	for(Expert e : experts){
+	    e.setWeight(1D);
+	}
+	
+    }
+    
     public List<Prediction> getNeighbors(PointFeatures searchPoint, boolean trained){	
 	List<Prediction> predictions = new ArrayList<Prediction>();
 	
