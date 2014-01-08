@@ -1,4 +1,4 @@
-package org.chargecar.algodev.predictors.knn;
+package org.chargecar.algodev.knn;
 
 import java.io.Serializable;
 

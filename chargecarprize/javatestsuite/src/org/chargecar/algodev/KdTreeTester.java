@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.chargecar.algodev.predictors.knn.FullFeatureSet;
-import org.chargecar.algodev.predictors.knn.KdTree;
-import org.chargecar.algodev.predictors.knn.KnnPoint;
+import org.chargecar.algodev.knn.FullFeatureSet;
+import org.chargecar.algodev.knn.KdTree;
+import org.chargecar.algodev.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
 
 public class KdTreeTester {

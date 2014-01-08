@@ -12,11 +12,11 @@ import java.util.Map;
 
 import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.controllers.DPOptController;
+import org.chargecar.algodev.knn.FullFeatureSet;
+import org.chargecar.algodev.knn.KnnPoint;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
-import org.chargecar.algodev.predictors.knn.FullFeatureSet;
 import org.chargecar.algodev.predictors.knn.KnnDistPredictor;
-import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.PointFeatures;

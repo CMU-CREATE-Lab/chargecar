@@ -3,7 +3,7 @@ package org.chargecar.algodev.predictors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chargecar.algodev.predictors.knn.KnnPoint;
+import org.chargecar.algodev.knn.KnnPoint;
 
 public class Prediction {
     private double weight;
