@@ -184,6 +184,7 @@ public class KnnForestMMDPPolicy implements Policy {
     @Override
     public void endTrip(Trip t) {
 	knnPredictor.endTrip();
+	//signals that the testing trip is over, expert weights can be reset.
     }    
     
     @Override

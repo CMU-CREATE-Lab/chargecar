@@ -57,8 +57,7 @@ import org.chargecar.prize.util.Trip;
         }
         
         public void feedback(List<Double> scores){
-            
-            
+            // TODO: Implement some sort of feedback scaling of expert weights based on scores returned by Policy.            
         }
         
         public void addTrip(Trip t){

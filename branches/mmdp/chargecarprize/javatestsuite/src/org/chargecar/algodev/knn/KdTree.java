@@ -85,6 +85,20 @@ public class KdTree {
 	return root.countNodes();
     }
     
+    public Prediction getNeighbor(PointFeatures searchPoint){
+	Comparator<KnnPoint> comp = new KnnComparator(searchPoint,featureSet);
+	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(1,comp);
+	kBestDist = Double.MAX_VALUE;
+
+	searchTree(root, searchPoint, neighbors, 1, new double[featureSet.getFeatureCount()]);
+	
+	KnnPoint kp = neighbors.poll();
+	
+	if(kp != null)
+	 return new Prediction(1/(kp.getDistance()+0.01),kp.getTripID(),kp.getTimeIndex(),kp);
+	else return null;	
+    }
+    
     public List<Prediction> getNeighbors(PointFeatures searchPoint, int k, List<Prediction> previousNeighbors, boolean trained){//, int lookahead){
 	Comparator<KnnPoint> comp = new KnnComparator(searchPoint,featureSet);
 	PriorityQueue<KnnPoint> neighbors = new PriorityQueue<KnnPoint>(k+2,comp);
