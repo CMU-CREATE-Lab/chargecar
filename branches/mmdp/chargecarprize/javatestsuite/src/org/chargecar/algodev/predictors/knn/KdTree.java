@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
-import org.chargecar.algodev.predictors.KdTreeFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.prize.util.PointFeatures;
 

@@ -6,7 +6,7 @@ import java.util.List;
 import org.chargecar.algodev.predictors.knn.KnnPoint;
 
 public class Prediction {
-    private final double weight;
+    private double weight;
  //   private final String driver;
     private final int tripID;
     private final int timeIndex;
@@ -31,6 +31,10 @@ public class Prediction {
     
     public KnnPoint getPoint(){
 	return this.knnPoint;
+    }
+    
+    public void setWeight(double weight){
+	this.weight = weight;
     }
     
 

@@ -26,7 +26,7 @@ import org.chargecar.prize.util.Trip;
 
 import org.chargecar.prize.util.TripFeatures;
 
-public class KnnDistributionPolicy implements Policy {
+public class KnnForestMMDPPolicy implements Policy {
     
     protected Predictor knnPredictor;
     protected Controller controller;
@@ -45,7 +45,7 @@ public class KnnDistributionPolicy implements Policy {
     private File optFileFolderPath;
     private final boolean trained;
     
-    public KnnDistributionPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors, boolean trained){
+    public KnnForestMMDPPolicy(String knnFileFolderPath, String optFileFolderPath, int neighbors, boolean trained){
 	this.knnFileFolderPath = new File(knnFileFolderPath);
 	this.optFileFolderPath = new File(optFileFolderPath);
 	this.neighbors = neighbors;

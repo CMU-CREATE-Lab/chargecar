@@ -1,6 +1,5 @@
-package org.chargecar.algodev.predictors;
+package org.chargecar.algodev.predictors.knn;
 
-import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
 
 public abstract class KdTreeFeatureSet {
