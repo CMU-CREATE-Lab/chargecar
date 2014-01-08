@@ -1,6 +1,7 @@
-package org.chargecar.algodev.predictors;
+package org.chargecar.algodev.predictors.knn;
 
 import java.util.Calendar;
+
 import org.chargecar.prize.util.PointFeatures;
 
 public class FullFeatureSet extends KdTreeFeatureSet {

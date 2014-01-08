@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.chargecar.algodev.predictors.FullFeatureSet;
+import org.chargecar.algodev.predictors.knn.FullFeatureSet;
 import org.chargecar.algodev.predictors.knn.KdTree;
 import org.chargecar.algodev.predictors.knn.KnnPoint;
 import org.chargecar.prize.util.PointFeatures;
@@ -25,7 +25,7 @@ public class KdTreeTester {
 	System.out.print("complete.\n");
 	System.out.println("Matching "+M+" points with "+k+" neighbors each...");
 	for(int i=0;i<M;i++){
-	    tree.getNeighbors(getRandomPoint(), k, null);
+	    tree.getNeighbors(getRandomPoint(), k, null, false);
 	    if(i%1000 == 0){
 		System.out.println(i+"...");
 	    }

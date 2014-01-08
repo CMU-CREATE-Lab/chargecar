@@ -1,6 +1,5 @@
 package org.chargecar.algodev.predictors.knn;
 
-import org.chargecar.algodev.predictors.KdTreeFeatureSet;
 
 
 public class KdTreeNode {

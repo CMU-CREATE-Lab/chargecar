@@ -2,7 +2,6 @@ package org.chargecar.algodev.predictors.knn;
 
 import java.util.List;
 
-import org.chargecar.algodev.predictors.KdTreeFeatureSet;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.algodev.predictors.Predictor;
 import org.chargecar.prize.util.PointFeatures;
