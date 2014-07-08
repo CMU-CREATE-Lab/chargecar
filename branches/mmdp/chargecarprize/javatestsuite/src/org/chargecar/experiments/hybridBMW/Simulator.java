@@ -43,15 +43,13 @@ public class Simulator {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	if (args == null || args.length < 3) {
-	    System.err.println("ERROR: Provide GPX, KNN, and OPT");
-	    //System.err.println("ERROR: Provide GPX directory");
+	if (args == null || args.length < 2) {
+	    System.err.println("ERROR: Provide GPX and OPT");
 	    System.exit(1);
 	}
 	
 	String gpxFolder = args[0];
-	String knnFolder = args[1];
-	String optFolder = args[2];
+	String optFolder = args[1];
 
 	File folder = new File(gpxFolder);
 	List<File> gpxFiles;
@@ -63,12 +61,23 @@ public class Simulator {
     	}
     	 
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
+	HybridSimResults res;
 	
 	OptPolicyHybrid op = new OptPolicyHybrid(optFolder);
 	op.loadState();
 
-	simulateTrips(op, gpxFiles);
-	    
+	res = simulateTrips(op, gpxFiles);
+	
+	System.out.println("Policy: "+op.getName());
+	System.out.println("Total Costs: "+res.getTotalCost());
+	
+	NaivePolicyHybrid np = new NaivePolicyHybrid(optFolder);
+	
+	
+	res = simulateTrips(np,gpxFiles);
+	System.out.println("Policy: "+np.getName());
+	System.out.println("Total Costs: "+res.getTotalCost());
+
 	}
 	    
     
@@ -81,8 +90,8 @@ public class Simulator {
 	}
 	
 	
-    private static void simulateTrips(OptPolicyHybrid op, List<File> tripFiles) throws IOException {
-	int count = 0;
+    private static HybridSimResults simulateTrips(OptPolicyHybrid op, List<File> tripFiles) throws IOException {
+	HybridSimResults res = new HybridSimResults();
 	List<Trip> tripsToTest = new ArrayList<Trip>();
 	for (File tripFile : tripFiles) {
 	    tripsToTest.addAll(parseTrips(tripFile));
@@ -93,8 +102,8 @@ public class Simulator {
 		System.out.print('.');
 		try {
 		    op.parseTrip(t);
-		    double cost = simulateTrip(op, t);
-		    System.out.println("Trip cost: "+cost);
+		    res.addTrip(simulateTrip(op, t));
+		   
 		} catch (PowerFlowException e) {
 		    e.printStackTrace();
 	    }
@@ -102,11 +111,12 @@ public class Simulator {
 
 	System.out.println();
 	System.out.println("Trips tested: "+tripsToTest.size());
+	return res;
 	
     }
     
     private static double simulateTrip(OptPolicyHybrid policy, Trip trip) throws PowerFlowException {
-	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr/2, systemVoltage);
+	BatteryModel tripBattery = new SimpleBattery(batteryWhr, 0, systemVoltage);
 	return simulate(policy, trip, tripBattery);
 
     }
