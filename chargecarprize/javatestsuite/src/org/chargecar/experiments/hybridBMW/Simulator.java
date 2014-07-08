@@ -6,16 +6,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
-import org.chargecar.algodev.SimulatorTrainer;
-import org.chargecar.algodev.policies.KnnDistPolyPolicy;
-import org.chargecar.algodev.policies.KnnDistributionPolicy;
-import org.chargecar.algodev.policies.KnnMMDPLive;
-import org.chargecar.algodev.policies.OptimalPolicy;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.LiFePo4;
+import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.battery.SimpleCapacitor;
 import org.chargecar.prize.policies.NoCapPolicy;
 import org.chargecar.prize.policies.Policy;
@@ -77,45 +75,13 @@ public class Simulator {
     	 
 	System.out.println("Testing on "+gpxFiles.size()+" GPX files.");
 	
-//	KnnDistributionPolicy kp = new KnnDistributionPolicy(knnFolder,optFolder,1,false);
-	OptimalPolicy op = new OptimalPolicy(optFolder);
+	OptPolicyHybrid op = new OptPolicyHybrid(optFolder);
 	op.loadState();
-	
-	List<Double> i2sums = new ArrayList<Double>();
-	 
-	List<Integer> whToTest = new ArrayList<Integer>();
-	whToTest.add(5);
-	whToTest.add(10);
-	whToTest.add(50);
-	whToTest.add(100);
-	whToTest.add(200);
-	whToTest.add(1000);
-	
-	File optFolderParent = new File(optFolder);
-	optFolderParent.mkdirs();
-	
-	for(int wh : whToTest){
-	    String newOptFolder = optFolder + "/mmdp"+wh;
-	   /* String[] tempArgs = new String[3];
-	    tempArgs[0] = args[0];
-	    tempArgs[1] = newOptFolder;
-	    tempArgs[2] = Integer.toString(wh);
-	    SimulatorTrainer.main(tempArgs);*/   
-	    	    
-	    op.setOptPath(newOptFolder);	    
-	    SimulationResults results = simulateTrips(op, gpxFiles, wh);
 
-	   double sum = getCurrentSquaredSum(results);
-	   i2sums.add(sum);
+	simulateTrips(op, gpxFiles);
 	    
-	    System.out.println("Wh = " + wh+ ": " + sum);    		
 	}
-	
-	writeResults(i2sums);
-//	visualizer.visualizeTrips(results);
-//	visualizer.visualizeSummary(results);
-//	visualizer2.visualizeTrips(results);
-    }    
+	    
     
 	private static double getCurrentSquaredSum(SimulationResults r){
 	    double currentSquaredSum = 0.0;
@@ -126,10 +92,7 @@ public class Simulator {
 	}
 	
 	
-    private static SimulationResults simulateTrips(OptimalPolicy op,
-	    List<File> tripFiles, int capWhr) throws IOException {
-	SimulationResults results = new SimulationResults(op.getName());
-	
+    private static void simulateTrips(OptPolicyHybrid op, List<File> tripFiles) throws IOException {
 	int count = 0;
 	List<Trip> tripsToTest = new ArrayList<Trip>();
 	for (File tripFile : tripFiles) {
@@ -138,47 +101,48 @@ public class Simulator {
 	   
 	    for (Trip t : tripsToTest) {
 		if(t.getPoints().size() > 3600) continue;
-		//System.out.println("Trip "+t.getPoints().size()+"points.");
 		System.out.print('.');
 		try {
-		 //   int tripID = t.hashCode();
 		    op.parseTrip(t);
-		    simulateTrip(op, t, results, capWhr);
+		    double cost = simulateTrip(op, t);
+		    System.out.println("Trip cost: "+cost);
 		} catch (PowerFlowException e) {
 		    e.printStackTrace();
 	    }
 	}	    
 
 	System.out.println();
-	//System.out.println("Trips tested: "+tripsToTest.size());
+	System.out.println("Trips tested: "+tripsToTest.size());
 	
-	return results;
     }
     
-    private static void simulateTrip(OptimalPolicy policy, Trip trip,
-	    SimulationResults results, int capWhr) throws PowerFlowException {
-	BatteryModel tripBattery = new LiFePo4(batteryWhr, batteryWhr, systemVoltage);
-	BatteryModel tripCap = new SimpleCapacitor(capWhr, 0, systemVoltage);
-	simulate(policy, trip, tripBattery, tripCap);
-	results.addTrip(trip, tripBattery, tripCap);
+    private static double simulateTrip(OptPolicyHybrid policy, Trip trip) throws PowerFlowException {
+	BatteryModel tripBattery = new SimpleBattery(batteryWhr, batteryWhr/2, systemVoltage);
+	return simulate(policy, trip, tripBattery);
+
     }
     
-    private static void simulate(OptimalPolicy policy, Trip trip,
-	    BatteryModel battery, BatteryModel cap) throws PowerFlowException {
-	policy.beginTrip(trip.getFeatures(), battery.createClone(), cap
-		.createClone());
+    private static double simulate(OptPolicyHybrid policy, Trip trip,
+	    BatteryModel battery) throws PowerFlowException {
+	int[] controlsSet = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
+	double[] controlsCost = new double[]{0,1,2,3,4,5,6,7,8,9,10};
+	Map<Integer,Double> costFunction = new HashMap<Integer,Double>(11);
+	for(int i=0;i<controlsSet.length;i++){
+	    costFunction.put(controlsSet[i], controlsCost[i]);
+	}
+	
+	policy.beginTrip(trip.getFeatures(), battery.createClone());
 	int i = 0;
 	policy.parseTrip(trip);
+	double cost = 0;
 	for (PointFeatures point : trip.getPoints()) {
-	    PowerFlows pf = policy.calculatePowerFlows(point, i);
+	    PowerControls pf = policy.calculatePowerFlows(point, i);
 	    i++;
-	   // pf.adjust(point.getPowerDemand());
-	    battery.drawPower(pf.getBatteryToCapacitor()
-		    + pf.getBatteryToMotor(), point.getPeriodMS());
-	    cap.drawPower(pf.getCapacitorToMotor()
-		    - pf.getBatteryToCapacitor(), point.getPeriodMS());
+	    battery.drawPower(pf.getMotorWatts(), point.getPeriodMS());
+	    cost += pf.getCost();
 	}
 	policy.endTrip(trip);
+	return cost;
     }
     
     private static List<Trip> parseTrips(File gpxFile) throws IOException {

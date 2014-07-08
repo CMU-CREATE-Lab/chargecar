@@ -9,7 +9,7 @@ import org.chargecar.experiments.hybridBMW.MDPValueGraphHybrid.ControlResult;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.util.Trip;
 
-public class DPOptControllerHybrid implements Controller {
+public class DPOptControllerHybrid {
 
     private final int[] U;
     private final Map<Integer, double[][]> tripMap;
@@ -26,7 +26,7 @@ public class DPOptControllerHybrid implements Controller {
 	this.tripMap.put(t.hashCode(), mmdpOpt.getValues(t.getPoints()));
     }
     
-    public double getControl(List<Prediction> predictedDuties,
+    public int getControl(List<Prediction> predictedDuties,
 	    BatteryModel batt, BatteryModel capnull, int periodMS, double powerDemand) {
 	double[] uValues = new double[U.length];
 	double percentCharge = batt.getWattHours() / batt.getMaxWattHours();
@@ -77,7 +77,7 @@ public class DPOptControllerHybrid implements Controller {
 	}
 	
 	double minValue = Double.MAX_VALUE;
-	double control = 0;
+	int control = 0;
 	
 	for(int i=0;i<uValues.length;i++){
 	    double value = uValues[i];

@@ -28,8 +28,8 @@ import org.chargecar.prize.util.TripFeatures;
 
 public class OptPolicyHybrid {
     
-    protected Controller controller;
-    private final int[] controlsSet = new int[]{0,5,10,15,20,25,30,35,40,45,50};
+    protected DPOptControllerHybrid controller;
+    private final int[] controlsSet = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
     private final double[] controlsCost = new double[]{0,1,2,3,4,5,6,7,8,9,10};
     private final Map<Integer,Double> costFunction = new HashMap<Integer,Double>(11);
     private String currentDriver;
@@ -90,21 +90,37 @@ public class OptPolicyHybrid {
     }
     
     
-    public PowerFlows calculatePowerFlows(PointFeatures pf, int i) {
-	double idealEngineWatts = getEnginePower(pf, i);	
-	double wattsDemanded = pf.getPowerDemand();
+    public PowerControls calculatePowerFlows(PointFeatures pf, int i) {
+	int idealEngineWatts = getEnginePower(pf, i);	
+	int wattsDemanded = (int)pf.getPowerDemand();
 	
 	int periodMS = pf.getPeriodMS();
 	
-	double minBattPower = modelBatt.getMinPowerDrawable(periodMS);
-	double maxBattPower = modelBatt.getMaxPowerDrawable(periodMS);	
+	int minBattPower = (int) modelBatt.getMinPowerDrawable(periodMS);
+	int maxBattPower = (int) modelBatt.getMaxPowerDrawable(periodMS);	
 	
-	double motorWatts = wattsDemanded-idealEngineWatts;
+	int motorWatts = wattsDemanded-idealEngineWatts;
 	
 	motorWatts = motorWatts > maxBattPower ? maxBattPower : motorWatts;
 	motorWatts = motorWatts < minBattPower ? minBattPower : motorWatts;
 	
-	double engineWatts = wattsDemanded - motorWatts;
+	int engineWatts = wattsDemanded - motorWatts;
+
+	Double cost = costFunction.get(engineWatts);
+	
+	if(cost == null){
+	    int finalEngineWatts = engineWatts;
+	    int closestDist = Integer.MAX_VALUE;
+	    for(int j=0;j<controlsSet.length;j++){
+		int diff = controlsSet[j]-engineWatts;
+		if(diff>=0 && diff<closestDist){
+		    closestDist = diff;
+		    finalEngineWatts = controlsSet[j];
+		}
+	    }
+	    engineWatts = finalEngineWatts;
+	    cost = costFunction.get(engineWatts);
+	}
 	
 	try {
 	    modelBatt.drawPower(motorWatts, periodMS);
@@ -112,10 +128,11 @@ public class OptPolicyHybrid {
 	    System.err.println("Battery Capacity violated in policy model");
 	}
 	
-	return new PowerFlows(engineWatts, motorWatts, 0);
+
+	return new PowerControls(engineWatts, motorWatts,cost);
     }
     
-    public double getEnginePower(PointFeatures pf, int i){
+    public int getEnginePower(PointFeatures pf, int i){
 	
 	KnnPoint kp = new KnnPoint(pf, tripID, i);
 	
