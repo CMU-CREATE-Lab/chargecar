@@ -30,8 +30,6 @@ public class OptPolicyHybrid {
     
     protected DPOptControllerHybrid controller;
     private final int[] controlsSet = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
-    private final double[] controlsCost = new double[]{0,1,2,3,4,5,6,7,8,9,10};
-    private final Map<Integer,Double> costFunction = new HashMap<Integer,Double>(11);
     private String currentDriver;
 
     protected BatteryModel modelBatt;
@@ -43,11 +41,7 @@ public class OptPolicyHybrid {
     
     public OptPolicyHybrid(String optFileFolderPath){
 	this.optFileFolderPath = new File(optFileFolderPath);
-	for(int i=0;i<controlsSet.length;i++){
-	    costFunction.put(controlsSet[i], controlsCost[i]);
 	}
-
-    }
     
     public void setOptPath(String optPath){
 	this.optFileFolderPath = new File(optPath);
@@ -80,7 +74,7 @@ public class OptPolicyHybrid {
 		Map<Integer, double[][]> optMap = (Map<Integer, double[][]>)ois.readObject();
 		ois.close();
 		System.out.println("Graph loaded. "+optMap.size()+" trips.");
-		controller = new DPOptControllerHybrid(controlsSet, costFunction, optMap, null); 
+		controller = new DPOptControllerHybrid(controlsSet, optMap, null); 
 		System.out.println("Controller loaded.");		
 	    } catch (Exception e) {		
 		e.printStackTrace();
@@ -105,22 +99,6 @@ public class OptPolicyHybrid {
 	motorWatts = motorWatts < minBattPower ? minBattPower : motorWatts;
 	
 	int engineWatts = wattsDemanded - motorWatts;
-
-	Double cost = costFunction.get(engineWatts);
-	
-	if(cost == null){
-	    int finalEngineWatts = engineWatts;
-	    int closestDist = Integer.MAX_VALUE;
-	    for(int j=0;j<controlsSet.length;j++){
-		int diff = controlsSet[j]-engineWatts;
-		if(diff>=0 && diff<closestDist){
-		    closestDist = diff;
-		    finalEngineWatts = controlsSet[j];
-		}
-	    }
-	    engineWatts = finalEngineWatts;
-	    cost = costFunction.get(engineWatts);
-	}
 	
 	try {
 	    modelBatt.drawPower(motorWatts, periodMS);
@@ -129,7 +107,7 @@ public class OptPolicyHybrid {
 	}
 	
 
-	return new PowerControls(engineWatts, motorWatts,cost);
+	return new PowerControls(engineWatts, motorWatts);
     }
     
     public int getEnginePower(PointFeatures pf, int i){

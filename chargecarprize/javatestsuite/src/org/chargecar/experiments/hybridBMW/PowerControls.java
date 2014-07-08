@@ -3,13 +3,11 @@ package org.chargecar.experiments.hybridBMW;
 public class PowerControls {
     final int engineWatts;
     final int motorWatts;
-    final double cost;
   
-    public PowerControls(int engineWatts, int motorWatts, double cost) {
+    public PowerControls(int engineWatts, int motorWatts) {
 	super();
 	this.engineWatts = engineWatts;
 	this.motorWatts = motorWatts;
-	this.cost = cost;
     }
 
     public int getEngineWatts() {
@@ -18,12 +16,5 @@ public class PowerControls {
 
     public int getMotorWatts() {
         return motorWatts;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-    
-    
-     
+    }     
 }

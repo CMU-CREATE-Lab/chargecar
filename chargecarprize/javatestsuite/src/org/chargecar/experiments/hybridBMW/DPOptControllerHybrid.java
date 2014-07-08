@@ -14,14 +14,13 @@ public class DPOptControllerHybrid {
     private final int[] U;
     private final Map<Integer, double[][]> tripMap;
     private final MDPValueGraphHybrid mmdpOpt;
-    private final Map<Integer,Double> costFunction;
     
-    public DPOptControllerHybrid(int[] controls, Map<Integer, Double> costFunction, Map<Integer, double[][]> tripMap, MDPValueGraphHybrid mvg){
+    public DPOptControllerHybrid(int[] controls, Map<Integer, double[][]> tripMap, MDPValueGraphHybrid mvg){
 	this.U = controls;
 	this.tripMap = tripMap;	
 	this.mmdpOpt = mvg;
-	this.costFunction = costFunction;
     }
+    
     public void addTrip(Trip t){	
 	this.tripMap.put(t.hashCode(), mmdpOpt.getValues(t.getPoints()));
     }
@@ -35,7 +34,7 @@ public class DPOptControllerHybrid {
 	
 	 for(int i=0;i<U.length;i++){
 		int control = U[i];
-		cResults[i] = MDPValueGraphHybrid.testControl(batt, costFunction, powerDemand, control);
+		cResults[i] = MDPValueGraphHybrid.testControl(batt, powerDemand, control);
 	 }
 	
 	for(int i = 0;i<uValues.length;i++){
