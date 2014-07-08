@@ -12,17 +12,15 @@ import org.chargecar.prize.util.PowerFlowException;
 public class MDPValueGraphHybrid{
     
     final int[] U;
-    final Map<Integer,Double> costFunction;
     final int X; //how many charge states 
     final double lambda;//discount factor
     final BatteryModel batt;
     
-    public MDPValueGraphHybrid(int[] controls, Map<Integer,Double> costFunction, int stateBuckets, double discountRate, BatteryModel batt){
+    public MDPValueGraphHybrid(int[] controls, int stateBuckets, double discountRate, BatteryModel batt){
 	this.U = controls;
 	this.X = stateBuckets;
 	this.lambda = discountRate;
 	this.batt = batt;
-	this.costFunction = costFunction;
     }
     
     public double[][] getValues(List<PointFeatures> points){
@@ -50,7 +48,7 @@ public class MDPValueGraphHybrid{
 		double minValue = Double.MAX_VALUE;
 		for(int u=0;u<U.length;u++){
 		    int control = U[u];
-		    ControlResult result = testControl(state, costFunction, power, control);
+		    ControlResult result = testControl(state, power, control);
 		    
 		    double value = result.cost;
 
@@ -89,7 +87,7 @@ public class MDPValueGraphHybrid{
 */
 	}
     
-    public static ControlResult testControl(BatteryModel batteryState, Map<Integer,Double> costFunction, double powerDraw, int control){
+    public static ControlResult testControl(BatteryModel batteryState, double powerDraw, int control){
 	BatteryModel modelBatt = batteryState.createClone();
 	
 	double cost = 0.0;
@@ -107,7 +105,7 @@ public class MDPValueGraphHybrid{
 
 	double percentCharge = modelBatt.getWattHours() / modelBatt.getMaxWattHours();
 	
-	cost = costFunction.get(control);
+	cost = CostFunction.getCost(control);
 		
 	return new ControlResult(percentCharge, cost);
     }

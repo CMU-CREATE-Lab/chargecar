@@ -18,8 +18,7 @@ import org.chargecar.prize.util.TripFeatures;
         private String currentDriver;
         private final String optFileFolderPath;
         private final double discountFactor = 0.99;
-        private final int[] controlsSet = new int[]{0,5,10,15,20,25,30,35,40,45,50};
-        private final double[] controlsCost = new double[]{0,1,2,3,4,5,6,7,8,9,10};
+        private final int[] controlsSet = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
         private final Map<Integer,Double> costFunction = new HashMap<Integer,Double>(11);
         
         private final MDPValueGraphHybrid mmdpOpt;
@@ -31,10 +30,7 @@ import org.chargecar.prize.util.TripFeatures;
     		tripMap = new HashMap<Integer,double[][]>();
     		this.optFileFolderPath = optFileFolderPath+"/";
     		this.batt = batt.createClone();
-    		for(int i=0;i<controlsSet.length;i++){
-    		    costFunction.put(controlsSet[i], controlsCost[i]);
-    		}
-    		mmdpOpt = new MDPValueGraphHybrid(controlsSet, costFunction, stateCount, discountFactor, batt);
+    		mmdpOpt = new MDPValueGraphHybrid(controlsSet, stateCount, discountFactor, batt);
         }    
 
         @Override

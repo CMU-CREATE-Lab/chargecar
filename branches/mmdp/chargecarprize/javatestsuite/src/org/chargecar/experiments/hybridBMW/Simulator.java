@@ -9,25 +9,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import org.chargecar.prize.battery.BatteryModel;
-import org.chargecar.prize.battery.LiFePo4;
 import org.chargecar.prize.battery.SimpleBattery;
-import org.chargecar.prize.battery.SimpleCapacitor;
-import org.chargecar.prize.policies.NoCapPolicy;
-import org.chargecar.prize.policies.Policy;
 import org.chargecar.prize.util.GPXTripParser;
 import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
-import org.chargecar.prize.util.PowerFlows;
 import org.chargecar.prize.util.SimulationResults;
 import org.chargecar.prize.util.Trip;
 import org.chargecar.prize.util.TripFeatures;
 import org.chargecar.prize.util.Vehicle;
-import org.chargecar.prize.visualization.CSVWriter;
-import org.chargecar.prize.visualization.ConsoleWriter;
-import org.chargecar.prize.visualization.Visualizer;
 
 /**
  * DO NOT EDIT 
@@ -40,8 +31,6 @@ import org.chargecar.prize.visualization.Visualizer;
 public class Simulator {
     
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
-    static Visualizer visualizer = new ConsoleWriter();
-    static Visualizer visualizer2 = new CSVWriter("/home/astyler/Dropbox/bmwHybridOmni.csv");
     static double systemVoltage = 120;
     static double batteryWhr = 5000;
     //5 kWh battery
@@ -124,14 +113,7 @@ public class Simulator {
     
     private static double simulate(OptPolicyHybrid policy, Trip trip,
 	    BatteryModel battery) throws PowerFlowException {
-	int[] controlsSet = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
-	double[] controlsCost = new double[]{0,1,2,3,4,5,6,7,8,9,10};
-	Map<Integer,Double> costFunction = new HashMap<Integer,Double>(11);
-	for(int i=0;i<controlsSet.length;i++){
-	    costFunction.put(controlsSet[i], controlsCost[i]);
-	}
-	
-	policy.beginTrip(trip.getFeatures(), battery.createClone());
+		policy.beginTrip(trip.getFeatures(), battery.createClone());
 	int i = 0;
 	policy.parseTrip(trip);
 	double cost = 0;
@@ -139,7 +121,7 @@ public class Simulator {
 	    PowerControls pf = policy.calculatePowerFlows(point, i);
 	    i++;
 	    battery.drawPower(pf.getMotorWatts(), point.getPeriodMS());
-	    cost += pf.getCost();
+	    cost += CostFunction.getCost(pf.getEngineWatts());
 	}
 	policy.endTrip(trip);
 	return cost;
