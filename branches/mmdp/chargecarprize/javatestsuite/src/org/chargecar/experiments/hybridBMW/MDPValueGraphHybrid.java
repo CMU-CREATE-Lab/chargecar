@@ -1,7 +1,6 @@
 package org.chargecar.experiments.hybridBMW;
 
 import java.util.List;
-import java.util.Map;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.SimpleBattery;
 import org.chargecar.prize.util.PointFeatures;

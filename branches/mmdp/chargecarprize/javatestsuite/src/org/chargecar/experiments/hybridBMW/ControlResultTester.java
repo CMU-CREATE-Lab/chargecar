@@ -1,8 +1,5 @@
 package org.chargecar.experiments.hybridBMW;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.chargecar.experiments.hybridBMW.MDPValueGraphHybrid.ControlResult;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.battery.SimpleBattery;
