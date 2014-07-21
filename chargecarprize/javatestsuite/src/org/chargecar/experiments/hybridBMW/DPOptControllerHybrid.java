@@ -3,89 +3,103 @@ package org.chargecar.experiments.hybridBMW;
 import java.util.List;
 import java.util.Map;
 
-import org.chargecar.algodev.controllers.Controller;
 import org.chargecar.algodev.predictors.Prediction;
 import org.chargecar.experiments.hybridBMW.MDPValueGraphHybrid.ControlResult;
 import org.chargecar.prize.battery.BatteryModel;
 import org.chargecar.prize.util.Trip;
 
 public class DPOptControllerHybrid {
-
+    
     private final int[] U;
     private final Map<Integer, double[][]> tripMap;
     private final MDPValueGraphHybrid mmdpOpt;
     
-    public DPOptControllerHybrid(int[] controls, Map<Integer, double[][]> tripMap, MDPValueGraphHybrid mvg){
+    public DPOptControllerHybrid(int[] controls,
+	    Map<Integer, double[][]> tripMap, MDPValueGraphHybrid mvg) {
 	this.U = controls;
-	this.tripMap = tripMap;	
+	this.tripMap = tripMap;
 	this.mmdpOpt = mvg;
     }
     
-    public void addTrip(Trip t){	
+    public void addTrip(Trip t) {
 	this.tripMap.put(t.hashCode(), mmdpOpt.getValues(t.getPoints()));
     }
     
-    public int getControl(List<Prediction> predictedDuties,
-	    BatteryModel batt, BatteryModel capnull, int periodMS, double powerDemand) {
-	double[] uValues = new double[U.length];
+    public int getControl(List<Prediction> predictedDuties, BatteryModel batt,
+	    BatteryModel capnull, int periodMS, double powerDemand) {
+	
+	double[] uExpectedCostToGo = new double[U.length];
 	double percentCharge = batt.getWattHours() / batt.getMaxWattHours();
 	
 	ControlResult[] cResults = new ControlResult[U.length];
 	
-	 for(int i=0;i<U.length;i++){
-		int control = U[i];
-		cResults[i] = MDPValueGraphHybrid.testControl(batt, powerDemand, control);
-	 }
-	
-	for(int i = 0;i<uValues.length;i++){
-	    uValues[i]=0;
+	for (int i = 0; i < U.length; i++) {
+	    //test each possible control and return the resulting controlResults for each
+	    int control = U[i];
+	    cResults[i] = MDPValueGraphHybrid.testControl(batt, powerDemand,
+		    control);
+	    
+	    //initialize expected cost to go's to be 0
+	    uExpectedCostToGo[i] = 0;
 	}
 	
-	for(Prediction p : predictedDuties){
+	for (Prediction p : predictedDuties) {
+	    //get the trip map MDP for the prediction match
 	    double[][] valueFunction = tripMap.get(p.getTripID());
-	   
-	    //notes, 2D array.  .length gives only first dimension (chargeStates in this case).
+	    
+	    // notes, 2D array. .length gives only first dimension (chargeStates
+	    // in this case).
 	    int X = valueFunction.length;
-	    	    
-	    int index = (int)(percentCharge*X);
-	    if(index == X) index = X-1;		    
- 
-	    for(int i=0;i<U.length;i++){
-		//doesnt know lambda for first step... OK
-		double value = cResults[i].cost;
-                double chargeState = cResults[i].pCharge*X;
-                
-                int floor = (int)Math.floor(chargeState);
-                floor = Math.min(Math.max(floor,0),X-1);
-                int ceil = (int)Math.ceil(chargeState);
-                ceil = Math.max(Math.min(ceil,X-1),0);
-
-                double fVal = valueFunction[floor][p.getTimeIndex()+1];
-
-                if(floor==ceil){
-                    value += fVal;
-                }
-                else{
-                    double cVal = valueFunction[ceil][p.getTimeIndex()+1];
-                    value += (fVal + ((cVal - fVal)*(chargeState - floor)/(ceil-floor) ));
-                }
+	    
+	    //find closest index for starting charge in the MDP state
+	    int index = (int) (percentCharge * X);
+	    if (index == X) index = X - 1;
+	    
+	    for (int i = 0; i < U.length; i++) {
+		// doesnt know lambda for first step... OK
 		
-		uValues[i] += p.getWeight()*value;
+		//initialize total cost to the one step cost from the control
+		double costToGo = cResults[i].cost;
+		
+		//find the resulting charge state (0 -> 1) in index space (0 -> X-1)
+		//it will be a double, so interpolate between the closest indexes
+		//to get a value estimate for that state (e.g. 1.5 is halfway between index 1 and 2)
+		double chargeState = cResults[i].pCharge * X;
+		
+		int floor = (int) Math.floor(chargeState);
+		floor = Math.min(Math.max(floor, 0), X - 1);
+		int ceil = (int) Math.ceil(chargeState);
+		ceil = Math.max(Math.min(ceil, X - 1), 0);
+		
+		double fVal = valueFunction[floor][p.getTimeIndex() + 1];
+		
+		
+		//add interpolated CostToGo to the one step cost already stored in CTG
+		if (floor == ceil) {
+		    costToGo += fVal;
+		} else {
+		    double cVal = valueFunction[ceil][p.getTimeIndex() + 1];
+		    costToGo += (fVal + ((cVal - fVal) * (chargeState - floor) / (ceil - floor)));
+		}
+		
+		//update the expected CostToGo for this control (U[i]), weighted by the prediction weight
+		//when all predictions results/weights combined, we will have an expectation of CostToGo
+		uExpectedCostToGo[i] += p.getWeight() * costToGo;
 	    }
 	    
 	}
 	
-	double minValue = Double.MAX_VALUE;
+	double minCTG = Double.MAX_VALUE;
 	int control = 0;
 	
-	for(int i=0;i<uValues.length;i++){
-	    double value = uValues[i];
-	    if(value < minValue){
-		minValue = value;
+	//determine which control had the lowest costToGo and return it
+	for (int i = 0; i < uExpectedCostToGo.length; i++) {
+	    double costToGo = uExpectedCostToGo[i];
+	    if (costToGo < minCTG) {
+		minCTG = costToGo;
 		control = U[i];
 	    }
 	}
 	return control;
-    }    
+    }
 }
-

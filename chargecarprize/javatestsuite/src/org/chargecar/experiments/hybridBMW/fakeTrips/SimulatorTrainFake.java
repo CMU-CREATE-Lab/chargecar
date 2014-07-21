@@ -43,15 +43,15 @@ public class SimulatorTrainFake {
 	
 	String optFolder = args[0];
 	
-	MDPTrainerHybrid policy = new MDPTrainerHybrid(optFolder, new SimpleBattery(battWhr, 0, systemVoltage), 100);
+	MDPTrainerHybrid trainer = new MDPTrainerHybrid(optFolder, new SimpleBattery(battWhr, 0, systemVoltage), 100);
 
 	List<Trip> trips = getTrips();
 	
 	for(Trip t : trips){
-	    policy.parseTrip(t);
+	    trainer.parseTrip(t);
 	}	
 		
-	policy.finishTraining();
+	trainer.finishTraining();
 	System.out.println("Finished Training on "+trips.size()+" fake trip(s)");
     }
 
