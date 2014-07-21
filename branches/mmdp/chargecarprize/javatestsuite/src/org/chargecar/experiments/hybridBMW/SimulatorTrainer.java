@@ -55,7 +55,7 @@ public class SimulatorTrainer {
 	}
 	
 	System.out.println("Training on "+gpxFiles.size()+" GPX files.");
-	MDPTrainerHybrid policy = new MDPTrainerHybrid(optFolder, new SimpleBattery(battWhr, 0, systemVoltage), 1000);
+	MDPTrainerHybrid policy = new MDPTrainerHybrid(optFolder, new SimpleBattery(battWhr, 0, systemVoltage), 100);
 
 	int count = 0;
 	for (File tripFile : gpxFiles) {
