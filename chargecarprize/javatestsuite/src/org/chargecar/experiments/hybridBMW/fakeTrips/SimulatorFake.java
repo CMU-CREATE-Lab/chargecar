@@ -105,7 +105,7 @@ public class SimulatorFake {
     
     private static double simulateTrip(OptPolicyHybrid policy, Trip trip)
 	    throws PowerFlowException {
-	BatteryModel tripBattery = new SimpleBattery(batteryWhr, 0,
+	BatteryModel tripBattery = new SimpleBattery(batteryWhr, 500,
 		systemVoltage);
 	return simulate(policy, trip, tripBattery);
 	
@@ -114,33 +114,44 @@ public class SimulatorFake {
     private static double simulate(OptPolicyHybrid policy, Trip trip,
 	    BatteryModel battery) throws PowerFlowException {
 	policy.beginTrip(trip.getFeatures(), battery.createClone());
+	
+	List<PowerControls> pc = new ArrayList<PowerControls>();
+	List<Double> costs = new ArrayList<Double>();
+	List<Double> charge = new ArrayList<Double>();
+	
 	int i = 0;
 	policy.parseTrip(trip);
-	double cost = 0;
+	
+	double totalCost = 0;
 	
 	for (PointFeatures point : trip.getPoints()) {
 	    PowerControls pf = policy.calculatePowerFlows(point, i);
+	    pc.add(pf);
 	    i++;
-	    battery.drawPower(pf.getMotorWatts(), point.getPeriodMS());
-	    cost += CostFunction.getCost(pf.getEngineWatts());
+	    battery.drawPower(pf.getMotorWatts(), point.getPeriodMS());	    
+	    totalCost += CostFunction.getCost(pf.getEngineWatts());
+	    costs.add(totalCost);
+	    charge.add(battery.getWattHours());
 	}
 	policy.endTrip(trip);
-	return cost;
+	
+	writeResults(pc,costs,charge);
+	
+	return totalCost;
     }
     
-    public static void writeResults(List<Double> i2sums) {
+    public static void writeResults(List<PowerControls> controls, List<Double> costs, List<Double> wh) {
 	FileWriter fstream;
 	try {
 	    
 	    fstream = new FileWriter(
-		    "C:/Users/astyler/Dropbox/experiments/whsensitivity/omnires.csv",
+		    "/home/astyler/Dropbox/experiments/hybridtest/faketrp500.csv",
 		    false);
 	    BufferedWriter out = new BufferedWriter(fstream);
-	    for (double d : i2sums) {
-		out.write(d + ",");
+	    for (int i = 0;i < controls.size();i++) {
+		PowerControls pc = controls.get(i);
+		out.write(pc.getEngineWatts() + "," + pc.getMotorWatts() + "," + costs.get(i) + "," + wh.get(i) +"\n");
 	    }
-	    
-	    out.write("0.0\n");
 	    out.close();
 	} catch (IOException e) {
 	    // TODO Auto-generated catch block
