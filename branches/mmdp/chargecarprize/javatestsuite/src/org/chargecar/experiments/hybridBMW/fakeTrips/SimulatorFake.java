@@ -33,7 +33,7 @@ public class SimulatorFake {
     static Vehicle civic = new Vehicle(1200, 1.988, 0.31, 0.015);
     static double systemVoltage = 120;
     static double batteryWhr = 5000;
-    static double startingWhr = 1000;
+    static double startingWhr = 0;
     
     // 5 kWh battery
     
@@ -65,14 +65,14 @@ public class SimulatorFake {
 	System.out.println("Policy: " + op.getShortName());
 	System.out.println("Total Costs: " + res.getTotalCost());
 	
-	op = new OptPolicyHybrid(optFolder, new int[] {25000,0});
+	/*op = new OptPolicyHybrid(optFolder, new int[] {25000,0});
 	op.loadState();
 	op.setShortName("OptLim");
 	
 	res = simulateTrips(op, trips, true);
 	System.out.println("Policy: " + op.getShortName());
 	System.out.println("Total Costs: " + res.getTotalCost());
-	
+	*/
 	NaivePolicyHybrid np = new NaivePolicyHybrid();
 	
 	res = simulateTrips(np, trips, false);

@@ -30,9 +30,12 @@ public class OptPolicyHybrid {
     private File optFileFolderPath;
     private int tripID;
     
+    private int lastControl;
+    
     public OptPolicyHybrid(String optFileFolderPath, int[] controls){
 	this.optFileFolderPath = new File(optFileFolderPath);
 	this.controlsSet = controls;
+	this.lastControl = 0;
 	}
     
     public void setShortName(String sn){
@@ -102,7 +105,7 @@ public class OptPolicyHybrid {
 	    System.err.println("Battery Capacity violated in policy model");
 	}
 	
-
+	this.lastControl = engineWatts;
 	return new PowerControls(engineWatts, motorWatts);
     }
     
@@ -114,7 +117,7 @@ public class OptPolicyHybrid {
 	
 	predictedDuty.add(cheater);
 	
-	return controller.getControl(predictedDuty, modelBatt, null, pf.getPeriodMS(), pf.getPowerDemand());	
+	return controller.getControl(predictedDuty, modelBatt, null, pf.getPeriodMS(), pf.getPowerDemand(), this.lastControl);	
     }
     
     public void writePowers(List<Double> powers) {
