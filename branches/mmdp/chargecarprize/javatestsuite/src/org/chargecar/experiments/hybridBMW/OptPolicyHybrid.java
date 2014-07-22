@@ -20,19 +20,24 @@ import org.chargecar.prize.util.TripFeatures;
 public class OptPolicyHybrid {
     
     protected DPOptControllerHybrid controller;
-    private final int[] controlsSet = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
+    private final int[] controlsSet;// = new int[]{0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000};
     private String currentDriver;
 
     protected BatteryModel modelBatt;
-    private final String name = "Optimal Policy";
-    private final String shortName = "optpoly";
+    private String name = "Optimal Policy";
+    private String shortName = "optpoly";
 
     private File optFileFolderPath;
     private int tripID;
     
-    public OptPolicyHybrid(String optFileFolderPath){
+    public OptPolicyHybrid(String optFileFolderPath, int[] controls){
 	this.optFileFolderPath = new File(optFileFolderPath);
+	this.controlsSet = controls;
 	}
+    
+    public void setShortName(String sn){
+	this.shortName = sn;
+    }
     
     public void setOptPath(String optPath){
 	this.optFileFolderPath = new File(optPath);

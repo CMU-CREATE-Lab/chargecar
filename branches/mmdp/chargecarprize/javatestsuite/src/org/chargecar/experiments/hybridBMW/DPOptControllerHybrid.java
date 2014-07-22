@@ -45,15 +45,17 @@ public class DPOptControllerHybrid {
 	
 	for (Prediction p : predictedDuties) {
 	    //get the trip map MDP for the prediction match
+	    //System.out.println("Debug prediction match: "+p.getTripID()+" Index: "+p.getTimeIndex()+" Weight: "+p.getWeight());
 	    double[][] valueFunction = tripMap.get(p.getTripID());
 	    
 	    // notes, 2D array. .length gives only first dimension (chargeStates
 	    // in this case).
 	    int X = valueFunction.length;
-	    
+	   // System.out.println("Charge States: "+X);
 	    //find closest index for starting charge in the MDP state
 	    int index = (int) (percentCharge * X);
 	    if (index == X) index = X - 1;
+	   // System.out.println("Time index pred: "+p.getTimeIndex()+" Charge State: "+index+"//"+X+" From pct: "+ percentCharge);
 	    
 	    for (int i = 0; i < U.length; i++) {
 		// doesnt know lambda for first step... OK
@@ -73,6 +75,8 @@ public class DPOptControllerHybrid {
 		
 		double fVal = valueFunction[floor][p.getTimeIndex() + 1];
 		
+		//System.out.println("Control "+U[i]+" Result: "+pd.format(chargeState) + " between "+floor+"-"+ceil);
+		
 		
 		//add interpolated CostToGo to the one step cost already stored in CTG
 		if (floor == ceil) {
@@ -86,6 +90,13 @@ public class DPOptControllerHybrid {
 		//when all predictions results/weights combined, we will have an expectation of CostToGo
 		uExpectedCostToGo[i] += p.getWeight() * costToGo;
 	    }
+	   /* DecimalFormat pd =new DecimalFormat("0.000E0");
+	    System.out.print("Index "+p.getTimeIndex()+" Costs: ");
+	    for(int i=0;i<U.length;i++){
+		System.out.print(pd.format(uExpectedCostToGo[i])+" ");
+		
+	    }
+	    System.out.print("\n");*/
 	    
 	}
 	

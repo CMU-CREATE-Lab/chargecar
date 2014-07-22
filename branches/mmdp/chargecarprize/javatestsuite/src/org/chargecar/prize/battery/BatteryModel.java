@@ -7,7 +7,6 @@ import org.chargecar.prize.util.PointFeatures;
 import org.chargecar.prize.util.PowerFlowException;
 import org.chargecar.prize.util.PowerFlows;
 
-
 /**
  * DO NOT EDIT
  * 
@@ -36,12 +35,14 @@ public abstract class BatteryModel {
     public abstract BatteryModel createClone();
     
     public abstract double calculateTemperature(double current, int periodMS);
+    
     public abstract double calculateEfficiency(double current, int periodMS);
+    
     public abstract double calculateVoltage(double current, int periodMS);
     
-    public void drawPower(double power, int periodMS) throws PowerFlowException{
-	//positive means power is being drawn from this source
-	//negative means powe4 is being recharged to this source
+    public void drawPower(double power, int periodMS) throws PowerFlowException {
+	// positive means power is being drawn from this source
+	// negative means power is being recharged to this source
 	this.current = powerToCurrent(power);
 	this.periodMS = periodMS;
 	this.efficiency = calculateEfficiency(power, this.periodMS);
@@ -57,6 +58,8 @@ public abstract class BatteryModel {
 	    this.wattHours = this.wattHours - power * this.efficiency
 		    * (periodMS / MS_PER_HOUR);
 	}
+	if(this.wattHours < 0) throw new PowerFlowException();
+	else if(this.wattHours > this.maxWattHours) throw new PowerFlowException();
     }
     
     public double getMaxWattHours() {
@@ -130,32 +133,34 @@ public abstract class BatteryModel {
     
     public double getMaxPowerDrawable(int periodMS) {
 	double powerInternalMax = this.wattHours / (periodMS / MS_PER_HOUR);
-	double powerAdjusted = powerInternalMax * calculateEfficiency(powerInternalMax, periodMS);
+	double powerAdjusted = powerInternalMax
+		* calculateEfficiency(powerInternalMax, periodMS);
 	return powerAdjusted;
-	//  max current is the maximum positive current that
+	// max current is the maximum positive current that
 	// would fill the capacitor to maximum over the given period
     }
     
     public double getMinPowerDrawable(int periodMS) {
 	double powerInternalMin = (this.wattHours - this.maxWattHours)
 		/ (periodMS / MS_PER_HOUR);
-	double powerAdjusted = powerInternalMin / calculateEfficiency(powerInternalMin, periodMS);
+	double powerAdjusted = powerInternalMin
+		/ calculateEfficiency(powerInternalMin, periodMS);
 	return powerAdjusted;
 	// min current is maximum negative current that
 	// would empty the current charge over the given period
     }
     
-//    public boolean check(PowerFlows pf, int periodMS) {
-//	double power = pf.getCapacitorToMotor() - pf.getBatteryToCapacitor();
-//	return power <= getMaxPower(periodMS)
-//		&& power >= getMinPower(periodMS);
-//    }
+    // public boolean check(PowerFlows pf, int periodMS) {
+    // double power = pf.getCapacitorToMotor() - pf.getBatteryToCapacitor();
+    // return power <= getMaxPower(periodMS)
+    // && power >= getMinPower(periodMS);
+    // }
     
-    public double powerToCurrent(double power){
-	return power/this.voltage;
+    public double powerToCurrent(double power) {
+	return power / this.voltage;
     }
     
-    public double currentToPower(double current){
-	return current*this.voltage;
+    public double currentToPower(double current) {
+	return current * this.voltage;
     }
 }

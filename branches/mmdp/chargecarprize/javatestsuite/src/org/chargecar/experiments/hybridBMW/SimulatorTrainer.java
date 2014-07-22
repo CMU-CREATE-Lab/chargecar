@@ -61,7 +61,7 @@ public class SimulatorTrainer {
 	for (File tripFile : gpxFiles) {
 	    List<Trip> tripsToTest = parseTrips(tripFile);
 	    for (Trip t : tripsToTest) {
-		policy.parseTrip(t);
+		policy.parseTrip(t, false);
 		count++;
 	    }
 	}	
