@@ -48,7 +48,7 @@ public class SimulatorTrainFake {
 	List<Trip> trips = getTrips();
 	
 	for(Trip t : trips){
-	    trainer.parseTrip(t);
+	    trainer.parseTrip(t, true);
 	}	
 		
 	trainer.finishTraining();
@@ -57,15 +57,8 @@ public class SimulatorTrainFake {
 
     private static List<Trip> getTrips() {
 	List<Trip> trips = new ArrayList<Trip>();
-	List<Double> powersWatts = new ArrayList<Double>();
-	List<Integer> durationSeconds = new ArrayList<Integer>();
-
-	powersWatts.add(20000.0);
-	durationSeconds.add(300);
-	
-	powersWatts.add(2000.0);
-	durationSeconds.add(300);
-	trips.add(FakeTripMaker.createTrip("JohnDoe", 1, powersWatts, durationSeconds, civic));
+	trips.add(FakeTripMaker.getTrip(civic,3));
+	trips.add(FakeTripMaker.getTrip(civic,4));
 	return trips;
     }    
 }

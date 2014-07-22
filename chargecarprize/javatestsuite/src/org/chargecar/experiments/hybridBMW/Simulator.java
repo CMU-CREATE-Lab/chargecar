@@ -61,8 +61,12 @@ public class Simulator {
 	System.out.println("Testing on " + gpxFiles.size() + " GPX files.");
 	HybridSimResults res;
 	
-	OptPolicyHybrid op = new OptPolicyHybrid(optFolder);
+	
+	OptPolicyHybrid op = new OptPolicyHybrid(optFolder, new int[] { 0,
+		5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000,
+		50000 });
 	op.loadState();
+	op.setShortName("OptAll");
 	
 	res = simulateTrips(op, gpxFiles);
 	

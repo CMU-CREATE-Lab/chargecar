@@ -39,7 +39,7 @@ public class MDPValueGraphHybrid{
 	
 	//djikstra shortest path search
 	//TODO change to A*?
-	for(int t=T-2;t>=1;t--){
+	for(int t=T-2;t>=0;t--){
 	    double power = 0;
 	    power = points.get(t).getPowerDemand();
 	    for(int x=0;x<X;x++){

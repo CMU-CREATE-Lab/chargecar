@@ -12,7 +12,7 @@ package org.chargecar.experiments.hybridBMW;
         private final String shortName = "naivepoly";
         
         public NaivePolicyHybrid(){
-            super("/");
+            super("/",null);
     	}
 
         public void beginTrip(TripFeatures tripFeatures, BatteryModel batteryClone) {
