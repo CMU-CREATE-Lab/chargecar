@@ -26,7 +26,7 @@ public class DPOptControllerHybrid {
     }
     
     public int getControl(List<Prediction> predictedDuties, BatteryModel batt,
-	    BatteryModel capnull, int periodMS, double powerDemand) {
+	    BatteryModel capnull, int periodMS, double powerDemand, int lastControl) {
 	
 	double[] uExpectedCostToGo = new double[U.length];
 	double percentCharge = batt.getWattHours() / batt.getMaxWattHours();
@@ -40,7 +40,7 @@ public class DPOptControllerHybrid {
 		    control);
 	    
 	    //initialize expected cost to go's to be 0
-	    uExpectedCostToGo[i] = 0;
+	    uExpectedCostToGo[i] = 0.00001*Math.abs(U[i]-lastControl);
 	}
 	
 	for (Prediction p : predictedDuties) {
@@ -90,6 +90,7 @@ public class DPOptControllerHybrid {
 		//when all predictions results/weights combined, we will have an expectation of CostToGo
 		uExpectedCostToGo[i] += p.getWeight() * costToGo;
 	    }
+	    
 	   /* DecimalFormat pd =new DecimalFormat("0.000E0");
 	    System.out.print("Index "+p.getTimeIndex()+" Costs: ");
 	    for(int i=0;i<U.length;i++){
