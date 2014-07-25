@@ -16,7 +16,7 @@ import org.chargecar.prize.util.Trip;
 public class MDPTrainerHybrid {
     private String currentDriver;
     private final String optFileFolderPath;
-    private final double discountFactor =1;
+    private final double discountFactor = 1;
     private final int[] controlsSet = new int[] { 0, 5000, 10000, 15000, 20000,
 	    25000, 30000, 35000, 40000, 45000, 50000 };
     
@@ -74,7 +74,8 @@ public class MDPTrainerHybrid {
     }
     
     public void writeValueGraph(Trip t, double[][] vg, File location) {
-	System.out.println("DEBUG: Printing ValueGraph file: "+location.getAbsolutePath());
+	System.out.println("DEBUG: Printing ValueGraph file: "
+		+ location.getAbsolutePath());
 	final DecimalFormat vgd = new DecimalFormat("0.000");
 	FileWriter fstream;
 	try {
