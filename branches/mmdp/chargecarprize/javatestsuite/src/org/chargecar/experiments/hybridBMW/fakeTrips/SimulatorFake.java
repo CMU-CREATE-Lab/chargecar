@@ -65,14 +65,14 @@ public class SimulatorFake {
 	System.out.println("Policy: " + op.getShortName());
 	System.out.println("Total Costs: " + res.getTotalCost());
 	
-	/*op = new OptPolicyHybrid(optFolder, new int[] {25000,0});
-	op.loadState();
-	op.setShortName("OptLim");
-	
-	res = simulateTrips(op, trips, true);
-	System.out.println("Policy: " + op.getShortName());
-	System.out.println("Total Costs: " + res.getTotalCost());
-	*/
+	/*
+	 * op = new OptPolicyHybrid(optFolder, new int[] {25000,0});
+	 * op.loadState(); op.setShortName("OptLim");
+	 * 
+	 * res = simulateTrips(op, trips, true); System.out.println("Policy: " +
+	 * op.getShortName()); System.out.println("Total Costs: " +
+	 * res.getTotalCost());
+	 */
 	NaivePolicyHybrid np = new NaivePolicyHybrid();
 	
 	res = simulateTrips(np, trips, false);
@@ -154,7 +154,7 @@ public class SimulatorFake {
 	try {
 	    
 	    fstream = new FileWriter(
-		    "/home/astyler/Dropbox/experiments/hybridtest/"+id
+		    "/home/astyler/Dropbox/experiments/hybridtest/" + id
 			    + Integer.toString((int) startingWhr) + ".csv",
 		    false);
 	    BufferedWriter out = new BufferedWriter(fstream);
