@@ -67,6 +67,7 @@ public class KdForest {
 	List<Prediction> predictions = new ArrayList<Prediction>();
 	
 	for(Expert expert : experts){
+	    //TODO Test single searchNeighbor vs searchNeighbors k=1
 	    Prediction p = expert.getTree().getNeighbor(searchPoint);
 	    if(trained && p.getWeight() > 99){
 		//We have trained on the data in the set, so skip the perfect match trip as it is the search trip
