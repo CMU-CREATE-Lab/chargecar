@@ -58,7 +58,7 @@ public class TestCaseGraphTrainer {
    	
 	powers = new double[51];
 	double pInit = -45078;
-	double pDiff = 3563.6;
+	double pDiff = 3563.6;//magic numbers to make an even distribution from -45708 to +100k something
 	for(int i = 0;i<51;i++){
 	    if(i == 13){
 		powers[i] = 0;
