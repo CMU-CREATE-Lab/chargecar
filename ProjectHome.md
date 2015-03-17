@@ -1,0 +1,1 @@
+[ChargeCar](http://www.chargecar.org/) is dedicated to open, community-centered teamwork for making electric vehicles practical and affordable enough to revolutionize urban commuting.
